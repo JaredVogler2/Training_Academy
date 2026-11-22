@@ -33,12 +33,15 @@
   padding: var(--dock-pad) calc(var(--gutter) + var(--safe-right))
     calc(var(--dock-pad) + var(--safe-bottom)) calc(var(--gutter) + var(--safe-left));
   border-radius: 30px 30px 0 0;
-  background: rgb(255 250 240 / 74%);
+  /*
+   * A translucent panel, deliberately without a backdrop blur. The picture behind it moves, so a blur would be
+   * recomputed on every frame: measured in software rendering, that alone was two thirds of what the idle home
+   * screen cost. Behind the dock there is only water, so the blur was also adding very little to look at.
+   */
+  background: rgb(255 250 240 / 84%);
   box-shadow:
     0 -10px 34px rgb(22 62 98 / 20%),
     inset 0 2px 0 rgb(255 255 255 / 80%);
-  -webkit-backdrop-filter: blur(16px) saturate(1.25);
-  backdrop-filter: blur(16px) saturate(1.25);
 }
 
 .tiles {

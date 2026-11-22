@@ -7,38 +7,46 @@
   overflow: visible;
 }
 
+/*
+ * Ambient movement, in steps rather than every frame.
+ *
+ * A change to any part of an SVG repaints the whole picture, so seven animations running at 60 frames a second kept
+ * one CPU core fully busy on a device with no graphics acceleration — and this picture is exactly what such a device
+ * is shown. The movements are slow and small (a cloud covers 40 px in most of a minute), so each takes its path in
+ * steps of a fraction of a pixel, between four and ten a second. It looks the same and costs a fraction as much.
+ */
 .cloudA {
-  animation: drift 46s ease-in-out infinite alternate;
+  animation: drift 46s steps(184) infinite alternate;
 }
 
 .cloudB {
-  animation: drift 62s ease-in-out infinite alternate-reverse;
+  animation: drift 62s steps(248) infinite alternate-reverse;
 }
 
 .birds {
-  animation: drift 30s ease-in-out infinite alternate;
+  animation: drift 30s steps(120) infinite alternate;
 }
 
 .ripples {
-  animation: sway 7s ease-in-out infinite alternate;
+  animation: sway 7s steps(56) infinite alternate;
 }
 
 .foam {
   transform-box: fill-box;
   transform-origin: 50% 50%;
-  animation: foam 5.5s ease-in-out infinite alternate;
+  animation: foam 5.5s steps(44) infinite alternate;
 }
 
 .boat {
   transform-box: fill-box;
   transform-origin: 50% 90%;
-  animation: bob 4.6s ease-in-out infinite alternate;
+  animation: bob 4.6s steps(46) infinite alternate;
 }
 
 .flag {
   transform-box: fill-box;
   transform-origin: 0 50%;
-  animation: flutter 1.8s ease-in-out infinite alternate;
+  animation: flutter 1.8s steps(18) infinite alternate;
 }
 
 @keyframes drift {

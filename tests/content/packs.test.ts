@@ -274,3 +274,146 @@ describe('the content lint catches authoring mistakes', () => {
     expect(quantityMisconception(3, 1)).toBe('many-fewer');
   });
 });
+
+/**
+ * Every rule the lint has, each proven to fire on a copy of the real pack broken in exactly that way. The last test
+ * reads the lint's own source, so a rule added without a case here fails the suite.
+ */
+describe('every lint rule fires', () => {
+  const lesson = (pack: ContentPack) => pack.lessons[0]!;
+  /** An independent challenge with three choices: a, b and the answer c. */
+  const three = (pack: ContentPack) => lesson(pack).challenges[3]!;
+
+  const BREAK: Record<string, (pack: ContentPack) => void> = {
+    'challenge-id-prefix': (pack) => {
+      three(pack).id = 'another-lesson.two-apples';
+    },
+    'challenge-skill': (pack) => {
+      three(pack).skillId = 'math.counting.count-to-5';
+    },
+    'choice-id-duplicate': (pack) => {
+      three(pack).choices[1]!.id = three(pack).choices[0]!.id;
+    },
+    'choice-label-duplicate': (pack) => {
+      three(pack).choices[1]!.label = three(pack).choices[0]!.label;
+    },
+    'answer-missing': (pack) => {
+      three(pack).answer = 'z';
+    },
+    'quantity-answer-count': (pack) => {
+      three(pack).prompt.stimulus.count = 9;
+    },
+    'quantity-answer-wrong': (pack) => {
+      three(pack).answer = 'a';
+    },
+    'quantity-duplicate-choice': (pack) => {
+      three(pack).choices[0]!.stimulus.count = three(pack).choices[1]!.stimulus.count;
+    },
+    'quantity-picture-match': (pack) => {
+      three(pack).choices[2]!.stimulus = { ...three(pack).prompt.stimulus };
+    },
+    'misconception-missing': (pack) => {
+      delete three(pack).misconceptions;
+    },
+    'misconception-wrong': (pack) => {
+      three(pack).misconceptions = { a: 'one-fewer', b: 'one-fewer' };
+    },
+    'misconception-target': (pack) => {
+      three(pack).misconceptions = { a: 'one-more', b: 'one-fewer', c: 'one-more' };
+    },
+    'hint-eliminate-target': (pack) => {
+      three(pack).hints[1] = {
+        type: 'eliminate',
+        remove: ['c'],
+        caption: 'ng.same-amount.hint.eliminate',
+      };
+    },
+    'hint-eliminate-all': (pack) => {
+      three(pack).hints[1] = {
+        type: 'eliminate',
+        remove: ['a', 'b'],
+        caption: 'ng.same-amount.hint.eliminate',
+      };
+    },
+    'hint-reveal-early': (pack) => {
+      three(pack).hints.reverse();
+    },
+    'hint-ladder-end': (pack) => {
+      three(pack).hints.pop();
+    },
+    'string-missing': (pack) => {
+      delete pack.strings.en['ng.same-amount.incorrect'];
+    },
+    'string-unused': (pack) => {
+      pack.strings.en['ng.same-amount.never-used'] = 'Nobody says this.';
+    },
+    'lesson-world': (pack) => {
+      lesson(pack).world = 'robot-ridge';
+    },
+    'lesson-skill-unknown': (pack) => {
+      lesson(pack).skillIds = ['math.counting.not-defined'];
+    },
+    'lesson-id-duplicate': (pack) => {
+      pack.lessons.push(structuredClone(lesson(pack)));
+    },
+    'plan-reference': (pack) => {
+      lesson(pack).plan.guided.push('ng-same-amount-01.not-written');
+    },
+    'plan-duplicate': (pack) => {
+      lesson(pack).plan.guided.push(lesson(pack).plan.demo[0]!);
+    },
+    'plan-count': (pack) => {
+      lesson(pack).plan.independent.count = 6;
+    },
+    'plan-reprobes': (pack) => {
+      lesson(pack).plan.independent.maxReprobes = 5;
+    },
+    'plan-variants': (pack) => {
+      for (const challenge of lesson(pack).challenges) challenge.variant = 'only-one';
+    },
+    'challenge-orphan': (pack) => {
+      lesson(pack).plan.independent.pool.pop();
+    },
+    'challenge-id-duplicate': (pack) => {
+      lesson(pack).challenges[1]!.id = lesson(pack).challenges[0]!.id;
+    },
+    'success-criteria': (pack) => {
+      lesson(pack).successCriteria.independentFirstTryCorrect = 4;
+    },
+    'skill-id-duplicate': (pack) => {
+      pack.skills.push(structuredClone(pack.skills[0]!));
+    },
+    'skill-world': (pack) => {
+      pack.skills[0]!.world = 'robot-ridge';
+    },
+    'skill-untaught': (pack) => {
+      pack.skills.push({ ...pack.skills[0]!, id: 'math.quantity.nobody-teaches-this' });
+    },
+    'skill-prerequisite-unknown': (pack) => {
+      pack.skills[0]!.prerequisites = ['math.counting.not-defined'];
+    },
+    'skill-prerequisite-self': (pack) => {
+      pack.skills[0]!.prerequisites = [pack.skills[0]!.id];
+    },
+    'skill-prerequisite-cycle': (pack) => {
+      const first = pack.skills[0]!;
+      pack.skills.push({ ...first, id: 'math.quantity.second', prerequisites: [first.id] });
+      first.prerequisites = ['math.quantity.second'];
+    },
+  };
+
+  it.each(Object.keys(BREAK))('%s', (code) => {
+    expect(codes(broken(BREAK[code]!))).toContain(code);
+  });
+
+  it('has a case here for every rule in the lint', async () => {
+    const source = (await import('@/content/lint.ts?raw')).default;
+    const inSource = new Set(
+      [...source.matchAll(/'([a-z]+(?:-[a-z]+)+)'/g)]
+        .map((match) => match[1]!)
+        // The misconception tags are data the lint produces, not rule names.
+        .filter((name) => !['one-more', 'one-fewer', 'many-more', 'many-fewer'].includes(name)),
+    );
+    expect([...inSource].sort()).toEqual(Object.keys(BREAK).sort());
+  });
+});

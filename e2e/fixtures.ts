@@ -38,16 +38,12 @@ const ALWAYS_ALLOWED = [
 ];
 
 /**
- * Two more that only WebKit produces, neither of them about the game:
- *   - to take a screenshot, Playwright adds a <style> to the page; this site's Content-Security-Policy refuses it,
- *     and WebKit reports the refusal. (Chromium words the same refusal differently, so an inline style added by the
- *     game itself would still fail these tests there.)
- *   - WebKit advises that a `modulepreload` link "was not used within a few seconds of the load event" whenever Vite
- *     adds one later than that, which is every time a part of the game is opened after the first few seconds.
+ * One more that only WebKit produces, and it is not about the game: to take a screenshot, Playwright adds a <style>
+ * to the page; this site's Content-Security-Policy refuses it, and WebKit reports the refusal. (Chromium words the
+ * same refusal differently, so an inline style added by the game itself would still fail these tests there.)
  */
 const WEBKIT_ALLOWED = [
   /Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline'/,
-  /was preloaded using link preload but not used within a few seconds/,
 ];
 
 /**

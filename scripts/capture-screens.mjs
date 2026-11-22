@@ -90,6 +90,9 @@ async function session(screen, steps, { graphics = 'pictures' } = {}) {
   const press = (target) => (touch ? target.tap() : target.click());
   const shot = async (name) => {
     const file = `${name}-${width}x${height}.jpg`;
+    // A phone browser zooms out to hold a page that is too wide, and the picture would hide the fault.
+    const pageWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    if (pageWidth > width) problems.push(`${file}: the page is ${pageWidth} px wide`);
     await page.screenshot({ path: join(out, file), type: 'jpeg', quality: 82 });
     console.log(`  ${file}`);
   };
@@ -241,6 +244,30 @@ try {
       await page.goto(`${BASE}/somewhere/else`);
       await page.getByRole('heading', { level: 1 }).waitFor();
       await shot('not-found');
+    });
+  }
+
+  // The longest names the form accepts, on the narrowest screens: nothing may push the page wider than the screen.
+  for (const screen of ['small-phone', 'phone']) {
+    await session(screen, async ({ page, shot }) => {
+      await page.goto(`${BASE}/grown-ups`);
+      await page.getByRole('button', { name: 'Press and hold' }).click({ delay: 2200 });
+      await page.getByRole('heading', { name: 'Players' }).waitFor();
+      for (const [name, picture] of [
+        ['Wonderful long nickname', 'Drop'],
+        ['W'.repeat(24), 'Shell'],
+      ]) {
+        await page.getByRole('button', { name: 'Add a player' }).click();
+        await page.getByLabel('Nickname', { exact: true }).fill(name);
+        await page.getByRole('radio', { name: picture }).check({ force: true });
+        await page.getByRole('button', { name: 'Add', exact: true }).click();
+        await page.getByTestId('player').filter({ hasText: name }).waitFor();
+      }
+      await page.waitForTimeout(400);
+      await shot('grown-ups-4-long-names');
+      await page.getByRole('heading', { name: 'Saved data' }).scrollIntoViewIfNeeded();
+      await page.waitForTimeout(200);
+      await shot('grown-ups-5-long-names-saved-data');
     });
   }
 

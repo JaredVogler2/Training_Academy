@@ -13,9 +13,16 @@ import type { Clock } from './Props';
 
 /** What the camera looks at: a point a little above the hill, nudged towards the pier so the harbour is in frame. */
 const TARGET = new Vector3(1.2, 3.5, 0.6);
-/** Half the width and height, in world units, that must stay in view around the target. */
-const HALF_WIDTH = 9.6;
+/** Half the height, in world units, that must stay in view around the target: the flag above, the near shore below. */
 const HALF_HEIGHT = 5.3;
+/**
+ * Sideways, the thing that reaches furthest is the boat at the end of the pier — and it is nearer the camera than the
+ * middle of the island, so perspective pushes it further out the closer the camera comes. A phone held sideways
+ * brings the camera close. These place the boat's outer edge relative to the target: how far to the side, and how far
+ * towards the camera.
+ */
+const REACH = 8.9;
+const REACH_NEARER = 5.9;
 /**
  * A low viewpoint: the island is seen a little from above, with the horizon and a band of sky behind the tower.
  * Higher and the scene becomes a map with no sky; lower and the top of the island disappears.
@@ -51,10 +58,6 @@ export function CameraRig({
       const width = Math.max(area.width, 120);
       const height = Math.max(area.height, 120);
 
-      const pixelsPerUnit = Math.min(
-        (width * 0.94) / (2 * HALF_WIDTH),
-        (height * 0.9) / (2 * HALF_HEIGHT),
-      );
       const tanHalfFov = Math.tan((camera.fov * Math.PI) / 360);
       const tanHalfAcross = tanHalfFov * (whole.width / whole.height);
 
@@ -65,7 +68,14 @@ export function CameraRig({
       // A phone held upright sees a narrow slice of the world; the same drift there would swing the sky right out of
       // view. Scale the drift to the width of the view.
       const sway = SWAY * Math.min(1, Math.atan(tanHalfAcross) / 0.55);
-      framing.current = { distance: whole.height / (2 * pixelsPerUnit * tanHalfFov), sway };
+
+      // The camera backs off until the island fits both ways, with a little air around it.
+      const forHeight = (whole.height * HALF_HEIGHT) / (height * 0.9 * tanHalfFov);
+      // Sideways it is the boat that decides, where the drift carries it furthest across the picture.
+      const reach = REACH * Math.cos(sway) + REACH_NEARER * Math.sin(sway);
+      const nearer = REACH_NEARER * Math.cos(sway) - REACH * Math.sin(sway);
+      const forWidth = nearer + (whole.height * reach) / (width * 0.94 * tanHalfFov);
+      framing.current = { distance: Math.max(forHeight, forWidth), sway };
 
       // Put the sun where this screen can see it: a fixed way across the free area, whatever its shape.
       const sunX = area.left - whole.left + area.width * SUN_ACROSS;

@@ -44,6 +44,15 @@ export default defineConfig({
     sourcemap: false,
     // three.js alone is larger than Vite's default warning threshold; scripts/verify-dist.mjs holds the real budgets.
     chunkSizeWarningLimit: 900,
+    modulePreload: {
+      // A part that is loaded on demand is fetched by its own `import()`, not by a <link rel="modulepreload"> that
+      // Vite would otherwise add just before it. (Its stylesheet is still fetched alongside.) WebKit keeps a preload
+      // that failed and hands the same failure to the next request for that file — even after the page is reloaded —
+      // so one lost download could leave "Load the page again" unable to help. Found by the WebKit browser tests.
+      // The first screen's own files are still preloaded from index.html.
+      resolveDependencies: (_file, deps, { hostType }) =>
+        hostType === 'js' ? deps.filter((dep) => dep.endsWith('.css')) : deps,
+    },
     rolldownOptions: {
       output: {
         codeSplitting: {

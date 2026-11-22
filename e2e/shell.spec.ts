@@ -1,4 +1,4 @@
-import { WORLD_NAMES, expect, screenFit, test } from './fixtures';
+import { WORLD_NAMES, expect, hubPicturesLoaded, screenFit, test } from './fixtures';
 
 test.describe('the home shell', () => {
   test('shows the brand, the two toggles and all six worlds, laid out for this screen @layout @smoke', async ({
@@ -16,7 +16,7 @@ test.describe('the home shell', () => {
     for (const name of WORLD_NAMES) {
       await expect(worlds.filter({ hasText: name })).toBeVisible();
     }
-    await expect(page.getByTestId('hub-stage')).toHaveAttribute('data-hub-mode', 'illustrated');
+    await expect(page.getByTestId('hub-stage')).toHaveAttribute('data-hub-mode', 'picture');
 
     const viewport = page.viewportSize();
     if (!viewport) throw new Error('no viewport');
@@ -28,9 +28,10 @@ test.describe('the home shell', () => {
     const boxes = [];
     for (const world of await worlds.all()) {
       const box = await world.boundingBox();
-      if (!box) throw new Error('A world tile is not on screen.');
-      expect(box.width).toBeGreaterThanOrEqual(88);
-      expect(box.height).toBeGreaterThanOrEqual(88);
+      if (!box) throw new Error('A world is not on screen.');
+      // The whole island is the button: far larger than the 48 to 64 pixels a small finger needs.
+      expect(box.width).toBeGreaterThanOrEqual(96);
+      expect(box.height).toBeGreaterThanOrEqual(96);
       expect(box.x).toBeGreaterThanOrEqual(0);
       expect(box.y).toBeGreaterThanOrEqual(0);
       expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 0.5);
@@ -45,7 +46,7 @@ test.describe('the home shell', () => {
           two.x + two.width <= one.x + 1 ||
           one.y + one.height <= two.y + 1 ||
           two.y + two.height <= one.y + 1;
-        expect(apart, `tiles ${a} and ${b} overlap`).toBe(true);
+        expect(apart, `worlds ${a} and ${b} overlap`).toBe(true);
       }
     }
 
@@ -57,14 +58,26 @@ test.describe('the home shell', () => {
       expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(viewport.width);
     }
 
-    // World names are never cut short.
-    const clipped = await worlds.evaluateAll((links) =>
-      links
-        .map((link) => link.querySelector('span:nth-of-type(2)'))
-        .filter((name) => name !== null && name.scrollWidth > name.clientWidth + 1)
-        .map((name) => name?.textContent),
+    // World names are never cut short, and never run off the screen.
+    const names = await worlds.evaluateAll((links) =>
+      links.map((link) => {
+        const name = link.querySelector('[data-name]');
+        const label = name?.parentElement?.getBoundingClientRect();
+        return {
+          text: name?.textContent ?? '',
+          clipped: name ? name.scrollWidth > name.clientWidth + 1 : true,
+          left: label?.left ?? -1,
+          right: label?.right ?? Infinity,
+          size: name ? parseFloat(getComputedStyle(name).fontSize) : 0,
+        };
+      }),
     );
-    expect(clipped).toEqual([]);
+    for (const name of names) {
+      expect(name.clipped, `${name.text} is cut short`).toBe(false);
+      expect(name.left, name.text).toBeGreaterThanOrEqual(0);
+      expect(name.right, name.text).toBeLessThanOrEqual(viewport.width + 0.5);
+      expect(name.size, name.text).toBeGreaterThanOrEqual(12);
+    }
   });
 
   test('marks which world has something to play and which are not open, in words too', async ({
@@ -77,6 +90,25 @@ test.describe('the home shell', () => {
     for (const name of WORLD_NAMES.filter((world) => world !== 'Number Garden')) {
       await expect(page.getByRole('link', { name: `${name} . Not open yet.` })).toBeVisible();
     }
+  });
+});
+
+test.describe('a world’s page', () => {
+  test('shows the island that was tapped, so the page is plainly the same place @layout', async ({
+    page,
+    press,
+  }) => {
+    await page.goto('/');
+    await press(page.getByRole('link', { name: /Inventor Island/ }));
+    await expect(page.getByRole('heading', { level: 1, name: 'Inventor Island' })).toBeVisible();
+    const picture = page.locator('[data-island="inventor-island"] img');
+    await expect(picture).toBeVisible();
+    await expect
+      .poll(() => picture.evaluate((image: HTMLImageElement) => image.naturalWidth))
+      .toBeGreaterThan(100);
+    // Decoration: the heading names the world.
+    await expect(picture).toHaveAttribute('alt', '');
+    expect(await screenFit(page)).toMatchObject({ sideways: [] });
   });
 });
 
@@ -200,14 +232,31 @@ test.describe('sound and motion', () => {
   });
 
   test('calm motion really stops the movement', async ({ page, press }) => {
-    await page.goto('/world/number-garden');
-    const emblem = page.locator('article header svg');
-    const duration = () =>
-      emblem.evaluate((element) => getComputedStyle(element).animationDuration);
-    expect(await duration()).toBe('5s');
+    await page.goto('/');
+    await hubPicturesLoaded(page);
+    // Everything on the home screen that is running an animation, and how long each one lasts.
+    const moving = () =>
+      page.evaluate(() =>
+        [
+          ...document.querySelectorAll(
+            '[data-testid="hub-picture"], [data-testid="hub-picture"] *, [data-testid="guide"], [data-testid="guide"] *',
+          ),
+        ]
+          .flatMap((element) => [getComputedStyle(element), getComputedStyle(element, '::before')])
+          .filter((style) => style.animationName !== 'none')
+          .map((style) => Number.parseFloat(style.animationDuration)),
+      );
+    // With motion on: the guide breathes, boats bob, clouds and wave marks drift.
+    const before = await moving();
+    expect(before.length).toBeGreaterThan(6);
+    expect(Math.max(...before)).toBeGreaterThanOrEqual(20);
+
     await press(page.getByRole('button', { name: 'Calm motion' }));
-    // The stylesheet collapses every animation to a single instant frame.
-    expect(Number.parseFloat(await duration())).toBeLessThan(0.001);
+    // Whatever is still animated has been collapsed to a single instant frame; the picture's own motion is off.
+    const after = await moving();
+    expect(Math.max(0, ...after)).toBeLessThan(0.001);
+    // And every pose is still there: the guide goes on pointing at the open island.
+    await expect(page.getByTestId('guide')).toHaveAttribute('data-state', 'point');
   });
 
   test('sound actually plays once the page has been touched, and stops when switched off', async ({

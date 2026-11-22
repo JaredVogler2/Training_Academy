@@ -2,7 +2,8 @@
 
 Training Academy is a static single-page app. There is no server, no account, no database in the cloud and no
 runtime secret. Everything a child does is decided by a small headless engine, saved in the browser, and drawn by a
-thin React layer. Phase 01 built that foundation; this document describes what exists and why each choice was made.
+thin React layer. Phase 01 built that foundation and Phase 02 the hub as it now looks; this document describes what
+exists and why each choice was made. How things should look and move is in `docs/ART_DIRECTION.md`.
 
 ## The layers
 
@@ -16,17 +17,20 @@ src/
              the typed repository, export/import. Depends on the engine only.
   game/      Browser-side glue around the engine: the shared services (clock, ids, the one repository), the players
              store, the lesson runner, the world registry, per-world modules, and the world and lesson screens.
-  render/    How the hub is drawn: the illustrated island (SVG), the WebGL probe, quality tiers, and hub3d/, the only
-             folder allowed to import three.js.
-  ui/        Controls (buttons, toggle, hold button, modal), icons and hand-drawn vector art.
+  render/    How the hub is drawn: where everything goes (archipelago.ts), the hub as a picture, the WebGL probe,
+             quality tiers, and hub3d/ — the modelling kit, the islands, the water — the only folder allowed to
+             import three.js.
+  assets/    The hub's pictures, rendered from the island models (docs/ASSETS.md).
+  ui/        Controls (buttons, toggle, hold button, modal), icons, hand-drawn vector art, and the guide.
   audio/     The audio engine: unlock on first touch, mute, a handful of synthesised cues.
   parent/    The grown-ups area.
   app/       The shell: entry wiring, history router, settings, error boundary, diagnostics, lazy-chunk loader,
              service-worker registration.
   styles/    Design tokens, base styles, bundled fonts.
-tests/       Vitest: engine, content, storage, game, app, parent, config.
+tests/       Vitest: engine, content, storage, game, app, parent, config, render, ui.
 e2e/         Playwright specs, run against the production build.
-scripts/     Build plugins (Vercel parity, service worker) and tools (dist verifier, screenshots, icons, measurements).
+scripts/     Build plugins (Vercel parity, service worker) and tools (dist verifier, screenshots, icons, the hub's
+             pictures, measurements).
 public/      Files served under their own names: manifest, favicon, robots.txt, assets/icons.
 docs/        This file and the other living documents.
 ```
@@ -141,7 +145,8 @@ Two tabs are safe but not live-synchronised.
 ## The shell
 
 - **Routing** (`app/router.ts`, `app/navigation.tsx`): a ~100-line History-API router, no library. Routes: `/`,
-  `/world/:world`, `/world/:world/play/:lessonId`, `/grown-ups`, and a not-found page. Links are real anchors. After a
+  `/world/:world`, `/world/:world/play/:lessonId`, `/grown-ups`, `/studio/:view` (a workbench, linked from
+  nowhere: one island close up, or the guide's character sheet) and a not-found page. Links are real anchors. After a
   navigation the page title is set, focus moves to `<main>`, and a live region announces the page. Addresses never
   contain a dot, so a static host can tell a page from a file.
 - **Settings**: sound on/off; motion `system | full | reduced` (the toggle flips whatever is in effect and makes it
@@ -151,51 +156,113 @@ Two tabs are safe but not live-synchronised.
   long words break, so that no text — a long nickname, a translation, text zoomed to 200% — can make a page wider than
   the screen. The browser tests check this against the real screen size with the longest names the forms accept.
 - **Error boundary**: one around the routed view (reset when the address changes). A failed lazy download becomes a
-  `ChunkLoadError`, shown as "this part could not be loaded" with a reload button. The hub has its own boundary, whose
-  fallback is simply the illustration.
+  `ChunkLoadError`, shown as "this part could not be loaded" with a reload button. The hub has its own boundary
+  around the 3D scene, whose fallback is simply the picture underneath.
 - **Diagnostics** (`app/diagnostics.ts`): marks, lazy-chunk load times, paint and layout-shift vitals where the browser
   reports them, long tasks, hub mode/tier/renderer/frame statistics/draw calls, and errors. Kept in the page's memory
   and shown under Grown-ups → Diagnostics. Nothing is transmitted: the CSP's `connect-src 'self'` and a browser-test
   guard that fails on any cross-origin request both hold that line.
 - **Audio** (`audio/audioEngine.ts`): the audio context is created on the first touch and resumed on later ones (iOS
-  suspends it at will); a cue that cannot play is skipped. Six short synthesised cues, no audio files. Phase 04 adds
-  recorded narration on top of the same unlock and mute handling.
+  suspends it at will); a cue that cannot play is skipped. Eight short synthesised cues, no audio files. Phase 04
+  adds recorded narration on top of the same unlock and mute handling.
 
 ## The hub
 
-`render/HubStage.tsx` decides what to draw:
+The hub is the map: Academy Rock and six islands in a sea, each island a link. It is drawn twice — as a picture and
+in real-time 3D — and navigated once, through ordinary links laid over whichever is showing.
 
-1. The **illustrated island** (`IllustratedHub.tsx`, SVG) is on screen from the first paint.
-2. After the shell is idle, the plan is made (`render/quality.ts`): pictures-only setting → illustration; no WebGL 2 →
-   illustration; on automatic, a device that could only draw 3D in software, or one that has asked to save data →
-   illustration; otherwise 3D at a tier.
-3. The **3D island** (`render/hub3d/`, React Three Fiber + Drei + three.js) is fetched as its own chunk group and faded
-   in after its second rendered frame.
-4. A failed download, a render error or a lost graphics context puts the illustration back.
+### One layout, three users
 
-So the "fallback" is a path every visit exercises, not a rarely-run branch.
+`render/archipelago.ts` is plain arithmetic with no graphics library in it. Given the size of the screen and the part
+of it the top bar leaves free, it returns a **frame**: which of four arrangements to use (tall phone, upright
+tablet, squarish window, wide screen), how many pixels a world unit takes, and where each island's middle lands.
 
-The illustration has to be cheap, because it is what the weakest devices are left with. A change to any part of an
-SVG repaints all of it, so its ambient movement (clouds, birds, ripples, the boat, the flag) runs in small steps, four
-to ten a second, instead of on every frame, and the dock over it is a translucent panel with no backdrop blur. Measured
-in software rendering at 1366×768, the idle home screen went from 100% of a CPU core to 10%
-(`docs/QUALITY_REPORT.md`).
+The camera never turns and has no perspective, so a point in the world is at
 
-The 3D scene is built from primitives and vertex colours only — no textures, no downloaded models, no CDN. One height
-function (`hub3d/island.ts`) places the terrain, the shoreline in the water shader and every prop. The camera rig
-(`CameraRig.tsx`) backs off until the island fits the part of the screen the dock leaves uncovered and shifts the view
-so the island sits in the middle of that area; the same numbers serve a portrait phone, a phone on its side, a tablet
-and a desktop. All animation reads one clock that stops under reduced motion.
+```
+across = x          down = z · sin(36°) − height · cos(36°)
+```
 
-Quality tiers (`TIERS` in `render/quality.ts`): `low` (pixel ratio ≤ 1, no shadows), `medium` (≤ 1.5, 1024 shadow
-map), `high` (≤ 2, 2048). On automatic, a device with little memory or two cores gets `low`, a touch device `medium`,
-otherwise `high`, and Drei's `PerformanceMonitor` may lower the pixel ratio if frames are slow. A CPU rasteriser
-(SwiftShader, llvmpipe) is not given 3D on automatic at all: it draws this scene at 8 to 27 frames a second with more
-than three cores busy. An explicit choice of quality is respected as given, on any device.
+times the scale, plus an offset. Three things use that one sum, and so agree to the pixel:
+
+| User                             | What it takes from the frame                                          |
+| -------------------------------- | --------------------------------------------------------------------- |
+| The 3D scene (`hub3d/Scene.tsx`) | The point the camera looks at, and its zoom                           |
+| The picture (`HubPicture.tsx`)   | Where to put each island's image, and how large                       |
+| The links (`app/Home.tsx`)       | Each island's box on screen — the tap area — and the size of its name |
+
+`render/extents.ts` holds the two things both the layout and the pictures depend on: the camera's angle and the room
+each island is given. `tests/render/archipelago.test.ts` checks, for ten screen shapes, that every tap area is at
+least 96 pixels square, that no two overlap, that the lighthouse (which is scenery) never lies inside one, that every
+name fits under its island, and that the guide, the boats, the rocks and the clouds are clear of all of them.
+
+### What is drawn
+
+`render/HubStage.tsx` decides:
+
+1. The **picture** is on screen from the first paint: seven images of the islands on a sea made of CSS.
+2. After the shell is idle, the plan is made (`render/quality.ts`): pictures-only setting → picture; no WebGL 2 →
+   picture; on automatic, a device that could only draw 3D in software, or one that has asked to save data → picture;
+   otherwise 3D at a tier.
+3. The **3D scene** is fetched as its own group of chunks and faded in, in place, after its second rendered frame.
+4. A failed download, a render error or a lost graphics context leaves the picture.
+
+So the fallback is a path every visit exercises, not a rarely-run branch. The 3D code is fetched by hand rather than
+through `React.lazy`: a lazy component that cannot be downloaded throws during rendering, and React, though it
+recovers, sometimes reports that on the console; here it is an ordinary event with an ordinary answer.
+
+The picture is not a second drawing of the hub. Each image is rendered **from the island's 3D model**
+(`scripts/render-sprites.mjs`, through the `/studio` route) with the water around it fading to nothing, and placed
+by the frame, so when the 3D scene fades in nothing moves. A unit test fails if a model has changed since its picture
+was rendered. The picture's own motion — boats, clouds, glints, wave marks — runs in steps on one shared half-second
+beat, because on the devices most likely to see it every change of frame is drawn by the processor.
+
+### The 3D scene
+
+Everything under `render/hub3d/`:
+
+| File                     | What it is                                                                                                                              |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `kit.ts`                 | The modelling kit: rounded blocks, turned shapes, hulls, land with a wandering shore; `Sculpture` merges an island into one mesh        |
+| `paint.ts`               | The one material everything solid wears: matte, vertex-coloured, with a brush texture generated on the device, wind, glow, rim and haze |
+| `islands/*.ts`           | The seven models: each a function from "how much detail" to one mesh and a few moving parts                                             |
+| `floating.ts`            | Boats, rocks, clouds, gulls                                                                                                             |
+| `Sea.tsx`                | The water: one plane, one shader; shallows, foam, rings and shadow around every island                                                  |
+| `stage.tsx`              | The camera, the light, and how an island is put on stage (and lifted when pointed at)                                                   |
+| `Harbour.tsx`            | All of the above together; also the frame-rate and renderer-memory record for Diagnostics                                               |
+| `Scene.tsx`, `Hub3D.tsx` | The hub's view of the harbour, and the canvas                                                                                           |
+| `Studio.tsx`             | One island on its own: for review, and for rendering the pictures                                                                       |
+
+- **One draw call an island.** Shapes are painted with a colour or a gradient as they are placed, then merged. The whole scene is 24 to 35 draw calls and about 105,000 triangles (about 50,000 on the lowest tier, which cuts its
+  curves more coarsely), with every corner stored once.
+- **Shadows are drawn once.** The sun and the islands do not move, so the shadow map is redrawn only when the layout
+  changes or an island is lifted. Contact shade is painted into the ground itself, so the lowest tier, with no
+  shadow map, still has houses that stand on their land.
+- **The shore is one formula**, used to build the land and again in the water shader, so the foam follows the land
+  exactly.
+- **The water is drawn last**, so the part of it under the islands is never shaded.
+- **Everything is disposed** with the scene: geometries, the material, the texture. The renderer's counts are shown
+  under Diagnostics so a leak would be seen as a number that grows.
+- All animation reads one clock, which stops under reduced motion; the canvas then draws only when something
+  changes.
+
+Quality tiers (`TIERS` in `render/quality.ts`): `low` (pixel ratio ≤ 1, no shadow map, half the decoration, coarser
+curves, plainer water), `medium` (≤ 1.5, 1024 shadow map), `high` (≤ 2, 2048). On automatic, a device with little memory or two
+cores gets `low`, a touch device `medium`, otherwise `high`, and Drei's `PerformanceMonitor` may lower the pixel
+ratio if frames are slow. A CPU rasteriser (SwiftShader, llvmpipe) is not given 3D on automatic at all: it draws
+this scene at two to eight frames a second. An explicit choice of quality is respected as given, on any device.
 
 Two upstream messages are handled deliberately: `shadows="percentage"` avoids a shadow mode three.js has removed, and
 `hub3d/threeConsole.ts` filters, by exact text, the one deprecation notice that React Three Fiber 9 triggers by
 constructing `THREE.Clock`. Everything else three.js says still reaches the console.
+
+### The guide
+
+`ui/Guide.tsx` is one SVG rigged in parts, with a pose and a motion for each of six states; `data-state` on its root
+selects them in CSS. It knows nothing about lessons. `game/lesson/LessonView.tsx` maps what the engine reports to a
+state (pointing during a demonstration or a hint, wondering at a new question, glad of a right answer, a tilted head
+after a wrong one), and `app/Home.tsx` moors it on the hub, pointing at the island that is open. It is hidden from
+assistive technology everywhere: the caption beside it says the same thing in words.
 
 ## Worlds and the sample activity
 
@@ -214,9 +281,11 @@ saves second; a failed save never interrupts a child (the lesson continues in me
 | Chunk                                                | When it loads                             |
 | ---------------------------------------------------- | ----------------------------------------- |
 | entry + `react` + `engine` + `profiles`              | first load                                |
-| `three`, `r3f`, `Hub3D`                              | after the shell, only where 3D is planned |
+| the hub's pictures (WebP)                            | with the first screen, as images          |
+| `three`, `r3f`, `harbour`, `Hub3D`                   | after the shell, only where 3D is planned |
 | `WorldView`, `LessonView`, `GrownUps`                | on first visit to that route              |
 | `number-garden` (code), `number-garden.v1` (content) | on entering Number Garden                 |
+| `Studio`, `GuideSheet`                               | only at `/studio/…`                       |
 
 Rolldown's `codeSplitting` groups are configured with `includeDependenciesRecursively: false`. With the default, the
 React Three Fiber group also captured React itself, which made the 3D chunk a static dependency of the entry — the

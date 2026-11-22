@@ -5,7 +5,7 @@ import { findLesson, hasPack, loadPack } from '@/content';
 import type { Lesson, WorldId } from '@/engine';
 import { worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule } from '@/game/worlds/modules';
-import { WorldEmblem } from '@/ui/art';
+import { IslandPicture } from '@/render/IslandPicture';
 import { ActionLink } from '@/ui/controls';
 import { IconAsleep, IconBack, IconPlay } from '@/ui/icons';
 import { worldText } from './text';
@@ -49,7 +49,7 @@ export default function WorldView({ world }: { world: WorldId }) {
 
       <header className={styles.hero}>
         <div className={styles.emblem}>
-          <WorldEmblem world={world} className={styles.emblemArt} />
+          <IslandPicture place={world} />
         </div>
         <div className={styles.heading}>
           <h1>{info.name}</h1>

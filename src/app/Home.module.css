@@ -1,154 +1,167 @@
 /*
- * The hub is two layers: the stage (island, sky, sea) fills the screen, and the dock of six worlds sits over its
- * lower edge — or its right edge on a phone held sideways. The stage keeps the island inside whatever the dock and
- * the top bar leave uncovered, using the same variables that size the dock.
+ * The hub is the map itself. The stage (3D, or the picture it falls back to) fills the screen; over it lie six
+ * links, one per world, each covering its island and carrying its name. Where everything goes is worked out in
+ * render/archipelago.ts from the size of `.free`: the part of the screen the top bar and the safe areas leave open.
  */
 .hub {
-  --tile-gap: 10px;
-  --dock-pad: 12px;
-  --tile-h: clamp(98px, 14.5vh, 150px);
-  --dock-h: calc(var(--tile-h) * 2 + var(--tile-gap) + var(--dock-pad) * 2 + var(--safe-bottom));
-  --dock-w: 0px;
-  --dock-lift: 0px;
-
   position: relative;
   height: 100%;
   overflow: hidden;
-  background: linear-gradient(var(--sky-top), var(--sky-mid) 44%, var(--sea) 46%, var(--sea-deep));
+  background: linear-gradient(#bfeaee, #58c6d2 34%, #2787b8);
 }
 
-@supports (height: 1dvh) {
-  .hub {
-    --tile-h: clamp(98px, 14.5dvh, 150px);
-  }
-}
-
-.dock {
+.free {
   position: absolute;
-  right: 0;
-  bottom: var(--dock-lift);
-  left: 0;
-  z-index: 5;
-  height: var(--dock-h);
-  padding: var(--dock-pad) calc(var(--gutter) + var(--safe-right))
-    calc(var(--dock-pad) + var(--safe-bottom)) calc(var(--gutter) + var(--safe-left));
-  border-radius: 30px 30px 0 0;
-  /*
-   * A translucent panel, deliberately without a backdrop blur. The picture behind it moves, so a blur would be
-   * recomputed on every frame: measured in software rendering, that alone was two thirds of what the idle home
-   * screen cost. Behind the dock there is only water, so the blur was also adding very little to look at.
-   */
-  background: rgb(255 250 240 / 84%);
-  box-shadow:
-    0 -10px 34px rgb(22 62 98 / 20%),
-    inset 0 2px 0 rgb(255 255 255 / 80%);
+  top: calc(var(--topbar) + var(--safe-top));
+  right: var(--safe-right);
+  bottom: var(--safe-bottom);
+  left: var(--safe-left);
+  visibility: hidden;
+  pointer-events: none;
 }
 
-.tiles {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--tile-gap);
-  height: 100%;
-  margin: 0 auto;
+.worlds {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
 }
 
-.tiles > li {
-  min-width: 0;
-  min-height: 0;
+.worlds ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.tile {
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  gap: 4px;
-  justify-items: center;
-  height: 100%;
-  padding: 8px 4px 9px;
-  border: 3px solid var(--white);
-  border-radius: 24px;
+.spot {
+  position: absolute;
+  display: block;
+  border-radius: 30px;
   color: var(--ink);
-  background: var(--tint);
-  box-shadow:
-    0 var(--lip) 0 var(--mid),
-    0 12px 20px rgb(34 48 79 / 14%);
   text-decoration: none;
-  transition:
-    transform var(--quick) var(--ease-out),
-    box-shadow var(--quick) var(--ease-out);
+  pointer-events: auto;
+  touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-@media (hover: hover) {
-  .tile:hover {
-    transform: translateY(-4px) rotate(-1deg);
-    box-shadow:
-      0 calc(var(--lip) + 4px) 0 var(--mid),
-      0 18px 26px rgb(34 48 79 / 18%);
-  }
-
-  .tile:hover .emblemArt {
-    transform: scale(1.06) rotate(2deg);
-  }
+/* The focus ring is drawn around the whole island, in two tones so it shows on pale sand and on deep water. */
+.spot:focus-visible {
+  outline: 4px solid var(--ink);
+  outline-offset: -4px;
+  box-shadow: inset 0 0 0 8px var(--white);
 }
 
-.tile:active {
-  transform: translateY(calc(var(--lip) - 1px));
+.label {
+  /* `--label` is the type size the layout worked out from the size of the islands (render/archipelago.ts). */
+  --size: var(--label, 15px);
+
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  height: calc(var(--size) * 1.9);
+  padding: 0 0.85em 0 0.25em;
+  border-radius: var(--radius-pill);
+  font-size: var(--size);
+  background: var(--white);
   box-shadow:
-    0 1px 0 var(--mid),
-    0 4px 8px rgb(34 48 79 / 14%);
-}
-
-.emblem {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-}
-
-/* The drawing scales to fit whichever of the tile's width or height is tighter. */
-.emblemArt {
-  width: 100%;
-  height: 100%;
-  transition: transform var(--gentle) var(--ease-spring);
+    0 3px 0 rgb(34 48 79 / 22%),
+    0 8px 16px rgb(18 60 96 / 22%);
+  transform: translateX(-50%);
+  transition: transform var(--quick) var(--ease-out);
 }
 
 .badge {
-  position: absolute;
-  top: -2px;
-  right: 2px;
+  flex: none;
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
-  border: 2px solid var(--white);
+  width: 1.65em;
+  height: 1.65em;
   border-radius: 50%;
-  color: var(--ink-soft);
-  background: #e6ebf5;
+  /* Each world's own colour: the name tag belongs to its island. */
+  color: var(--deep, var(--ink-soft));
+  background: var(--tint, #e6ebf5);
 }
 
-.badge[data-open='true'] {
-  color: var(--ink);
-  background: var(--sun);
+.badge svg {
+  width: 62%;
+  height: 62%;
 }
 
-.tileName {
-  max-width: 100%;
+/* On the very smallest screens the name alone fits; the sunny label still marks the world that is open. */
+.label[data-compact] {
+  padding-left: 0.85em;
+}
+
+.label[data-compact] .badge {
+  display: none;
+}
+
+.name {
+  overflow: hidden;
   font-family: var(--font-display);
-  font-size: clamp(0.8125rem, 3.4vw, 1.0625rem);
   font-weight: 600;
-  line-height: 1.1;
-  text-align: center;
-  text-wrap: balance;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* The narrowest phones: names take two lines rather than being cut short, and every tile keeps the same shape. */
-@media (max-width: 379px) {
-  .tileName {
-    display: grid;
-    align-content: center;
-    min-height: 2.2em;
+/* The world that has something to play is the one that stands out: a sunny label, a little larger. */
+.spot[data-open='true'] .label {
+  height: calc(var(--size) * 2.05);
+  background: var(--sun);
+  box-shadow:
+    0 3px 0 var(--yes-deep),
+    0 8px 18px rgb(120 82 0 / 30%);
+}
+
+.spot[data-open='true'] .badge {
+  color: var(--ink);
+  background: var(--white);
+}
+
+@media (hover: hover) {
+  .spot:hover .label {
+    transform: translateX(-50%) translateY(-3px) scale(1.06);
   }
+}
+
+.spot:active .label {
+  transform: translateX(-50%) translateY(1px) scale(0.96);
+}
+
+/* The guide, afloat: a button the size of the room the layout keeps for it, the figure standing on its floor. */
+.guide {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 28px;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.guide > * {
+  --size: 82%;
+}
+
+.guide:focus-visible {
+  outline: 4px solid var(--ink);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 8px var(--white);
+}
+
+.guide:active > * {
+  transform: scale(0.95);
 }
 
 .player {
@@ -162,8 +175,10 @@
   max-width: 46vw;
   padding: 4px 14px 4px 4px;
   border-radius: var(--radius-pill);
-  background: rgb(255 255 255 / 80%);
+  background: rgb(255 255 255 / 86%);
   box-shadow: 0 3px 0 rgb(34 48 79 / 10%);
+  /* A name tag, not a control: a tap on it reaches whatever island is underneath. */
+  pointer-events: none;
 }
 
 .playerPicture {
@@ -178,78 +193,4 @@
   font-size: 1rem;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-/* Tablets: the same three by two, with room to breathe. */
-@media (min-width: 700px) and (min-height: 521px) {
-  .hub {
-    --tile-gap: 16px;
-    --dock-pad: 18px;
-    --tile-h: clamp(128px, 16dvh, 184px);
-  }
-
-  .tiles {
-    max-width: 760px;
-  }
-
-  .tile {
-    border-radius: 28px;
-  }
-
-  .badge {
-    width: 32px;
-    height: 32px;
-  }
-}
-
-/* Desktop: one row of six, floating above the water. */
-@media (min-width: 1000px) and (min-height: 521px) {
-  .hub {
-    --tile-h: clamp(128px, 20dvh, 176px);
-    --dock-h: calc(var(--tile-h) + var(--dock-pad) * 2);
-    --dock-lift: 18px;
-  }
-
-  .dock {
-    right: auto;
-    left: 50%;
-    width: min(1120px, calc(100% - 2 * var(--gutter)));
-    padding: var(--dock-pad);
-    border-radius: 34px;
-    transform: translateX(-50%);
-  }
-
-  .tiles {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    max-width: none;
-  }
-}
-
-/* A phone on its side: the dock moves to the right-hand edge, the island keeps the rest. */
-@media (orientation: landscape) and (max-height: 520px) {
-  .hub {
-    --tile-gap: 8px;
-    --dock-pad: 10px;
-    --dock-w: clamp(318px, 43vw, 400px);
-    --dock-h: 0px;
-  }
-
-  .dock {
-    top: calc(var(--topbar) + var(--safe-top));
-    bottom: 0;
-    left: auto;
-    width: calc(var(--dock-w) + var(--safe-right));
-    height: auto;
-    padding: var(--dock-pad) calc(var(--dock-pad) + var(--safe-right))
-      calc(var(--dock-pad) + var(--safe-bottom)) var(--dock-pad);
-    border-radius: 28px 0 0;
-  }
-
-  .tiles {
-    grid-template-rows: repeat(2, minmax(0, 1fr));
-  }
-
-  .tileName {
-    font-size: clamp(0.6875rem, 1.45vw, 0.8125rem);
-  }
 }

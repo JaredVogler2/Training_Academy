@@ -458,7 +458,12 @@ function Diagnostics() {
     ],
     [
       'Scene',
-      hub.drawCalls === null ? '—' : `${hub.drawCalls} draw calls, ${hub.triangles ?? 0} triangles`,
+      hub.drawCalls === null
+        ? '—'
+        : `${hub.drawCalls} draw calls, ${hub.triangles ?? 0} triangles` +
+          (hub.geometries === null
+            ? ''
+            : `; holding ${hub.geometries} geometries, ${hub.textures ?? 0} textures, ${hub.programs ?? 0} shader programs`),
     ],
     [
       'First paint',

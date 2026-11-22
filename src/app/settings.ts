@@ -7,7 +7,7 @@ import { useSyncExternalStore } from 'react';
  */
 
 export const MOTION_OPTIONS = ['system', 'full', 'reduced'] as const;
-/** `pictures` shows the illustrated hub and never starts WebGL. */
+/** `pictures` shows the hub as a picture and never starts WebGL. */
 export const GRAPHICS_OPTIONS = ['auto', 'low', 'medium', 'high', 'pictures'] as const;
 
 const SettingsSchema = v.object({

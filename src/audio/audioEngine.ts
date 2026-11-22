@@ -8,7 +8,7 @@
  * cue that cannot play is simply skipped.
  */
 
-export type Cue = 'tap' | 'on' | 'off' | 'success' | 'again' | 'step';
+export type Cue = 'tap' | 'on' | 'off' | 'success' | 'again' | 'step' | 'hello' | 'sail';
 
 /** The part of the Web Audio API this engine uses, so tests can supply a fake. */
 export interface AudioContextLike {
@@ -90,6 +90,23 @@ const CUES: Record<Cue, { wave: OscillatorType; notes: Note[] }> = {
     ],
   },
   step: { wave: 'sine', notes: [{ frequency: 698.46, at: 0, seconds: 0.1, level: 0.14 }] },
+  // Glim's own three notes, skipping up: the guide saying hello.
+  hello: {
+    wave: 'triangle',
+    notes: [
+      { frequency: 659.25, at: 0, seconds: 0.09, level: 0.15 },
+      { frequency: 783.99, at: 0.09, seconds: 0.09, level: 0.15 },
+      { frequency: 1046.5, at: 0.18, seconds: 0.2, level: 0.14 },
+    ],
+  },
+  // Setting sail for an island: a low note and the fifth above it, like a small horn.
+  sail: {
+    wave: 'sine',
+    notes: [
+      { frequency: 392, at: 0, seconds: 0.12, level: 0.15 },
+      { frequency: 587.33, at: 0.1, seconds: 0.22, level: 0.15 },
+    ],
+  },
 };
 
 export class AudioEngine {

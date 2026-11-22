@@ -121,3 +121,36 @@ export function bandColour(
   }
   return { r: r / count, g: g / count, b: b / count };
 }
+
+/** Average colour of a square patch centred on a point, in pixels. */
+export function patchColour(
+  pixels: Pixels,
+  centreX: number,
+  centreY: number,
+  half = 6,
+): { r: number; g: number; b: number } {
+  let r = 0;
+  let g = 0;
+  let b = 0;
+  let count = 0;
+  for (let y = Math.round(centreY) - half; y <= Math.round(centreY) + half; y++) {
+    for (let x = Math.round(centreX) - half; x <= Math.round(centreX) + half; x++) {
+      if (x < 0 || y < 0 || x >= pixels.width || y >= pixels.height) continue;
+      const index = (y * pixels.width + x) * 4;
+      r += pixels.data[index] ?? 0;
+      g += pixels.data[index + 1] ?? 0;
+      b += pixels.data[index + 2] ?? 0;
+      count += 1;
+    }
+  }
+  if (count === 0) return { r: 0, g: 0, b: 0 };
+  return { r: r / count, g: g / count, b: b / count };
+}
+
+/** How far apart two colours are: 0 for the same colour, about 441 for black against white. */
+export function colourDistance(
+  one: { r: number; g: number; b: number },
+  two: { r: number; g: number; b: number },
+): number {
+  return Math.hypot(one.r - two.r, one.g - two.g, one.b - two.b);
+}

@@ -10,6 +10,7 @@ import { ensureActiveProfile } from '@/game/profiles';
 import { getRepository, localDay, newId, newSeed, now } from '@/game/services';
 import { worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds/modules';
+import { Guide, type GuideState } from '@/ui/Guide';
 import { WorldEmblem } from '@/ui/art';
 import { ActionButton, ActionLink } from '@/ui/controls';
 import {
@@ -124,6 +125,29 @@ function Steps({ index, count }: { index: number; count: number }) {
 
 type Playing = Extract<RunnerState, { phase: 'playing' }>;
 
+/** How long the guide wonders along with the child before settling down to wait. */
+const PONDER_MS = 3200;
+
+/**
+ * What the guide is doing, from what the lesson is doing. The guide never knows more than the engine has said:
+ * it points while something is being shown, wonders when a question is new, is glad of a right answer, and after a
+ * wrong one tilts its head and waits — never anything that looks like disappointment.
+ */
+function useGuideMood(state: Playing): GuideState {
+  const { view, feedback, hint } = state;
+  const question = `${view.key}-${String(view.hintsUsed)}`;
+  const [pondered, setPondered] = useState<string | null>(null);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setPondered(question), PONDER_MS);
+    return () => window.clearTimeout(timer);
+  }, [question]);
+
+  if (feedback?.outcome === 'correct') return 'celebrate';
+  if (feedback?.outcome === 'incorrect') return 'retry';
+  if (hint !== null || view.stage === 'demo') return 'point';
+  return pondered === question ? 'idle' : 'think';
+}
+
 function Challenge({ state, runner, pack, module }: { state: Playing } & Loaded) {
   const { view, feedback, hint, answered, picked } = state;
   const { Picture } = module;
@@ -138,6 +162,8 @@ function Challenge({ state, runner, pack, module }: { state: Playing } & Loaded)
       : demo
         ? `${lessonText.watch} ${text(view.challenge.prompt.instruction)}`
         : text(view.challenge.prompt.instruction);
+
+  const mood = useGuideMood(state);
 
   // "Count with me" whenever the lesson is teaching rather than asking: the demonstration, a hint, any feedback.
   const counting = demo || feedback !== null || hint !== null;
@@ -202,6 +228,7 @@ function Challenge({ state, runner, pack, module }: { state: Playing } & Loaded)
       </div>
 
       <div className={styles.foot}>
+        <Guide state={mood} aim={105} className={styles.guide} />
         <p
           className={styles.caption}
           role="status"
@@ -242,7 +269,10 @@ function Finished({
   const { summary } = state;
   return (
     <section className={styles.finished} data-testid="lesson-finished">
-      <WorldEmblem world={world} className={styles.finishedArt} />
+      <div className={styles.finishedArt}>
+        <WorldEmblem world={world} className={styles.finishedEmblem} />
+        <Guide state="celebrate" className={styles.finishedGuide} />
+      </div>
       <h1>{lessonText.allDone}</h1>
       <ol className={styles.grown} aria-hidden="true">
         {Array.from({ length: state.stepCount - 1 }, (_, index) => (

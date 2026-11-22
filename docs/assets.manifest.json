@@ -1,0 +1,165 @@
+{
+  "about": "Every asset the game ships, and where it comes from. Kept true by tests/config/assets.test.ts: a file in src/assets or public that is not listed here fails the build, and so does a listed path that does not exist. Read with docs/ASSETS.md.",
+  "assets": [
+    {
+      "id": "font-fredoka",
+      "kind": "font",
+      "origin": "third-party",
+      "what": "Fredoka, variable, Latin subset: headings, buttons, island names",
+      "paths": ["node_modules/@fontsource-variable/fredoka/files/fredoka-latin-wght-normal.woff2"],
+      "source": "npm @fontsource-variable/fredoka 5.3.0",
+      "holder": "© 2016 The Fredoka Project Authors",
+      "licence": "OFL-1.1",
+      "madeWith": "Bundled unmodified by Vite from src/styles/fonts.css"
+    },
+    {
+      "id": "font-nunito",
+      "kind": "font",
+      "origin": "third-party",
+      "what": "Nunito, variable, Latin subset: running text",
+      "paths": ["node_modules/@fontsource-variable/nunito/files/nunito-latin-wght-normal.woff2"],
+      "source": "npm @fontsource-variable/nunito 5.3.0",
+      "holder": "© The Nunito Project Authors",
+      "licence": "OFL-1.1",
+      "madeWith": "Bundled unmodified by Vite from src/styles/fonts.css"
+    },
+    {
+      "id": "brand-and-emblems",
+      "kind": "vector",
+      "origin": "original",
+      "what": "Brand mark, six world emblems, six player pictures",
+      "paths": ["src/ui/art.tsx", "public/favicon.svg"],
+      "licence": "Project",
+      "madeWith": "Hand-written SVG"
+    },
+    {
+      "id": "app-icons",
+      "kind": "icon",
+      "origin": "derived",
+      "what": "Installable-app icons",
+      "paths": ["public/assets/icons/*.png"],
+      "licence": "Project",
+      "madeWith": "Rendered from the brand mark by scripts/generate-icons.mjs (npm run icons)"
+    },
+    {
+      "id": "interface-icons",
+      "kind": "vector",
+      "origin": "original",
+      "what": "Interface icons on a 24-unit grid",
+      "paths": ["src/ui/icons.tsx"],
+      "licence": "Project",
+      "madeWith": "Hand-written SVG"
+    },
+    {
+      "id": "guide",
+      "kind": "vector",
+      "origin": "original",
+      "what": "Glim, the guide: one rigged drawing with six states; and the character sheet",
+      "paths": ["src/ui/Guide.tsx", "src/ui/Guide.module.css", "src/ui/GuideSheet.tsx"],
+      "licence": "Project",
+      "madeWith": "Hand-written SVG, posed and moved with CSS"
+    },
+    {
+      "id": "counting-pictures",
+      "kind": "vector",
+      "origin": "original",
+      "what": "Apple, leaf, snail, acorn",
+      "paths": ["src/game/worlds/number-garden/index.tsx"],
+      "licence": "Project",
+      "madeWith": "Hand-written SVG"
+    },
+    {
+      "id": "modelling-kit",
+      "kind": "model",
+      "origin": "original",
+      "what": "The shapes every island is sculpted from, and what floats between the islands",
+      "paths": [
+        "src/render/hub3d/kit.ts",
+        "src/render/hub3d/floating.ts",
+        "src/render/hub3d/islands/parts.ts"
+      ],
+      "licence": "Project",
+      "madeWith": "Written in code on three.js geometry; no model files"
+    },
+    {
+      "id": "islands",
+      "kind": "model",
+      "origin": "original",
+      "what": "Academy Rock and the six world islands",
+      "paths": [
+        "src/render/hub3d/islands/academy.ts",
+        "src/render/hub3d/islands/reading.ts",
+        "src/render/hub3d/islands/number.ts",
+        "src/render/hub3d/islands/robot.ts",
+        "src/render/hub3d/islands/memory.ts",
+        "src/render/hub3d/islands/inventor.ts",
+        "src/render/hub3d/islands/explorer.ts"
+      ],
+      "licence": "Project",
+      "madeWith": "Sculpted in code with the modelling kit"
+    },
+    {
+      "id": "paint",
+      "kind": "texture",
+      "origin": "original",
+      "what": "The brush texture and the painted material",
+      "paths": ["src/render/hub3d/paint.ts"],
+      "licence": "Project",
+      "madeWith": "Generated on the device from seeded noise (128 × 128, three channels); no image file"
+    },
+    {
+      "id": "sea",
+      "kind": "shader",
+      "origin": "original",
+      "what": "The water: shallows, foam, rings, shadows, glints",
+      "paths": ["src/render/hub3d/Sea.tsx"],
+      "licence": "Project",
+      "madeWith": "GLSL written for this project"
+    },
+    {
+      "id": "hub-pictures",
+      "kind": "sprite",
+      "origin": "derived",
+      "what": "The islands, boats, rock and cloud as pictures: what the hub shows first and falls back to",
+      "paths": ["src/assets/hub/*.webp", "src/assets/hub/sprites.json"],
+      "licence": "Project",
+      "madeWith": "Rendered from the island models by scripts/render-sprites.mjs (npm run art:sprites); encoded as WebP"
+    },
+    {
+      "id": "picture-sea",
+      "kind": "vector",
+      "origin": "original",
+      "what": "The picture's sea: a gradient matched to the 3D water, and a tile of wave marks",
+      "paths": ["src/render/HubPicture.module.css"],
+      "licence": "Project",
+      "madeWith": "CSS, with a small SVG written inline"
+    },
+    {
+      "id": "sounds",
+      "kind": "audio",
+      "origin": "original",
+      "what": "Eight interface sounds",
+      "paths": ["src/audio/audioEngine.ts"],
+      "licence": "Project",
+      "madeWith": "Synthesised on the device with the Web Audio API; no audio files"
+    },
+    {
+      "id": "curriculum",
+      "kind": "content",
+      "origin": "original",
+      "what": "Number Garden, version 1",
+      "paths": ["src/content/packs/number-garden.v1.json"],
+      "licence": "Project",
+      "madeWith": "Written for this project"
+    },
+    {
+      "id": "site-files",
+      "kind": "content",
+      "origin": "original",
+      "what": "Web manifest, robots.txt, the note in public/assets",
+      "paths": ["public/manifest.webmanifest", "public/robots.txt", "public/assets/README.md"],
+      "licence": "Project",
+      "madeWith": "Written for this project"
+    }
+  ]
+}

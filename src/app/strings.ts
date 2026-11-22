@@ -21,6 +21,8 @@ export const ui = {
   loading: 'Loading…',
   player: 'Player',
   choosePlayer: 'Who is playing?',
+  guideName: 'Glim',
+  guideHello: 'Say hello to Glim, your guide',
 
   notFoundTitle: 'This page is not on the map',
   notFoundBody: 'The address does not lead anywhere in the academy.',

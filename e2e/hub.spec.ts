@@ -11,7 +11,8 @@ test.describe('the 3D hub', () => {
     ({ browserName }) => browserName !== 'chromium',
     'Needs WebGL, which headless WebKit may lack.',
   );
-  test.use({ graphics: 'auto' });
+  // Asked for by name. Left on automatic, a software rasteriser is given the illustration instead (tested below).
+  test.use({ graphics: 'low' });
 
   test('arrives after the shell, in its own chunks, and draws a real scene @layout', async ({
     page,
@@ -24,7 +25,6 @@ test.describe('the 3D hub', () => {
     // …and the 3D scene replaces it once it has drawn its first frames.
     await expect(stage(page)).toHaveAttribute('data-hub-mode', '3d', { timeout: 45_000 });
     await expect(stage(page).locator('canvas')).toBeVisible();
-    // A CPU rasteriser is detected and given the lightest tier.
     await expect(stage(page)).toHaveAttribute('data-hub-tier', 'low');
 
     const requested = guard.requested();
@@ -110,6 +110,31 @@ test.describe('the 3D hub', () => {
 });
 
 test.describe('the illustrated hub', () => {
+  test('is what "automatic" gives a device that could only draw 3D in software', async ({
+    page,
+    guard,
+    browserName,
+  }) => {
+    test.skip(
+      browserName !== 'chromium',
+      'Needs a software WebGL renderer, which this Chromium has.',
+    );
+    await page.addInitScript(
+      ({ key }) => {
+        window.localStorage.setItem(
+          key,
+          JSON.stringify({ version: 1, sound: true, motion: 'system', graphics: 'auto' }),
+        );
+      },
+      { key: 'training-academy.settings.v1' },
+    );
+    await page.goto('/');
+    await expect(stage(page)).toHaveAttribute('data-hub-mode', 'illustrated');
+    await expect(stage(page)).toHaveAttribute('data-hub-reason', 'software-renderer');
+    await page.waitForTimeout(2500);
+    expect(guard.requested().filter((path) => HUB_3D_CODE.test(path))).toEqual([]);
+  });
+
   test('is what a browser without WebGL gets, and it never downloads the 3D code @layout', async ({
     page,
     guard,

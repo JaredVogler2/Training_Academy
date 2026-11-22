@@ -60,7 +60,23 @@ describe('deciding whether to try 3D at all', () => {
 
   it('uses 3D when the device can', () => {
     expect(planHub(base)).toEqual({ use3d: true, reason: null, tier: 'high' });
-    expect(planHub({ ...base, webgl: { available: true, software: true } }).tier).toBe('low');
+  });
+
+  it('keeps to pictures when 3D could only be drawn in software, unless a grown-up asked for it', () => {
+    const software = { available: true, software: true };
+    expect(planHub({ ...base, webgl: software })).toEqual({
+      use3d: false,
+      reason: 'software-renderer',
+      tier: null,
+    });
+    expect(planHub({ ...base, webgl: software, graphics: 'low' })).toMatchObject({
+      use3d: true,
+      tier: 'low',
+    });
+    expect(planHub({ ...base, webgl: software, graphics: 'high' })).toMatchObject({
+      use3d: true,
+      tier: 'high',
+    });
   });
 
   it('keeps to pictures when a grown-up chose that, without probing further', () => {

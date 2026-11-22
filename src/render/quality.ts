@@ -60,6 +60,7 @@ export type IllustratedReason =
   | 'loading'
   | 'setting'
   | 'no-webgl'
+  | 'software-renderer'
   | 'save-data'
   | 'load-failed'
   | 'context-lost'
@@ -80,6 +81,12 @@ export function planHub(input: {
 }): HubPlan {
   if (input.graphics === 'pictures') return { use3d: false, reason: 'setting', tier: null };
   if (!input.webgl.available) return { use3d: false, reason: 'no-webgl', tier: null };
+  // A CPU rasteriser can draw the scene, but not at a usable speed: measured on this scene, 7 to 21 frames a second
+  // with more than three cores busy (docs/QUALITY_REPORT.md). Left on automatic, such a device keeps the picture.
+  // A grown-up can still ask for 3D by choosing a quality.
+  if (input.webgl.software && input.graphics === 'auto') {
+    return { use3d: false, reason: 'software-renderer', tier: null };
+  }
   // Someone who has asked their browser to save data gets the picture unless a grown-up chose 3D explicitly.
   if (input.saveData && input.graphics === 'auto') {
     return { use3d: false, reason: 'save-data', tier: null };

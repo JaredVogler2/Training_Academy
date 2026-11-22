@@ -1,5 +1,6 @@
 import { useMemo, useRef, type RefObject } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import { Vector3 } from 'three';
 import { setHubDiagnostics } from '@/app/diagnostics';
 import { TIERS, type Tier } from '../quality';
 import { CameraRig } from './CameraRig';
@@ -70,6 +71,8 @@ export function Scene({
   /** Seconds of animation time. It only advances while motion is allowed. */
   const clock = useRef(0);
   const island = useMemo(() => buildIslandGeometry(), []);
+  // Low in the morning sky, a little left of straight ahead; the camera rig moves it to suit the screen.
+  const sun = useMemo(() => new Vector3(-0.2, 0.075, -0.98).normalize(), []);
 
   useFrame((_, delta) => {
     // A long gap (the tab was hidden) must not make everything jump.
@@ -78,7 +81,7 @@ export function Scene({
 
   return (
     <>
-      <Sky />
+      <Sky sun={sun} />
       {/* Warm sun from the upper left, cool sky fill from above, soft green bounce from the ground. */}
       <hemisphereLight args={['#eaf5ff', '#cfe6bd', 1.95]} />
       <directionalLight
@@ -112,7 +115,7 @@ export function Scene({
       <FarIslets />
       {settings.detail >= 0.8 && <Birds clock={clock} />}
 
-      <CameraRig focusArea={focusArea} clock={clock} />
+      <CameraRig focusArea={focusArea} clock={clock} sun={sun} />
       <FrameProbe onReady={onReady} />
     </>
   );

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { BackSide, Color, Vector3 } from 'three';
+import { BackSide, Color, type Vector3 } from 'three';
 
 /** A gradient dome with a soft sun: cream at the horizon, blue overhead. Matches the page's sky tokens. */
 
@@ -34,17 +34,17 @@ const fragmentShader = /* glsl */ `
   }
 `;
 
-export function Sky() {
+export function Sky({ sun }: { sun: Vector3 }) {
   const uniforms = useMemo(
     () => ({
       uTop: { value: new Color('#6dbdea') },
       uMid: { value: new Color('#b4e0f5') },
       uLow: { value: new Color('#fdecc8') },
       uSun: { value: new Color('#ffe27a') },
-      // Low in the morning sky, a little left of straight ahead.
-      uSunDirection: { value: new Vector3(-0.2, 0.075, -0.98).normalize() },
+      // The same vector the camera rig writes to, so the sun follows the framing without a re-render.
+      uSunDirection: { value: sun },
     }),
-    [],
+    [sun],
   );
   return (
     <mesh frustumCulled={false} renderOrder={-10}>

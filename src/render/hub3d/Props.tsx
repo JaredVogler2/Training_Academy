@@ -430,7 +430,7 @@ export function Boat({ clock }: { clock: Clock }) {
   });
 
   return (
-    <group position={[8.7, 0, 7.6]} rotation-y={0.42}>
+    <group position={[9.2, 0, 6.5]} rotation-y={0.42}>
       <group ref={boat} position-y={-0.1}>
         <mesh geometry={hull} castShadow>
           <meshLambertMaterial color="#e8734f" />

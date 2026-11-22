@@ -37,6 +37,15 @@ const ALWAYS_ALLOWED = [
   /Service Worker registration blocked by Playwright/,
 ];
 
+/**
+ * On a Vercel preview deployment, Vercel may add its collaboration toolbar to the page. This site's
+ * Content-Security-Policy refuses it, and the browser reports the refusal. That report is the policy working, so it
+ * is tolerated when testing a deployment — and only that. (Better still: switch the toolbar off for the project; see
+ * docs/DEPLOYMENT.md.)
+ */
+const REMOTE_ALLOWED =
+  (process.env.BASE_URL ?? process.env.PLAYWRIGHT_BASE_URL) ? [/vercel\.live/] : [];
+
 export const test = base.extend<Fixtures>({
   graphics: ['pictures', { option: true }],
 
@@ -44,7 +53,7 @@ export const test = base.extend<Fixtures>({
     async ({ page, baseURL }, use, testInfo) => {
       const origin = new URL(baseURL ?? 'http://127.0.0.1').origin;
       const problems: string[] = [];
-      const allowed = [...ALWAYS_ALLOWED];
+      const allowed = [...ALWAYS_ALLOWED, ...REMOTE_ALLOWED];
       const requested: string[] = [];
 
       page.on('console', (message) => {

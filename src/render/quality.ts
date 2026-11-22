@@ -18,7 +18,9 @@ export interface TierSettings {
 }
 
 export const TIERS: Record<Tier, TierSettings> = {
-  low: { maxPixelRatio: 1, antialias: false, shadows: false, shadowMapSize: 0, detail: 0.5 },
+  // Even the lightest tier smooths its edges: at one pixel per point, un-smoothed edges are plainly jagged, and
+  // multisampling costs far less than drawing more pixels.
+  low: { maxPixelRatio: 1, antialias: true, shadows: false, shadowMapSize: 0, detail: 0.5 },
   medium: { maxPixelRatio: 1.5, antialias: true, shadows: true, shadowMapSize: 1024, detail: 0.8 },
   high: { maxPixelRatio: 2, antialias: true, shadows: true, shadowMapSize: 2048, detail: 1 },
 };

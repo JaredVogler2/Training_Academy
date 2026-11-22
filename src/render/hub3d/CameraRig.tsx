@@ -21,20 +21,27 @@ const HALF_HEIGHT = 5.3;
  * Higher and the scene becomes a map with no sky; lower and the top of the island disappears.
  */
 const ELEVATION = (8 * Math.PI) / 180;
+/** The widest the camera drifts to either side, in radians, on a wide screen. Narrow screens get less. */
 const SWAY = 0.1;
+/** Where the sun sits: this far across the free area from its left edge, this high above the horizon. */
+const SUN_ACROSS = 0.2;
+const SUN_ELEVATION = (4.3 * Math.PI) / 180;
 
 export function CameraRig({
   focusArea,
   clock,
+  sun,
 }: {
   focusArea: RefObject<HTMLElement | null>;
   clock: Clock;
+  /** Written here, read by the sky: the direction of the sun, chosen so that it is in view on this screen. */
+  sun: Vector3;
 }) {
   const camera = useThree((state) => state.camera) as PerspectiveCamera;
   const canvas = useThree((state) => state.gl.domElement);
   const invalidate = useThree((state) => state.invalidate);
   const size = useThree((state) => state.size);
-  const distance = useRef(36);
+  const framing = useRef({ distance: 36, sway: SWAY });
 
   useEffect(() => {
     const frame = () => {
@@ -48,12 +55,27 @@ export function CameraRig({
         (width * 0.94) / (2 * HALF_WIDTH),
         (height * 0.9) / (2 * HALF_HEIGHT),
       );
-      const halfFov = (camera.fov * Math.PI) / 360;
-      distance.current = whole.height / (2 * pixelsPerUnit * Math.tan(halfFov));
+      const tanHalfFov = Math.tan((camera.fov * Math.PI) / 360);
+      const tanHalfAcross = tanHalfFov * (whole.width / whole.height);
 
       const shiftX = area.left - whole.left + area.width / 2 - whole.width / 2;
       const shiftY = area.top - whole.top + area.height / 2 - whole.height / 2;
       camera.setViewOffset(whole.width, whole.height, -shiftX, -shiftY, whole.width, whole.height);
+
+      // A phone held upright sees a narrow slice of the world; the same drift there would swing the sky right out of
+      // view. Scale the drift to the width of the view.
+      const sway = SWAY * Math.min(1, Math.atan(tanHalfAcross) / 0.55);
+      framing.current = { distance: whole.height / (2 * pixelsPerUnit * tanHalfFov), sway };
+
+      // Put the sun where this screen can see it: a fixed way across the free area, whatever its shape.
+      const sunX = area.left - whole.left + area.width * SUN_ACROSS;
+      const across = (sunX - whole.width / 2 - shiftX) / (whole.width / 2);
+      const azimuth = Math.atan(across * tanHalfAcross);
+      sun.set(
+        Math.sin(azimuth) * Math.cos(SUN_ELEVATION),
+        Math.sin(SUN_ELEVATION),
+        -Math.cos(azimuth) * Math.cos(SUN_ELEVATION),
+      );
       invalidate();
     };
     frame();
@@ -64,15 +86,16 @@ export function CameraRig({
       observer.disconnect();
       camera.clearViewOffset();
     };
-  }, [camera, canvas, focusArea, invalidate, size.width, size.height]);
+  }, [camera, canvas, focusArea, invalidate, sun, size.width, size.height]);
 
   useFrame(() => {
     // A slow side-to-side drift gives the diorama depth. It stops with the clock when motion is reduced.
-    const azimuth = Math.sin(clock.current * 0.12) * SWAY;
-    const flat = Math.cos(ELEVATION) * distance.current;
+    const { distance, sway } = framing.current;
+    const azimuth = Math.sin(clock.current * 0.12) * sway;
+    const flat = Math.cos(ELEVATION) * distance;
     camera.position.set(
       TARGET.x + Math.sin(azimuth) * flat,
-      TARGET.y + Math.sin(ELEVATION) * distance.current,
+      TARGET.y + Math.sin(ELEVATION) * distance,
       TARGET.z + Math.cos(azimuth) * flat,
     );
     camera.lookAt(TARGET);

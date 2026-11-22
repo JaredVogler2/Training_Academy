@@ -94,7 +94,15 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     // Most specs intercept or count network requests, which a service worker would hide. e2e/offline.spec.ts opts in.
     serviceWorkers: 'block',
-    ...(bypassSecret ? { extraHTTPHeaders: { 'x-vercel-protection-bypass': bypassSecret } } : {}),
+    ...(remote
+      ? {
+          extraHTTPHeaders: {
+            // Ask Vercel not to inject its preview toolbar (a third-party script this site's policy blocks anyway).
+            'x-vercel-skip-toolbar': '1',
+            ...(bypassSecret ? { 'x-vercel-protection-bypass': bypassSecret } : {}),
+          },
+        }
+      : {}),
   },
   projects,
   ...(remote

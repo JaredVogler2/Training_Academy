@@ -11,15 +11,16 @@ import {
 const HUB_3D_CODE = /\/immutable\/(three|r3f|Hub3D)-/;
 const stage = (page: Page) => page.getByTestId('hub-stage');
 
-// Without a graphics card the 3D scene is drawn by a software rasteriser, which wants every processor core it can
-// get. Two such scenes at once starve each other: on the CI machine that took one test here to 47 of the 60
-// seconds it then had. So this file's tests run one after another, while the other workers get on with other
-// files. (Two scenes can still meet where one screen shape's tests end and the next one's begin.)
-test.describe.configure({ mode: 'default' });
-
 /**
- * For tests that have the scene drawn in software. It may take most of a minute to arrive and seconds more to
- * photograph, so the usual minute for a whole test cannot hold the waits inside one.
+ * For tests that have the scene drawn in software, which is all a machine without a graphics card can do. The scene
+ * may take most of a minute to arrive and seconds more to photograph, so the usual minute for a whole test cannot
+ * hold the waits inside one: on the CI machine "keeps moving gently" has taken 47 seconds.
+ *
+ * Running this file's tests one after another, so that no two scenes are drawn at once, was tried and made CI
+ * slower: 10.9 minutes against 7.8, and 77 seconds for that test. On that machine a test that ends with the scene
+ * still moving leaves ten to thirty seconds of clearing up to the next test in the same browser, and in order the
+ * next test is always another of these. Measure any change to how these are scheduled there, not on a faster
+ * machine, where none of this shows.
  */
 const SOFTWARE_3D_TIMEOUT = 180_000;
 

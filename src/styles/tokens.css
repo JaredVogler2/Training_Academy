@@ -1,0 +1,95 @@
+/*
+ * Design tokens for the Phase 01 shell. Phase 02 owns the art direction (docs/ART_DIRECTION.md); these are the
+ * interim values it starts from, kept in one place so they can be retuned without touching components.
+ */
+:root {
+  /* Ink and paper */
+  --ink: #22304f;
+  --ink-soft: #4d5b7c;
+  --ink-faint: #8792ac;
+  --paper: #fffaf0;
+  --paper-warm: #fff1d6;
+  --white: #ffffff;
+  --line: rgb(34 48 79 / 12%);
+
+  /* Sky and sea, shared by the illustrated hub, the 3D hub and the page backgrounds */
+  --sky-top: #6dbdea;
+  --sky-mid: #b4e0f5;
+  --sky-low: #fdecc8;
+  --sea-far: #a8e3df;
+  --sea: #45b9c7;
+  --sea-deep: #2b82b0;
+  --sun: #ffd35c;
+
+  /* One role colour per world: a mid tone, a deep tone for rims and text-safe accents, a tint for surfaces */
+  --reading: #ff8f7a;
+  --reading-deep: #c94f3b;
+  --reading-tint: #ffe6df;
+  --number: #6fcf74;
+  --number-deep: #2f8440;
+  --number-tint: #e0f6dd;
+  --robot: #62b4f3;
+  --robot-deep: #2a6fb5;
+  --robot-tint: #dff0ff;
+  --memory: #a993f8;
+  --memory-deep: #6b4fd0;
+  --memory-tint: #ece6ff;
+  --inventor: #ffc45a;
+  --inventor-deep: #a86a00;
+  --inventor-tint: #fff1d1;
+  --explorer: #4fcfc4;
+  --explorer-deep: #17807d;
+  --explorer-tint: #dbf7f3;
+
+  /* Feedback: warm and calm. There is deliberately no "wrong" red. */
+  --yes: #ffcf4a;
+  --yes-deep: #c88a00;
+  --try: #b9c8ff;
+  --try-deep: #5a6fd0;
+
+  /* Type */
+  --font-display:
+    'Fredoka Variable', ui-rounded, 'Arial Rounded MT Bold', 'Trebuchet MS', system-ui, sans-serif;
+  --font-body:
+    'Nunito Variable', ui-rounded, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --text-s: 0.875rem;
+  --text-m: 1rem;
+  --text-l: 1.25rem;
+  --text-xl: clamp(1.5rem, 1.1rem + 1.6vw, 2.125rem);
+  --text-xxl: clamp(1.875rem, 1.2rem + 3vw, 3rem);
+
+  /* Shape */
+  --radius-s: 12px;
+  --radius-m: 20px;
+  --radius-l: 28px;
+  --radius-pill: 999px;
+  --lip: 5px;
+  --shadow-card: 0 var(--lip) 0 rgb(34 48 79 / 14%), 0 16px 30px rgb(34 48 79 / 16%);
+  --shadow-float: 0 10px 30px rgb(34 48 79 / 18%);
+
+  /* Touch: nothing a child is meant to press is smaller than this */
+  --tap: 56px;
+  --tap-small: 48px;
+
+  /* Layout */
+  --gutter: clamp(12px, 3vw, 24px);
+  --topbar: 64px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --quick: 140ms;
+  --gentle: 320ms;
+
+  color-scheme: light;
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  :root {
+    --topbar: 52px;
+  }
+}

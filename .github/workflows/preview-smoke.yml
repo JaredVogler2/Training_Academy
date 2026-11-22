@@ -1,0 +1,58 @@
+name: Preview smoke test
+
+# Runs the @smoke browser tests against a real deployment: the security headers, the deep-link rewrite, the cache
+# rules, the 404 for a missing build file, and a start-up with no console errors and no third-party requests.
+#
+#   - Automatically, when Vercel reports a successful deployment of this repository. This needs the repository to be
+#     connected to a Vercel project, and this file to be on the default branch.
+#   - By hand, from the Actions tab, against any URL.
+#
+# If the deployment is behind Vercel's Deployment Protection, add the project's "Protection Bypass for Automation"
+# secret to this repository as VERCEL_AUTOMATION_BYPASS_SECRET. Without it the tests would only see a login page.
+
+on:
+  repository_dispatch:
+    types: ['vercel.deployment.success']
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Deployment URL to test (https://…)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Smoke test the deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Passed as environment variables, never interpolated into a command line.
+      BASE_URL: ${{ github.event.client_payload.url || inputs.url }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Test the deployment with the tests of the commit that was deployed.
+          ref: ${{ github.event.client_payload.git.sha || github.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Check the URL
+        run: |
+          case "$BASE_URL" in
+            https://*) echo "Testing $BASE_URL" ;;
+            *) echo "BASE_URL must be an https:// address."; exit 1 ;;
+          esac
+      - run: npx playwright test --project=desktop --project=phone
+      - uses: actions/upload-artifact@v7
+        if: ${{ failure() }}
+        with:
+          name: preview-smoke
+          path: test-results/
+          retention-days: 7

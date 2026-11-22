@@ -1,0 +1,296 @@
+/* The grown-ups area: ordinary, readable forms. Text reflows at 200% zoom and nothing depends on colour alone. */
+.gate,
+.area {
+  width: min(100% - 2 * var(--gutter), 44rem);
+  margin: 0 auto;
+  padding: 8px 0 calc(32px + var(--safe-bottom));
+}
+
+.gate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  justify-items: center;
+  margin-top: clamp(16px, 8vh, 72px);
+  padding: clamp(22px, 5vw, 40px);
+  border-radius: var(--radius-l);
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.gate h1 {
+  font-size: var(--text-xl);
+}
+
+/* Names typed by a grown-up appear in headings and labels here; a long one with no spaces must still fit. */
+.area {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  overflow-wrap: anywhere;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h1 {
+  font-size: var(--text-xxl);
+}
+
+.lead {
+  padding: 12px 16px;
+  border-radius: var(--radius-m);
+  background: rgb(255 255 255 / 76%);
+}
+
+.card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  padding: clamp(16px, 4vw, 26px);
+  border-radius: var(--radius-l);
+  background: var(--paper);
+  box-shadow: var(--shadow-card);
+}
+
+.card h2 {
+  font-size: var(--text-xl);
+}
+
+.card > summary {
+  font-family: var(--font-display);
+  font-size: var(--text-l);
+  cursor: pointer;
+}
+
+.small {
+  color: var(--ink-soft);
+  font-size: var(--text-s);
+}
+
+.warning {
+  padding: 10px 14px;
+  border-left: 6px solid var(--inventor-deep);
+  border-radius: var(--radius-s);
+  background: var(--inventor-tint);
+}
+
+.message:empty {
+  display: none;
+}
+
+.message {
+  padding: 10px 14px;
+  border-radius: var(--radius-s);
+  background: var(--number-tint);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Players */
+.players {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.player {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--radius-m);
+  background: var(--white);
+}
+
+.playerName {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  min-width: 0;
+}
+
+/* The whole name is shown: it wraps, and a long one with no spaces breaks, rather than being cut short. */
+.playerName strong {
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-l);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.playingNow {
+  color: var(--number-deep);
+  font-size: var(--text-s);
+  font-weight: 800;
+}
+
+.linkButton {
+  justify-self: start;
+  min-height: 32px;
+  text-align: left;
+  color: var(--robot-deep);
+  font-size: var(--text-s);
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+/* Forms */
+.form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.form label,
+.field label,
+.avatars legend {
+  font-weight: 800;
+}
+
+.field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+
+.input {
+  width: 100%;
+  min-height: var(--tap-small);
+  padding: 8px 14px;
+  border: 2px solid var(--ink-faint);
+  border-radius: var(--radius-s);
+  color: var(--ink);
+  background: var(--white);
+  font-size: 1rem;
+}
+
+.avatars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.avatars legend {
+  margin-bottom: 6px;
+  padding: 0;
+}
+
+.avatarChoice {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border: 3px solid transparent;
+  border-radius: 20px;
+  background: var(--white);
+  cursor: pointer;
+}
+
+/* The chosen picture has a heavy ring and a lifted card, not just a different colour. */
+.avatarChoice[data-chosen='true'] {
+  border-color: var(--ink);
+  box-shadow: 0 4px 0 rgb(34 48 79 / 18%);
+  transform: translateY(-2px);
+}
+
+.avatarChoice:has(:focus-visible) {
+  outline: 4px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.check {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  min-height: var(--tap-small);
+  font-weight: 800;
+}
+
+.check input {
+  width: 26px;
+  height: 26px;
+  accent-color: var(--ink);
+}
+
+/* What the player has shown */
+.skills {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.skill {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: var(--radius-m);
+  background: var(--white);
+}
+
+.status {
+  justify-self: start;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--paper-warm);
+  font-family: var(--font-display);
+}
+
+.skill[data-status='provisionally-independent'] .status,
+.skill[data-status='consistently-independent'] .status {
+  background: var(--sun);
+}
+
+.evidence {
+  color: var(--ink-soft);
+}
+
+/* Diagnostics */
+.facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  margin: 0;
+  font-size: var(--text-s);
+}
+
+.facts > div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.8fr) minmax(0, 1.2fr);
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.facts dt {
+  color: var(--ink-soft);
+}
+
+.facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}

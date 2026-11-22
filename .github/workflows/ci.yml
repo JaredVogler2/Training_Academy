@@ -1,0 +1,75 @@
+name: CI
+
+# Every pull request, and every push to main:
+#   verify    formatting, lint, types, unit tests, the production build and its release checks
+#   browsers  the Playwright suite against that build, on Chromium and on WebKit (Safari's engine)
+#
+# WebKit here is a desktop Linux build driven by Playwright. It is evidence about the engine, not about an iPhone.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, types, unit tests, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      # The build as it would be served: whole, lean, strict-CSP-safe, with the 3D code out of the first load.
+      - run: npm run verify:dist
+
+  browsers:
+    name: Browser tests (${{ matrix.engine }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - engine: chromium
+            projects: --project=desktop --project=phone --project=phone-landscape --project=tablet --project=small-phone
+          - engine: webkit
+            projects: --project=webkit-desktop --project=webkit-phone
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.engine }}
+      # Timings in these tests depend on the machine; say what it is, so a slow run can be read for what it is.
+      - name: Describe the runner
+        run: echo "$(nproc) CPU cores, $(awk '/MemTotal/ {printf "%.0f", $2 / 1048576}' /proc/meminfo) GB of memory"
+      - run: npx playwright test ${{ matrix.projects }}
+        env:
+          PW_WEBKIT: ${{ matrix.engine == 'webkit' && '1' || '0' }}
+      - uses: actions/upload-artifact@v7
+        if: ${{ failure() }}
+        with:
+          name: playwright-${{ matrix.engine }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

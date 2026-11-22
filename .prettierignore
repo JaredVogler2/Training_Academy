@@ -1,0 +1,11 @@
+node_modules
+dist
+coverage
+test-results
+playwright-report
+blob-report
+package-lock.json
+# The owner's build prompts are kept byte-for-byte as written.
+prompt-series
+# Reviewed screenshots.
+docs/review

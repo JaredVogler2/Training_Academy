@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { ErrorBoundary } from '@/app/ErrorBoundary';
 import { loadChunk } from '@/app/chunks';
 import { mark, recordError, setHubDiagnostics } from '@/app/diagnostics';
@@ -8,7 +8,8 @@ import {
   useSettings,
   type GraphicsOption,
 } from '@/app/settings';
-import { IllustratedHub } from './IllustratedHub';
+import type { Frame, PlaceId } from './archipelago';
+import { HubPicture } from './HubPicture';
 import { planHub, type HubPlan, type IllustratedReason } from './quality';
 import { probeWebGl } from './webgl';
 import styles from './HubStage.module.css';
@@ -51,12 +52,13 @@ function whenIdle(run: () => void): () => void {
 }
 
 /**
- * The hub's picture. The illustrated island is there from the first paint; when the device can do it, the real-time
- * 3D island is fetched in the background and faded in over it. If 3D is unavailable, switched off, fails to load,
- * throws, or loses its graphics context, the illustration is simply what stays — the hub never shows an empty box.
- * (After a lost context the hub stays illustrated until it is next opened, when 3D is tried afresh.)
+ * The hub's picture. The archipelago is there as a picture from the first paint; when the device can do it, the
+ * real-time 3D scene is fetched in the background and faded in over it, island for island in the same places. If 3D
+ * is unavailable, switched off, fails to load, throws, or loses its graphics context, the picture is simply what
+ * stays — the hub never shows an empty box.
+ * (After a lost context the hub stays a picture until it is next opened, when 3D is tried afresh.)
  */
-export function HubStage() {
+export function HubStage({ frame, lifted }: { frame: Frame | null; lifted: PlaceId | null }) {
   const settings = useSettings();
   const reducedMotion = useReducedMotion();
   const graphics = graphicsOverride() ?? settings.graphics;
@@ -65,7 +67,6 @@ export function HubStage() {
   const [idle, setIdle] = useState(false);
   const [ready, setReady] = useState(false);
   const [trouble, setTrouble] = useState<IllustratedReason | null>(null);
-  const free = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const next = devicePlan(graphics);
@@ -102,12 +103,10 @@ export function HubStage() {
       data-hub-reason={reason ?? undefined}
       data-hub-tier={plan.tier ?? undefined}
     >
-      <div className={styles.free} ref={free}>
-        <div className={styles.picture} data-hidden={mode === '3d'}>
-          <IllustratedHub />
-        </div>
+      <div className={styles.picture} data-hidden={mode === '3d'}>
+        {frame && <HubPicture frame={frame} lifted={lifted} still={reducedMotion} />}
       </div>
-      {show3d && plan.tier && (
+      {show3d && plan.tier && frame && (
         <div className={styles.canvas} data-ready={ready}>
           <ErrorBoundary
             fallback={(error) => {
@@ -123,7 +122,8 @@ export function HubStage() {
                 tier={plan.tier}
                 adaptive={graphics === 'auto'}
                 reducedMotion={reducedMotion}
-                focusArea={free}
+                frame={frame}
+                lifted={lifted}
                 onReady={onReady}
                 onContextLost={onContextLost}
               />

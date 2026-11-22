@@ -1,0 +1,12 @@
+.studio {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #58c6d2;
+}
+
+/* As a picture: the canvas is exactly the picture's size, in the corner, on a clear ground. */
+.studio[data-sprite='true'] {
+  inset: 0 auto auto 0;
+  background: transparent;
+}

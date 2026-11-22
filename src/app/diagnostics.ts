@@ -29,6 +29,10 @@ export interface HubDiagnostics {
   frames: { fps: number; p95Ms: number; samples: number } | null;
   drawCalls: number | null;
   triangles: number | null;
+  /** What the renderer is holding on the graphics card: a number that keeps growing is a leak. */
+  geometries: number | null;
+  textures: number | null;
+  programs: number | null;
 }
 
 export interface Diagnostics {
@@ -61,6 +65,9 @@ let state: Diagnostics = {
     frames: null,
     drawCalls: null,
     triangles: null,
+    geometries: null,
+    textures: null,
+    programs: null,
   },
   vitals: {
     firstContentfulPaintMs: null,

@@ -1,0 +1,101 @@
+{
+  "about": "Written by scripts/render-sprites.mjs. Sizes and anchors are in pixels of the picture; `source` is a hash of the model sources the pictures were rendered from.",
+  "pixelsPerUnit": 80,
+  "source": "8f2beff879a4f81984b89255ec116480f93f8ef722bff1e41c816e9d2caae362",
+  "sources": [
+    "src/render/archipelago.ts",
+    "src/render/sprites.ts",
+    "src/render/hub3d/kit.ts",
+    "src/render/hub3d/paint.ts",
+    "src/render/hub3d/Sea.tsx",
+    "src/render/hub3d/stage.tsx",
+    "src/render/hub3d/floating.ts",
+    "src/render/hub3d/islands/*.ts"
+  ],
+  "sprites": {
+    "academy": {
+      "file": "academy.webp",
+      "width": 560,
+      "height": 472,
+      "anchorX": 280,
+      "anchorY": 306.48
+    },
+    "reading-cove": {
+      "file": "reading-cove.webp",
+      "width": 600,
+      "height": 409,
+      "anchorX": 300,
+      "anchorY": 232.05
+    },
+    "number-garden": {
+      "file": "number-garden.webp",
+      "width": 600,
+      "height": 409,
+      "anchorX": 300,
+      "anchorY": 232.05
+    },
+    "robot-ridge": {
+      "file": "robot-ridge.webp",
+      "width": 600,
+      "height": 409,
+      "anchorX": 300,
+      "anchorY": 232.05
+    },
+    "memory-forest": {
+      "file": "memory-forest.webp",
+      "width": 600,
+      "height": 409,
+      "anchorX": 300,
+      "anchorY": 232.05
+    },
+    "inventor-island": {
+      "file": "inventor-island.webp",
+      "width": 600,
+      "height": 409,
+      "anchorX": 300,
+      "anchorY": 232.05
+    },
+    "explorer-harbor": {
+      "file": "explorer-harbor.webp",
+      "width": 600,
+      "height": 409,
+      "anchorX": 300,
+      "anchorY": 232.05
+    },
+    "boat-0": {
+      "file": "boat-0.webp",
+      "width": 208,
+      "height": 160,
+      "anchorX": 104,
+      "anchorY": 100
+    },
+    "boat-1": {
+      "file": "boat-1.webp",
+      "width": 208,
+      "height": 160,
+      "anchorX": 104,
+      "anchorY": 100
+    },
+    "boat-2": {
+      "file": "boat-2.webp",
+      "width": 208,
+      "height": 160,
+      "anchorX": 104,
+      "anchorY": 100
+    },
+    "rock": {
+      "file": "rock.webp",
+      "width": 272,
+      "height": 176,
+      "anchorX": 136,
+      "anchorY": 88
+    },
+    "cloud": {
+      "file": "cloud.webp",
+      "width": 288,
+      "height": 152,
+      "anchorX": 144,
+      "anchorY": 84
+    }
+  }
+}

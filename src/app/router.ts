@@ -10,6 +10,8 @@ export type Route =
   | { name: 'world'; world: WorldId }
   | { name: 'play'; world: WorldId; lessonId: string }
   | { name: 'grown-ups' }
+  /** The art studio: one island, or one drawing, on its own. Not linked from the game. */
+  | { name: 'studio'; view: string }
   | { name: 'not-found'; path: string };
 
 const LESSON_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -37,6 +39,14 @@ export function parsePath(pathname: string): Route {
   const [first, second, third, fourth, ...rest] = segments;
   if (first === undefined) return { name: 'home' };
   if (first === 'grown-ups' && second === undefined) return { name: 'grown-ups' };
+  if (
+    first === 'studio' &&
+    second !== undefined &&
+    third === undefined &&
+    LESSON_SLUG.test(second)
+  ) {
+    return { name: 'studio', view: second };
+  }
   if (first === 'world' && second !== undefined && isWorldId(second)) {
     if (third === undefined) return { name: 'world', world: second };
     if (third === 'play' && fourth !== undefined && rest.length === 0 && LESSON_SLUG.test(fourth)) {
@@ -56,6 +66,8 @@ export function toPath(route: Route): string {
       return `/world/${route.world}/play/${route.lessonId}`;
     case 'grown-ups':
       return '/grown-ups';
+    case 'studio':
+      return `/studio/${route.view}`;
     case 'not-found':
       return route.path;
   }

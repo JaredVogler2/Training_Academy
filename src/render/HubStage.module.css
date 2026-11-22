@@ -4,18 +4,9 @@
   overflow: hidden;
 }
 
-/* The part of the screen that neither the top bar nor the dock covers. The island is framed inside it. */
-.free {
-  position: absolute;
-  top: calc(var(--topbar) + var(--safe-top));
-  right: calc(var(--dock-w) + var(--safe-right));
-  bottom: calc(var(--dock-h) + var(--dock-lift));
-  left: var(--safe-left);
-}
-
 .picture {
   position: absolute;
-  inset: 2% 3% 0;
+  inset: 0;
   transition: opacity 700ms ease;
 }
 
@@ -25,6 +16,11 @@
   transition:
     opacity 700ms ease,
     visibility 0s linear 700ms;
+}
+
+/* Under the 3D scene the picture is not seen, so it need not keep moving. */
+.picture[data-hidden='true'] * {
+  animation-play-state: paused;
 }
 
 .canvas {
@@ -39,6 +35,6 @@
 }
 
 .canvas canvas {
-  /* The picture is decoration; taps belong to the dock. */
+  /* The picture is decoration; taps belong to the links laid over it (app/Home.tsx). */
   pointer-events: none;
 }

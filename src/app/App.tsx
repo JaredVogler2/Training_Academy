@@ -15,6 +15,7 @@ import styles from './App.module.css';
 const WorldView = lazyView('world', () => import('@/game/world/WorldView'));
 const LessonView = lazyView('lesson', () => import('@/game/lesson/LessonView'));
 const GrownUps = lazyView('grown-ups', () => import('@/parent/GrownUps'));
+const Studio = lazyView('studio', () => import('@/render/hub3d/Studio'));
 
 function titleOf(route: Route): string {
   switch (route.name) {
@@ -25,6 +26,8 @@ function titleOf(route: Route): string {
       return pageTitle(worldById(route.world).name);
     case 'grown-ups':
       return pageTitle(ui.grownUps);
+    case 'studio':
+      return pageTitle('Studio');
     case 'not-found':
       return pageTitle(ui.notFoundTitle);
   }
@@ -40,6 +43,8 @@ function RouteView({ route }: { route: Route }) {
       return <LessonView world={route.world} lessonId={route.lessonId} />;
     case 'grown-ups':
       return <GrownUps />;
+    case 'studio':
+      return null;
     case 'not-found':
       return <NotFound />;
   }
@@ -69,6 +74,15 @@ export function App() {
     // `route` is identified by `path`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path]);
+
+  // The studio is a workbench, not a page of the game: it stands alone, without the shell around it.
+  if (route.name === 'studio') {
+    return (
+      <Suspense fallback={null}>
+        <Studio view={route.view} />
+      </Suspense>
+    );
+  }
 
   return (
     <div className={styles.app} data-route={route.name}>

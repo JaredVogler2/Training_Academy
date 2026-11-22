@@ -223,8 +223,12 @@ export default tseslint.config(
     ...tseslint.configs.disableTypeChecked,
   },
   {
-    files: ['scripts/**/*.mjs', 'public/**/*.js'],
+    files: ['scripts/**/*.mjs'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
+  {
+    files: ['scripts/vite/sw-source.js'],
+    languageOptions: { sourceType: 'script', globals: { ...globals.serviceworker } },
   },
   prettier,
 );

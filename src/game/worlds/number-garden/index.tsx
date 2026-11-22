@@ -131,28 +131,37 @@ const CLUSTERS: Record<number, readonly (readonly [number, number])[]> = {
   ],
 };
 
+/**
+ * How large each thing is drawn. Up to six things share one size, so in the early lessons size is never a clue to
+ * the amount; larger sets are drawn a little smaller so that they fit without touching.
+ */
+export function thingScale(count: number): number {
+  return count > 6 ? 0.85 : 1.14;
+}
+
 /** Where each thing goes. Things never touch or overlap, so they can always be told apart. */
 export function layout(count: number, arrangement: Arrangement): [number, number][] {
   const cluster = arrangement === 'cluster' ? CLUSTERS[count] : undefined;
   if (cluster) return cluster.map(([x, y]) => [x, y]);
 
-  // A row, or rows of up to five when there are more.
-  const perRow = count <= 5 ? count : Math.ceil(count / 2);
+  // Rows: up to three across at full size, up to four across when there are more than six.
+  const small = count > 6;
+  const perRow = count <= 3 ? count : !small || count === 9 ? 3 : 4;
   const rows = Math.ceil(count / perRow);
+  const columnGap = small ? 40 : 54;
+  const rowGap = rows >= 3 ? 38 : small ? 46 : 56;
   return Array.from({ length: count }, (_, index) => {
     const row = Math.floor(index / perRow);
     const inRow = Math.min(perRow, count - row * perRow);
-    const gap = Math.min(54, 176 / Math.max(1, perRow - 1 || 1));
-    const x = WIDTH / 2 + (index - row * perRow - (inRow - 1) / 2) * gap;
-    const y = HEIGHT / 2 + (row - (rows - 1) / 2) * 56;
+    const x = WIDTH / 2 + (index - row * perRow - (inRow - 1) / 2) * columnGap;
+    const y = HEIGHT / 2 + (row - (rows - 1) / 2) * rowGap;
     return [x, y];
   });
 }
 
 function Picture({ stimulus, counting = false }: PictureProps) {
   const places = layout(stimulus.count, stimulus.arrangement);
-  // Every picture on a screen uses the same box and the same scale, so size is never a clue to the answer.
-  const scale = stimulus.count > 5 ? 0.85 : 1.14;
+  const scale = thingScale(stimulus.count);
   return (
     <svg
       className={styles.picture}

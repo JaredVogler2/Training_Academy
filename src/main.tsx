@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from '@/app/App';
 import { mark, observeVitals, recordError } from '@/app/diagnostics';
+import { registerServiceWorker } from '@/app/serviceWorker';
 import { applyMotionToDocument, settingsStore } from '@/app/settings';
 import { installAudioUnlock } from '@/audio';
 import '@/styles/fonts.css';
@@ -18,6 +19,8 @@ installAudioUnlock(window);
 // Anything that slips past the error boundary is noted on the device (and nowhere else).
 window.addEventListener('error', (event) => recordError('window', event.error ?? event.message));
 window.addEventListener('unhandledrejection', (event) => recordError('promise', event.reason));
+
+registerServiceWorker();
 
 const root = document.getElementById('root');
 if (!root) throw new Error('index.html has no #root element.');

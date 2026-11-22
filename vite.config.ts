@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import { serviceWorker } from './scripts/vite/service-worker.ts';
 import { vercelParity } from './scripts/vite/vercel-parity.ts';
 
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as {
@@ -28,7 +29,7 @@ function buildLabel(): string {
 }
 
 export default defineConfig({
-  plugins: [react(), vercelParity()],
+  plugins: [react(), vercelParity(), serviceWorker()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
@@ -46,16 +47,21 @@ export default defineConfig({
     rolldownOptions: {
       output: {
         codeSplitting: {
+          // A group takes exactly the modules its test matches. (By default it would also take everything those
+          // modules import, which pulled React itself into the 3D chunk and so the 3D chunk into the first load.
+          // scripts/verify-dist.mjs fails the build if that ever happens again.)
+          includeDependenciesRecursively: false,
           groups: [
-            { name: 'three', test: /node_modules[\\/]three[\\/]/, priority: 30 },
-            {
-              name: 'r3f',
-              test: /node_modules[\\/](@react-three|three-stdlib|maath|zustand|suspend-react|its-fine|react-use-measure|troika-[\w-]+|camera-controls|meshline|stats-gl|stats\.js|tunnel-rat|detect-gpu|hls\.js|@monogrid|@mediapipe|glsl-noise|three-mesh-bvh|bidi-js|webgl-sdf-generator|@use-gesture|cross-env|utility-types|react-reconciler)[\\/]/,
-              priority: 20,
-            },
             {
               name: 'react',
               test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+              priority: 30,
+            },
+            { name: 'three', test: /node_modules[\\/]three[\\/]/, priority: 20 },
+            {
+              // React Three Fiber, Drei and what they bring with them.
+              name: 'r3f',
+              test: /node_modules[\\/](@react-three|three-stdlib|three-mesh-bvh|maath|zustand|suspend-react|its-fine|react-reconciler|react-use-measure|troika-[\w-]+|camera-controls|meshline|stats-gl|stats\.js|tunnel-rat|detect-gpu|hls\.js|@monogrid|@mediapipe|glsl-noise|bidi-js|webgl-sdf-generator|@use-gesture|use-sync-external-store|utility-types)[\\/]/,
               priority: 10,
             },
           ],

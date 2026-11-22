@@ -1,0 +1,406 @@
+/*
+ * The lesson frame: a bar (leave, progress, help), the board (the group to match and the choices), and a foot (what
+ * just happened, and the way on). One screen, no scrolling, every target large.
+ */
+.lesson {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: clamp(8px, 1.8vh, 16px);
+  width: min(100%, 920px);
+  height: calc(100vh - var(--topbar) - var(--safe-top));
+  height: calc(100dvh - var(--topbar) - var(--safe-top));
+  margin: 0 auto;
+  padding: 4px calc(var(--gutter) + var(--safe-right)) calc(12px + var(--safe-bottom))
+    calc(var(--gutter) + var(--safe-left));
+}
+
+.bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  justify-content: center;
+}
+
+.step {
+  width: 14px;
+  height: 14px;
+  border: 3px solid var(--white);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 55%);
+  transition:
+    transform var(--gentle) var(--ease-spring),
+    background-color var(--gentle) linear;
+}
+
+/* Done is filled, now is larger and sun-coloured, ahead is hollow: three states told apart by more than colour. */
+.step[data-state='done'] {
+  border-color: var(--deep);
+  background: var(--deep);
+}
+
+.step[data-state='now'] {
+  background: var(--sun);
+  transform: scale(1.5);
+}
+
+.board {
+  display: grid;
+  grid-template-rows: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(10px, 2vh, 18px);
+  min-height: 0;
+}
+
+.board[data-count='3'] {
+  grid-template-rows: minmax(0, 0.6fr) minmax(0, 1.4fr);
+}
+
+.prompt {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  padding: clamp(6px, 1.5vh, 14px);
+  border: 4px dashed var(--mid);
+  border-radius: var(--radius-l);
+  background: var(--tint);
+  transition:
+    border-color var(--gentle) linear,
+    background-color var(--gentle) linear;
+}
+
+.prompt[data-same='true'] {
+  border-style: solid;
+  border-color: var(--yes);
+  background: #fff6d2;
+}
+
+.choices {
+  display: grid;
+  grid-auto-rows: minmax(0, 1fr);
+  gap: clamp(8px, 1.6vh, 14px);
+  min-height: 0;
+}
+
+/* On a narrow screen the choices stack, full width, so every picture is as large as it can be. */
+.choices > li {
+  min-width: 0;
+  min-height: 0;
+}
+
+.choice {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 84px;
+  padding: 6px;
+  border: 4px solid var(--white);
+  border-radius: 26px;
+  background: var(--white);
+  box-shadow:
+    0 var(--lip) 0 rgb(34 48 79 / 16%),
+    0 12px 20px rgb(34 48 79 / 12%);
+  transition:
+    transform var(--quick) var(--ease-out),
+    box-shadow var(--quick) var(--ease-out),
+    opacity var(--gentle) linear,
+    border-color var(--gentle) linear,
+    background-color var(--gentle) linear;
+}
+
+@media (hover: hover) {
+  .choice[data-state='open'][aria-disabled='false']:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 calc(var(--lip) + 3px) 0 rgb(34 48 79 / 16%),
+      0 16px 24px rgb(34 48 79 / 14%);
+  }
+}
+
+.choice[data-state='open'][aria-disabled='false']:active {
+  transform: translateY(calc(var(--lip) - 1px));
+  box-shadow: 0 1px 0 rgb(34 48 79 / 16%);
+}
+
+.choice[aria-disabled='true'] {
+  cursor: default;
+}
+
+/* The right group: a sun border and a tick — never colour alone. */
+.choice[data-state='same'] {
+  border-color: var(--yes);
+  background: #fff6d2;
+  animation: settle 0.5s var(--ease-spring);
+}
+
+/* A choice that has been set aside after a try or a hint: quiet, hollow, out of the way. No cross, no red. */
+.choice[data-state='away'] {
+  border-style: dashed;
+  border-color: var(--ink-faint);
+  background: rgb(255 255 255 / 45%);
+  box-shadow: none;
+  opacity: 0.42;
+  transform: scale(0.94);
+}
+
+.choice[data-just-tried='true'] {
+  animation: set-aside 0.7s var(--ease-out);
+}
+
+.tick {
+  position: absolute;
+  top: -12px;
+  right: -8px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--white);
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--yes);
+  animation: pop 0.45s var(--ease-spring) both;
+}
+
+/* The guide's hand: "tap here". */
+.pointer {
+  position: absolute;
+  right: 6%;
+  bottom: -14px;
+  color: var(--ink);
+  filter: drop-shadow(0 3px 0 rgb(34 48 79 / 18%));
+  animation: tap-here 0.9s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.foot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 76px;
+}
+
+.caption {
+  justify-self: start;
+  max-width: 100%;
+  padding: 10px 16px;
+  border-radius: 18px;
+  color: var(--ink-soft);
+  background: rgb(255 255 255 / 72%);
+  font-size: 0.9375rem;
+  line-height: 1.3;
+}
+
+.caption[data-tone='correct'] {
+  color: var(--ink);
+  background: #fff6d2;
+  font-weight: 800;
+}
+
+/* The way on arrives after the demonstration has been seen; it is in the page (and usable) from the start. */
+.myTurn {
+  animation: arrive 0.4s var(--ease-spring) both;
+  animation-delay: 2.4s;
+}
+
+.next {
+  animation: arrive 0.4s var(--ease-spring) both;
+  animation-delay: 0.6s;
+}
+
+.unsaved {
+  justify-self: center;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+  background: rgb(255 255 255 / 80%);
+  font-size: var(--text-s);
+}
+
+/* The end of a lesson: calm. */
+.finished {
+  display: grid;
+  grid-row: 2 / 4;
+  gap: clamp(10px, 2vh, 18px);
+  align-content: center;
+  align-self: center;
+  justify-items: center;
+  padding: clamp(24px, 6vw, 44px) clamp(16px, 4vw, 32px);
+  border-radius: var(--radius-l);
+  background: var(--paper);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.finished h1 {
+  font-size: var(--text-xxl);
+}
+
+.finishedArt {
+  width: clamp(96px, 22vh, 168px);
+  height: clamp(96px, 22vh, 168px);
+}
+
+.grown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.sprout {
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--white);
+  border-radius: 50%;
+  background: var(--mid);
+  box-shadow: 0 2px 0 rgb(34 48 79 / 14%);
+  animation: pop 0.45s var(--ease-spring) both;
+}
+
+.report {
+  max-width: 30rem;
+  color: var(--ink-soft);
+  font-size: var(--text-s);
+}
+
+.finishedActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+/* Wider screens: the choices sit side by side. */
+@media (min-width: 600px) {
+  .choices {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-auto-flow: column;
+  }
+
+  .board,
+  .board[data-count='3'] {
+    grid-template-rows: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+
+  .caption {
+    font-size: 1.0625rem;
+  }
+}
+
+/* A phone on its side: the group to match on the left, the choices in a row on the right. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .lesson {
+    gap: 6px;
+  }
+
+  .board,
+  .board[data-count='3'] {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
+  }
+
+  .choices {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-auto-flow: column;
+  }
+
+  .choice {
+    min-height: 0;
+  }
+
+  .foot {
+    min-height: 60px;
+  }
+
+  .finished {
+    grid-template-columns: auto 1fr;
+    column-gap: 20px;
+    text-align: left;
+  }
+
+  .finishedArt {
+    grid-row: 1 / 5;
+    width: 110px;
+    height: 110px;
+  }
+
+  .finished h1 {
+    font-size: var(--text-xl);
+  }
+
+  .finished > * {
+    justify-self: start;
+  }
+}
+
+@keyframes settle {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes set-aside {
+  0% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1) rotate(-2.5deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(2.5deg);
+  }
+  100% {
+    opacity: 0.42;
+    transform: scale(0.94) rotate(0);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tap-here {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(-6px, -8px);
+  }
+}

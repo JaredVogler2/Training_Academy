@@ -75,7 +75,8 @@ const StringKeySchema = v.pipe(v.string(), v.regex(STRING_KEY, 'string key'));
 // Authored content
 // ---------------------------------------------------------------------------------------------------------------------
 
-export const ITEM_KINDS = ['ladybug', 'flower', 'apple', 'shell'] as const;
+/** Things to count. Each is one plain shape, with no spots, petals or other parts a child might count instead. */
+export const ITEM_KINDS = ['apple', 'leaf', 'snail', 'acorn'] as const;
 export type ItemKind = (typeof ITEM_KINDS)[number];
 
 export const ARRANGEMENTS = ['row', 'cluster'] as const;

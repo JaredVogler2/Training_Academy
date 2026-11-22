@@ -39,10 +39,10 @@
         "independent": {
           "pool": [
             "ng-same-amount-01.two-apples",
-            "ng-same-amount-01.three-flowers",
-            "ng-same-amount-01.one-shell",
-            "ng-same-amount-01.two-ladybugs",
-            "ng-same-amount-01.three-shells"
+            "ng-same-amount-01.three-leaves",
+            "ng-same-amount-01.one-acorn",
+            "ng-same-amount-01.two-snails",
+            "ng-same-amount-01.three-acorns"
           ],
           "count": 3,
           "maxReprobes": 1
@@ -57,18 +57,18 @@
           "variant": "demo-two",
           "prompt": {
             "instruction": "ng.same-amount.instruction",
-            "stimulus": { "type": "quantity", "item": "ladybug", "count": 2, "arrangement": "row" }
+            "stimulus": { "type": "quantity", "item": "snail", "count": 2, "arrangement": "row" }
           },
           "choices": [
             {
               "id": "a",
-              "label": "one flower",
-              "stimulus": { "type": "quantity", "item": "flower", "count": 1, "arrangement": "row" }
+              "label": "one leaf",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 1, "arrangement": "row" }
             },
             {
               "id": "b",
-              "label": "two flowers",
-              "stimulus": { "type": "quantity", "item": "flower", "count": 2, "arrangement": "row" }
+              "label": "two leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 2, "arrangement": "row" }
             }
           ],
           "answer": "b",
@@ -94,13 +94,13 @@
           "choices": [
             {
               "id": "a",
-              "label": "one shell",
-              "stimulus": { "type": "quantity", "item": "shell", "count": 1, "arrangement": "row" }
+              "label": "one acorn",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 1, "arrangement": "row" }
             },
             {
               "id": "b",
-              "label": "three shells",
-              "stimulus": { "type": "quantity", "item": "shell", "count": 3, "arrangement": "row" }
+              "label": "three acorns",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 3, "arrangement": "row" }
             }
           ],
           "answer": "a",
@@ -121,20 +121,20 @@
           "variant": "guided-three",
           "prompt": {
             "instruction": "ng.same-amount.instruction",
-            "stimulus": { "type": "quantity", "item": "ladybug", "count": 3, "arrangement": "row" }
+            "stimulus": { "type": "quantity", "item": "snail", "count": 3, "arrangement": "row" }
           },
           "choices": [
             {
               "id": "a",
-              "label": "two flowers",
-              "stimulus": { "type": "quantity", "item": "flower", "count": 2, "arrangement": "row" }
+              "label": "two leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 2, "arrangement": "row" }
             },
             {
               "id": "b",
-              "label": "three flowers",
+              "label": "three leaves",
               "stimulus": {
                 "type": "quantity",
-                "item": "flower",
+                "item": "leaf",
                 "count": 3,
                 "arrangement": "cluster"
               }
@@ -163,25 +163,25 @@
           "choices": [
             {
               "id": "a",
-              "label": "three shells",
+              "label": "three acorns",
               "stimulus": {
                 "type": "quantity",
-                "item": "shell",
+                "item": "acorn",
                 "count": 3,
                 "arrangement": "cluster"
               }
             },
             {
               "id": "b",
-              "label": "one shell",
-              "stimulus": { "type": "quantity", "item": "shell", "count": 1, "arrangement": "row" }
+              "label": "one acorn",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 1, "arrangement": "row" }
             },
             {
               "id": "c",
-              "label": "two shells",
+              "label": "two acorns",
               "stimulus": {
                 "type": "quantity",
-                "item": "shell",
+                "item": "acorn",
                 "count": 2,
                 "arrangement": "cluster"
               }
@@ -200,7 +200,7 @@
           }
         },
         {
-          "id": "ng-same-amount-01.three-flowers",
+          "id": "ng-same-amount-01.three-leaves",
           "kind": "choose-one",
           "skillId": "math.quantity.match-sets-to-3",
           "variant": "three-as-row",
@@ -208,7 +208,7 @@
             "instruction": "ng.same-amount.instruction",
             "stimulus": {
               "type": "quantity",
-              "item": "flower",
+              "item": "leaf",
               "count": 3,
               "arrangement": "cluster"
             }
@@ -216,30 +216,30 @@
           "choices": [
             {
               "id": "a",
-              "label": "three ladybugs",
+              "label": "three snails",
               "stimulus": {
                 "type": "quantity",
-                "item": "ladybug",
+                "item": "snail",
                 "count": 3,
                 "arrangement": "row"
               }
             },
             {
               "id": "b",
-              "label": "two ladybugs",
+              "label": "two snails",
               "stimulus": {
                 "type": "quantity",
-                "item": "ladybug",
+                "item": "snail",
                 "count": 2,
                 "arrangement": "row"
               }
             },
             {
               "id": "c",
-              "label": "one ladybug",
+              "label": "one snail",
               "stimulus": {
                 "type": "quantity",
-                "item": "ladybug",
+                "item": "snail",
                 "count": 1,
                 "arrangement": "row"
               }
@@ -258,13 +258,13 @@
           }
         },
         {
-          "id": "ng-same-amount-01.one-shell",
+          "id": "ng-same-amount-01.one-acorn",
           "kind": "choose-one",
           "skillId": "math.quantity.match-sets-to-3",
           "variant": "one",
           "prompt": {
             "instruction": "ng.same-amount.instruction",
-            "stimulus": { "type": "quantity", "item": "shell", "count": 1, "arrangement": "row" }
+            "stimulus": { "type": "quantity", "item": "acorn", "count": 1, "arrangement": "row" }
           },
           "choices": [
             {
@@ -301,7 +301,7 @@
           }
         },
         {
-          "id": "ng-same-amount-01.two-ladybugs",
+          "id": "ng-same-amount-01.two-snails",
           "kind": "choose-one",
           "skillId": "math.quantity.match-sets-to-3",
           "variant": "two-as-row",
@@ -309,7 +309,7 @@
             "instruction": "ng.same-amount.instruction",
             "stimulus": {
               "type": "quantity",
-              "item": "ladybug",
+              "item": "snail",
               "count": 2,
               "arrangement": "cluster"
             }
@@ -344,39 +344,39 @@
           }
         },
         {
-          "id": "ng-same-amount-01.three-shells",
+          "id": "ng-same-amount-01.three-acorns",
           "kind": "choose-one",
           "skillId": "math.quantity.match-sets-to-3",
           "variant": "three-as-cluster",
           "prompt": {
             "instruction": "ng.same-amount.instruction",
-            "stimulus": { "type": "quantity", "item": "shell", "count": 3, "arrangement": "row" }
+            "stimulus": { "type": "quantity", "item": "acorn", "count": 3, "arrangement": "row" }
           },
           "choices": [
             {
               "id": "a",
-              "label": "two flowers",
+              "label": "two leaves",
               "stimulus": {
                 "type": "quantity",
-                "item": "flower",
+                "item": "leaf",
                 "count": 2,
                 "arrangement": "cluster"
               }
             },
             {
               "id": "b",
-              "label": "three flowers",
+              "label": "three leaves",
               "stimulus": {
                 "type": "quantity",
-                "item": "flower",
+                "item": "leaf",
                 "count": 3,
                 "arrangement": "cluster"
               }
             },
             {
               "id": "c",
-              "label": "one flower",
-              "stimulus": { "type": "quantity", "item": "flower", "count": 1, "arrangement": "row" }
+              "label": "one leaf",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 1, "arrangement": "row" }
             }
           ],
           "answer": "b",

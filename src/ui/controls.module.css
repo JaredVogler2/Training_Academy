@@ -1,0 +1,168 @@
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: var(--tap-small);
+  padding: 0 20px;
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+  background: var(--white);
+  box-shadow:
+    0 var(--lip) 0 rgb(34 48 79 / 18%),
+    0 10px 18px rgb(34 48 79 / 12%);
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.1;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    transform var(--quick) var(--ease-out),
+    box-shadow var(--quick) var(--ease-out),
+    background-color var(--quick) linear;
+}
+
+@media (hover: hover) {
+  .button:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 calc(var(--lip) + 2px) 0 rgb(34 48 79 / 18%),
+      0 14px 22px rgb(34 48 79 / 14%);
+  }
+}
+
+.button:active {
+  transform: translateY(calc(var(--lip) - 1px));
+  box-shadow:
+    0 1px 0 rgb(34 48 79 / 18%),
+    0 3px 6px rgb(34 48 79 / 12%);
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.sun {
+  background: var(--sun);
+}
+
+.quiet {
+  background: rgb(255 255 255 / 70%);
+  box-shadow: 0 2px 0 rgb(34 48 79 / 12%);
+}
+
+.danger {
+  color: #fff;
+  background: #c2413a;
+}
+
+.round {
+  width: var(--tap-small);
+  min-width: var(--tap-small);
+  height: var(--tap-small);
+  padding: 0;
+  border-radius: 50%;
+}
+
+.big {
+  min-height: var(--tap);
+  padding: 0 28px;
+  font-size: 1.25rem;
+}
+
+.big.round {
+  width: 72px;
+  min-width: 72px;
+  height: 72px;
+  padding: 0;
+}
+
+/* Toggles: on is a filled sun, off is a hollow button with a slashed or calmed icon. */
+.toggle {
+  background: rgb(255 255 255 / 86%);
+  color: var(--ink-soft);
+}
+
+.toggle.pressed {
+  background: var(--sun);
+  color: var(--ink);
+}
+
+/* Hold-to-open */
+.hold {
+  overflow: hidden;
+  isolation: isolate;
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+
+.holdFill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--yes-deep);
+  opacity: 0.45;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.holding .holdFill {
+  transform: scaleX(1);
+  transition: transform var(--hold-seconds) linear;
+}
+
+/* The fill is a progress indicator, not decoration: it keeps its timing when motion is reduced. */
+:root[data-motion='reduced'] .hold.holding .holdFill {
+  transition-duration: var(--hold-seconds) !important;
+}
+
+.holdContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Modal */
+.modal {
+  width: min(92vw, 26rem);
+  max-height: 86dvh;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-l);
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: var(--shadow-float);
+}
+
+.modal::backdrop {
+  background: rgb(34 48 79 / 55%);
+}
+
+.modalBody {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+}
+
+.modalTitle {
+  font-size: var(--text-l);
+}
+
+.modalText {
+  display: grid;
+  gap: 12px;
+  color: var(--ink-soft);
+}
+
+.modalActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+}

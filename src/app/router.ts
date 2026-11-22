@@ -1,0 +1,66 @@
+import { WORLD_IDS, type WorldId } from '@/engine';
+
+/**
+ * The route table, as data. Pure functions only: the browser plumbing lives in navigation.tsx.
+ *
+ * Paths never contain a dot, so a static host can tell a page from a file (see vercel.json).
+ */
+export type Route =
+  | { name: 'home' }
+  | { name: 'world'; world: WorldId }
+  | { name: 'play'; world: WorldId; lessonId: string }
+  | { name: 'grown-ups' }
+  | { name: 'not-found'; path: string };
+
+const LESSON_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function isWorldId(value: string): value is WorldId {
+  return (WORLD_IDS as readonly string[]).includes(value);
+}
+
+function segmentsOf(pathname: string): string[] | null {
+  try {
+    return pathname
+      .split('/')
+      .filter((segment) => segment !== '')
+      .map((segment) => decodeURIComponent(segment));
+  } catch {
+    return null;
+  }
+}
+
+export function parsePath(pathname: string): Route {
+  const notFound: Route = { name: 'not-found', path: pathname };
+  const segments = segmentsOf(pathname);
+  if (!segments) return notFound;
+
+  const [first, second, third, fourth, ...rest] = segments;
+  if (first === undefined) return { name: 'home' };
+  if (first === 'grown-ups' && second === undefined) return { name: 'grown-ups' };
+  if (first === 'world' && second !== undefined && isWorldId(second)) {
+    if (third === undefined) return { name: 'world', world: second };
+    if (third === 'play' && fourth !== undefined && rest.length === 0 && LESSON_SLUG.test(fourth)) {
+      return { name: 'play', world: second, lessonId: fourth };
+    }
+  }
+  return notFound;
+}
+
+export function toPath(route: Route): string {
+  switch (route.name) {
+    case 'home':
+      return '/';
+    case 'world':
+      return `/world/${route.world}`;
+    case 'play':
+      return `/world/${route.world}/play/${route.lessonId}`;
+    case 'grown-ups':
+      return '/grown-ups';
+    case 'not-found':
+      return route.path;
+  }
+}
+
+export function sameRoute(a: Route, b: Route): boolean {
+  return toPath(a) === toPath(b);
+}

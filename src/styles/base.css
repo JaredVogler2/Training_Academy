@@ -20,6 +20,8 @@ body {
   font-size: var(--text-m);
   font-weight: 600;
   line-height: 1.45;
+  /* A word too long for its box breaks rather than sticking out of it. */
+  overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior: none;

@@ -1,5 +1,6 @@
 .world {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(14px, 2.6vh, 24px);
   width: min(100% - 2 * var(--gutter), 46rem);
   margin: 0 auto;
@@ -49,6 +50,7 @@
 
 .play {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
   justify-items: center;
 }
@@ -80,6 +82,7 @@
 
 .about {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   padding: clamp(18px, 4vw, 28px);
   border-radius: var(--radius-l);
@@ -103,6 +106,7 @@
 
 .planned {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   counter-reset: planned;
 }

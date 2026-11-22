@@ -165,6 +165,7 @@
 /* Trouble, not-found and other short messages */
 .notice {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
   justify-items: center;
   width: min(100% - 2 * var(--gutter), 30rem);

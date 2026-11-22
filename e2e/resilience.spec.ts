@@ -77,7 +77,9 @@ test.describe('when the browser will not let the game save', () => {
     press,
   }) => {
     await page.addInitScript(() => {
-      window.indexedDB.open = () => {
+      // On the prototype: WebKit can forget a property set on the `indexedDB` object itself, and the test would
+      // then quietly use IndexedDB after all.
+      IDBFactory.prototype.open = () => {
         throw new DOMException('The operation is insecure.', 'SecurityError');
       };
     });
@@ -85,6 +87,13 @@ test.describe('when the browser will not let the game save', () => {
     await press(myTurn(page));
     await choose(page, press, true);
     await press(next(page));
+    expect(await stepNumber(page)).toBe(3);
+
+    // The fallback store really holds the sitting, at the step just reached, before the page goes away.
+    await expect
+      .poll(() => page.evaluate(() => window.localStorage.getItem('training-academy.db.v1') ?? ''))
+      .toContain('"cursor":2');
+
     await page.reload();
     await expect(lesson(page).locator('[data-choice]').first()).toBeVisible();
     expect(await stepNumber(page)).toBe(3);
@@ -106,7 +115,8 @@ test.describe('when the browser will not let the game save', () => {
       const refuse = () => {
         throw new DOMException('The operation is insecure.', 'SecurityError');
       };
-      window.indexedDB.open = refuse;
+      // On the prototypes: WebKit can forget a property set on the `indexedDB` object itself.
+      IDBFactory.prototype.open = refuse;
       Storage.prototype.getItem = refuse;
       Storage.prototype.setItem = refuse;
       Storage.prototype.removeItem = refuse;
@@ -152,14 +162,20 @@ test.describe('when part of the game cannot be downloaded', () => {
       message.getByRole('heading', { name: 'This part could not be loaded' }),
     ).toBeVisible();
     await expect(message.getByRole('button', { name: 'Load the page again' })).toBeVisible();
-    // The shell around it is intact.
+    // The shell around it is intact, and the way home works.
     await expect(page.getByRole('button', { name: 'Sound' })).toBeVisible();
     await press(message.getByRole('link', { name: 'Home' }));
     await expect(page.getByRole('navigation', { name: 'Worlds' })).toBeVisible();
 
-    // Once the network is back, loading the page again recovers.
+    // Still unreachable: the same calm message again, not a broken page.
+    await press(page.getByRole('link', { name: /Memory Forest/ }));
+    await expect(
+      message.getByRole('heading', { name: 'This part could not be loaded' }),
+    ).toBeVisible();
+
+    // The network comes back; the button the message offers is all it takes.
     await page.unroute('**/immutable/WorldView-*.js');
-    await page.goto('/world/memory-forest');
+    await press(message.getByRole('button', { name: 'Load the page again' }));
     await expect(page.getByRole('heading', { level: 1, name: 'Memory Forest' })).toBeVisible();
   });
 

@@ -5,6 +5,7 @@ import {
   finishCorrectly,
   myTurn,
   openGrownUps,
+  screenFit,
   test,
   type Page,
 } from './fixtures';
@@ -14,7 +15,7 @@ const skill = (page: Page) => page.getByTestId('skill').first();
 
 async function addPlayer(page: Page, name: string, picture: string) {
   await page.getByRole('button', { name: 'Add a player' }).click();
-  await page.getByLabel('Nickname').fill(name);
+  await page.getByLabel('Nickname', { exact: true }).fill(name);
   await page.getByRole('radio', { name: picture }).check({ force: true });
   await page.getByRole('button', { name: 'Add', exact: true }).click();
   await expect(players(page).filter({ hasText: name })).toBeVisible();
@@ -81,7 +82,7 @@ test.describe('the grown-ups area', () => {
     await expect(skill(page)).toHaveAttribute('data-status', 'not-yet-observed');
     await expect(skill(page)).toContainText('Nothing recorded yet.');
 
-    await page.getByRole('button', { name: 'Switch to Robin' }).click();
+    await page.getByRole('button', { name: 'Switch to this player: Robin' }).click();
     await expect(players(page).filter({ hasText: 'Robin' })).toContainText('Playing now');
 
     await page.getByRole('button', { name: 'Change Sam' }).click();
@@ -119,7 +120,7 @@ test.describe('the grown-ups area', () => {
     await addPlayer(page, 'Bo', 'Sun');
     await expect(page.getByRole('heading', { name: 'What Bo has shown' })).toBeVisible();
     await expect(skill(page)).toContainText('Nothing recorded yet.');
-    await page.getByRole('button', { name: 'Switch to Ada' }).click();
+    await page.getByRole('button', { name: 'Switch to this player: Ada' }).click();
     await expect(skill(page)).toContainText('3 independent successes');
   });
 
@@ -241,11 +242,17 @@ test.describe('the grown-ups area', () => {
 
   test('is readable and usable on this screen @layout', async ({ page }) => {
     await openGrownUps(page);
+    // The longest names the form accepts: one with spaces, and one that offers nowhere to break a line.
     await addPlayer(page, 'Wonderful long nickname', 'Drop');
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - window.innerWidth,
-    );
-    expect(overflow).toBe(0);
+    expect((await screenFit(page)).sideways).toEqual([]);
+    await addPlayer(page, 'W'.repeat(24), 'Shell');
+    expect((await screenFit(page)).sideways).toEqual([]);
+    // Every part of the page, opened.
+    await page.getByTestId('diagnostics').getByText('Diagnostics', { exact: true }).click();
+    await page.getByRole('button', { name: `Change ${'W'.repeat(24)}` }).click();
+    await expect(page.getByLabel('Nickname', { exact: true })).toBeVisible();
+    expect((await screenFit(page)).sideways).toEqual([]);
+    await page.getByRole('button', { name: 'Cancel' }).click();
     for (const name of ['Add a player', 'Load a copy', 'Erase everything']) {
       const box = await page.getByRole('button', { name }).boundingBox();
       expect(box?.height).toBeGreaterThanOrEqual(44);

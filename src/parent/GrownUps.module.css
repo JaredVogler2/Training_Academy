@@ -8,6 +8,7 @@
 
 .gate {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   justify-items: center;
   margin-top: clamp(16px, 8vh, 72px);
@@ -23,9 +24,12 @@
   font-size: var(--text-xl);
 }
 
+/* Names typed by a grown-up appear in headings and labels here; a long one with no spaces must still fit. */
 .area {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
+  overflow-wrap: anywhere;
 }
 
 .header {
@@ -48,6 +52,7 @@
 
 .card {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
   padding: clamp(16px, 4vw, 26px);
   border-radius: var(--radius-l);
@@ -96,6 +101,7 @@
 /* Players */
 .players {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
 }
 
@@ -111,17 +117,18 @@
 
 .playerName {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2px;
   min-width: 0;
 }
 
+/* The whole name is shown: it wraps, and a long one with no spaces breaks, rather than being cut short. */
 .playerName strong {
-  overflow: hidden;
+  min-width: 0;
   font-family: var(--font-display);
   font-size: var(--text-l);
   font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.15;
 }
 
 .playingNow {
@@ -133,6 +140,7 @@
 .linkButton {
   justify-self: start;
   min-height: 32px;
+  text-align: left;
   color: var(--robot-deep);
   font-size: var(--text-s);
   font-weight: 800;
@@ -142,6 +150,7 @@
 /* Forms */
 .form {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
 }
 
@@ -153,6 +162,7 @@
 
 .field {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
 }
 
@@ -229,11 +239,13 @@
 /* What the player has shown */
 .skills {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 
 .skill {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   padding: 14px 16px;
   border-radius: var(--radius-m);
@@ -260,6 +272,7 @@
 /* Diagnostics */
 .facts {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 4px;
   margin: 0;
   font-size: var(--text-s);

@@ -38,6 +38,19 @@ const ALWAYS_ALLOWED = [
 ];
 
 /**
+ * Two more that only WebKit produces, neither of them about the game:
+ *   - to take a screenshot, Playwright adds a <style> to the page; this site's Content-Security-Policy refuses it,
+ *     and WebKit reports the refusal. (Chromium words the same refusal differently, so an inline style added by the
+ *     game itself would still fail these tests there.)
+ *   - WebKit advises that a `modulepreload` link "was not used within a few seconds of the load event" whenever Vite
+ *     adds one later than that, which is every time a part of the game is opened after the first few seconds.
+ */
+const WEBKIT_ALLOWED = [
+  /Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline'/,
+  /was preloaded using link preload but not used within a few seconds/,
+];
+
+/**
  * On a Vercel preview deployment, Vercel may add its collaboration toolbar to the page. This site's
  * Content-Security-Policy refuses it, and the browser reports the refusal. That report is the policy working, so it
  * is tolerated when testing a deployment — and only that. (Better still: switch the toolbar off for the project; see
@@ -50,10 +63,14 @@ export const test = base.extend<Fixtures>({
   graphics: ['pictures', { option: true }],
 
   guard: [
-    async ({ page, baseURL }, use, testInfo) => {
+    async ({ page, baseURL, browserName }, use, testInfo) => {
       const origin = new URL(baseURL ?? 'http://127.0.0.1').origin;
       const problems: string[] = [];
-      const allowed = [...ALWAYS_ALLOWED, ...REMOTE_ALLOWED];
+      const allowed = [
+        ...ALWAYS_ALLOWED,
+        ...REMOTE_ALLOWED,
+        ...(browserName === 'webkit' ? WEBKIT_ALLOWED : []),
+      ];
       const requested: string[] = [];
 
       page.on('console', (message) => {
@@ -130,6 +147,58 @@ export const WORLD_NAMES = [
 ];
 
 export const LESSON_PATH = '/world/number-garden/play/ng-same-amount-01';
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Does the page fit the screen?
+// ---------------------------------------------------------------------------------------------------------------------
+
+export interface ScreenFit {
+  /** Everything that is too wide or cut off at the side, in words. Empty when the page fits. */
+  sideways: string[];
+  /** How much taller the page is than the screen, in CSS pixels (0 when it fits in one screen). */
+  taller: number;
+}
+
+/**
+ * Measures the page against the screen size the test asked for — never against `window.innerWidth`.
+ *
+ * A phone browser, and Chromium when it emulates one, quietly widens its layout viewport to hold content that is
+ * too wide, and zooms out. From inside the page everything then looks fine (`scrollWidth === innerWidth`) on exactly
+ * the screens where it is not. The size the test configured does not move.
+ *
+ * Besides the page as a whole, every control must lie wholly between the left and right edges: something an
+ * ancestor clips does not widen the page, but it is still cut off.
+ */
+export async function screenFit(page: Page): Promise<ScreenFit> {
+  const screen = page.viewportSize();
+  if (!screen) throw new Error('This test has no fixed screen size.');
+  return page.evaluate(({ width, height }) => {
+    const sideways: string[] = [];
+    const root = document.documentElement;
+    if (root.scrollWidth > width) {
+      sideways.push(
+        `the page is ${String(root.scrollWidth)} px wide on a ${String(width)} px screen`,
+      );
+    }
+    const controls = document.querySelectorAll<HTMLElement>(
+      'a[href], button, input, select, textarea, summary, [role="button"], [role="link"]',
+    );
+    for (const control of controls) {
+      if (!control.checkVisibility({ visibilityProperty: true })) continue;
+      const box = control.getBoundingClientRect();
+      // Visually hidden helpers (1 px), and the skip link parked above the page until it is focused.
+      if (box.width < 2 || box.height < 2 || box.bottom <= 0) continue;
+      if (box.left < -0.5 || box.right > width + 0.5) {
+        const words = (control.getAttribute('aria-label') ?? control.textContent).trim();
+        const name = (words === '' ? control.tagName.toLowerCase() : words).slice(0, 40);
+        sideways.push(
+          `"${name}" runs from ${box.left.toFixed(1)} to ${box.right.toFixed(1)} px on a ${String(width)} px screen`,
+        );
+      }
+    }
+    return { sideways, taller: Math.max(0, root.scrollHeight - height) };
+  }, screen);
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Playing the sample activity the way a child would: by looking at the pictures

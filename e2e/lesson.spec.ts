@@ -7,6 +7,7 @@ import {
   myTurn,
   next,
   openGrownUps,
+  screenFit,
   stepNumber,
   test,
   type Page,
@@ -238,12 +239,8 @@ test.describe('the sample activity', () => {
 
     const viewport = page.viewportSize();
     if (!viewport) throw new Error('no viewport');
-    const overflow = await page.evaluate(() => ({
-      width: document.documentElement.scrollWidth - window.innerWidth,
-      height: document.documentElement.scrollHeight - window.innerHeight,
-    }));
-    expect(overflow.width).toBe(0);
-    expect(overflow.height).toBeLessThanOrEqual(0);
+    // The whole activity is on one screen: nothing to scroll to, in either direction.
+    expect(await screenFit(page)).toEqual({ sideways: [], taller: 0 });
 
     const boxes = await lesson(page)
       .locator('[data-choice]')

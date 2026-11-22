@@ -18,7 +18,9 @@ export const grownUpText = {
   noPlayers:
     'No players yet. The first activity creates one called Explorer, or you can add your own.',
   playingNow: 'Playing now',
-  switchTo: (name: string) => `Switch to ${name}`,
+  switchTo: 'Switch to this player',
+  /** What a screen reader says for that button: the visible words first, then whose row it is. */
+  switchToNamed: (name: string) => `Switch to this player: ${name}`,
   edit: (name: string) => `Change ${name}`,
   remove: (name: string) => `Remove ${name}`,
   addPlayer: 'Add a player',

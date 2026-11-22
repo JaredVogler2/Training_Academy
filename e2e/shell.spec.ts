@@ -1,4 +1,4 @@
-import { WORLD_NAMES, expect, test } from './fixtures';
+import { WORLD_NAMES, expect, screenFit, test } from './fixtures';
 
 test.describe('the home shell', () => {
   test('shows the brand, the two toggles and all six worlds, laid out for this screen @layout @smoke', async ({
@@ -21,12 +21,8 @@ test.describe('the home shell', () => {
     const viewport = page.viewportSize();
     if (!viewport) throw new Error('no viewport');
 
-    // Nothing scrolls sideways, and the hub is exactly one screen tall.
-    const overflow = await page.evaluate(() => ({
-      width: document.documentElement.scrollWidth - window.innerWidth,
-      height: document.documentElement.scrollHeight - window.innerHeight,
-    }));
-    expect(overflow).toEqual({ width: 0, height: 0 });
+    // Nothing scrolls sideways or is cut off, and the hub is exactly one screen tall.
+    expect(await screenFit(page)).toEqual({ sideways: [], taller: 0 });
 
     // Every world is a large target, wholly on screen, and no two overlap.
     const boxes = [];
@@ -147,6 +143,14 @@ test.describe('navigation', () => {
     await expect(page).toHaveTitle('This page is not on the map · Training Academy');
     await press(page.getByRole('link', { name: 'Back to the islands' }));
     await expect(page.getByRole('navigation', { name: 'Worlds' })).toBeVisible();
+  });
+
+  test('world pages fit this screen without scrolling sideways @layout', async ({ page }) => {
+    for (const path of ['/world/number-garden', '/world/inventor-island', '/somewhere/else']) {
+      await page.goto(path);
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+      expect((await screenFit(page)).sideways, path).toEqual([]);
+    }
   });
 
   test('a world that is not built says so and offers nothing to play', async ({ page }) => {

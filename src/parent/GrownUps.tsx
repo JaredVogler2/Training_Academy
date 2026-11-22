@@ -190,9 +190,10 @@ function Players({ onDialog }: { onDialog: (dialog: Dialog) => void }) {
                   <button
                     type="button"
                     className={styles.linkButton}
+                    aria-label={text.switchToNamed(profile.name)}
                     onClick={() => void setActiveProfile(profile.id)}
                   >
-                    {text.switchTo(profile.name)}
+                    {text.switchTo}
                   </button>
                 )}
               </div>

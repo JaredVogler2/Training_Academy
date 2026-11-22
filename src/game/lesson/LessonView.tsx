@@ -164,7 +164,8 @@ function Challenge({ state, runner, pack, module }: { state: Playing } & Loaded)
             const isAnswer = view.shownAnswer === choice.id || (answered && picked === choice.id);
             const state = isAnswer ? 'same' : available ? 'open' : 'away';
             return (
-              <li key={choice.id}>
+              // Keyed by step, so a new question gets new cards instead of morphing the old ones.
+              <li key={`${view.stepIndex}-${choice.id}`}>
                 <button
                   type="button"
                   className={styles.choice}

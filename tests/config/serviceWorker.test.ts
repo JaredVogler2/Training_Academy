@@ -15,31 +15,61 @@ class FakeRequest {
   method = 'GET';
   mode = 'cors';
   cache: string | undefined;
+  headers = new Headers();
   constructor(url: string, init: { cache?: string } = {}) {
     this.url = absolute(url);
     this.cache = init.cache;
   }
 }
 
+type Requestish = string | { url: string; headers?: Headers };
+interface Entry {
+  response: Response;
+  /** The headers of the request that stored it, which `Vary` compares against. */
+  requestHeaders: Headers;
+}
+
+/** Like the real Cache API, a lookup honours the stored response's Vary header unless told to ignore it. */
 class FakeCache {
-  readonly entries = new Map<string, Response>();
+  readonly entries = new Map<string, Entry>();
   constructor(private readonly fetcher: (request: FakeRequest) => Promise<Response>) {}
 
+  private static headersOf(request: Requestish): Headers {
+    return typeof request === 'string' ? new Headers() : (request.headers ?? new Headers());
+  }
   async addAll(requests: FakeRequest[]): Promise<void> {
     const responses = await Promise.all(requests.map((request) => this.fetcher(request)));
     if (responses.some((response) => !response.ok)) throw new TypeError('Request failed');
-    requests.forEach((request, index) => this.entries.set(request.url, responses[index]!));
+    requests.forEach((request, index) =>
+      this.entries.set(request.url, {
+        response: responses[index]!,
+        requestHeaders: request.headers,
+      }),
+    );
   }
-  async put(request: string | { url: string }, response: Response): Promise<void> {
-    this.entries.set(absolute(request), response);
+  async put(request: Requestish, response: Response): Promise<void> {
+    this.entries.set(absolute(request), { response, requestHeaders: FakeCache.headersOf(request) });
   }
-  async match(request: string | { url: string }): Promise<Response | undefined> {
-    return this.entries.get(absolute(request))?.clone();
+  async match(
+    request: Requestish,
+    options: { ignoreVary?: boolean } = {},
+  ): Promise<Response | undefined> {
+    const entry = this.entries.get(absolute(request));
+    if (!entry) return undefined;
+    const vary = options.ignoreVary ? null : entry.response.headers.get('vary');
+    for (const name of (vary ?? '')
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean)) {
+      if (entry.requestHeaders.get(name) !== FakeCache.headersOf(request).get(name))
+        return undefined;
+    }
+    return entry.response.clone();
   }
   async keys(): Promise<{ url: string }[]> {
     return [...this.entries.keys()].map((url) => ({ url }));
   }
-  async delete(request: string | { url: string }): Promise<boolean> {
+  async delete(request: Requestish): Promise<boolean> {
     return this.entries.delete(absolute(request));
   }
 }
@@ -59,9 +89,12 @@ class FakeCacheStorage {
   async delete(name: string): Promise<boolean> {
     return this.caches.delete(name);
   }
-  async match(request: string | { url: string }): Promise<Response | undefined> {
+  async match(
+    request: Requestish,
+    options: { ignoreVary?: boolean } = {},
+  ): Promise<Response | undefined> {
     for (const cache of this.caches.values()) {
-      const found = await cache.match(request);
+      const found = await cache.match(request, options);
       if (found) return found;
     }
     return undefined;
@@ -83,10 +116,16 @@ function network(paths: string[]) {
     state.served.push(pathname);
     // Every page address is the same document, as the host's rewrite makes it.
     const isPage = !pathname.includes('.');
-    if (isPage)
-      return new Response(`<html>${[...state.files].sort().join()}</html>`, { status: 200 });
+    // Answers vary by Origin, as a host with CORS handling makes them.
+    const headers = { Vary: 'Origin' };
+    if (isPage) {
+      return new Response(`<html>${[...state.files].sort().join()}</html>`, {
+        status: 200,
+        headers,
+      });
+    }
     return state.files.has(pathname)
-      ? new Response(`contents of ${pathname}`, { status: 200 })
+      ? new Response(`contents of ${pathname}`, { status: 200, headers })
       : new Response('404: NOT_FOUND', { status: 404 });
   };
   return { state, fetcher };
@@ -125,7 +164,12 @@ function startWorker(
     /** Returns the worker's response, or `null` when it leaves the request to the browser. */
     request(
       path: string,
-      init: { mode?: string; method?: string; origin?: string } = {},
+      init: {
+        mode?: string;
+        method?: string;
+        origin?: string;
+        headers?: Record<string, string>;
+      } = {},
     ): Promise<Response> | null {
       let response: Promise<Response> | null = null;
       listeners.fetch?.({
@@ -133,6 +177,7 @@ function startWorker(
           url: (init.origin ?? ORIGIN) + path,
           method: init.method ?? 'GET',
           mode: init.mode ?? 'cors',
+          headers: new Headers(init.headers),
         },
         respondWith: (promise: Promise<Response>) => (response = Promise.resolve(promise)),
       });
@@ -244,11 +289,11 @@ describe('service worker: pages', () => {
   it('does not keep an error page', async () => {
     const { net, storage, worker } = setup();
     await worker.install();
-    const kept = await (await storage.match('/'))?.text();
+    const kept = await (await storage.match('/', { ignoreVary: true }))?.text();
     const failing = async () => new Response('Server error', { status: 500 });
     const flaky = startWorker(V1, storage, failing);
     expect((await flaky.request('/', { mode: 'navigate' }))?.status).toBe(500);
-    expect(await (await storage.match('/'))?.text()).toBe(kept);
+    expect(await (await storage.match('/', { ignoreVary: true }))?.text()).toBe(kept);
     expect(net.state.online).toBe(true);
   });
 
@@ -269,6 +314,24 @@ describe('service worker: content-hashed files', () => {
       'contents of /immutable/index-1.js',
     );
     expect(net.state.served).toEqual([]);
+  });
+
+  it('serves a kept file to a real page request, which carries an Origin header the worker\u2019s own did not', async () => {
+    // Browsers send Origin with module-script and stylesheet requests. If the host answers `Vary: Origin`, a strict
+    // lookup would miss every file fetched at install: the game would open offline to a blank page.
+    const { net, worker } = setup();
+    await worker.install();
+    net.state.online = false;
+    const asThePageAsks = { headers: { Origin: ORIGIN, Accept: '*/*' } };
+    expect(await text(worker.request('/immutable/index-1.js', asThePageAsks))).toBe(
+      'contents of /immutable/index-1.js',
+    );
+    expect(await text(worker.request('/immutable/index-1.css', asThePageAsks))).toContain(
+      'index-1.css',
+    );
+    expect(
+      await text(worker.request('/world/number-garden', { mode: 'navigate', ...asThePageAsks })),
+    ).toContain('<html>');
   });
 
   it('keeps an on-demand file the first time it is used, and then works offline', async () => {

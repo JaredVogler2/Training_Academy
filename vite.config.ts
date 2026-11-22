@@ -70,6 +70,8 @@ export default defineConfig({
     },
   },
   preview: {
+    // Vercel sends no CORS headers for static files, so neither does the preview.
+    cors: false,
     host: '127.0.0.1',
     port: 4173,
     strictPort: true,

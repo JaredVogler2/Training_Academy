@@ -21,6 +21,9 @@ const SHELL_CACHE = `ta-shell-${BUILD.version}`;
 const RUNTIME_CACHE = 'ta-immutable';
 const NAVIGATION_TIMEOUT_MS = 4000;
 const PAGE_KEY = '/';
+// What is kept is looked up by address alone. A browser sends an Origin header with module-script requests; if the
+// host answers with `Vary: Origin`, a copy fetched by this worker (which sends none) would otherwise never match.
+const BY_ADDRESS = { ignoreVary: true };
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -79,13 +82,13 @@ async function page(request) {
     }
     return response;
   } catch {
-    const kept = await caches.match(PAGE_KEY);
+    const kept = await caches.match(PAGE_KEY, BY_ADDRESS);
     return kept || Response.error();
   }
 }
 
 async function immutable(request) {
-  const kept = await caches.match(request);
+  const kept = await caches.match(request, BY_ADDRESS);
   if (kept) return kept;
   const response = await fetch(request);
   if (response.ok) {
@@ -99,7 +102,7 @@ async function passThrough(request) {
   try {
     return await fetch(request);
   } catch {
-    const kept = await caches.match(request);
+    const kept = await caches.match(request, BY_ADDRESS);
     return kept || Response.error();
   }
 }

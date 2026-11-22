@@ -358,8 +358,9 @@ function Data({
           type="file"
           accept="application/json,.json"
           className="sr-only"
+          // The button beside it is the control people use; this input is only the browser's file picker.
           tabIndex={-1}
-          aria-label={text.loadCopy}
+          aria-hidden="true"
           data-testid="import-file"
           onChange={(event) => {
             const chosen = event.target.files?.[0];

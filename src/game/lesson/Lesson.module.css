@@ -83,7 +83,7 @@
 .choices {
   display: grid;
   grid-auto-rows: minmax(0, 1fr);
-  gap: clamp(8px, 1.6vh, 14px);
+  gap: clamp(10px, 1.6vh, 14px);
   min-height: 0;
 }
 

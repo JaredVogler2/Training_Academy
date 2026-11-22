@@ -205,6 +205,13 @@ export default tseslint.config(
     },
   },
   {
+    // Functions handed to the browser (page.evaluate, addInitScript) patch built-in prototypes on purpose.
+    files: ['e2e/**/*.ts'],
+    rules: {
+      '@typescript-eslint/unbound-method': 'off',
+    },
+  },
+  {
     files: ['tests/**/*.{ts,tsx}'],
     rules: {
       // Fakes and fixtures are deliberately loose.

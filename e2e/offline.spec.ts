@@ -23,6 +23,19 @@ test.describe('offline', () => {
   );
   test.use({ serviceWorkers: 'allow' });
 
+  // Seen only on the slower CI machine, and only once a service worker controls the page: Chromium sometimes declines
+  // to reuse a file that index.html preloaded ("…is found, but is not used because it is a cross-world service worker
+  // resource mismatch"), asks the worker for it again, and may then remark that the preload went unused. The second
+  // request is answered from the worker's own cache, the page is unaffected, and nothing in the game can change it
+  // short of not preloading its first files. These tests are about what happens offline, so the two remarks are
+  // allowed here and nowhere else.
+  test.beforeEach(({ guard }) => {
+    guard.allow(
+      /is found, but is not used because it is a cross-world service worker resource mismatch/,
+    );
+    guard.allow(/was preloaded using link preload but not used within a few seconds/);
+  });
+
   /** Wait until the worker has installed and taken control of this page. */
   async function workerInControl(page: Page): Promise<void> {
     await page.waitForFunction(() => navigator.serviceWorker.controller !== null, undefined, {

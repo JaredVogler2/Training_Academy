@@ -1,7 +1,7 @@
 // Measures what the 3D hub costs at each quality tier, from the running production build, and prints a Markdown
 // table for docs/QUALITY_REPORT.md.
 //
-//   npm run build && node scripts/measure-hub.mjs
+//   npm run build && npm run measure:hub
 //
 // Read the numbers for what they are. Draw calls, triangles and pixel ratio are properties of the scene and do not
 // depend on the machine. Frames per second here come from SwiftShader, a CPU rasteriser in a container with no GPU:

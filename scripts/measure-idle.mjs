@@ -1,7 +1,7 @@
 // Measures what each screen costs while nobody is touching it: the CPU time of every browser process over a few
 // seconds, from the running production build. Prints a Markdown table for docs/QUALITY_REPORT.md.
 //
-//   npm run build && node scripts/measure-idle.mjs
+//   npm run build && npm run measure:idle
 //
 // 100% means one CPU core fully busy. A screen that is not being used should be close to zero; anything that is not
 // is repainting on a timer and will cost battery on a real device.

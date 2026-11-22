@@ -22,6 +22,8 @@
     "verify:dist": "node scripts/verify-dist.mjs",
     "verify:release": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build && npm run verify:dist && npm run test:e2e",
     "screens": "node scripts/capture-screens.mjs",
+    "measure:hub": "node scripts/measure-hub.mjs",
+    "measure:idle": "node scripts/measure-idle.mjs",
     "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {

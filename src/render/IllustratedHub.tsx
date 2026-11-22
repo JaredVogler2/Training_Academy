@@ -7,6 +7,8 @@ import styles from './IllustratedHub.module.css';
  *
  * The drawing's box (`viewBox`) is fitted inside the free part of the screen; sky and sea are drawn far beyond that
  * box and allowed to overflow it, so they fill whatever shape of screen there is while the island stays whole.
+ * The box runs from the island's left shore to just past the boat at the end of the pier: anything that must not be
+ * cut off by the edge of a narrow screen has to be inside it.
  *
  * Decorative: the worlds are reached through the labelled buttons beside it, never through this picture.
  */
@@ -87,7 +89,7 @@ export function IllustratedHub() {
   return (
     <svg
       className={styles.scene}
-      viewBox="118 64 564 446"
+      viewBox="118 64 598 446"
       preserveAspectRatio="xMidYMid meet"
       aria-hidden="true"
       focusable="false"

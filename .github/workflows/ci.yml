@@ -59,6 +59,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps ${{ matrix.engine }}
+      # Timings in these tests depend on the machine; say what it is, so a slow run can be read for what it is.
+      - name: Describe the runner
+        run: echo "$(nproc) CPU cores, $(awk '/MemTotal/ {printf "%.0f", $2 / 1048576}' /proc/meminfo) GB of memory"
       - run: npx playwright test ${{ matrix.projects }}
         env:
           PW_WEBKIT: ${{ matrix.engine == 'webkit' && '1' || '0' }}

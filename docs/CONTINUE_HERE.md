@@ -3,8 +3,10 @@
 **Phases 01 (foundation) and 02 (the look) are complete. Phase 03 has not been started.**
 
 - **Date:** 2026-11-22
-- **Branch:** `claude/zealous-carson-qyiipa` — pull request [#2](https://github.com/JaredVogler2/Training_Academy/pull/2), open, not merged
-- **Tested code:** commit `e69eb06` (commits after it change documents only)
+- **Where it is:** on `main`. Phase 02 was pull request
+  [#2](https://github.com/JaredVogler2/Training_Academy/pull/2), merged as `65a137b`.
+- **Tested code:** commit `1102729`, which is what was merged. The game itself is as it was at `e69eb06`; later
+  commits change documents, and one comment in a test file.
 - **Deployed:** nowhere. No Vercel project is connected to this repository.
 
 ## The state, in one paragraph
@@ -19,13 +21,15 @@ describes. The activity screen does not yet; that is where Phase 03 starts.
 
 ## Verified
 
-On commit `e69eb06`:
+On commit `1102729`:
 
 - `npm run verify:release` passes locally: format, lint, typecheck, **594 unit tests**, production build,
   **156 build checks**, and **173 browser tests passed, 4 skipped by design** in headless Chromium on five
   screen shapes (1366×768, 390×844, 844×390, 768×1024, 360×740).
-- CI on the pull request (the same checks, the browser tests in Chromium, and in WebKit): see the pull request's
-  checks and `docs/TEST_RESULTS.md` → _Continuous integration_.
+- CI passed on the same commit, and again on `main` after the merge, with no failed test and no retry: the same
+  checks; the browser tests in Chromium (173 passed, 4 skipped by design); and in WebKit (118 passed, 26 skipped: the
+  tests that need the 3D scene or the service worker, and the keyboard journeys on its touch project).
+  `docs/TEST_RESULTS.md` → _Continuous integration_.
 - Every browser test also fails on any console error or warning, failed request, or request to another origin.
 - The layout is proved by arithmetic for ten screen shapes and checked in a browser for five: tap areas of at least
   96 pixels that never overlap, names that are never cut short, nothing floating over an island.
@@ -63,7 +67,6 @@ Details, including every command and count: `docs/TEST_RESULTS.md`. How it looks
 3. **Decide when to connect Vercel.** `docs/DEPLOYMENT.md` has the steps and the settings (switch the Vercel Toolbar
    off). A preview deployment would let the smoke tests run against the real platform, and would make step 1 a link.
    Production release stays with Phase 16.
-4. **Review the pull request.**
 
 ## The next action: Phase 03
 
@@ -138,6 +141,12 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
 - **Software-rendered 3D is unusable** (two to eight frames a second), so on "automatic" a software renderer keeps
   the picture. The 3D browser tests therefore ask for a tier by name (`graphics: 'low'`), and anything that must
   catch a moment — a wave, a hop — is tested or captured with the hub as a picture.
+- **Neither timings on this machine nor one CI run say how long the browser tests take in CI.** The same tests in
+  the same order have taken 7.8, 9.2 and 11.7 minutes there. And there, a test that ends with the 3D scene still
+  moving leaves the next test in the same browser five to thirty seconds late, which never happens here. Tests
+  that have the scene drawn in software are allowed three minutes (`SOFTWARE_3D_TIMEOUT` in `e2e/hub.spec.ts`), and
+  a new one needs the same. Judge a change to how the tests are scheduled by several CI runs, not one. And read the
+  times in a green run now and then: a test near its limit says so there before it ever fails.
 - **A slow machine opens the grown-ups gate late.** Tests hold the button until the area appears (`holdGateOpen`),
   never for a fixed time.
 - **WebKit keeps a failed preload.** Do not re-enable `<link rel="modulepreload">` for on-demand parts

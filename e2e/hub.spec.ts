@@ -14,13 +14,14 @@ const stage = (page: Page) => page.getByTestId('hub-stage');
 /**
  * For tests that have the scene drawn in software, which is all a machine without a graphics card can do. The scene
  * may take most of a minute to arrive and seconds more to photograph, so the usual minute for a whole test cannot
- * hold the waits inside one: on the CI machine "keeps moving gently" has taken 47 seconds.
+ * hold the waits inside one: on the CI machine "keeps moving gently" has taken from 47 to 78 seconds.
  *
- * Running this file's tests one after another, so that no two scenes are drawn at once, was tried and made CI
- * slower: 10.9 minutes against 7.8, and 77 seconds for that test. On that machine a test that ends with the scene
- * still moving leaves ten to thirty seconds of clearing up to the next test in the same browser, and in order the
- * next test is always another of these. Measure any change to how these are scheduled there, not on a faster
- * machine, where none of this shows.
+ * That machine's speed varies a great deal: these tests in this order have taken 7.8, 9.2 and 11.7 minutes in all.
+ * Running this file's tests one after another, so that no two scenes are drawn at once, was tried once and took
+ * 10.9, which is inside that spread. (The commit that took it out again says it was slower. One run could not
+ * show that.) What is known: there, a test that ends with the scene still moving leaves five to thirty seconds of
+ * clearing up to the next test in the same browser, and none of that shows on a faster machine. So judge a change
+ * to how these tests are scheduled by several CI runs, not by one, and not by local timings.
  */
 const SOFTWARE_3D_TIMEOUT = 180_000;
 

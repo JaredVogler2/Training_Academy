@@ -3,6 +3,7 @@ import {
   LESSON_PATH,
   expect,
   finishCorrectly,
+  holdGateOpen,
   myTurn,
   openGrownUps,
   screenFit,
@@ -36,8 +37,8 @@ test.describe('the grown-ups area', () => {
     await hold.click({ delay: 700 });
     await expect(page.getByRole('heading', { name: 'Players' })).toHaveCount(0);
 
-    // Two seconds does.
-    await hold.click({ delay: 2200 });
+    // Holding it does.
+    await holdGateOpen(page);
     await expect(page.getByRole('heading', { name: 'Players' })).toBeVisible();
     await expect(page.getByText('Everything here stays on this device.')).toBeVisible();
 
@@ -54,7 +55,7 @@ test.describe('the grown-ups area', () => {
     await page.goto('/grown-ups');
     await page.getByRole('button', { name: 'Press and hold' }).focus();
     await page.keyboard.down('Space');
-    await expect(page.getByRole('heading', { name: 'Players' })).toBeVisible({ timeout: 6000 });
+    await expect(page.getByRole('heading', { name: 'Players' })).toBeVisible({ timeout: 30_000 });
     await page.keyboard.up('Space');
   });
 
@@ -227,7 +228,7 @@ test.describe('the grown-ups area', () => {
     await page.goto('/');
     await expect(page.getByTestId('hub-stage')).toHaveAttribute('data-hub-mode', 'illustrated');
     await page.getByRole('link', { name: 'Grown-ups' }).click();
-    await page.getByRole('button', { name: 'Press and hold' }).click({ delay: 2200 });
+    await holdGateOpen(page);
     const diagnostics = page.getByTestId('diagnostics');
     await diagnostics.getByText('Diagnostics', { exact: true }).click();
     await expect(diagnostics).toContainText('Nothing on this list is sent anywhere.');

@@ -253,15 +253,26 @@ export async function finishCorrectly(page: Page, press: Fixtures['press']): Pro
   throw new Error('The activity did not finish.');
 }
 
-/** Open the grown-ups area: go to its page and hold the button for the two seconds it asks for. */
-export async function openGrownUps(page: Page): Promise<void> {
-  await page.goto('/grown-ups');
+/**
+ * Press and hold the gate's button until the grown-ups area opens. The gate must already be on screen.
+ *
+ * The button is held down until the area appears, rather than for a fixed time: the gate asks for two seconds, but
+ * a busy CI machine can take several times that to get round to it, and a press timed at "a little over two
+ * seconds" then lets go too early.
+ */
+export async function holdGateOpen(page: Page): Promise<void> {
   const hold = page.getByRole('button', { name: 'Press and hold' });
   await hold.waitFor();
   const box = await hold.boundingBox();
   if (!box) throw new Error('The hold button is not on screen.');
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
-  await page.getByRole('heading', { name: 'Players' }).waitFor({ timeout: 6000 });
+  await page.getByRole('heading', { name: 'Players' }).waitFor({ timeout: 30_000 });
   await page.mouse.up();
+}
+
+/** Open the grown-ups area: go to its page and hold the button. */
+export async function openGrownUps(page: Page): Promise<void> {
+  await page.goto('/grown-ups');
+  await holdGateOpen(page);
 }

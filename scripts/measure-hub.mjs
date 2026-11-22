@@ -32,6 +32,17 @@ const SCREENS = [
 ];
 const TIERS = ['low', 'medium', 'high'];
 
+/** Hold the gate's button down until the grown-ups area opens (a busy machine can take longer than the two seconds). */
+async function holdGateOpen(page) {
+  const hold = page.getByRole('button', { name: 'Press and hold' });
+  await hold.waitFor();
+  const box = await hold.boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.getByRole('heading', { name: 'Players' }).waitFor({ timeout: 30_000 });
+  await page.mouse.up();
+}
+
 const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], {
   cwd: root,
   stdio: 'ignore',
@@ -74,7 +85,7 @@ try {
 
       // The diagnostics live in the page's memory; the grown-ups area shows them.
       await page.getByRole('link', { name: 'Grown-ups' }).click();
-      await page.getByRole('button', { name: 'Press and hold' }).click({ delay: 2200 });
+      await holdGateOpen(page);
       const panel = page.getByTestId('diagnostics');
       await panel.getByText('Diagnostics', { exact: true }).click();
       const fact = async (label) =>

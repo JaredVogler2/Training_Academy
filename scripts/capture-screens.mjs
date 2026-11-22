@@ -103,6 +103,17 @@ async function session(screen, steps, { graphics = 'pictures' } = {}) {
   }
 }
 
+/** Hold the gate's button down until the grown-ups area opens (a busy machine can take longer than the two seconds). */
+async function holdGateOpen(page) {
+  const hold = page.getByRole('button', { name: 'Press and hold' });
+  await hold.waitFor();
+  const box = await hold.boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.getByRole('heading', { name: 'Players' }).waitFor({ timeout: 30_000 });
+  await page.mouse.up();
+}
+
 /** Tap a choice whose amount matches the group to match (`right`), or one that does not. */
 async function choose(page, press, right) {
   const lesson = page.getByTestId('lesson');
@@ -251,8 +262,7 @@ try {
   for (const screen of ['small-phone', 'phone']) {
     await session(screen, async ({ page, shot }) => {
       await page.goto(`${BASE}/grown-ups`);
-      await page.getByRole('button', { name: 'Press and hold' }).click({ delay: 2200 });
-      await page.getByRole('heading', { name: 'Players' }).waitFor();
+      await holdGateOpen(page);
       for (const [name, picture] of [
         ['Wonderful long nickname', 'Drop'],
         ['W'.repeat(24), 'Shell'],

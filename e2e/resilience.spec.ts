@@ -4,6 +4,7 @@ import {
   expect,
   finishCorrectly,
   finished,
+  holdGateOpen,
   myTurn,
   next,
   openGrownUps,
@@ -135,7 +136,7 @@ test.describe('when the browser will not let the game save', () => {
     // Within the visit the record is complete; the grown-up is told it will not last.
     await press(page.getByRole('link', { name: 'Islands' }));
     await press(page.getByRole('link', { name: 'Grown-ups' }));
-    await page.getByRole('button', { name: 'Press and hold' }).click({ delay: 2200 });
+    await holdGateOpen(page);
     await expect(
       page.getByRole('status').filter({ hasText: 'not letting the game save' }),
     ).toBeVisible();

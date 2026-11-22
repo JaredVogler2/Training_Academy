@@ -11,6 +11,18 @@ import {
 const HUB_3D_CODE = /\/immutable\/(three|r3f|Hub3D)-/;
 const stage = (page: Page) => page.getByTestId('hub-stage');
 
+// Without a graphics card the 3D scene is drawn by a software rasteriser, which wants every processor core it can
+// get. Two such scenes at once starve each other: on the CI machine that took one test here to 47 of the 60
+// seconds it then had. So this file's tests run one after another, while the other workers get on with other
+// files. (Two scenes can still meet where one screen shape's tests end and the next one's begin.)
+test.describe.configure({ mode: 'default' });
+
+/**
+ * For tests that have the scene drawn in software. It may take most of a minute to arrive and seconds more to
+ * photograph, so the usual minute for a whole test cannot hold the waits inside one.
+ */
+const SOFTWARE_3D_TIMEOUT = 180_000;
+
 test.describe('the 3D hub', () => {
   // WebGL in these tests comes from Chromium's software rasteriser. WebKit's headless build may have none, in which
   // case the hub correctly shows its picture: that path is covered below, on every browser.
@@ -20,6 +32,7 @@ test.describe('the 3D hub', () => {
   );
   // Asked for by name. Left on automatic, a software rasteriser is given the picture instead (tested below).
   test.use({ graphics: 'low' });
+  test.describe.configure({ timeout: SOFTWARE_3D_TIMEOUT });
 
   test('arrives after the shell, in its own chunks, and draws a real scene @layout', async ({
     page,
@@ -101,8 +114,6 @@ test.describe('the 3D hub', () => {
     page,
     press,
   }) => {
-    // Two full builds of the scene by a software rasteriser, with the page busy throughout: give it time.
-    test.slow();
     await page.goto('/');
     await expect(stage(page)).toHaveAttribute('data-hub-mode', '3d', { timeout: 45_000 });
     for (const world of [/Robot Ridge/, /Memory Forest/]) {
@@ -388,6 +399,7 @@ test.describe('the picture and the 3D scene', () => {
     ({ browserName }) => browserName !== 'chromium',
     'Needs WebGL, which headless WebKit may lack.',
   );
+  test.describe.configure({ timeout: SOFTWARE_3D_TIMEOUT });
 
   test('put every island in the same place, so nothing jumps when one replaces the other', async ({
     page,

@@ -4,7 +4,8 @@ import { test as base, expect, type Locator, type Page } from '@playwright/test'
  * What every browser test gets:
  *
  *   - a guard that fails the test on any console error or warning, uncaught exception, failed request, or request to
- *     another origin (the game talks to nobody) — unless the test says a specific one is expected;
+ *     another origin (the game talks to nobody) — unless the test says a specific one is expected. The one thing it
+ *     lets pass on its own is a download the browser cancelled because the page had moved on to another document;
  *   - the graphics setting chosen up front (the illustrated hub by default, so only the 3D specs pay for software
  *     rendering);
  *   - `press`, which taps on a touch device and clicks otherwise, so one spec exercises both.
@@ -75,12 +76,26 @@ export const test = base.extend<Fixtures>({
         }
       });
       page.on('pageerror', (error) => problems.push(`uncaught: ${error.message}`));
+
+      // A download still under way when the page starts loading another document is cancelled by the browser. That
+      // is not a failure of anything, so a cancelled request counts only if no other document was asked for after
+      // it began. (Every other kind of failed request counts, always.)
+      let documents = 0;
+      const startedIn = new WeakMap<object, number>();
+      const cancelled: { line: string; document: number }[] = [];
       page.on('requestfailed', (request) => {
-        problems.push(
-          `request failed: ${request.url()} (${request.failure()?.errorText ?? 'unknown'})`,
-        );
+        const reason = request.failure()?.errorText ?? 'unknown';
+        const line = `request failed: ${request.url()} (${reason})`;
+        if (/cancell?ed|ERR_ABORTED/i.test(reason)) {
+          cancelled.push({ line, document: startedIn.get(request) ?? documents });
+        } else {
+          problems.push(line);
+        }
       });
       page.on('request', (request) => {
+        // In-app navigation asks for no document; only a real page load does.
+        if (request.isNavigationRequest() && request.frame() === page.mainFrame()) documents += 1;
+        startedIn.set(request, documents);
         const url = new URL(request.url());
         if (url.protocol === 'data:' || url.protocol === 'blob:') return;
         if (url.origin === origin) requested.push(url.pathname);
@@ -98,6 +113,9 @@ export const test = base.extend<Fixtures>({
         requested: () => [...requested],
       });
 
+      for (const { line, document } of cancelled) {
+        if (document >= documents) problems.push(line);
+      }
       const unexpected = problems.filter(
         (problem) => !allowed.some((pattern) => pattern.test(problem)),
       );

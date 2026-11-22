@@ -81,7 +81,7 @@ export function planHub(input: {
 }): HubPlan {
   if (input.graphics === 'pictures') return { use3d: false, reason: 'setting', tier: null };
   if (!input.webgl.available) return { use3d: false, reason: 'no-webgl', tier: null };
-  // A CPU rasteriser can draw the scene, but not at a usable speed: measured on this scene, 7 to 21 frames a second
+  // A CPU rasteriser can draw the scene, but not at a usable speed: measured on this scene, 8 to 27 frames a second
   // with more than three cores busy (docs/QUALITY_REPORT.md). Left on automatic, such a device keeps the picture.
   // A grown-up can still ask for 3D by choosing a quality.
   if (input.webgl.software && input.graphics === 'auto') {

@@ -127,6 +127,7 @@ have been run and passed; the evidence is linked. `docs/CONTINUE_HERE.md` has th
 | The first screen's own files are still preloaded from `index.html`; whether a failed one recovers on reload in Safari is untested | 14          |
 | No privacy/legal review; no dependency licence audit                                                                              | 14          |
 | No image-comparison tests; no Firefox; no physical devices                                                                        | 15          |
+| In CI, a browser test that follows a 3D test has taken up to 44.5 of its 60 seconds (see `docs/TEST_RESULTS.md`)                  | 15          |
 | Not deployed; GitHub Actions are pinned to major versions, not commit SHAs                                                        | 16          |
 
 ## Log
@@ -134,8 +135,11 @@ have been run and passed; the evidence is linked. `docs/CONTINUE_HERE.md` has th
 - **2026-11-22** — Phase 02 implemented and verified. The hub became the map: layout arithmetic shared by 3D, picture
   and links; a modelling kit, one painted material and a water shader; seven island models; the picture rendered
   from them; Glim; an art standard, an asset manifest and a pipeline; two rated rounds of review. What the tests and
-  measurements found along the way is in `docs/TEST_RESULTS.md` and `docs/QUALITY_REPORT.md`. The largest thing
-  still unknown is the same as before: how it runs on a real device.
+  measurements found along the way is in `docs/TEST_RESULTS.md` and `docs/QUALITY_REPORT.md`. CI passed in Chromium
+  and in WebKit on every run, and the pull request was merged as `65a137b`. Reading the times of those green runs
+  showed that the browser tests of the 3D scene had less time than they sometimes need, which was put right. (A
+  trial of running them in order was taken out again; the CI machine varies too much from run to run for it to
+  have shown anything.) The largest thing still unknown is the same as before: how it runs on a real device.
 
 - **2026-11-22** — Phase 01 implemented and verified. Toolchain; engine and first content pack; storage; shell, hub
   (3D and illustrated), sample activity, grown-ups area; release tooling and service worker; browser tests on five

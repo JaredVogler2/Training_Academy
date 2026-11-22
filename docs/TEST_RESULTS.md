@@ -3,8 +3,9 @@
 Everything in this file was actually run. Where something was not run, it says so.
 
 - **Date:** 2026-11-22
-- **Code under test:** commit `e69eb06` on branch `claude/zealous-carson-qyiipa` (Phase 02; later commits change
-  documents only)
+- **Code under test:** commit `1102729`, merged to `main` as `65a137b` (Phase 02, pull request #2). The game itself
+  is as it was at `e69eb06`; the commits between added screenshots and documents, and gave the browser tests of the
+  3D scene more time. Later commits change documents, and one comment in a test file.
 - **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright 1.63.0
   with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
 - **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium and WebKit builds that Playwright 1.63.0 installs.
@@ -27,7 +28,7 @@ Result of the last local run: **passed.**
 | `npm test`             | **594 tests in 25 files, all passed**                                                    |
 | `npm run build`        | built; 48 files in `dist/`                                                               |
 | `npm run verify:dist`  | **156 checks, all passed** (sizes below)                                                 |
-| `npm run test:e2e`     | **177 browser tests: 173 passed, 4 skipped by design, 0 failed (Chromium, 3.8 minutes)** |
+| `npm run test:e2e`     | **177 browser tests: 173 passed, 4 skipped by design, 0 failed (Chromium, 3.9 minutes)** |
 
 The skipped tests are keyboard journeys, which run on the desktop project and are skipped on the touch one.
 
@@ -36,12 +37,58 @@ tiles and the hand-drawn island were rewritten for the map.
 
 ## Continuous integration
 
-Every push to a pull request runs three jobs (`.github/workflows/ci.yml`): lint, types, unit tests and build; the
-browser tests in Chromium on five screen shapes; and the browser tests in WebKit on two.
+Every push to a pull request, and to `main`, runs three jobs (`.github/workflows/ci.yml`): lint, types, unit tests
+and build; the browser tests in Chromium on five screen shapes; and the browser tests in WebKit on two. The machine
+they run on has four processor cores and no graphics card, and runs two tests at a time.
 
-**Phase 02** is pull request [#2](https://github.com/JaredVogler2/Training_Academy/pull/2). Its first run had not
-finished when this file was written; the result is recorded here by the next commit, and in the meantime the pull
-request's own checks are the place to look.
+**Phase 02** was pull request [#2](https://github.com/JaredVogler2/Training_Academy/pull/2), merged as `65a137b`.
+Every run passed all three jobs, with no failed test and no retry:
+
+| Run                                                                            | Commit               | Chromium                                     | WebKit                              | What it showed                                                                                                                                                                                              |
+| ------------------------------------------------------------------------------ | -------------------- | -------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [1](https://github.com/JaredVogler2/Training_Academy/actions/runs/45073413722) | `107acd6`            | 173 passed, 4 skipped by design, 7.8 minutes | 118 passed, 26 skipped, 3.9 minutes | Green, and one test close to its limit: "keeps moving gently" took 46.8 of its 60 seconds on the desktop screen.                                                                                            |
+| [2](https://github.com/JaredVogler2/Training_Academy/actions/runs/45075801660) | `8899c8c`            | the same, 10.9 minutes                       | the same, 4.1 minutes               | A trial: the hub's tests one after another (taken out again in run 3; see below for what it did and did not show), and three minutes for the tests of the 3D scene (kept). That test took about 77 seconds. |
+| [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45078542501) | `1102729`            | the same, 9.2 minutes                        | the same, 4.1 minutes               | The order as it was before, the three minutes kept. That test took 59.8 seconds: 0.2 inside the limit it had before.                                                                                        |
+| [4](https://github.com/JaredVogler2/Training_Academy/actions/runs/45079897889) | `65a137b`, on `main` | the same, 11.7 minutes                       | the same, 3.5 minutes               | The merge: the same code and order as run 3. That test took about 78 seconds, which the limit it had before would not have allowed.                                                                         |
+
+WebKit's 26 skipped tests are, on each of its two projects, the eight that need the 3D scene and the three that need
+the service worker (see _iOS Safari_ below), and on its touch project the four keyboard journeys. None of its
+tests has taken more than 12 seconds.
+
+### What the times in those runs said
+
+Nothing failed, so nothing asked to be looked at. The times were read anyway, and they said three things.
+
+**The tests of the 3D scene had less time than their own steps were allowed.** Each waits up to 45 or 60 seconds for
+the scene to arrive and then photographs it, inside a test that had 60 seconds in all. Drawn in software on the CI
+machine, "keeps moving gently" took 46.8 seconds in run 1, 59.8 in run 3 and about 78 in run 4, in the same order
+each time; in run 4 another of them took 58.2. Those tests have been allowed three minutes since run 2
+(`SOFTWARE_3D_TIMEOUT` in `e2e/hub.spec.ts`), and without that run 4, on `main`, would have had a test run out of
+time. No assertion was changed and no test was skipped.
+
+**On that machine, a test pays for the 3D test before it.** A test that ends with the scene still moving leaves the
+next test in the same browser late by five to thirty seconds, most after the highest tier. In run 1, "falls back to
+the picture if the 3D code cannot be downloaded" took 17.3 seconds on the desktop screen, straight after a 3D test,
+and 1.5 on the phone screen, where the test before it had ended with the picture. The lesson test that happens to
+follow the highest tier's scene took 35.3 of its 60 seconds in run 3 and 44.5 in run 4; it takes about 10 otherwise.
+This is read off the times, not traced; the likely cause is the one under _Seen only on the CI machine_ below, with
+far more work queued. It does not happen at all on the machine this was developed on.
+
+It has not failed a test, but 44.5 of 60 is closer than it should be. If that test ever does run out of time, CI
+runs it once more in a fresh browser, where there is nothing to wait for, so it would show as a retry and not as a
+failure. It has not been fixed: the tests that have a minute were left alone here, and it is listed in
+`docs/PROGRESS.md` → _Known gaps_. An untried idea: have each 3D test open one more page before it ends, so that it
+pays for its own clearing up out of its three minutes.
+
+**That machine's own speed varies more than anything else measured here.** Runs 3 and 4 are the same code in the
+same order, a quarter of an hour apart: 9.2 and 11.7 minutes. Run 1, in that order too, took 7.8.
+
+So run 2 settled nothing, and what was first concluded from it was wrong. It tried the hub's tests one after
+another, so that no two scenes were drawn at once. Locally that made the 3D tests quicker (the first of them took 13
+seconds instead of 23). In CI the run took 10.9 minutes, which looked like a loss beside the 7.8 before it, and the
+trial was taken out on that reading: the message of commit `1102729` says it made CI slower. Run 4 then took longer
+without it. One run each way cannot tell on a machine that varies this much. The order stays as it was because,
+with three minutes allowed, nothing needs it to change; whether the other order would be better is not known.
 
 ### Phase 01, for the record
 
@@ -147,26 +194,27 @@ changed.
 
 Everything in this table was fixed, except the two rows that say a browser's own remark is now allowed in tests.
 
-| Found by                               | Fault                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Unit test (model sizes)** — Phase 02 | **Sunflowers, a tree's crown and a flag reached outside the room their islands were given**, so pictures of them were cut off and a neighbour's tap area could have covered them. Room is now measured as drawn on screen, and every model is measured against it.                                                                                                                                                                                        |
-| **Unit test (layout)** — Phase 02      | A cloud placed over the lighthouse island on a tablet, a boat over a name on a sideways phone, the guide over an island's name on a phone: all placed by eye. They are now placed by the layout's arithmetic.                                                                                                                                                                                                                                             |
-| **Browser test under load** — Phase 02 | **When the 3D code could not be downloaded, React sometimes wrote the error to the console** (two runs in twelve). The hub fell back correctly, but a thrown error is the wrong tool for an ordinary event: the 3D code is now fetched by hand.                                                                                                                                                                                                           |
-| **Idle-cost measurement** — Phase 02   | The picture hub kept a quarter of a core busy: twenty stepped animations, each on its own clock. One shared beat brought it to 14%.                                                                                                                                                                                                                                                                                                                       |
-| Screenshot capture — Phase 02          | A picture still being decoded is left out of the frame a screenshot takes ("complete" is not "drawn"): captures and tests now wait for decoding.                                                                                                                                                                                                                                                                                                          |
-| Browser test — Phase 02                | The first Tab press reached the guide before any island; the test of calm motion was measuring an emblem that is no longer on the page (rewritten to measure everything that moves on the home screen).                                                                                                                                                                                                                                                   |
-| `verify:dist`                          | The bundler's grouping made the 3D code a static dependency of the first screen.                                                                                                                                                                                                                                                                                                                                                                          |
-| Offline browser test                   | Files fetched at install could never be found again: browsers send `Origin` with module requests and the server answered `Vary: Origin`. The worker's lookups now ignore `Vary`.                                                                                                                                                                                                                                                                          |
-| Console guard                          | An unknown `Permissions-Policy` feature; a three.js shadow mode that no longer exists; a deprecation notice triggered inside React Three Fiber (filtered by exact text, everything else still shown).                                                                                                                                                                                                                                                     |
-| Layout tests                           | World names cut off at 360 px; a hidden file input announced as a second button; question cards morphing into the next question; tile pictures overflowing on a sideways phone.                                                                                                                                                                                                                                                                           |
-| Unit test (counting pictures)          | Things overlapped or left their box for groups of four to ten.                                                                                                                                                                                                                                                                                                                                                                                            |
-| **WebKit in CI**                       | **A long button label ("Save a copy of …") made the grown-ups area wider than a phone.** Chromium's phone emulation hid it: it widens its layout viewport to hold the content, so `scrollWidth` equalled `innerWidth`. The label now wraps, and every layout test measures against the configured screen size and checks each control's edges (`screenFit` in `e2e/fixtures.ts`).                                                                         |
-| **WebKit in CI**                       | **After one failed download of a lazy part, "Load the page again" did not recover.** WebKit kept the failed preload and reused it. Lazy parts are now fetched by their own `import()` rather than a late `<link rel="modulepreload">`.                                                                                                                                                                                                                    |
-| WebKit in CI (tests, not the app)      | WebKit forgot a test's override set on the `indexedDB` object (now set on the prototype); Playwright's screenshot stylesheet is refused by the CSP and WebKit reports it (allowed, on WebKit only); a download cancelled by a test's own reload was counted as a failed request (the guard now tells the two apart).                                                                                                                                      |
-| **The slow Chromium CI runner**        | **The idle home screen, in its illustrated form, kept a whole CPU core busy** (seven SVG animations at 60 frames a second under a backdrop blur). It starved the rest of the run: the grown-ups gate took up to six seconds to open instead of two, and nine desktop tests timed out. The animations now move in steps and the blur is gone (100% of a core → 10%). Tests also hold the gate's button until the area appears instead of for a fixed time. |
-| Measuring the above                    | Software-rendered 3D costs more than three cores for 8 to 27 frames a second, so on automatic a software renderer now keeps the illustration.                                                                                                                                                                                                                                                                                                             |
-| Chromium in CI (tests, not the app)    | With a service worker in control, Chromium sometimes declines to reuse a file that `index.html` preloaded and fetches it from the worker again, with a console remark. Harmless; allowed in the offline tests only, with the reason beside it.                                                                                                                                                                                                            |
-| Screenshot review                      | See `docs/QUALITY_REPORT.md`.                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Found by                                   | Fault                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Unit test (model sizes)** — Phase 02     | **Sunflowers, a tree's crown and a flag reached outside the room their islands were given**, so pictures of them were cut off and a neighbour's tap area could have covered them. Room is now measured as drawn on screen, and every model is measured against it.                                                                                                                                                                                        |
+| **Unit test (layout)** — Phase 02          | A cloud placed over the lighthouse island on a tablet, a boat over a name on a sideways phone, the guide over an island's name on a phone: all placed by eye. They are now placed by the layout's arithmetic.                                                                                                                                                                                                                                             |
+| **Browser test under load** — Phase 02     | **When the 3D code could not be downloaded, React sometimes wrote the error to the console** (two runs in twelve). The hub fell back correctly, but a thrown error is the wrong tool for an ordinary event: the 3D code is now fetched by hand.                                                                                                                                                                                                           |
+| **Idle-cost measurement** — Phase 02       | The picture hub kept a quarter of a core busy: twenty stepped animations, each on its own clock. One shared beat brought it to 14%.                                                                                                                                                                                                                                                                                                                       |
+| Screenshot capture — Phase 02              | A picture still being decoded is left out of the frame a screenshot takes ("complete" is not "drawn"): captures and tests now wait for decoding.                                                                                                                                                                                                                                                                                                          |
+| **The times in a green CI run** — Phase 02 | **The browser tests of the 3D scene had less time than their own steps were allowed**, and on the CI machine one of them took 46.8 and then 59.8 of its 60 seconds. They now have three minutes. A trial of running the hub's tests in order was taken out again, and whether it helped cannot be told: the CI machine's own runs differ by more than the trial did (_Continuous integration_, above). Tests only; the game is unchanged.                 |
+| Browser test — Phase 02                    | The first Tab press reached the guide before any island; the test of calm motion was measuring an emblem that is no longer on the page (rewritten to measure everything that moves on the home screen).                                                                                                                                                                                                                                                   |
+| `verify:dist`                              | The bundler's grouping made the 3D code a static dependency of the first screen.                                                                                                                                                                                                                                                                                                                                                                          |
+| Offline browser test                       | Files fetched at install could never be found again: browsers send `Origin` with module requests and the server answered `Vary: Origin`. The worker's lookups now ignore `Vary`.                                                                                                                                                                                                                                                                          |
+| Console guard                              | An unknown `Permissions-Policy` feature; a three.js shadow mode that no longer exists; a deprecation notice triggered inside React Three Fiber (filtered by exact text, everything else still shown).                                                                                                                                                                                                                                                     |
+| Layout tests                               | World names cut off at 360 px; a hidden file input announced as a second button; question cards morphing into the next question; tile pictures overflowing on a sideways phone.                                                                                                                                                                                                                                                                           |
+| Unit test (counting pictures)              | Things overlapped or left their box for groups of four to ten.                                                                                                                                                                                                                                                                                                                                                                                            |
+| **WebKit in CI**                           | **A long button label ("Save a copy of …") made the grown-ups area wider than a phone.** Chromium's phone emulation hid it: it widens its layout viewport to hold the content, so `scrollWidth` equalled `innerWidth`. The label now wraps, and every layout test measures against the configured screen size and checks each control's edges (`screenFit` in `e2e/fixtures.ts`).                                                                         |
+| **WebKit in CI**                           | **After one failed download of a lazy part, "Load the page again" did not recover.** WebKit kept the failed preload and reused it. Lazy parts are now fetched by their own `import()` rather than a late `<link rel="modulepreload">`.                                                                                                                                                                                                                    |
+| WebKit in CI (tests, not the app)          | WebKit forgot a test's override set on the `indexedDB` object (now set on the prototype); Playwright's screenshot stylesheet is refused by the CSP and WebKit reports it (allowed, on WebKit only); a download cancelled by a test's own reload was counted as a failed request (the guard now tells the two apart).                                                                                                                                      |
+| **The slow Chromium CI runner**            | **The idle home screen, in its illustrated form, kept a whole CPU core busy** (seven SVG animations at 60 frames a second under a backdrop blur). It starved the rest of the run: the grown-ups gate took up to six seconds to open instead of two, and nine desktop tests timed out. The animations now move in steps and the blur is gone (100% of a core → 10%). Tests also hold the gate's button until the area appears instead of for a fixed time. |
+| Measuring the above                        | Software-rendered 3D costs more than three cores for 8 to 27 frames a second, so on automatic a software renderer now keeps the illustration.                                                                                                                                                                                                                                                                                                             |
+| Chromium in CI (tests, not the app)        | With a service worker in control, Chromium sometimes declines to reuse a file that `index.html` preloaded and fetches it from the worker again, with a console remark. Harmless; allowed in the offline tests only, with the reason beside it.                                                                                                                                                                                                            |
+| Screenshot review                          | See `docs/QUALITY_REPORT.md`.                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 ## iOS Safari: exactly what is and is not verified
 
@@ -181,10 +229,10 @@ Apple's graphics, audio, storage policy, touch handling, browser chrome or insta
 
 **Not verified on WebKit at all** (skipped there, and why):
 
-| Skipped                                                               | Why                                                                             |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| The 3D hub, what a software renderer is given, and picture against 3D | Headless WebKit on Linux has no usable WebGL. Only the picture is tested there. |
-| Offline and the service worker (3 per project)                        | Run in Chromium only.                                                           |
+| Skipped                                                                               | Why                                                                             |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| The 3D hub, what a software renderer is given, and picture against 3D (8 per project) | Headless WebKit on Linux has no usable WebGL. Only the picture is tested there. |
+| Offline and the service worker (3 per project)                                        | Run in Chromium only.                                                           |
 
 **Not verified on any Apple device or in any real Safari** — none of this has been tried:
 
@@ -210,6 +258,9 @@ page starts. A temporary probe recorded a browser trace of it in CI: Chromium de
 was developed on, even with the CPU throttled; and with the home screen no longer starving the runner it no longer
 delays anything a test waits for. It has not been checked on a device with a real GPU, where that wait should be
 milliseconds.
+
+After the 3D scene of Phase 02 the same kind of wait is far longer, five to thirty seconds, and it falls on the next
+test: see _What the times in those runs said_, above.
 
 ## Also not done
 

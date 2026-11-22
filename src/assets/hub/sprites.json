@@ -1,9 +1,9 @@
 {
   "about": "Written by scripts/render-sprites.mjs. Sizes and anchors are in pixels of the picture; `source` is a hash of the model sources the pictures were rendered from.",
   "pixelsPerUnit": 80,
-  "source": "8f2beff879a4f81984b89255ec116480f93f8ef722bff1e41c816e9d2caae362",
+  "source": "d2abf44a78b4a0aed9f9d32ec545f3dd1b5a15fac863bb6529bd1c25923ee6e6",
   "sources": [
-    "src/render/archipelago.ts",
+    "src/render/extents.ts",
     "src/render/sprites.ts",
     "src/render/hub3d/kit.ts",
     "src/render/hub3d/paint.ts",

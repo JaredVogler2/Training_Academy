@@ -1,0 +1,432 @@
+/*
+ * Glim, the guide (Guide.tsx). Every state has a POSE, set with plain transforms, and a MOTION around that pose,
+ * set with an animation. With motion reduced the animations are cut short (styles/base.css) and the poses remain,
+ * so each state still reads.
+ *
+ * What never stops — breathing, the glow, the scarf, the sparks while pointing — moves in steps on one shared beat
+ * of half a second. The movements are a few pixels, so the steps cannot be seen; but a browser drawing with its
+ * processor then has two frames a second to make instead of sixty, and the guide costs it a twentieth as much
+ * (docs/QUALITY_REPORT.md). What happens once — a hop, a wave, a nod — is smooth.
+ */
+.guide {
+  --size: 96px;
+
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: var(--size);
+  aspect-ratio: 148 / 164;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* The glow is its own layer, so that its pulsing never repaints the drawing in front of it. */
+.halo {
+  position: absolute;
+  inset: 4% 0 14%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgb(255 244 176 / 85%),
+    rgb(255 226 122 / 38%) 55%,
+    transparent
+  );
+  opacity: 0.75;
+  animation: glow 3s steps(6) infinite alternate;
+}
+
+.bobber {
+  position: absolute;
+  inset: 0;
+  display: block;
+  animation: bob 3s steps(6) infinite alternate;
+}
+
+.figure {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.lean,
+.body,
+.face,
+.armLeft,
+.armRight,
+.tail,
+.blink,
+.beam {
+  transform-box: view-box;
+}
+
+.lean {
+  transform-origin: 60px 116px;
+  transition: transform var(--gentle) var(--ease-out);
+}
+
+.face {
+  transform-origin: 60px 66px;
+  transition: transform var(--gentle) var(--ease-out);
+}
+
+.armLeft {
+  transform: rotate(16deg);
+  transform-origin: 34px 80px;
+  transition: transform var(--gentle) var(--ease-spring);
+}
+
+.armRight {
+  transform: rotate(-16deg);
+  transform-origin: 86px 80px;
+  transition: transform var(--gentle) var(--ease-spring);
+}
+
+.tail {
+  transform-origin: 84px 92px;
+  animation: flutter 2s steps(4) infinite alternate;
+}
+
+.blink {
+  transform-origin: 60px 62px;
+  animation: blink 5s step-end infinite;
+}
+
+/* Faces: one set of eyes and one mouth shows at a time. */
+.eyesHappy,
+.brows,
+.mouthOpen,
+.mouthSmall,
+.mouthSoft,
+.thoughts,
+.sparkles,
+.beam,
+.boat {
+  display: none;
+}
+
+.sparkles path,
+.beam path {
+  fill: #ffd35c;
+  stroke: #fff;
+  stroke-width: 1.2;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* --- Afloat: on the hub the guide sits in a rowing boat ------------------------------------------------------- */
+.guide[data-afloat] .boat {
+  display: inline;
+}
+
+.guide[data-afloat] .feet {
+  display: none;
+}
+
+.guide[data-afloat] .bobber {
+  animation-name: float;
+}
+
+/* --- Point: an arm out towards the aim, sparks travelling that way ------------------------------------------- */
+.guide[data-state='point'] .beam {
+  display: inline;
+  transform: rotate(var(--beam));
+  transform-origin: 60px 66px;
+}
+
+.guide[data-state='point'] .beam path {
+  animation: travel 1.5s steps(3) infinite;
+}
+
+.guide[data-state='point'] .beam g:nth-child(2) path {
+  animation-delay: 0.5s;
+}
+
+.guide[data-state='point'] .beam g:nth-child(3) path {
+  animation-delay: 1s;
+}
+
+.guide[data-state='point'][data-side='right'] .armRight,
+.guide[data-state='point'][data-side='left'] .armLeft {
+  /* The arm reaches as well as turns. */
+  transform: rotate(var(--aim)) scaleY(1.28);
+}
+
+.guide[data-state='point'][data-side='right'] .lean {
+  transform: rotate(4deg);
+}
+
+.guide[data-state='point'][data-side='left'] .lean {
+  transform: rotate(-4deg);
+}
+
+/* --- Think: eyes up, a hand to the chin, three thought bubbles ----------------------------------------------- */
+.guide[data-state='think'] .blink {
+  transform: translate(2.5px, -3px);
+  animation: none;
+}
+
+.guide[data-state='think'] .mouthSmile {
+  display: none;
+}
+
+.guide[data-state='think'] .mouthSmall {
+  display: inline;
+}
+
+.guide[data-state='think'] .armRight {
+  /* Across the body, hand to the chin. */
+  transform: rotate(98deg);
+}
+
+.guide[data-state='think'] .lean {
+  transform: rotate(3deg);
+}
+
+.guide[data-state='think'] .thoughts {
+  display: inline;
+}
+
+.guide[data-state='think'] .thoughts circle {
+  animation: ponder 2s steps(4) infinite;
+}
+
+.guide[data-state='think'] .thoughts circle:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.guide[data-state='think'] .thoughts circle:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.guide[data-state='think'] .halo {
+  opacity: 0.45;
+  animation: none;
+}
+
+/* --- Celebrate: a hop, both arms up, happy eyes, sparkles ----------------------------------------------------- */
+.guide[data-state='celebrate'] .eyesOpen,
+.guide[data-state='celebrate'] .mouthSmile {
+  display: none;
+}
+
+.guide[data-state='celebrate'] .eyesHappy,
+.guide[data-state='celebrate'] .mouthOpen,
+.guide[data-state='celebrate'] .sparkles {
+  display: inline;
+}
+
+.guide[data-state='celebrate'] .armLeft {
+  transform: rotate(146deg) scaleY(1.15);
+}
+
+.guide[data-state='celebrate'] .armRight {
+  transform: rotate(-146deg) scaleY(1.15);
+}
+
+.guide[data-state='celebrate'] .bobber {
+  animation: hop 0.62s var(--ease-out) 2;
+}
+
+.guide[data-state='celebrate'] .sparkles path {
+  animation: sparkle 0.9s ease-out 2 both;
+}
+
+.guide[data-state='celebrate'] .sparkles g:nth-child(2) path {
+  animation-delay: 0.12s;
+}
+
+.guide[data-state='celebrate'] .sparkles g:nth-child(3) path {
+  animation-delay: 0.2s;
+}
+
+.guide[data-state='celebrate'] .sparkles g:nth-child(4) path {
+  animation-delay: 0.3s;
+}
+
+.guide[data-state='celebrate'] .sparkles g:nth-child(5) path {
+  animation-delay: 0.06s;
+}
+
+.guide[data-state='celebrate'] .halo {
+  opacity: 1;
+}
+
+/* --- Gentle retry: a tilt of the head and a small nod. Kind, not sad. ---------------------------------------- */
+.guide[data-state='retry'] .mouthSmile {
+  display: none;
+}
+
+.guide[data-state='retry'] .mouthSoft,
+.guide[data-state='retry'] .brows {
+  display: inline;
+}
+
+.guide[data-state='retry'] .lean {
+  transform: rotate(-7deg);
+  animation: nod 1.1s ease-in-out 1;
+}
+
+.guide[data-state='retry'] .armLeft {
+  transform: rotate(58deg);
+}
+
+.guide[data-state='retry'] .armRight {
+  transform: rotate(-58deg);
+}
+
+/* --- Wave: hello --------------------------------------------------------------------------------------------- */
+.guide[data-state='wave'] .eyesOpen {
+  display: none;
+}
+
+.guide[data-state='wave'] .eyesHappy {
+  display: inline;
+}
+
+.guide[data-state='wave'] .armRight {
+  transform: rotate(-150deg) scaleY(1.15);
+  animation: wave 0.5s ease-in-out 3 alternate;
+}
+
+@keyframes bob {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-3.5%);
+  }
+}
+
+@keyframes float {
+  from {
+    transform: translateY(1%) rotate(-2deg);
+  }
+
+  to {
+    transform: translateY(-2%) rotate(2deg);
+  }
+}
+
+@keyframes glow {
+  from {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 0.85;
+    transform: scale(1.03);
+  }
+}
+
+@keyframes flutter {
+  from {
+    transform: rotate(-7deg);
+  }
+
+  to {
+    transform: rotate(7deg);
+  }
+}
+
+/* Open, then shut for a seventh of a second, once every five. (`step-end`: each keyframe holds until the next.) */
+@keyframes blink {
+  0% {
+    transform: scaleY(1);
+  }
+
+  96% {
+    transform: scaleY(0.1);
+  }
+
+  99%,
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes hop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+
+  12% {
+    transform: translateY(2%) scale(1.06, 0.94);
+  }
+
+  50% {
+    transform: translateY(-16%) scale(0.97, 1.04);
+  }
+}
+
+@keyframes sparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) rotate(-30deg);
+  }
+
+  40% {
+    opacity: 1;
+    transform: scale(1.15) rotate(10deg);
+  }
+
+  100% {
+    opacity: 0.85;
+    transform: scale(0.9) rotate(20deg);
+  }
+}
+
+@keyframes ponder {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  45% {
+    opacity: 1;
+  }
+}
+
+@keyframes nod {
+  0%,
+  100% {
+    transform: rotate(-7deg);
+  }
+
+  35% {
+    transform: rotate(-2deg);
+  }
+
+  70% {
+    transform: rotate(-9deg);
+  }
+}
+
+@keyframes wave {
+  from {
+    transform: rotate(-128deg) scaleY(1.15);
+  }
+
+  to {
+    transform: rotate(-166deg) scaleY(1.15);
+  }
+}
+
+@keyframes travel {
+  0% {
+    opacity: 0.25;
+    transform: translateX(-8px) scale(0.6);
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.25;
+    transform: translateX(10px) scale(1.15);
+  }
+}

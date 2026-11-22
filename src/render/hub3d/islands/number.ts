@@ -4,6 +4,7 @@ import {
   block,
   boulder,
   bush,
+  dress,
   flower,
   gable,
   landmass,
@@ -211,6 +212,19 @@ export function buildNumberGarden(detail: Detail): IslandModel {
       flower(s, ground(x, z), tint, 1.25);
     }
   }
+
+  dress(s, land, {
+    tufts: Math.round(12 * detail),
+    pebbles: Math.round(7 * detail),
+    keepClear: [
+      { x: -0.5, z: -0.45, radius: 0.95 },
+      { x: 1.0, z: -0.5, radius: 0.66 },
+      { x: 0, z: 1.02, radius: 1.25 },
+      { x: -1.12, z: 0.42, radius: 0.42 },
+      { x: 0.25, z: 0.05, radius: 0.34 },
+      { x: 1.42, z: 0.2, radius: 0.3 },
+    ],
+  });
 
   return finish(s, land);
 }

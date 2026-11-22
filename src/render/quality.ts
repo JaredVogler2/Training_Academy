@@ -56,7 +56,7 @@ export function effectivePixelRatio(devicePixelRatio: number, tier: Tier): numbe
 }
 
 /** Why the hub is not (or not yet) in 3D. Shown to grown-ups under Diagnostics. */
-export type IllustratedReason =
+export type PictureReason =
   | 'loading'
   | 'setting'
   | 'no-webgl'
@@ -68,7 +68,7 @@ export type IllustratedReason =
 
 export interface HubPlan {
   use3d: boolean;
-  reason: IllustratedReason | null;
+  reason: PictureReason | null;
   tier: Tier | null;
 }
 

@@ -1,4 +1,5 @@
-import { WORLD_IDS, type WorldId } from '@/engine';
+import type { WorldId } from '@/engine';
+import { EXTENTS, PITCH, PLACES, type PlaceId } from './extents';
 
 /**
  * Where everything in the harbour is, for any shape of screen — in plain arithmetic, with no graphics library.
@@ -15,35 +16,10 @@ import { WORLD_IDS, type WorldId } from '@/engine';
  * screen, so the islands are as large as the screen allows and never hide one another.
  */
 
-/** How far below the horizontal the camera looks. */
-export const PITCH = (36 * Math.PI) / 180;
+export { EXTENTS, PITCH, PLACES, type Extent, type PlaceId } from './extents';
+
 const RISE = Math.cos(PITCH);
 const DEPTH = Math.sin(PITCH);
-
-export type PlaceId = 'academy' | WorldId;
-export const PLACES: readonly PlaceId[] = ['academy', ...WORLD_IDS];
-
-export interface Extent {
-  /** Reach of the shore from the middle, in world units. */
-  radius: number;
-  /** How tall the place may be drawn: see EXTENTS. */
-  height: number;
-}
-
-/**
- * Room kept for each place. `height` is how high the place may be drawn above its middle at water level, given as
- * the height of something standing exactly there: a landmark further back is drawn higher for the same height, and
- * must be that much shorter. The models (hub3d/islands) must stay inside these: a test measures that they do.
- */
-export const EXTENTS: Readonly<Record<PlaceId, Extent>> = {
-  academy: { radius: 2.05, height: 4.55 },
-  'reading-cove': { radius: 2.3, height: 3.4 },
-  'number-garden': { radius: 2.3, height: 3.4 },
-  'robot-ridge': { radius: 2.3, height: 3.4 },
-  'memory-forest': { radius: 2.3, height: 3.4 },
-  'inventor-island': { radius: 2.3, height: 3.4 },
-  'explorer-harbor': { radius: 2.3, height: 3.4 },
-};
 
 export interface Spot {
   x: number;
@@ -84,7 +60,7 @@ const BODY = WORLD.radius * DEPTH + WORLD.height * RISE;
 function tall(): Omit<Layout, 'arrangement'> {
   const column = 2.95;
   const step = 4.7;
-  const firstStep = 5.75;
+  const firstStep = 5.3;
   const order: readonly WorldId[] = [
     'reading-cove',
     'number-garden',
@@ -105,12 +81,13 @@ function tall(): Omit<Layout, 'arrangement'> {
   return {
     spots: spots as Layout['spots'],
     extras: {
-      guide: { x: 3.0, z: 0.75 },
+      // Beside the first island and level with its name, under the second island's.
+      guide: { x: 3.0, z: 3.05 },
       boats: [{ x: 3.75, z: far - 0.4 }],
       rocks: [{ x: -4.3, z: far + 1.2 }],
       clouds: [
-        { x: -3.7, z: far - 3.6 },
-        { x: 3.9, z: far - 4.4 },
+        { x: -3.8, z: far - 3.6 },
+        { x: 4.0, z: far - 4.4 },
       ],
     },
   };
@@ -133,15 +110,12 @@ function upright(aspect: number): Omit<Layout, 'arrangement'> {
     },
     extras: {
       guide: { x: 0, z: rows - 0.4 },
-      boats: [
-        { x: 0.3, z: -rows + 0.6 },
-        { x: -0.4, z: rows * 0.52 },
+      boats: [{ x: 0.9, z: -rows + 0.6 }],
+      rocks: [
+        { x: -1.2, z: -7.0 },
+        { x: 0.5, z: 3.57 },
       ],
-      rocks: [{ x: -0.9, z: -rows * 0.62 }],
-      clouds: [
-        { x: -0.2, z: -rows - 3.4 },
-        { x: 8.3, z: -rows * 0.5 - 1.0 },
-      ],
+      clouds: [{ x: -0.2, z: -rows - 3.4 }],
     },
   };
 }
@@ -163,7 +137,7 @@ function ring(): Omit<Layout, 'arrangement'> {
       boats: [
         { x: -4.6, z: 0.9 },
         { x: 0.2, z: -7.4 },
-        { x: 8.6, z: 5.6 },
+        { x: 9.6, z: 6.6 },
       ],
       rocks: [
         { x: 4.5, z: 1.0 },
@@ -194,21 +168,20 @@ function wide(): Omit<Layout, 'arrangement'> {
       'number-garden': { x: 4.5, z: front },
     },
     extras: {
-      guide: { x: 0, z: front + 0.2 },
+      guide: { x: 0, z: front + 1.08 },
       boats: [
-        { x: -4.7, z: 0.0 },
-        { x: 9.6, z: front + 0.1 },
-        { x: 0.3, z: back - 0.7 },
+        { x: 9.6, z: 6.65 },
+        { x: 0.3, z: -7.5 },
       ],
       rocks: [
-        { x: -9.6, z: front - 0.1 },
-        { x: -9.9, z: back - 0.3 },
-        { x: 9.9, z: back - 0.5 },
+        { x: -9.6, z: 5.95 },
+        { x: -9.9, z: -6.1 },
+        { x: 9.9, z: -6.2 },
       ],
       clouds: [
         { x: -9.6, z: back - 3.1 },
         { x: 9.9, z: back - 2.5 },
-        { x: 0.2, z: back - 4.7 },
+        { x: -0.6, z: -10.5 },
       ],
     },
   };
@@ -238,6 +211,8 @@ export interface Frame {
   /** The point on the water that lands in the middle of the stage: where the 3D camera looks. */
   target: Spot;
   stage: { width: number; height: number };
+  /** The part of the stage nothing else covers, which everything was fitted into. */
+  free: Box;
 }
 
 /**
@@ -245,7 +220,23 @@ export interface Frame {
  * sideways the names still fit under islands a hundred pixels wide.
  */
 export function labelSize(scale: number): number {
-  return clamp(0.34 * scale + 4.5, 12, 17);
+  return clamp(0.3 * scale + 4.5, 12, 17);
+}
+
+/** Below this many pixels to the unit there is no room for the little state badge beside a name. */
+export const COMPACT_LABELS_BELOW = 24;
+
+/**
+ * How wide a place's name may be: it may overhang its island a little on each side, but never the edge of the
+ * screen.
+ */
+export function labelWidth(frame: Frame, place: PlaceId): number {
+  const { box } = hotspotFor(frame, place);
+  const toEdge = Math.min(
+    box.left - frame.free.left,
+    frame.free.left + frame.free.width - (box.left + box.width),
+  );
+  return box.width + 2 * clamp(toEdge - 1, 0, box.width * 0.16);
 }
 
 /** Height in CSS pixels kept under each island for its name, at a given number of pixels to the world unit. */
@@ -305,6 +296,7 @@ export function frameFor(stage: { width: number; height: number }, free: Box): F
     origin,
     target: { x: acrossAtCentre, z: -upAtCentre / DEPTH },
     stage: { width: stage.width, height: stage.height },
+    free: { ...free },
   };
 }
 
@@ -363,26 +355,6 @@ export function drawnBoxes(frame: Frame, place: PlaceId): [island: Box, landmark
   ];
 }
 
-/** The square patch of water, in world units, that the sun's shadow map has to cover. */
-export function shadowBounds(layout: Layout): { centre: Spot; reach: number } {
-  let left = Infinity;
-  let right = -Infinity;
-  let far = Infinity;
-  let near = -Infinity;
-  for (const place of PLACES) {
-    const spot = layout.spots[place];
-    const radius = EXTENTS[place].radius + 1.2;
-    left = Math.min(left, spot.x - radius);
-    right = Math.max(right, spot.x + radius);
-    far = Math.min(far, spot.z - radius);
-    near = Math.max(near, spot.z + radius);
-  }
-  return {
-    centre: { x: (left + right) / 2, z: (far + near) / 2 },
-    reach: Math.max(right - left, near - far) / 2 + 1,
-  };
-}
-
 /** Where a place's name goes: the strip under its island. */
 export function labelBox(frame: Frame, place: PlaceId): Box {
   const spot = frame.layout.spots[place];
@@ -398,7 +370,7 @@ export function labelBox(frame: Frame, place: PlaceId): Box {
 }
 
 /** The guide is drawn this many world units wide, and never smaller than `GUIDE_MIN` CSS pixels. */
-export const GUIDE_SPAN = 2.0;
+export const GUIDE_SPAN = 2.4;
 export const GUIDE_MIN = 64;
 
 /** The square the guide and their boat are drawn in. */

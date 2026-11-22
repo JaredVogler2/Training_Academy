@@ -1,6 +1,6 @@
 import type { BufferGeometry } from 'three';
 import { sailBoat } from './islands/parts';
-import { Sculpture, ball, boulder, bush, type Tint } from './kit';
+import { Sculpture, ball, boulder, bush, cone, outlineOf, slab, type Tint } from './kit';
 
 /**
  * The shapes of what floats and drifts between the islands: sailing boats in three liveries, rocks, clouds.
@@ -55,5 +55,36 @@ export function rocksShape(rocks: readonly { x: number; z: number }[]): BufferGe
     boulder(s, [rock.x - 0.26, -0.05, rock.z + 0.2], 0.6, ['#8791a9', '#c3c9d8'], index + 2.2);
     bush(s, [rock.x - 0.02, 0.2, rock.z - 0.02], 0.62);
   }
+  return s.build();
+}
+
+/** A gull's body, beak towards +x. Its wings are separate so they can beat. */
+export function gullBody(): BufferGeometry {
+  const s = new Sculpture();
+  s.add(ball(0.075, 1, 8), { tint: ['#dfe6f2', '#ffffff'], glow: 0.25 }, { size: [2.3, 0.9, 1] });
+  s.add(ball(0.06, 1, 8), { tint: '#ffffff', glow: 0.25 }, { at: [0.16, 0.03, 0] });
+  s.add(cone(0.022, 0.07, 5), '#f0a63a', { at: [0.2, 0.03, 0], turn: [0, 0, -Math.PI / 2] });
+  s.add(ball(0.04, 1, 6), ['#8792ac', '#b9c0d1'], { at: [-0.19, 0.0, 0], size: [1.6, 0.5, 1] });
+  return s.build();
+}
+
+/** One wing, hinged along the body at its own origin and reaching out to +z (`side` 1) or −z (`side` −1). */
+export function gullWing(side: 1 | -1): BufferGeometry {
+  const s = new Sculpture();
+  s.add(
+    slab(
+      outlineOf([
+        [0.09, 0],
+        [-0.07, 0],
+        [-0.12, 0.3],
+        [-0.06, 0.46],
+        [0.02, 0.3],
+      ]),
+      0.014,
+      0,
+    ),
+    { tint: ['#c9d2e3', '#ffffff'], glow: 0.25 },
+    { turn: [(side * Math.PI) / 2, 0, 0] },
+  );
   return s.build();
 }

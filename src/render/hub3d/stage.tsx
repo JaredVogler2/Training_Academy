@@ -7,7 +7,7 @@ import type {
   Object3D,
   OrthographicCamera,
 } from 'three';
-import { PITCH } from '../archipelago';
+import { PITCH } from '../extents';
 import type { IslandModel } from './islands';
 
 /**

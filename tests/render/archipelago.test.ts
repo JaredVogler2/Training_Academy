@@ -4,13 +4,17 @@ import {
   EXTENTS,
   MAX_SCALE,
   PLACES,
+  aloft,
   arrange,
   drawnBoxes,
   frameFor,
+  guideBox,
+  labelBox,
   hotspotFor,
   labelRoom,
+  labelSize,
   project,
-  shadowBounds,
+  visibleDepth,
   type Box,
 } from '@/render/archipelago';
 
@@ -117,6 +121,74 @@ describe.each(SCREENS)('fitting %s', (_name, width, height, bar) => {
     expect(Math.min(across / free.width, down / free.height)).toBeGreaterThan(0.55);
   });
 
+  it('moors the guide in open water, at a size a child can tap', () => {
+    const guide = guideBox(frame);
+    expect(guide.width).toBeGreaterThanOrEqual(64);
+    expect(guide.height).toBeGreaterThanOrEqual(64);
+    expect(guide.left).toBeGreaterThanOrEqual(free.left - 0.5);
+    expect(guide.left + guide.width).toBeLessThanOrEqual(free.left + free.width + 0.5);
+    expect(guide.top).toBeGreaterThanOrEqual(free.top - 0.5);
+    expect(guide.top + guide.height).toBeLessThanOrEqual(free.top + free.height + 0.5);
+    for (const world of worlds) {
+      expect(overlap(world.box, guide), `the guide and ${world.place}`).toBe(0);
+    }
+    for (const box of drawnBoxes(frame, 'academy')) {
+      expect(overlap(box, guide), 'the guide and the lighthouse').toBe(0);
+    }
+  });
+
+  it('floats boats and rocks clear of every island, every name and the guide', () => {
+    const { boats, rocks } = frame.layout.extras;
+    // What one of them covers on screen: a little more across than up.
+    const around = (spot: { x: number; z: number }, reach: number): Box => {
+      const at = project(frame, spot.x, 0, spot.z);
+      return {
+        left: at.x - reach * frame.scale,
+        top: at.y - reach * 0.9 * frame.scale,
+        width: reach * 2 * frame.scale,
+        height: reach * 1.3 * frame.scale,
+      };
+    };
+    const floating = [
+      // A boat wanders: allow for the whole of its course.
+      ...boats.map((boat) => ({ name: 'a boat', box: around(boat, 1.25) })),
+      ...rocks.map((rock) => ({ name: 'a rock', box: around(rock, 0.75) })),
+    ];
+    const guide = guideBox(frame);
+    for (const { name, box } of floating) {
+      expect(overlap(box, guide), `${name} and the guide`).toBe(0);
+      for (const place of PLACES) {
+        for (const drawn of drawnBoxes(frame, place)) {
+          expect(overlap(box, drawn), `${name} and ${place}`).toBe(0);
+        }
+        if (place !== 'academy') {
+          expect(overlap(box, labelBox(frame, place)), `${name} and the name of ${place}`).toBe(0);
+        }
+      }
+    }
+  });
+
+  it('keeps clouds off the islands and their names', () => {
+    for (const cloud of frame.layout.extras.clouds) {
+      const at = project(frame, cloud.x, 0, cloud.z);
+      // A cloud drifts a little either way.
+      const box: Box = {
+        left: at.x - 2 * frame.scale,
+        top: at.y - 0.8 * frame.scale,
+        width: 4 * frame.scale,
+        height: 1.5 * frame.scale,
+      };
+      for (const place of PLACES) {
+        for (const drawn of drawnBoxes(frame, place)) {
+          expect(overlap(box, drawn), `a cloud and ${place}`).toBe(0);
+        }
+        if (place !== 'academy') {
+          expect(overlap(box, labelBox(frame, place)), `a cloud and the name of ${place}`).toBe(0);
+        }
+      }
+    }
+  });
+
   it('agrees with itself: the camera target lands in the middle of the stage', () => {
     const centre = project(frame, frame.target.x, 0, frame.target.z);
     expect(centre.x).toBeCloseTo(width / 2, 6);
@@ -147,16 +219,42 @@ describe('the tap areas', () => {
   });
 });
 
-describe('the patch the shadows must cover', () => {
-  it('holds every island with room to spare', () => {
-    for (const aspect of [0.5, 0.8, 1.4, 2.2]) {
-      const layout = arrange(aspect);
-      const { centre, reach } = shadowBounds(layout);
-      for (const place of PLACES) {
-        const spot = layout.spots[place];
-        expect(Math.abs(spot.x - centre.x) + EXTENTS[place].radius).toBeLessThan(reach);
-        expect(Math.abs(spot.z - centre.z) + EXTENTS[place].radius).toBeLessThan(reach);
-      }
+describe('names under the islands', () => {
+  it('are set in type sized from the islands, between 12 and 17 pixels', () => {
+    expect(labelSize(10)).toBe(12);
+    expect(labelSize(30)).toBeCloseTo(13.5, 1);
+    expect(labelSize(92)).toBe(17);
+    expect(labelRoom(20)).toBeLessThan(labelRoom(60));
+  });
+
+  it('sit directly under their island, as wide as the island', () => {
+    const frame = frameFor({ width: 1366, height: 768 }, freeOf(1366, 768, 64));
+    for (const world of WORLD_IDS) {
+      const spot = hotspotFor(frame, world);
+      const name = labelBox(frame, world);
+      expect(name.left).toBeCloseTo(spot.box.left, 6);
+      expect(name.width).toBeCloseTo(spot.box.width, 6);
+      expect(name.top + name.height).toBeCloseTo(spot.box.top + spot.box.height, 6);
     }
+  });
+});
+
+describe('things in the air', () => {
+  it('are seen exactly above the point on the water they are said to be over', () => {
+    const frame = frameFor({ width: 1024, height: 768 }, freeOf(1024, 768, 64));
+    const over = { x: 3, z: -4 };
+    const up = aloft(over, 5);
+    const seen = project(frame, up.x, up.y, up.z);
+    const below = project(frame, over.x, 0, over.z);
+    expect(seen.x).toBeCloseTo(below.x, 6);
+    expect(seen.y).toBeCloseTo(below.y, 6);
+  });
+
+  it('know the far and near edges of what is on screen', () => {
+    const frame = frameFor({ width: 390, height: 844 }, freeOf(390, 844, 64));
+    const { far, near } = visibleDepth(frame);
+    expect(project(frame, 0, 0, far).y).toBeCloseTo(0, 6);
+    expect(project(frame, 0, 0, near).y).toBeCloseTo(844, 6);
+    expect(far).toBeLessThan(near);
   });
 });

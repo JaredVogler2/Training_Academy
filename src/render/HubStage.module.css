@@ -4,6 +4,21 @@
   overflow: hidden;
 }
 
+/*
+ * The corners of the sea are a little deeper than its middle, and the far edge a little hazier: it gathers the eye
+ * towards the islands and seats the top bar. One layer over both the 3D scene and its picture, costing nothing.
+ */
+.stage::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(rgb(223 244 242 / 34%), transparent 16%),
+    radial-gradient(125% 95% at 50% 46%, transparent 58%, rgb(14 62 104 / 20%) 100%);
+  content: '';
+  pointer-events: none;
+}
+
 .picture {
   position: absolute;
   inset: 0;

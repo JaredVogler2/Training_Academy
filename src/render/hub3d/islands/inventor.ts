@@ -6,6 +6,7 @@ import {
   box,
   bush,
   cone,
+  dress,
   flower,
   gable,
   landmass,
@@ -256,6 +257,19 @@ export function buildInventorIsland(detail: Detail): IslandModel {
       flower(s, ground(x, z), tint, 1.2);
     }
   }
+
+  dress(s, land, {
+    tufts: Math.round(11 * detail),
+    pebbles: Math.round(8 * detail),
+    keepClear: [
+      { x: -0.58, z: -0.34, radius: 0.74 },
+      { x: 0.85, z: -0.22, radius: 0.74 },
+      { x: 1.12, z: 0.78, radius: 0.4 },
+      { x: -0.25, z: 0.86, radius: 0.56 },
+      { x: 0.25, z: 0.42, radius: 0.28 },
+      { x: 0.55, z: 0.55, radius: 0.4 },
+    ],
+  });
 
   return finish(s, land, movers);
 }

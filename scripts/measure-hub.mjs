@@ -30,7 +30,8 @@ const SCREENS = [
     touch: true,
   },
 ];
-const TIERS = ['low', 'medium', 'high'];
+// `npm run measure:hub -- low` measures one tier only.
+const TIERS = process.argv[2] ? process.argv[2].split(',') : ['low', 'medium', 'high'];
 
 /** Hold the gate's button down until the grown-ups area opens (a busy machine can take longer than the two seconds). */
 async function holdGateOpen(page) {
@@ -81,7 +82,7 @@ try {
       await page.goto(`${BASE}/?gfx=${tier}`);
       await page.locator('[data-hub-mode="3d"]').waitFor({ timeout: 120_000 });
       // Long enough for at least one full sampling window (90 frames) even at a few frames per second.
-      await page.waitForTimeout(25_000);
+      await page.waitForTimeout(40_000);
 
       // The diagnostics live in the page's memory; the grown-ups area shows them.
       await page.getByRole('link', { name: 'Grown-ups' }).click();
@@ -109,16 +110,18 @@ try {
 
   console.log(`Renderer: ${renderer}\n`);
   console.log(
-    '| Screen | Tier | Draw calls | Triangles | Pixel ratio | Frames/s (software) | 95% of frames under |',
+    '| Screen | Tier | Draw calls | Triangles | Geometries | Textures | Shader programs | Pixel ratio | Frames/s (software) | 95% of frames under |',
   );
-  console.log('| --- | --- | --- | --- | --- | --- | --- |');
+  console.log('| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |');
   for (const row of rows) {
     const scene = /(\d+) draw calls, (\d+) triangles/.exec(row.scene);
     const frames = /(\d+) per second, 95% under ([\d.]+) ms, pixel ratio ([\d.?]+)/.exec(
       row.frames,
     );
+    const held = /holding (\d+) geometries, (\d+) textures, (\d+) shader programs/.exec(row.scene);
     console.log(
       `| ${row.screen} | ${row.tier} | ${scene?.[1] ?? '—'} | ${scene ? Number(scene[2]).toLocaleString('en') : '—'} | ` +
+        `${held?.[1] ?? '—'} | ${held?.[2] ?? '—'} | ${held?.[3] ?? '—'} | ` +
         `${frames?.[3] ?? '—'} | ${frames?.[1] ?? 'not measured'} | ${frames ? `${frames[2]} ms` : '—'} |`,
     );
   }

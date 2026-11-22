@@ -1,4 +1,4 @@
-import { EXTENTS, PITCH, PLACES, type PlaceId } from './archipelago';
+import { EXTENTS, PITCH, PLACES, type PlaceId } from './extents';
 
 /**
  * The pictures the hub falls back to are rendered from the 3D models, one per island and one per floating thing

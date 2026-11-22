@@ -15,7 +15,7 @@ import {
   Vector2,
   Vector3,
 } from 'three';
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 /**
  * A small modelling kit. Every island is "sculpted" from it in code: shapes are placed, painted with a colour or a
@@ -59,6 +59,26 @@ const scratch = {
   top: new Color(),
 };
 
+/**
+ * How finely round things are cut. Normally 1; the lowest quality tier builds its islands with fewer facets, which
+ * at the size the islands are drawn cannot be seen and nearly halves the triangles a weak device has to draw.
+ */
+let facets = 1;
+
+/** Build something with round shapes cut `value` times as finely as usual (0.5 = half as many sides). */
+export function withFacets<T>(value: number, build: () => T): T {
+  const before = facets;
+  facets = value;
+  try {
+    return build();
+  } finally {
+    facets = before;
+  }
+}
+
+/** A number of sides, scaled by the current fineness and never below `least`. */
+const cut = (sides: number, least: number): number => Math.max(least, Math.round(sides * facets));
+
 const smooth = (edge0: number, edge1: number, value: number): number => {
   const t = Math.min(1, Math.max(0, (value - edge0) / (edge1 - edge0)));
   return t * t * (3 - 2 * t);
@@ -87,12 +107,15 @@ export class Sculpture {
       typeof paint === 'string' || Array.isArray(paint)
         ? { tint: paint as Tint }
         : (paint as Stroke);
-    const geometry = shape.index ? shape.toNonIndexed() : shape;
-    if (geometry !== shape) shape.dispose();
-    for (const name of Object.keys(geometry.attributes)) {
-      if (name !== 'position' && name !== 'normal') geometry.deleteAttribute(name);
+    // Only position and normal are kept; then every piece is indexed, so that corners shared by several
+    // triangles are stored once. (Extruded shapes arrive with every triangle's corners spelt out; welding the
+    // identical ones leaves their hard edges alone, because those corners differ in their normals.)
+    for (const name of Object.keys(shape.attributes)) {
+      if (name !== 'position' && name !== 'normal') shape.deleteAttribute(name);
     }
-    if (!geometry.hasAttribute('normal')) geometry.computeVertexNormals();
+    if (!shape.hasAttribute('normal')) shape.computeVertexNormals();
+    const geometry = shape.index ? shape : mergeVertices(shape);
+    if (geometry !== shape) shape.dispose();
 
     const { at = [0, 0, 0], turn = [0, 0, 0], size = 1 } = placement;
     scratch.position.set(at[0], at[1], at[2]);
@@ -133,7 +156,7 @@ export class Sculpture {
     return this;
   }
 
-  /** Add an already painted geometry (from `landmass`, or another sculpture's `build`). */
+  /** Add an already painted, indexed geometry (from `landmass`, or another sculpture's `build`). */
   addPainted(geometry: BufferGeometry, placement: Placement = {}): this {
     const { at = [0, 0, 0], turn = [0, 0, 0], size = 1 } = placement;
     scratch.position.set(at[0], at[1], at[2]);
@@ -168,14 +191,15 @@ export class Sculpture {
 
 /** A ball, optionally squashed: `squash` < 1 makes it a bun, > 1 an egg. */
 export function ball(radius: number, squash = 1, detail = 12): BufferGeometry {
-  const geometry = new SphereGeometry(radius, detail, Math.max(6, Math.round(detail * 0.7)));
+  const around = cut(detail, 5);
+  const geometry = new SphereGeometry(radius, around, Math.max(4, Math.round(around * 0.7)));
   if (squash !== 1) geometry.scale(1, squash, 1);
   return geometry;
 }
 
 /** A stone: a ball pushed out of true, the same way every time. */
 export function stone(radius: number, squash = 0.7): BufferGeometry {
-  const geometry = new SphereGeometry(radius, 9, 6);
+  const geometry = new SphereGeometry(radius, cut(9, 6), cut(6, 4));
   const positions = geometry.getAttribute('position');
   for (let index = 0; index < positions.count; index++) {
     const x = positions.getX(index);
@@ -199,14 +223,14 @@ export function post(
   height: number,
   sides = 14,
 ): BufferGeometry {
-  const geometry = new CylinderGeometry(topRadius, bottomRadius, height, sides);
+  const geometry = new CylinderGeometry(topRadius, bottomRadius, height, cut(sides, 5));
   geometry.translate(0, height / 2, 0);
   return geometry;
 }
 
 /** A cone standing on y = 0. */
 export function cone(radius: number, height: number, sides = 16): BufferGeometry {
-  const geometry = new ConeGeometry(radius, height, sides);
+  const geometry = new ConeGeometry(radius, height, sides <= 6 ? sides : cut(sides, 6));
   geometry.translate(0, height / 2, 0);
   return geometry;
 }
@@ -246,8 +270,8 @@ export function block(width: number, height: number, depth: number, round = 0.12
     bevelEnabled: true,
     bevelThickness: bevel,
     bevelSize: bevel,
-    bevelSegments: 2,
-    curveSegments: 5,
+    bevelSegments: facets < 1 ? 1 : 2,
+    curveSegments: cut(5, 2),
   });
   // Extruded along z: stand it up, with its foot on y = 0.
   geometry.rotateX(-Math.PI / 2);
@@ -262,8 +286,8 @@ export function slab(outline: Shape, thickness: number, bevel = 0.03): BufferGeo
     bevelEnabled: bevel > 0,
     bevelThickness: bevel,
     bevelSize: bevel,
-    bevelSegments: 2,
-    curveSegments: 8,
+    bevelSegments: facets < 1 ? 1 : 2,
+    curveSegments: cut(8, 3),
   });
   geometry.translate(0, 0, -thickness / 2 + bevel);
   return geometry;
@@ -276,7 +300,7 @@ export function turned(
 ): BufferGeometry {
   return new LatheGeometry(
     profile.map(([radius, height]) => new Vector2(Math.max(radius, 0.0001), height)),
-    sides,
+    cut(sides, 8),
   );
 }
 
@@ -306,7 +330,7 @@ export function hull(length: number, width: number, height: number): BufferGeome
   const geometry = new ExtrudeGeometry(outline, {
     depth: height,
     bevelEnabled: false,
-    curveSegments: 8,
+    curveSegments: cut(8, 4),
   });
   geometry.rotateX(-Math.PI / 2);
   const positions = geometry.getAttribute('position');
@@ -377,6 +401,8 @@ export interface Land {
   reach: number;
   /** The two numbers the water needs to redraw this shore. */
   shore: { seed: number; wander: number };
+  /** How far towards the shore the flat top reaches, as a fraction. */
+  plateau: number;
 }
 
 const BEACH_FROM = 0.78;
@@ -432,9 +458,17 @@ export function landmass(spec: LandSpec): Land {
   const patchColours = patches.map((patch) => new Color(patch.tint));
 
   const colourAt = (x: number, z: number, f: number, target: Color): void => {
-    // Grass: lighter in the middle, with slow drifts of a second green so it is not one flat field.
+    // Grass: lighter in the middle, with slow drifts of a second green so it is not one flat field, and smaller
+    // clumps of light and shade across it, as if it had been dabbed on.
     const drift = 0.5 + 0.5 * Math.sin(x * 1.9 + seed) * Math.cos(z * 1.6 - seed * 0.7);
     target.copy(edge).lerp(middle, (1 - smooth(0, plateau + 0.15, f)) * 0.75 + drift * 0.25);
+    const clump = Math.sin(x * 5.3 + seed * 2.1) * Math.sin(z * 4.7 - seed * 1.3);
+    target.multiplyScalar(1 + clump * 0.07);
+    // A darker line where the turf ends and the sand begins.
+    const turfEdge =
+      smooth(BEACH_FROM - 0.2, BEACH_FROM - 0.09, f) *
+      (1 - smooth(BEACH_FROM - 0.09, BEACH_FROM - 0.05, f));
+    target.multiplyScalar(1 - turfEdge * 0.14);
     // The slope shows rock where it is steep.
     const slope =
       smooth(plateau + 0.02, plateau + 0.18, f) *
@@ -463,14 +497,16 @@ export function landmass(spec: LandSpec): Land {
   const indices: number[] = [];
   const colour = new Color();
   // The centre vertex, then rings out to a little past the waterline.
+  const rings = cut(RINGS, 14);
+  const segments = cut(SEGMENTS, 40);
   positions.push(0, profile(0), 0);
   colourAt(0, 0, 0, colour);
   colours.push(colour.r, colour.g, colour.b);
-  for (let ring = 1; ring <= RINGS; ring++) {
+  for (let ring = 1; ring <= rings; ring++) {
     // More rings near the shore, where the shape changes fastest.
-    const f = SKIRT * (ring / RINGS) ** 0.85;
-    for (let segment = 0; segment < SEGMENTS; segment++) {
-      const angle = (segment / SEGMENTS) * Math.PI * 2;
+    const f = SKIRT * (ring / rings) ** 0.85;
+    for (let segment = 0; segment < segments; segment++) {
+      const angle = (segment / segments) * Math.PI * 2;
       const distance = f * shoreAt(angle);
       const x = Math.cos(angle) * distance;
       const z = Math.sin(angle) * distance;
@@ -479,14 +515,14 @@ export function landmass(spec: LandSpec): Land {
       colours.push(colour.r, colour.g, colour.b);
     }
   }
-  for (let segment = 0; segment < SEGMENTS; segment++) {
-    indices.push(0, 1 + ((segment + 1) % SEGMENTS), 1 + segment);
+  for (let segment = 0; segment < segments; segment++) {
+    indices.push(0, 1 + ((segment + 1) % segments), 1 + segment);
   }
-  for (let ring = 1; ring < RINGS; ring++) {
-    const inner = 1 + (ring - 1) * SEGMENTS;
-    const outer = 1 + ring * SEGMENTS;
-    for (let segment = 0; segment < SEGMENTS; segment++) {
-      const next = (segment + 1) % SEGMENTS;
+  for (let ring = 1; ring < rings; ring++) {
+    const inner = 1 + (ring - 1) * segments;
+    const outer = 1 + ring * segments;
+    for (let segment = 0; segment < segments; segment++) {
+      const next = (segment + 1) % segments;
       indices.push(inner + segment, inner + next, outer + segment);
       indices.push(inner + next, outer + next, outer + segment);
     }
@@ -497,14 +533,13 @@ export function landmass(spec: LandSpec): Land {
   indexed.setAttribute('color', new BufferAttribute(new Float32Array(colours), 3));
   indexed.setIndex(indices);
   indexed.computeVertexNormals();
-  const geometry = indexed.toNonIndexed();
-  indexed.dispose();
+  const geometry = indexed;
   const count = geometry.getAttribute('position').count;
   geometry.setAttribute('aSway', new BufferAttribute(new Float32Array(count), 1));
   geometry.setAttribute('aGlow', new BufferAttribute(new Float32Array(count), 1));
   let reach = 0;
   for (let step = 0; step < 360; step++) reach = Math.max(reach, shoreAt((step / 180) * Math.PI));
-  return { geometry, heightAt, shoreAt, radius, reach, shore: { seed, wander } };
+  return { geometry, heightAt, shoreAt, radius, reach, shore: { seed, wander }, plateau };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -691,5 +726,102 @@ export function mushroom(
         at[2] + Math.sin(angle) * out,
       ],
     });
+  }
+}
+
+/** A tuft of long grass: three blades. */
+export function tuft(sculpture: Sculpture, at: Vec3, size = 1, greens: Greens = LEAF): void {
+  const blades: readonly (readonly [number, number, number])[] = [
+    [0, 0, 1],
+    [0.045, 0.38, 0.8],
+    [-0.04, -0.34, 0.86],
+  ];
+  for (const [dx, lean, tall] of blades) {
+    sculpture.add(
+      cone(0.034 * size, 0.15 * size * tall, 5),
+      { tint: [greens.dark, greens.light], sway: 0.3, swayFromBase: true },
+      { at: [at[0] + dx * size, at[1] - 0.01, at[2]], turn: [0, 0, -lean] },
+    );
+  }
+}
+
+/** A pebble on the beach. */
+export function pebble(
+  sculpture: Sculpture,
+  at: Vec3,
+  size = 1,
+  tint: Tint = ['#b9b3a6', '#e6e0d2'],
+): void {
+  sculpture.add(ball(0.05 * size, 0.6, 6), tint, { at: [at[0], at[1] + 0.012 * size, at[2]] });
+}
+
+/** A starfish lying on the sand. */
+export function starfish(sculpture: Sculpture, at: Vec3, size = 1, turn = 0): void {
+  const points: [number, number][] = [];
+  for (let index = 0; index < 10; index++) {
+    const angle = (index / 10) * Math.PI * 2;
+    const reach = index % 2 === 0 ? 0.11 : 0.045;
+    points.push([Math.cos(angle) * reach * size, Math.sin(angle) * reach * size]);
+  }
+  sculpture.add(slab(outlineOf(points), 0.03 * size, 0.008 * size), ['#ff8f7a', '#ffb7a3'], {
+    at: [at[0], at[1] + 0.02 * size, at[2]],
+    turn: [-Math.PI / 2, 0, turn],
+  });
+}
+
+/** A tiny, fixed random source for scattering: the same scatter every time for the same seed. */
+function scatterSource(seed: number): () => number {
+  let state = (Math.floor(seed * 1000) + 0x9e3779b9) >>> 0;
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Dress an island's ground: tufts of grass on the turf, pebbles on the beach. Nothing is put where something
+ * already stands (`keepClear`), and the same island is always dressed the same way.
+ */
+export function dress(
+  sculpture: Sculpture,
+  land: Land,
+  options: {
+    tufts: number;
+    pebbles: number;
+    keepClear?: readonly { x: number; z: number; radius: number }[];
+    greens?: Greens;
+  },
+): void {
+  const random = scatterSource(land.shore.seed);
+  const clear = (x: number, z: number): boolean =>
+    (options.keepClear ?? []).every((spot) => Math.hypot(x - spot.x, z - spot.z) > spot.radius);
+  const place = (from: number, to: number): [number, number] | null => {
+    for (let attempt = 0; attempt < 12; attempt++) {
+      const angle = random() * Math.PI * 2;
+      const f = from + (to - from) * Math.sqrt(random());
+      const distance = f * land.shoreAt(angle);
+      const x = Math.cos(angle) * distance;
+      const z = Math.sin(angle) * distance;
+      if (clear(x, z)) return [x, z];
+    }
+    return null;
+  };
+  for (let index = 0; index < options.tufts; index++) {
+    const spot = place(0.12, Math.min(0.7, land.plateau + 0.12));
+    if (!spot) continue;
+    tuft(
+      sculpture,
+      [spot[0], land.heightAt(spot[0], spot[1]), spot[1]],
+      0.9 + random() * 0.5,
+      options.greens,
+    );
+  }
+  for (let index = 0; index < options.pebbles; index++) {
+    const spot = place(0.84, 0.95);
+    if (!spot) continue;
+    pebble(sculpture, [spot[0], land.heightAt(spot[0], spot[1]), spot[1]], 0.7 + random() * 0.9);
   }
 }

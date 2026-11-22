@@ -6,6 +6,7 @@ import {
   box,
   bush,
   cone,
+  dress,
   gable,
   hull,
   landmass,
@@ -13,10 +14,11 @@ import {
   palm,
   post,
   slab,
+  starfish,
   stone,
   type Vec3,
 } from '../kit';
-import { bobbing, jetty, pennant } from './parts';
+import { bobbing, buoy, jetty, pennant } from './parts';
 import { finish, type Detail, type IslandModel, type Mover } from './types';
 
 /**
@@ -302,6 +304,24 @@ export function buildExplorerHarbor(detail: Detail): IslandModel {
     boulder(s, [-0.2, 0.0, -1.85], 0.75, ROCK, 2.4);
     bush(s, ground(1.25, -1.0), 0.7);
   }
+
+  dress(s, land, {
+    tufts: Math.round(10 * detail),
+    pebbles: Math.round(9 * detail),
+    keepClear: [
+      { x: 0.78, z: -0.52, radius: 0.55 },
+      { x: -0.9, z: -0.55, radius: 0.75 },
+      { x: -0.05, z: 0.1, radius: 0.22 },
+      { x: -0.82, z: 0.55, radius: 0.45 },
+      { x: 0.72, z: 0.72, radius: 0.27 },
+      { x: 0.3, z: 0.95, radius: 0.9 },
+    ],
+  });
+  starfish(s, [-0.35, land.heightAt(-0.35, 1.2), 1.2], 1.0, 0.7);
+  // A channel buoy marking the way in.
+  const marker = 0.3;
+  const off = Math.min(land.shoreAt(marker) + 0.26, 2.12);
+  movers.push(bobbing(buoy(), [Math.cos(marker) * off, 0, Math.sin(marker) * off], 0, 1.5));
 
   return finish(s, land, movers);
 }

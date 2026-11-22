@@ -73,6 +73,13 @@ export default defineConfig({
               test: /node_modules[\\/](@react-three|three-stdlib|three-mesh-bvh|maath|zustand|suspend-react|its-fine|react-reconciler|react-use-measure|troika-[\w-]+|camera-controls|meshline|stats-gl|stats\.js|tunnel-rat|detect-gpu|hls\.js|@monogrid|@mediapipe|glsl-noise|bidi-js|webgl-sdf-generator|@use-gesture|use-sync-external-store|utility-types)[\\/]/,
               priority: 10,
             },
+            {
+              // The harbour itself: the modelling kit, the islands, the water. The hub and the studio both use it,
+              // and each stays a small chunk of its own that asks for this one.
+              name: 'harbour',
+              test: /src[\\/]render[\\/]hub3d[\\/](?!Hub3D\.|Studio\.)/,
+              priority: 5,
+            },
           ],
         },
       },

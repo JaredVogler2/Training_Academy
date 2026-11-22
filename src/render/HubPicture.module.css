@@ -16,6 +16,24 @@
   );
 }
 
+/*
+ * Wave marks, as in the 3D water: a small drawing of pale dashes, repeated, drifting one step a second. It is a
+ * layer of its own under the islands, so the islands never need repainting when it moves.
+ */
+.sea::before {
+  position: absolute;
+  inset: 0 -260px 0 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='190' fill='none' stroke='%23fff' stroke-linecap='round' stroke-width='2.4'%3E%3Cpath d='M18 22h16M96 51h22M190 30h12M52 96h13M150 108h24M224 139h14M30 158h20M118 171h11M78 20h7M236 78h9' opacity='.55'/%3E%3Cpath d='M130 80q14-7 28 0M20 124q11-6 22 0M196 172q12-6 24 0' opacity='.3' stroke-width='2'/%3E%3C/svg%3E");
+  background-size: 260px 190px;
+  content: '';
+  opacity: 0.5;
+  animation: swell 26s steps(52) infinite;
+}
+
+.sea[data-still]::before {
+  animation: none;
+}
+
 .sprite {
   position: absolute;
   display: block;
@@ -41,24 +59,27 @@
 }
 
 /*
- * What moves, moves in a few steps a second: on a device that draws with its processor (which is where this picture
- * is most likely to be seen) a smooth animation would cost a whole core, and nobody can tell a boat bobbing at
- * sixty frames a second from one bobbing at four.
+ * What moves, moves in steps, and everything steps on the same half-second beat: on a device that draws with its
+ * processor (which is where this picture is most likely to be seen) a smooth animation would cost a whole core, and
+ * nobody can tell a boat bobbing at sixty frames a second from one bobbing at two. Keeping one beat matters as much
+ * as stepping: twenty things each stepping in their own time are still twenty frames a second.
  */
 .boat {
-  animation: bob 2.6s steps(7) infinite alternate;
+  animation: bob 3s steps(6) infinite alternate;
 }
 
 .boat:nth-of-type(odd) {
-  animation-duration: 3.1s;
+  animation-duration: 4s;
+  animation-timing-function: steps(8);
 }
 
 .cloud {
-  animation: drift 36s steps(54) infinite alternate;
+  animation: drift 36s steps(72) infinite alternate;
 }
 
 .cloud:nth-of-type(even) {
-  animation-duration: 47s;
+  animation-duration: 48s;
+  animation-timing-function: steps(96);
 }
 
 .glint {
@@ -67,7 +88,13 @@
   border-radius: 50%;
   background: rgb(255 255 255 / 85%);
   opacity: 0;
-  animation: twinkle 7s steps(7) infinite;
+  animation: twinkle 7s steps(14) infinite;
+}
+
+@keyframes swell {
+  to {
+    transform: translateX(-260px);
+  }
 }
 
 @keyframes bob {

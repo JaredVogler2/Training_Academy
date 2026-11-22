@@ -5,12 +5,14 @@ import {
   boulder,
   bush,
   cone,
+  dress,
   flower,
   gable,
   landmass,
   palm,
   placer,
   post,
+  starfish,
   type Tint,
   type Vec3,
 } from '../kit';
@@ -182,6 +184,20 @@ export function buildReadingCove(detail: Detail): IslandModel {
       flower(s, [x, land.heightAt(x, z), z], tint, 1.2);
     }
   }
+
+  dress(s, land, {
+    tufts: Math.round(11 * detail),
+    pebbles: Math.round(9 * detail),
+    keepClear: [
+      { x: -0.3, z: -0.3, radius: 1.1 },
+      { x: 0.75, z: 1.05, radius: 0.9 },
+      { x: -0.1, z: 1.25, radius: 0.62 },
+      { x: 1.3, z: -0.35, radius: 0.25 },
+      { x: -1.3, z: 0.45, radius: 0.25 },
+    ],
+  });
+  starfish(s, [0.5, land.heightAt(0.5, 1.5), 1.5], 1.1, 0.4);
+  if (detail >= 0.8) starfish(s, [-0.45, land.heightAt(-0.45, 1.55), 1.55], 0.85, 1.3);
 
   return finish(s, land, movers);
 }

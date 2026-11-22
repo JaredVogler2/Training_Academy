@@ -6,7 +6,7 @@ import { test as base, expect, type Locator, type Page } from '@playwright/test'
  *   - a guard that fails the test on any console error or warning, uncaught exception, failed request, or request to
  *     another origin (the game talks to nobody) — unless the test says a specific one is expected. The one thing it
  *     lets pass on its own is a download the browser cancelled because the page had moved on to another document;
- *   - the graphics setting chosen up front (the illustrated hub by default, so only the 3D specs pay for software
+ *   - the graphics setting chosen up front (the hub as a picture by default, so only the 3D specs pay for software
  *     rendering);
  *   - `press`, which taps on a touch device and clicks otherwise, so one spec exercises both.
  */
@@ -25,7 +25,8 @@ interface Guard {
 interface Fixtures {
   graphics: Graphics;
   guard: Guard;
-  press: (target: Locator) => Promise<void>;
+  /** Tap on a touch screen, click otherwise; `position` is measured from the target's top-left corner. */
+  press: (target: Locator, options?: { position?: { x: number; y: number } }) => Promise<void>;
 }
 
 /**
@@ -143,7 +144,7 @@ export const test = base.extend<Fixtures>({
   },
 
   press: async ({ hasTouch }, use) => {
-    await use((target) => (hasTouch ? target.tap() : target.click()));
+    await use((target, options) => (hasTouch ? target.tap(options) : target.click(options)));
   },
 });
 
@@ -293,4 +294,28 @@ export async function holdGateOpen(page: Page): Promise<void> {
 export async function openGrownUps(page: Page): Promise<void> {
   await page.goto('/grown-ups');
   await holdGateOpen(page);
+}
+
+/**
+ * Wait until every picture of the hub's fallback has been downloaded, decoded and drawn.
+ * ("Complete" is not enough: the browser decodes pictures off the main thread and may paint a frame without one
+ * that is still being decoded, which is exactly what a screenshot would then catch.)
+ */
+export async function hubPicturesLoaded(page: Page): Promise<void> {
+  await expect(page.getByTestId('hub-picture')).toBeAttached();
+  await page.waitForFunction(() => {
+    const images = [
+      ...document.querySelectorAll<HTMLImageElement>('[data-testid="hub-picture"] img'),
+    ];
+    return images.length >= 7 && images.every((image) => image.complete && image.naturalWidth > 0);
+  });
+  await page.evaluate(async () => {
+    const images = [
+      ...document.querySelectorAll<HTMLImageElement>('[data-testid="hub-picture"] img'),
+    ];
+    await Promise.all(images.map((image) => image.decode().catch(() => undefined)));
+    await new Promise<void>((done) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => done()));
+    });
+  });
 }

@@ -63,7 +63,6 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4em;
-  max-width: 132%;
   height: calc(var(--size) * 1.9);
   padding: 0 0.85em 0 0.25em;
   border-radius: var(--radius-pill);
@@ -83,13 +82,23 @@
   width: 1.65em;
   height: 1.65em;
   border-radius: 50%;
-  color: var(--ink-soft);
-  background: #e6ebf5;
+  /* Each world's own colour: the name tag belongs to its island. */
+  color: var(--deep, var(--ink-soft));
+  background: var(--tint, #e6ebf5);
 }
 
 .badge svg {
   width: 62%;
   height: 62%;
+}
+
+/* On the very smallest screens the name alone fits; the sunny label still marks the world that is open. */
+.label[data-compact] {
+  padding-left: 0.85em;
+}
+
+.label[data-compact] .badge {
+  display: none;
 }
 
 .name {
@@ -125,6 +134,36 @@
   transform: translateX(-50%) translateY(1px) scale(0.96);
 }
 
+/* The guide, afloat: a button the size of the room the layout keeps for it, the figure standing on its floor. */
+.guide {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 28px;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.guide > * {
+  --size: 82%;
+}
+
+.guide:focus-visible {
+  outline: 4px solid var(--ink);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 8px var(--white);
+}
+
+.guide:active > * {
+  transform: scale(0.95);
+}
+
 .player {
   position: absolute;
   top: calc(var(--topbar) + var(--safe-top) + 6px);
@@ -138,6 +177,8 @@
   border-radius: var(--radius-pill);
   background: rgb(255 255 255 / 86%);
   box-shadow: 0 3px 0 rgb(34 48 79 / 10%);
+  /* A name tag, not a control: a tap on it reaches whatever island is underneath. */
+  pointer-events: none;
 }
 
 .playerPicture {

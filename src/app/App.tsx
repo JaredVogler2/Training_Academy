@@ -16,6 +16,7 @@ const WorldView = lazyView('world', () => import('@/game/world/WorldView'));
 const LessonView = lazyView('lesson', () => import('@/game/lesson/LessonView'));
 const GrownUps = lazyView('grown-ups', () => import('@/parent/GrownUps'));
 const Studio = lazyView('studio', () => import('@/render/hub3d/Studio'));
+const GuideSheet = lazyView('guide-sheet', () => import('@/ui/GuideSheet'));
 
 function titleOf(route: Route): string {
   switch (route.name) {
@@ -79,7 +80,7 @@ export function App() {
   if (route.name === 'studio') {
     return (
       <Suspense fallback={null}>
-        <Studio view={route.view} />
+        {route.view === 'guide' ? <GuideSheet /> : <Studio view={route.view} />}
       </Suspense>
     );
   }

@@ -1,13 +1,17 @@
 // Captures the review screenshots from the RUNNING production build: real pages, real interactions, no mock-ups.
 //
-//   npm run build && npm run screens
+//   npm run build && npm run screens                          everything, into docs/review/phase-02/
+//   npm run screens -- phase-02/round-1 hub,lesson            some groups, into another folder
+//
+// Groups: hub, islands, guide, world, lesson, grownups. The folder is relative to docs/review/, so a second set can
+// be kept beside the first for before-and-after comparisons.
 //
 // It starts `vite preview` itself (the same server the browser tests use, with the vercel.json headers), drives the
-// game in headless Chromium, and writes JPEGs to docs/review/phase-01/. Pass another folder name as the first
-// argument to keep a second set (for before/after comparisons).
+// game in headless Chromium, and writes JPEGs.
 //
 // Headless Chromium has no GPU: the 3D hub is drawn by SwiftShader, a CPU rasteriser. The pictures show composition,
-// colour, lighting and layout faithfully. They say nothing about frame rate on a real device.
+// colour, lighting and layout faithfully. They say nothing about frame rate on a real device, and a still picture
+// says nothing about motion.
 
 import { spawn } from 'node:child_process';
 import { mkdirSync, readdirSync, statSync } from 'node:fs';
@@ -16,7 +20,13 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const out = join(root, 'docs/review', process.argv[2] ?? 'phase-01');
+const out = join(root, 'docs/review', process.argv[2] ?? 'phase-02');
+const GROUPS = ['hub', 'islands', 'guide', 'world', 'lesson', 'grownups'];
+const wanted = new Set(process.argv[3] ? process.argv[3].split(',') : GROUPS);
+for (const group of wanted) {
+  if (!GROUPS.includes(group))
+    throw new Error(`No such group: ${group}. Groups: ${GROUPS.join(', ')}`);
+}
 const PORT = 4179;
 const BASE = `http://127.0.0.1:${PORT}`;
 const LESSON = '/world/number-garden/play/ng-same-amount-01';
@@ -130,44 +140,118 @@ async function choose(page, press, right) {
 try {
   console.log(`Writing to ${out}`);
 
-  // The hub in 3D at its high tier, on every screen shape.
-  for (const screen of Object.keys(SCREENS)) {
+  if (wanted.has('hub')) {
+    // The hub in 3D at its high tier, on every screen shape.
+    for (const screen of Object.keys(SCREENS)) {
+      await session(
+        screen,
+        async ({ page, shot }) => {
+          await page.goto(`${BASE}/`);
+          await page.locator('[data-hub-mode="3d"]').waitFor({ timeout: 90_000 });
+          await page.waitForTimeout(1800);
+          await shot('hub-3d');
+        },
+        { graphics: 'high' },
+      );
+    }
+
+    // The hub as a picture: the first paint, and what a device without usable WebGL keeps.
+    for (const screen of ['phone', 'tablet', 'desktop']) {
+      await session(screen, async ({ page, shot }) => {
+        await page.goto(`${BASE}/`);
+        await page.getByRole('navigation', { name: 'Worlds' }).waitFor();
+        // Downloaded, decoded and drawn: a picture still being decoded is left out of the frame a screenshot takes.
+        await page.waitForFunction(() => {
+          const images = [...document.querySelectorAll('[data-testid="hub-picture"] img')];
+          return (
+            images.length >= 7 && images.every((image) => image.complete && image.naturalWidth > 0)
+          );
+        });
+        await page.evaluate(async () => {
+          const images = [...document.querySelectorAll('[data-testid="hub-picture"] img')];
+          await Promise.all(images.map((image) => image.decode().catch(() => undefined)));
+          await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+        });
+        await page.waitForTimeout(700);
+        await shot('hub-picture');
+      });
+    }
+
+    // The low tier, as a weak device gets it.
     await session(
-      screen,
+      'phone',
       async ({ page, shot }) => {
         await page.goto(`${BASE}/`);
         await page.locator('[data-hub-mode="3d"]').waitFor({ timeout: 90_000 });
-        await page.waitForTimeout(1800);
-        await shot('hub-3d');
+        await page.waitForTimeout(1500);
+        await shot('hub-3d-low-tier');
+      },
+      { graphics: 'low' },
+    );
+
+    // An island with keyboard focus: it rises, and the ring shows what Enter will open.
+    await session(
+      'desktop',
+      async ({ page, shot }) => {
+        await page.goto(`${BASE}/`);
+        await page.locator('[data-hub-mode="3d"]').waitFor({ timeout: 90_000 });
+        await page.getByRole('link', { name: /Number Garden/ }).focus();
+        await page.waitForTimeout(1200);
+        await shot('hub-3d-island-focused');
       },
       { graphics: 'high' },
     );
-  }
 
-  // The illustrated hub: the first paint, and what a device without WebGL keeps.
-  for (const screen of ['phone', 'desktop']) {
-    await session(screen, async ({ page, shot }) => {
+    // The guide answering a tap. Taken with the hub as a picture: software-rendered 3D keeps the page so busy that
+    // the wave can be over before a screenshot of it is possible.
+    await session('desktop', async ({ page, shot }) => {
       await page.goto(`${BASE}/`);
-      await page.getByRole('navigation', { name: 'Worlds' }).waitFor();
-      await page.waitForTimeout(700);
-      await shot('hub-illustrated');
+      await page.getByRole('button', { name: /Glim/ }).click();
+      await page.locator('[data-testid="guide"][data-state="wave"]').waitFor();
+      await page.waitForTimeout(350);
+      await shot('hub-picture-guide-hello');
     });
   }
 
-  // The low tier, as a software renderer or a weak device gets it.
-  await session(
-    'phone',
-    async ({ page, shot }) => {
-      await page.goto(`${BASE}/`);
-      await page.locator('[data-hub-mode="3d"]').waitFor({ timeout: 90_000 });
-      await page.waitForTimeout(1500);
-      await shot('hub-3d-low-tier');
-    },
-    { graphics: 'low' },
-  );
+  // Each island on its own, from the studio, and the guide's character sheet.
+  if (wanted.has('islands')) {
+    await session('desktop', async ({ page, shot }) => {
+      for (const island of [
+        'academy',
+        'reading-cove',
+        'number-garden',
+        'robot-ridge',
+        'memory-forest',
+        'inventor-island',
+        'explorer-harbor',
+      ]) {
+        await page.goto(`${BASE}/studio/${island}`);
+        await page
+          .locator('[data-testid="studio"][data-ready="true"]')
+          .waitFor({ timeout: 90_000 });
+        await page.waitForTimeout(1500);
+        await shot(`island-${island}`);
+      }
+    });
+  }
+  if (wanted.has('guide')) {
+    await session('desktop', async ({ page, shot }) => {
+      await page.setViewportSize({ width: 1366, height: 1080 });
+      await page.goto(`${BASE}/studio/guide`);
+      await page.getByTestId('guide-sheet').waitFor();
+      await page.waitForTimeout(900);
+      await page.screenshot({
+        path: join(out, 'guide-character-sheet-1366x1080.jpg'),
+        type: 'jpeg',
+        quality: 86,
+      });
+      console.log('  guide-character-sheet-1366x1080.jpg');
+      void shot;
+    });
+  }
 
   // World front doors: one that is open, one that is not.
-  for (const screen of ['phone', 'desktop']) {
+  for (const screen of wanted.has('world') ? ['phone', 'desktop'] : []) {
     await session(screen, async ({ page, shot }) => {
       await page.goto(`${BASE}/world/number-garden`);
       await page.getByRole('link', { name: 'Play' }).waitFor();
@@ -181,7 +265,9 @@ try {
   }
 
   // The sample activity, state by state.
-  for (const screen of ['phone', 'phone-landscape', 'tablet', 'desktop']) {
+  for (const screen of wanted.has('lesson')
+    ? ['phone', 'phone-landscape', 'tablet', 'desktop']
+    : []) {
     await session(screen, async ({ page, press, shot }) => {
       const next = page.getByRole('button', { name: 'Next' });
       await page.goto(`${BASE}${LESSON}`);
@@ -222,7 +308,7 @@ try {
   }
 
   // The grown-ups area and the "something went wrong" screens.
-  for (const screen of ['phone', 'desktop']) {
+  for (const screen of wanted.has('grownups') ? ['phone', 'desktop'] : []) {
     await session(screen, async ({ page, shot }) => {
       await page.goto(`${BASE}${LESSON}`);
       const next = page.getByRole('button', { name: 'Next' });
@@ -259,7 +345,7 @@ try {
   }
 
   // The longest names the form accepts, on the narrowest screens: nothing may push the page wider than the screen.
-  for (const screen of ['small-phone', 'phone']) {
+  for (const screen of wanted.has('grownups') ? ['small-phone', 'phone'] : []) {
     await session(screen, async ({ page, shot }) => {
       await page.goto(`${BASE}/grown-ups`);
       await holdGateOpen(page);

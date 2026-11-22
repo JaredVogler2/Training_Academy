@@ -180,15 +180,24 @@
   pointer-events: none;
 }
 
+/* The foot: the guide, what the guide is saying, and the way on. */
 .foot {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
   align-items: center;
-  min-height: 76px;
+  min-height: 84px;
 }
 
+.guide {
+  --size: 68px;
+
+  align-self: end;
+}
+
+/* The caption is the guide's speech: a bubble with a small tail towards the guide. */
 .caption {
+  position: relative;
   justify-self: start;
   max-width: 100%;
   padding: 10px 16px;
@@ -197,6 +206,18 @@
   background: rgb(255 255 255 / 72%);
   font-size: 0.9375rem;
   line-height: 1.3;
+}
+
+.caption::before {
+  position: absolute;
+  top: 50%;
+  left: -7px;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: inherit;
+  content: '';
+  transform: translateY(-50%) rotate(45deg);
 }
 
 .caption[data-tone='correct'] {
@@ -244,9 +265,24 @@
   font-size: var(--text-xxl);
 }
 
+/* The world's emblem, with the guide celebrating in front of it. */
 .finishedArt {
+  position: relative;
   width: clamp(96px, 22vh, 168px);
   height: clamp(96px, 22vh, 168px);
+}
+
+.finishedEmblem {
+  width: 100%;
+  height: 100%;
+}
+
+.finishedGuide {
+  --size: 52%;
+
+  position: absolute;
+  right: -22%;
+  bottom: -6%;
 }
 
 .grown {
@@ -278,6 +314,36 @@
   gap: 14px;
   justify-content: center;
   margin-top: 6px;
+}
+
+/*
+ * A narrow phone: with the guide, the caption and a worded button side by side, the caption was left a column two
+ * words wide. The way on becomes a round arrow there; its words stay for screen readers.
+ */
+@media (max-width: 479px) {
+  .foot .myTurn,
+  .foot .next {
+    width: 64px;
+    min-width: 64px;
+    height: 64px;
+    padding: 0;
+    border-radius: 50%;
+  }
+
+  .foot .myTurn > span,
+  .foot .next > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .guide {
+    --size: 60px;
+  }
 }
 
 /* Wider screens: the choices sit side by side. */
@@ -320,6 +386,10 @@
 
   .foot {
     min-height: 60px;
+  }
+
+  .guide {
+    --size: 52px;
   }
 
   .finished {

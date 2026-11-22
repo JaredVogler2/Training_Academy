@@ -19,8 +19,8 @@ export interface ErrorRecord {
 }
 
 export interface HubDiagnostics {
-  mode: 'pending' | '3d' | 'illustrated';
-  /** Why the illustrated hub is showing, when it is. */
+  mode: 'pending' | '3d' | 'picture';
+  /** Why the hub as a picture is showing, when it is. */
   reason: string | null;
   tier: string | null;
   pixelRatio: number | null;

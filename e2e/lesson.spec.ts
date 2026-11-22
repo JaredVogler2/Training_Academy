@@ -149,6 +149,41 @@ test.describe('the sample activity', () => {
     await expect(skill(page)).not.toContainText('was not right');
   });
 
+  test('the guide shows what is happening without a word: pointing, wondering, glad, patient', async ({
+    page,
+    press,
+  }) => {
+    const guide = lesson(page).getByTestId('guide').first();
+    await page.goto(LESSON_PATH);
+    // While the demonstration is on, the guide points at it.
+    await expect(myTurn(page)).toBeVisible();
+    await expect(guide).toHaveAttribute('data-state', 'point');
+    // The guide is a picture of what the caption says, never the only way to know: hidden from screen readers.
+    await expect(guide).toHaveAttribute('aria-hidden', 'true');
+
+    // A new question: the guide wonders along, then settles down to wait.
+    await press(myTurn(page));
+    await expect(guide).toHaveAttribute('data-state', 'think');
+    await expect(guide).toHaveAttribute('data-state', 'idle', { timeout: 8000 });
+
+    // A wrong answer: a tilt of the head. There is no sad or cross state for it to be in.
+    await choose(page, press, false);
+    await expect(guide).toHaveAttribute('data-state', 'retry');
+
+    // Help: the guide points again.
+    await press(page.getByRole('button', { name: 'Help me' }));
+    await expect(guide).toHaveAttribute('data-state', 'point');
+
+    // A right answer: glad.
+    await choose(page, press, true);
+    await expect(guide).toHaveAttribute('data-state', 'celebrate');
+
+    // And at the end, the guide is there celebrating.
+    await press(next(page));
+    await finishCorrectly(page, press);
+    await expect(finished(page).getByTestId('guide')).toHaveAttribute('data-state', 'celebrate');
+  });
+
   test('two quick taps count once', async ({ page, press }) => {
     await page.goto(LESSON_PATH);
     await press(myTurn(page));

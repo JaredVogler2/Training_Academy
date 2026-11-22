@@ -162,10 +162,10 @@ const FRAGMENT_PAINT = /* glsl */ `
     vec3 flat_ = texture2D(uPaint, vPaintWorld.xz * 0.21).rgb;
     vec3 wall = texture2D(uPaint, vec2(vPaintWorld.x + vPaintWorld.z, vPaintWorld.y) * 0.21).rgb;
     vec3 brush = mix(wall, flat_, weight.y);
-    float wash = (brush.r - 0.5) * 0.26 + (brush.g - 0.5) * 0.12;
+    float wash = (brush.r - 0.5) * 0.36 + (brush.g - 0.5) * 0.16;
     diffuseColor.rgb *= 1.0 + wash;
     // The wash also drifts a little warm or cool, as real paint does.
-    diffuseColor.rgb += vec3(0.035, 0.008, -0.035) * (brush.b - 0.5);
+    diffuseColor.rgb += vec3(0.05, 0.012, -0.05) * (brush.r - 0.5) + vec3(0.02, 0.004, -0.02) * (brush.b - 0.5);
   }
 `;
 
@@ -219,6 +219,6 @@ export function createPaintMaterial(uniforms: PaintUniforms): MeshLambertMateria
       .replace('#include <opaque_fragment>', FRAGMENT_HAZE);
   };
   // One program for every paint material, whatever three.js would otherwise decide from the callback's identity.
-  material.customProgramCacheKey = () => 'training-academy-paint-2';
+  material.customProgramCacheKey = () => 'training-academy-paint-3';
   return material;
 }

@@ -23,8 +23,10 @@ const BUDGET_KB = {
   initialScript: 110,
   initialStyles: 12,
   fonts: 80,
-  /** three.js, React Three Fiber, Drei and the hub scene: fetched after the shell, only where WebGL works. */
+  /** three.js, React Three Fiber, Drei and the harbour scene: fetched after the shell, only where WebGL works. */
   hub3d: 290,
+  /** The pictures of the islands the hub shows first (WebP, already compressed, so measured as they are). */
+  hubPictures: 330,
   /** Any other on-demand chunk (a world, the lesson frame, the grown-ups area, a content pack). */
   lazyChunk: 30,
   /** Everything in dist, uncompressed. */
@@ -36,12 +38,15 @@ const LAZY_ONLY = [
   /^three-/,
   /^r3f-/,
   /^Hub3D-/,
+  /^harbour-/,
+  /^Studio-/,
+  /^GuideSheet-/,
   /^WorldView-/,
   /^LessonView-/,
   /^GrownUps-/,
   /^number-garden/,
 ];
-const HUB_3D = [/^three-/, /^r3f-/, /^Hub3D-/];
+const HUB_3D = [/^three-/, /^r3f-/, /^Hub3D-/, /^harbour-/];
 
 const failures = [];
 const notes = [];
@@ -160,6 +165,13 @@ within('first-load script (gzip)', initialScript, BUDGET_KB.initialScript);
 within('first-load styles (gzip)', initialStyles, BUDGET_KB.initialStyles);
 within('fonts', fonts, BUDGET_KB.fonts);
 within('3D hub chunks (gzip)', hub3d, BUDGET_KB.hub3d);
+const pictures = relativeFiles.filter((file) => /^immutable\/.*\.webp$/.test(file));
+check(pictures.length >= 7, `the build has the hub's pictures (${pictures.length} WebP files)`);
+within(
+  'hub pictures',
+  sum(pictures, (file) => statSync(file).size),
+  BUDGET_KB.hubPictures,
+);
 within('whole build (uncompressed)', totalRaw, BUDGET_KB.totalRaw);
 for (const file of allScripts) {
   if (initial.has(file) || hubFiles.includes(file)) continue;

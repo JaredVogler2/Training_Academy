@@ -1,13 +1,21 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import type { ReactNode } from 'react';
-import type { Mesh, MeshLambertMaterial } from 'three';
+import type { Group, Mesh, MeshLambertMaterial } from 'three';
 import { setHubDiagnostics } from '@/app/diagnostics';
 import { aloft, type Extras, type PlaceId } from '../archipelago';
 import { TIERS, type Tier } from '../quality';
 import { Sea, type Isle, type SeaLook } from './Sea';
 import { ISLAND_BUILDERS, disposeIsland, type IslandModel } from './islands';
-import { BOAT_PAINTS, ROCK_SHORE, boatShape, cloudShape, rocksShape } from './floating';
+import {
+  BOAT_PAINTS,
+  ROCK_SHORE,
+  boatShape,
+  cloudShape,
+  gullBody,
+  gullWing,
+  rocksShape,
+} from './floating';
 import { createPaintMaterial, createPaintUniforms, MAX_CLOUDS } from './paint';
 import { Island, Lights, SHADOW_ON_WATER } from './stage';
 
@@ -38,8 +46,9 @@ function FrameProbe({ onReady }: { onReady: () => void }) {
   useFrame((_, delta) => {
     drawn.current += 1;
     // The second frame: shaders are compiled and the first image is on the canvas.
-    if (drawn.current === 2) {
-      onReady();
+    if (drawn.current === 2) onReady();
+    // The fifth: the one-off drawing of the shadows is over, so these are the numbers of an ordinary frame.
+    if (drawn.current === 5) {
       setHubDiagnostics({
         drawCalls: gl.info.render.calls,
         triangles: gl.info.render.triangles,
@@ -49,9 +58,9 @@ function FrameProbe({ onReady }: { onReady: () => void }) {
         pixelRatio: Math.round(gl.getPixelRatio() * 100) / 100,
       });
     }
-    // When frames are drawn only on demand, ask for the second one.
-    if (drawn.current < 2) invalidate();
-    if (drawn.current <= 2) return;
+    // When frames are drawn only on demand, ask for the next until those numbers are in.
+    if (drawn.current < 5) invalidate();
+    if (drawn.current <= 5) return;
 
     samples.current.push(delta * 1000);
     if (samples.current.length < SAMPLE_FRAMES) return;
@@ -96,6 +105,101 @@ function boatAt(spot: { x: number; z: number }, index: number, time: number) {
   };
 }
 
+/** Where the gulls wheel: a point on the water they are seen above, and how wide their circle is. */
+export interface GullCourse {
+  x: number;
+  z: number;
+  radius: number;
+}
+
+/**
+ * Gulls wheeling high over the harbour: each a body and two wings that beat in short bursts between glides.
+ * Decoration only: the lowest tier has none.
+ */
+function Gulls({
+  course,
+  count,
+  clock,
+  material,
+}: {
+  course: GullCourse;
+  count: number;
+  clock: { current: number };
+  material: MeshLambertMaterial;
+}) {
+  const birds = useRef<(Group | null)[]>([]);
+  const left = useRef<(Mesh | null)[]>([]);
+  const right = useRef<(Mesh | null)[]>([]);
+  const shapes = useMemo(() => ({ body: gullBody(), left: gullWing(-1), right: gullWing(1) }), []);
+  useEffect(
+    () => () => {
+      shapes.body.dispose();
+      shapes.left.dispose();
+      shapes.right.dispose();
+    },
+    [shapes],
+  );
+
+  useFrame(() => {
+    const time = clock.current;
+    for (let index = 0; index < count; index++) {
+      const bird = birds.current[index];
+      if (!bird) continue;
+      const way = index % 2 === 0 ? 1 : -1;
+      const turn = time * (0.17 + index * 0.035) * way + index * 2.1;
+      const radius = course.radius * (0.62 + 0.24 * index);
+      const height = 4.4 + index * 0.45 + Math.sin(time * 0.3 + index) * 0.25;
+      const at = aloft(
+        { x: course.x + Math.cos(turn) * radius, z: course.z + Math.sin(turn) * radius * 0.62 },
+        height,
+      );
+      bird.position.set(at.x, at.y, at.z);
+      // Beak along the way it is going, banking a little into the turn.
+      bird.rotation.set(
+        0.22 * way,
+        -Math.atan2(Math.cos(turn) * 0.62 * way, -Math.sin(turn) * way),
+        0,
+      );
+      // A few beats, then a glide.
+      const beating = Math.max(0, Math.sin(time * 0.55 + index * 1.9));
+      const flap = 0.12 + Math.sin(time * 9 + index) * 0.55 * beating;
+      const one = left.current[index];
+      const other = right.current[index];
+      if (one) one.rotation.x = flap;
+      if (other) other.rotation.x = -flap;
+    }
+  });
+
+  return (
+    <>
+      {Array.from({ length: count }, (_, index) => (
+        <group
+          key={index}
+          ref={(bird) => {
+            birds.current[index] = bird;
+          }}
+        >
+          <mesh geometry={shapes.body} material={material} />
+          <mesh
+            ref={(wing) => {
+              left.current[index] = wing;
+            }}
+            geometry={shapes.left}
+            material={material}
+          />
+          <mesh
+            ref={(wing) => {
+              right.current[index] = wing;
+            }}
+            geometry={shapes.right}
+            material={material}
+          />
+        </group>
+      ))}
+    </>
+  );
+}
+
 export function Harbour({
   placed,
   extras,
@@ -106,6 +210,7 @@ export function Harbour({
   sprite = false,
   bare = false,
   moreIsles = NO_ISLES,
+  gulls = null,
   onReady,
   children,
 }: {
@@ -122,6 +227,8 @@ export function Harbour({
   bare?: boolean;
   /** Anything else the water should draw a shore around. */
   moreIsles?: readonly Isle[];
+  /** Where gulls wheel, if there are to be any. */
+  gulls?: GullCourse | null;
   onReady?: () => void;
   /** Anything else to put on stage, painted with the same material. */
   children?: (material: MeshLambertMaterial) => ReactNode;
@@ -253,7 +360,7 @@ export function Harbour({
         continue;
       }
       const height = 4.2 + (index % 2) * 0.7;
-      const drift = Math.sin(time * 0.05 + index * 2.1) * 1.1;
+      const drift = Math.sin(time * 0.05 + index * 2.1) * 0.6;
       const at = aloft({ x: over.x + drift, z: over.z }, height);
       const part = cloudParts.current[index];
       if (part) part.position.set(at.x, at.y + Math.sin(time * 0.4 + index) * 0.05, at.z);
@@ -300,6 +407,7 @@ export function Harbour({
           look={look}
           clouds={uniforms.uClouds.value}
           sprite={sprite}
+          rich={settings.detail >= 0.75}
         />
       )}
       {placed.map((place) => {
@@ -347,6 +455,14 @@ export function Harbour({
           scale={0.92 + (index % 3) * 0.14}
         />
       ))}
+      {gulls && settings.detail >= 0.8 && (
+        <Gulls
+          course={gulls}
+          count={settings.detail >= 1 ? 3 : 2}
+          clock={clock}
+          material={material}
+        />
+      )}
       {children?.(material)}
       {onReady && <FrameProbe onReady={onReady} />}
     </>

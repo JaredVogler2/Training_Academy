@@ -1,5 +1,6 @@
 import {
   Sculpture,
+  ball,
   block,
   box,
   cone,
@@ -209,4 +210,14 @@ export function jetty(sculpture: Sculpture, from: Vec3, to: Vec3, width = 0.4): 
       );
     }
   }
+}
+
+/** A channel buoy: red and white, with a small light on top. Returned as its own sculpture so it can bob. */
+export function buoy(): Sculpture {
+  const s = new Sculpture();
+  s.add(post(0.15, 0.13, 0.1, 10), ['#c94f3b', '#e2604a'], { at: [0, -0.03, 0] });
+  s.add(cone(0.12, 0.26, 10), ['#fff1d6', '#ffffff'], { at: [0, 0.07, 0] });
+  s.add(post(0.123, 0.09, 0.07, 10), ['#d9533f', '#ff8f7a'], { at: [0, 0.07, 0] });
+  s.add(ball(0.04, 1, 7), { tint: '#ffd35c', glow: 0.9 }, { at: [0, 0.35, 0] });
+  return s;
 }

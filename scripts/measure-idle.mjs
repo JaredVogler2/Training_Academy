@@ -24,9 +24,9 @@ const LESSON = '/world/number-garden/play/ng-same-amount-01';
 const DESKTOP = { width: 1366, height: 768 };
 const PHONE = { width: 390, height: 844 };
 const CASES = [
-  ['Home, illustrated', '/', { graphics: 'pictures', motion: 'full' }, DESKTOP],
-  ['Home, illustrated (phone)', '/', { graphics: 'pictures', motion: 'full' }, PHONE],
-  ['Home, illustrated, calm motion', '/', { graphics: 'pictures', motion: 'reduced' }, DESKTOP],
+  ['Home, as a picture', '/', { graphics: 'pictures', motion: 'full' }, DESKTOP],
+  ['Home, as a picture (phone)', '/', { graphics: 'pictures', motion: 'full' }, PHONE],
+  ['Home, as a picture, calm motion', '/', { graphics: 'pictures', motion: 'reduced' }, DESKTOP],
   [
     "A world's front page",
     '/world/number-garden',

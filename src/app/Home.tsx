@@ -3,8 +3,17 @@ import { playCue } from '@/audio';
 import { activeProfile, refreshProfiles, useProfiles } from '@/game/profiles';
 import { WORLDS, type WorldInfo } from '@/game/worlds';
 import { HubStage } from '@/render/HubStage';
-import { hotspotFor, labelSize, type Frame, type PlaceId } from '@/render/archipelago';
+import {
+  COMPACT_LABELS_BELOW,
+  guideBox,
+  hotspotFor,
+  labelSize,
+  labelWidth,
+  type Frame,
+  type PlaceId,
+} from '@/render/archipelago';
 import { useHubFrame } from '@/render/useHubFrame';
+import { Guide } from '@/ui/Guide';
 import { AvatarPicture } from '@/ui/art';
 import { IconAsleep, IconPlay } from '@/ui/icons';
 import { Link } from './navigation';
@@ -35,7 +44,7 @@ function WorldSpot({
       data-role={world.role}
       data-world={world.id}
       data-open={open}
-      onClick={() => playCue('tap')}
+      onClick={() => playCue(open ? 'sail' : 'tap')}
       onPointerEnter={(event) => {
         if (event.pointerType === 'mouse') onLift(world.id);
       }}
@@ -45,14 +54,54 @@ function WorldSpot({
       onFocus={() => onLift(world.id)}
       onBlur={() => onLift(null)}
     >
-      <span className={styles.label}>
+      <span
+        className={styles.label}
+        style={{ maxWidth: labelWidth(frame, world.id) }}
+        data-compact={frame.scale < COMPACT_LABELS_BELOW || undefined}
+      >
         <span className={styles.badge}>
           {open ? <IconPlay size={16} /> : <IconAsleep size={16} />}
         </span>
-        <span className={styles.name}>{world.name}</span>
+        <span className={styles.name} data-name>
+          {world.name}
+        </span>
       </span>
       <span className="sr-only">. {open ? ui.tryIt : ui.notOpenYet}.</span>
     </Link>
+  );
+}
+
+/**
+ * Glim, afloat between the islands, pointing at the world that has something to play. A tap says hello.
+ */
+function HubGuide({ frame }: { frame: Frame }) {
+  const [greeting, setGreeting] = useState(false);
+  useEffect(() => {
+    if (!greeting) return;
+    const timer = window.setTimeout(() => setGreeting(false), 1800);
+    return () => window.clearTimeout(timer);
+  }, [greeting]);
+
+  const box = guideBox(frame);
+  const open = WORLDS.find((world) => world.status === 'sample');
+  // Point from the guide's shoulder to the island: screen y runs downwards, angles run upwards.
+  const from = { x: box.left + box.width / 2, y: box.top + box.height * 0.45 };
+  const to = open ? hotspotFor(frame, open.id).anchor : null;
+  const aim = to ? (Math.atan2(from.y - to.y, to.x - from.x) * 180) / Math.PI : 90;
+
+  return (
+    <button
+      type="button"
+      className={styles.guide}
+      style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
+      aria-label={ui.guideHello}
+      onClick={() => {
+        playCue('hello');
+        setGreeting(true);
+      }}
+    >
+      <Guide state={greeting ? 'wave' : open ? 'point' : 'idle'} aim={aim} afloat />
+    </button>
   );
 }
 
@@ -94,6 +143,8 @@ export function Home() {
             ))}
         </ul>
       </nav>
+      {/* After the worlds, so the keyboard and a screen reader reach the islands first. */}
+      {frame && <HubGuide frame={frame} />}
     </div>
   );
 }

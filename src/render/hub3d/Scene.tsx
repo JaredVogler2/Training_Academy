@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { PLACES, visibleDepth, type Frame, type PlaceId } from '../archipelago';
 import type { Tier } from '../quality';
-import { Harbour, type Placed } from './Harbour';
+import { Harbour, type GullCourse, type Placed } from './Harbour';
 import type { SeaLook } from './Sea';
 import { OrthoRig } from './stage';
 
@@ -37,6 +37,16 @@ export function Scene({
     };
   }, [frame]);
 
+  // The gulls wheel over the middle of what is on screen, in a circle a third as wide as the shorter side.
+  const gulls = useMemo<GullCourse>(
+    () => ({
+      x: frame.target.x,
+      z: frame.target.z,
+      radius: (Math.min(frame.stage.width, frame.stage.height) / frame.scale) * 0.32,
+    }),
+    [frame],
+  );
+
   return (
     <>
       <OrthoRig target={target} zoom={frame.scale} />
@@ -47,6 +57,7 @@ export function Scene({
         still={reducedMotion}
         lifted={lifted}
         look={look}
+        gulls={gulls}
         onReady={onReady}
       />
     </>

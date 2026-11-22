@@ -4,6 +4,7 @@ import {
   block,
   boulder,
   bush,
+  dress,
   landmass,
   mushroom,
   pine,
@@ -230,6 +231,19 @@ export function buildMemoryForest(detail: Detail): IslandModel {
       part.rotation.y = time * 0.22;
       part.position.y = foot[1] + 0.3 + Math.sin(time * 0.8) * 0.08;
     },
+  });
+
+  dress(s, land, {
+    tufts: Math.round(13 * detail),
+    pebbles: Math.round(6 * detail),
+    keepClear: [
+      { x: -0.05, z: -0.22, radius: 0.95 },
+      { x: 0.08, z: 0.92, radius: 0.36 },
+      ...ring.map(([x, z]) => ({ x, z, radius: 0.24 })),
+      { x: -1.32, z: -0.4, radius: 0.3 },
+      { x: 1.38, z: -0.32, radius: 0.3 },
+    ],
+    greens: DEEP,
   });
 
   return finish(s, land, movers);

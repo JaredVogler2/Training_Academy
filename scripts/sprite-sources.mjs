@@ -8,7 +8,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const FIXED = [
-  'src/render/archipelago.ts',
+  'src/render/extents.ts',
   'src/render/sprites.ts',
   'src/render/hub3d/kit.ts',
   'src/render/hub3d/paint.ts',

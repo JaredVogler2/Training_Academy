@@ -45,7 +45,7 @@ function measure(model: IslandModel, place: PlaceId): Measured {
     if (body.getY(index) < -0.05) continue;
     visit(body.getX(index), body.getY(index), body.getZ(index));
   }
-  result.triangles += body.count / 3;
+  result.triangles += (model.body.index?.count ?? body.count) / 3;
   // Moving parts are followed through their motion rather than guessed at.
   const stand = new Object3D();
   const vertex = new Vector3();
@@ -57,13 +57,13 @@ function measure(model: IslandModel, place: PlaceId): Measured {
       stand.scale.setScalar(1);
       mover.animate(time, stand);
       stand.updateMatrix();
-      for (let index = 0; index < part.count; index += 3) {
+      for (let index = 0; index < part.count; index++) {
         vertex.fromBufferAttribute(part, index).applyMatrix4(stand.matrix);
         if (vertex.y < -0.05) continue;
         visit(vertex.x, vertex.y, vertex.z);
       }
     }
-    result.triangles += part.count / 3;
+    result.triangles += (mover.geometry.index?.count ?? part.count) / 3;
   }
   return result;
 }
@@ -101,6 +101,13 @@ describe.each(PLACES)('%s', (place) => {
     }
   });
 
+  it('stores each corner once: far fewer vertices than three to a triangle', () => {
+    const vertices = model.body.getAttribute('position').count;
+    const triangles = (model.body.index?.count ?? 0) / 3;
+    expect(model.body.index).not.toBeNull();
+    expect(vertices).toBeLessThan(triangles * 1.5);
+  });
+
   it('builds the same shape every time', () => {
     const again = ISLAND_BUILDERS[place](TIERS.high.detail);
     expect(again.body.getAttribute('position').count).toBe(
@@ -130,7 +137,8 @@ describe('the archipelago as a whole', () => {
       }, 0);
     const low = count(TIERS.low.detail);
     const high = count(TIERS.high.detail);
-    expect(low).toBeLessThan(high);
+    // The lowest tier cuts its curves more coarsely as well as leaving out decoration.
+    expect(low).toBeLessThan(high * 0.7);
     expect(high).toBeLessThan(160_000);
   });
 });

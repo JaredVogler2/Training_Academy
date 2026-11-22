@@ -1,5 +1,5 @@
-import manifest from '@/assets/hub/sprites.json';
 import { PLACES, project, type Frame, type PlaceId, type Spot } from './archipelago';
+import { SPRITE_PIXELS_PER_UNIT, spriteFile } from './spriteFiles';
 import type { SpriteId } from './sprites';
 import styles from './HubPicture.module.css';
 
@@ -11,22 +11,6 @@ import styles from './HubPicture.module.css';
  * gradient matched to the 3D water; the boats bob and the clouds drift with a few steps of CSS, which costs a
  * software-rendered device almost nothing.
  */
-
-const urls = import.meta.glob<string>('../assets/hub/*.webp', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-});
-
-interface SpriteRecord {
-  file: string;
-  width: number;
-  height: number;
-  anchorX: number;
-  anchorY: number;
-}
-
-const sprites = manifest.sprites as Readonly<Record<SpriteId, SpriteRecord>>;
 
 function Sprite({
   id,
@@ -45,15 +29,15 @@ function Sprite({
   flipped?: boolean;
   size?: number;
 }) {
-  const sprite = sprites[id];
-  const url = urls[`../assets/hub/${sprite.file}`];
-  if (!url) return null;
-  const k = (frame.scale / manifest.pixelsPerUnit) * size;
+  const sprite = spriteFile(id);
+  if (!sprite) return null;
+  const k = (frame.scale / SPRITE_PIXELS_PER_UNIT) * size;
   const anchor = project(frame, at.x, 0, at.z);
   return (
     <span
       className={[styles.sprite, className].filter(Boolean).join(' ')}
       data-sprite={id}
+      data-anchor={`${String(Math.round(anchor.x))},${String(Math.round(anchor.y))}`}
       data-lifted={lifted || undefined}
       style={{
         left: anchor.x - sprite.anchorX * k,
@@ -63,7 +47,7 @@ function Sprite({
       }}
     >
       <img
-        src={url}
+        src={sprite.url}
         alt=""
         width={sprite.width}
         height={sprite.height}
@@ -116,7 +100,8 @@ export function HubPicture({
             left: `${String(x * 100)}%`,
             top: `${String(y * 100)}%`,
             width: Math.max(8, frame.scale * 0.32 * size),
-            animationDelay: `${String(-index * 0.7)}s`,
+            // Whole seconds, so every glint changes on the picture's shared beat.
+            animationDelay: `${String(-index)}s`,
           }}
         />
       ))}

@@ -1,4 +1,4 @@
-import { PITCH } from '../../archipelago';
+import { PITCH } from '../../extents';
 import {
   Sculpture,
   ball,
@@ -6,6 +6,7 @@ import {
   boulder,
   bush,
   cone,
+  dress,
   flower,
   gable,
   landmass,
@@ -16,7 +17,7 @@ import {
   tree,
   turned,
 } from '../kit';
-import { bobbing, jetty, lamp, pennant, rowBoat } from './parts';
+import { bobbing, buoy, jetty, lamp, pennant, rowBoat } from './parts';
 import { finish, type Detail, type IslandModel, type Mover } from './types';
 
 /**
@@ -245,6 +246,23 @@ export function buildAcademy(detail: Detail): IslandModel {
       flower(s, [x, land.heightAt(x, z), z], tint, 1.2);
     }
   }
+
+  dress(s, land, {
+    tufts: Math.round(12 * detail),
+    pebbles: Math.round(8 * detail),
+    keepClear: [
+      { x: -0.2, z: -0.18, radius: 0.8 },
+      { x: 0.88, z: 0.02, radius: 0.62 },
+      { x: 0.05, z: 0.55, radius: 0.3 },
+      { x: 0.42, z: 0.8, radius: 0.3 },
+      { x: 0.8, z: 1.02, radius: 0.3 },
+      { x: -1.02, z: -0.1, radius: 0.32 },
+    ],
+  });
+  // A channel buoy off the western shore.
+  const marker = 2.35;
+  const off = Math.min(land.shoreAt(marker) + 0.24, 1.9);
+  movers.push(bobbing(buoy(), [Math.cos(marker) * off, 0, Math.sin(marker) * off], 0.3, 2.2));
 
   return finish(s, land, movers);
 }

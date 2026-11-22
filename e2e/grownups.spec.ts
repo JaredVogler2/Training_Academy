@@ -200,9 +200,7 @@ test.describe('the grown-ups area', () => {
     await expect(players(page)).toHaveCount(1);
   });
 
-  test('device settings: "pictures only" switches the hub to its illustration', async ({
-    page,
-  }) => {
+  test('device settings: "pictures only" switches the hub to its picture', async ({ page }) => {
     await openGrownUps(page);
     await page.getByLabel('Graphics', { exact: true }).selectOption('auto');
     await page.getByLabel('Motion', { exact: true }).selectOption('reduced');
@@ -226,14 +224,14 @@ test.describe('the grown-ups area', () => {
     page,
   }) => {
     await page.goto('/');
-    await expect(page.getByTestId('hub-stage')).toHaveAttribute('data-hub-mode', 'illustrated');
+    await expect(page.getByTestId('hub-stage')).toHaveAttribute('data-hub-mode', 'picture');
     await page.getByRole('link', { name: 'Grown-ups' }).click();
     await holdGateOpen(page);
     const diagnostics = page.getByTestId('diagnostics');
     await diagnostics.getByText('Diagnostics', { exact: true }).click();
     await expect(diagnostics).toContainText('Nothing on this list is sent anywhere.');
     await expect(diagnostics.getByText('indexeddb', { exact: true })).toBeVisible();
-    await expect(diagnostics.getByText('illustrated (setting)')).toBeVisible();
+    await expect(diagnostics.getByText('picture (setting)')).toBeVisible();
     await expect(diagnostics).toContainText('Mark: shell-ready');
     await expect(diagnostics).toContainText('Loaded: grown-ups');
     await expect(

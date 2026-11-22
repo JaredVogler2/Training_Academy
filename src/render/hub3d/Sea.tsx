@@ -99,11 +99,13 @@ const fragmentShader = /* glsl */ `
 
     float shallows = 1.0 - smoothstep(0.0, 2.1, toLand);
 
+    #ifdef RICH
     // Light marbling the surface where two slow layers of the brush cross: clearest over the pale shallows.
     float a = texture2D(uPaint, p * 0.075 + vec2(uTime * 0.011, -uTime * 0.006)).r;
     float b = texture2D(uPaint, p * 0.075 * 1.31 + vec2(-uTime * 0.009, uTime * 0.008) + 0.37).r;
     float net = smoothstep(0.05, 0.0, abs(a - b));
     colour += uFoam * net * (0.012 + 0.06 * shallows);
+    #endif
 
     // Shallows: turquoise near land, and the sand showing through right at the edge.
     colour = mix(colour, uShallow, shallows * 0.82);
@@ -127,19 +129,27 @@ const fragmentShader = /* glsl */ `
     float rings = smoothstep(0.9, 1.0, ring) * (1.0 - smoothstep(0.25, 2.0, offshore)) * smoothstep(0.15, 0.3, offshore);
     colour = mix(colour, uFoam, clamp(foam * 0.9 + rings * 0.32, 0.0, 1.0));
 
+    #ifdef RICH
     // Glints: small lens-shaped highlights lying along the swell, gathered in loose shoals that drift. Each one
     // swells and fades as two layers of the brush slide past each other.
     float lens = texture2D(uPaint, p * vec2(0.34, 0.95) + vec2(uTime * 0.016, 0.0)).r;
     float pass = texture2D(uPaint, p * vec2(0.29, 0.8) - vec2(uTime * 0.02, uTime * 0.008) + 0.53).r;
     float shoal = texture2D(uPaint, p * 0.037 + vec2(-uTime * 0.004, 0.31)).r;
-    float glint = smoothstep(0.69, 0.76, lens) * smoothstep(0.52, 0.7, pass) * smoothstep(0.46, 0.62, shoal);
-    colour = mix(colour, uFoam, glint * 0.55 * smoothstep(0.7, 1.6, offshore) * (1.0 - overcast));
+    float glint = smoothstep(0.67, 0.74, lens) * smoothstep(0.5, 0.68, pass) * smoothstep(0.42, 0.6, shoal);
+    colour = mix(colour, uFoam, glint * 0.7 * smoothstep(0.7, 1.6, offshore) * (1.0 - overcast));
+    #endif
 
     // Short curved wave marks, sparse, drifting.
     float wave = sin(p.y * 2.1 + sin(p.x * 0.7 + uTime * 0.3) * 1.2 + uTime * 0.25);
     float patches = sin(p.x * 0.37 + 1.7) * sin(p.y * 0.29 - uTime * 0.04 + 0.6);
-    float marks = smoothstep(0.985, 1.0, wave) * smoothstep(0.6, 0.9, patches);
-    colour = mix(colour, uFoam, marks * 0.3 * smoothstep(1.2, 2.4, offshore));
+    float marks = smoothstep(0.98, 1.0, wave) * smoothstep(0.35, 0.75, patches);
+    colour = mix(colour, uFoam, marks * 0.42 * smoothstep(1.2, 2.4, offshore));
+
+    #ifdef RICH
+    // Broad pools of sunlight drifting over open water, where the brush runs thin.
+    float pool = texture2D(uPaint, p * 0.019 + vec2(uTime * 0.003, -uTime * 0.0015) + 0.71).r;
+    colour += uFoam * smoothstep(0.52, 0.78, pool) * 0.07 * smoothstep(0.8, 2.4, offshore) * (1.0 - overcast);
+    #endif
 
     // Far water pales into the haze.
     colour = mix(colour, uHaze, smoothstep(uHazeRange.x, uHazeRange.y, -p.y) * uHazeRange.z * 1.6);
@@ -152,6 +162,9 @@ const fragmentShader = /* glsl */ `
     #include <colorspace_fragment>
   }
 `;
+
+const RICH = { RICH: '' };
+const PLAIN = {};
 
 export interface SeaLook {
   /** World z at which the water is palest (far) and deepest (near). */
@@ -168,6 +181,7 @@ export function Sea({
   look,
   clouds,
   sprite = false,
+  rich = true,
 }: {
   /** Read every frame, so floating things can move. */
   isles: { current: readonly Isle[] };
@@ -180,6 +194,11 @@ export function Sea({
   clouds: Vector3[];
   /** Draw only the water that belongs to the islands, on a clear ground. */
   sprite?: boolean;
+  /**
+   * Marbling, glints and pools of light in open water. The lowest tier goes without: they are six of the shader's
+   * seven texture reads, on every pixel of the screen, and none of them tells a child anything.
+   */
+  rich?: boolean;
 }) {
   const material = useRef<ShaderMaterial>(null);
   const uniforms = useMemo(
@@ -227,7 +246,9 @@ export function Sea({
   });
 
   return (
-    <mesh rotation-x={-Math.PI / 2} renderOrder={-1}>
+    // Drawn after the islands: the water under them is then never shaded at all, which on a full-screen shader is a
+    // fifth to a quarter of the work.
+    <mesh rotation-x={-Math.PI / 2} renderOrder={1}>
       <planeGeometry args={[600, 600, 1, 1]} />
       <shaderMaterial
         ref={material}
@@ -235,6 +256,9 @@ export function Sea({
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
         transparent={sprite}
+        // A different key for each variant, so switching tier compiles the other shader instead of reusing this one.
+        key={rich ? 'rich' : 'plain'}
+        defines={rich ? RICH : PLAIN}
       />
     </mesh>
   );

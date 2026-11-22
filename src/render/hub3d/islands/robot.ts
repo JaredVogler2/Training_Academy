@@ -5,6 +5,7 @@ import {
   boulder,
   box,
   bush,
+  dress,
   landmass,
   outlineOf,
   pine,
@@ -53,12 +54,13 @@ export function buildRobotRidge(detail: Detail): IslandModel {
     seed: 3.7,
     wander: 0.14,
     grass: ['#55a98c', '#a3e0a8'],
-    rock: '#9aa5bd',
+    rock: '#a9b4cb',
+    // A paved yard in front of the door.
     patches: [
-      { x: 0.1, z: 0.5, radius: 0.5, tint: '#c9d2e3', strength: 0.9 },
-      { x: 0.3, z: 0.05, radius: 0.5, tint: '#c9d2e3', strength: 0.7 },
+      { x: 0.25, z: 0.6, radius: 0.74, tint: '#e3e8f4', strength: 1 },
+      { x: 0.0, z: 0.12, radius: 0.5, tint: '#e3e8f4', strength: 1 },
     ],
-    contacts: [{ x: -0.1, z: -0.3, radius: 1.0 }],
+    contacts: [{ x: -0.1, z: -0.3, radius: 0.92 }],
   });
   const s = new Sculpture();
   s.addPainted(land.geometry);
@@ -225,6 +227,18 @@ export function buildRobotRidge(detail: Detail): IslandModel {
     boulder(s, [0.9, 0.02, -1.6], 0.9, ['#7d89a6', '#bcc6dc'], 0.2);
     boulder(s, [1.5, 0.02, -0.95], 0.7, ['#7d89a6', '#bcc6dc'], 3.3);
   }
+
+  dress(s, land, {
+    tufts: Math.round(9 * detail),
+    pebbles: Math.round(8 * detail),
+    keepClear: [
+      { x: -0.12, z: -0.32, radius: 1.0 },
+      { x: 0.25, z: 0.6, radius: 0.78 },
+      { x: 0.0, z: 0.12, radius: 0.52 },
+      { x: 1.05, z: -0.45, radius: 0.3 },
+    ],
+    greens: { dark: '#2d8a6a', light: '#86d6a2' },
+  });
 
   return finish(s, land, movers);
 }

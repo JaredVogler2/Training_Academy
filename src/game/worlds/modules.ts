@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 import { loadChunk } from '@/app/chunks';
 import { addVoice, type VoiceBank } from '@/audio';
-import type { MakeChallenge, Stimulus, WorldId } from '@/engine';
+import type { Challenge, MakeChallenge, Stimulus, WorldId } from '@/engine';
 import type { BoardProps } from '@/game/lesson/frame';
 import type { ChooseSituation, MakeSituation, Script } from '@/game/lesson/script';
 
@@ -19,6 +19,11 @@ export interface PictureProps {
   place?: 'prompt' | 'choice' | 'card';
   /** It is being named or played at this moment. */
   sounding?: boolean;
+  /**
+   * What it asks has just been answered, and the answer is being shown beside it. A picture with a gap in it — a
+   * story with its ending missing — shows what belongs there.
+   */
+  solved?: boolean;
   /** Given to a picture that is itself something to tap (a sound to hear again): what tapping it asks for. */
   onAgain?: () => void;
 }
@@ -40,16 +45,31 @@ export interface WorldModule {
    */
   makeScript?(situation: MakeSituation, challenge: MakeChallenge): Script | null;
   /**
+   * The clip a picture makes of its own accord when it is tapped or lit — a drum's thump — where it is a thing
+   * that makes a sound. `null` for everything else, which gets the frame's counting notes instead.
+   */
+  soundOf?(stimulus: Stimulus): string | null;
+  /**
    * Boards for games only this world has, by what they are for: a kind of task (`program`), or a scene a question
    * is asked about (`scene:map`). The lesson frame has boards of its own for everything else.
    */
   boards?: Readonly<Record<string, ComponentType<BoardProps>>>;
+  /**
+   * Lines a challenge is told with beside its own instruction, feedback and hints (the lines of a story's
+   * pictures), so that they can be fetched before they are wanted.
+   */
+  linesFor?(challenge: Challenge): string[];
   /** This world's lines for the voice. */
   voice: VoiceBank;
 }
 
 const MODULES: Partial<Record<WorldId, () => Promise<{ default: WorldModule }>>> = {
+  'reading-cove': () => import('./reading-cove'),
   'number-garden': () => import('./number-garden'),
+  'robot-ridge': () => import('./robot-ridge'),
+  'memory-forest': () => import('./memory-forest'),
+  'inventor-island': () => import('./inventor-island'),
+  'explorer-harbor': () => import('./explorer-harbor'),
 };
 
 export function hasWorldModule(world: WorldId): boolean {

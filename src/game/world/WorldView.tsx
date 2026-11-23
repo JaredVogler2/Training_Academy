@@ -4,8 +4,7 @@ import { loadChunk } from '@/app/chunks';
 import { recordError } from '@/app/diagnostics';
 import { hasPack, loadPack } from '@/content';
 import type { Challenge, Lesson, Stimulus, WorldId } from '@/engine';
-import { useProfiles } from '@/game/profiles';
-import { getRepository } from '@/game/services';
+import { nextLessonIn, useFinishedLessons } from '@/game/progress';
 import { isOpen, lessonsOf, worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds/modules';
 import { IslandPicture } from '@/render/IslandPicture';
@@ -28,9 +27,7 @@ interface Opened {
 function useWorld(world: WorldId): Opened {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [module, setModule] = useState<WorldModule | null>(null);
-  const [done, setDone] = useState<ReadonlySet<string>>(new Set());
-  const { activeId } = useProfiles();
-
+  const done = useFinishedLessons();
   useEffect(() => {
     if (!hasPack(world)) return;
     let current = true;
@@ -56,30 +53,7 @@ function useWorld(world: WorldId): Opened {
     };
   }, [world]);
 
-  useEffect(() => {
-    if (activeId === null) return;
-    let current = true;
-    getRepository()
-      .then((repository) => repository.listSessions(activeId))
-      .then(
-        (sessions) => {
-          if (!current) return;
-          setDone(
-            new Set(
-              sessions
-                .filter((session) => session.status === 'completed')
-                .map((session) => session.lessonId),
-            ),
-          );
-        },
-        (error: unknown) => recordError('storage', error),
-      );
-    return () => {
-      current = false;
-    };
-  }, [activeId, world]);
-
-  return { lessons, module, done: activeId === null ? new Set() : done };
+  return { lessons, module, done };
 }
 
 /**
@@ -137,7 +111,7 @@ export default function WorldView({ world }: { world: WorldId }) {
   const { lessons, module, done } = useWorld(world);
   // What "Play" goes to: the first lesson not yet finished; once they all are, the first again.
   const order = lessonsOf(info);
-  const nextId = order.find((id) => !done.has(id)) ?? order[0];
+  const nextId = nextLessonIn(info, done) ?? undefined;
   const next = lessons.find((lesson) => lesson.id === nextId) ?? null;
   const allDone = order.length > 0 && order.every((id) => done.has(id));
   const unbuilt = info.activities.some((activity) => activity.lessons.length === 0);

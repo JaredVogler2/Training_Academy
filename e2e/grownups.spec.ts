@@ -4,6 +4,7 @@ import {
   expect,
   finishCorrectly,
   holdGateOpen,
+  lessonSkill,
   myTurn,
   openGrownUps,
   screenFit,
@@ -12,7 +13,7 @@ import {
 } from './fixtures';
 
 const players = (page: Page) => page.getByTestId('player');
-const skill = (page: Page) => page.getByTestId('skill').first();
+const skill = lessonSkill;
 
 async function addPlayer(page: Page, name: string, picture: string) {
   await page.getByRole('button', { name: 'Add a player' }).click();

@@ -3,25 +3,135 @@
 The plan is the seventeen phases in `prompt-series/`. A phase is marked done only when its own acceptance checks
 have been run and passed; the evidence is linked. `docs/CONTINUE_HERE.md` has the next action.
 
-| Phase | Subject                                        | Status                                      |
-| ----- | ---------------------------------------------- | ------------------------------------------- |
-| 01    | Architecture, tooling, Vercel-ready foundation | **Done** (2026-11-22) — see below           |
-| 02    | Visual identity and art pipeline               | **Done** (2026-11-22) — see below           |
-| 03    | World and player journey, first vertical slice | **Done** (2026-11-23) — see below           |
-| 04    | Audio and pre-reader onboarding                | Not started                                 |
-| 05    | Phonics                                        | Not started                                 |
-| 06    | Math                                           | Not started (one sample lesson exists)      |
-| 07    | Robots (visual programming)                    | Not started                                 |
-| 08    | Memory                                         | Not started                                 |
-| 09    | Inventors' lab                                 | Not started                                 |
-| 10    | Storytelling and geography                     | Not started                                 |
-| 11    | Music and additional skills                    | Not started                                 |
-| 12    | Adaptive mastery engine                        | Not started (evidence rules exist)          |
-| 13    | Parent dashboard                               | Not started (a basic grown-ups area exists) |
-| 14    | Accessibility, privacy, performance            | Not started (foundations in place)          |
-| 15    | Test and visual QA                             | Not started (test harness in place)         |
-| 16    | Vercel release                                 | Not started — **nothing is deployed**       |
-| 17    | Polish, expansion, hand-off                    | Not started                                 |
+| Phase | Subject                                        | Status                                                                 |
+| ----- | ---------------------------------------------- | ---------------------------------------------------------------------- |
+| 01    | Architecture, tooling, Vercel-ready foundation | **Done** (2026-11-22) — see below                                      |
+| 02    | Visual identity and art pipeline               | **Done** (2026-11-22) — see below                                      |
+| 03    | World and player journey, first vertical slice | **Done** (2026-11-23) — see below                                      |
+| 04    | Audio and pre-reader onboarding                | **Partly done** (2026-11-23): the voice is built; onboarding is not    |
+| 05    | Phonics                                        | **Partly done**: Reading Cove's four activities; no sentences          |
+| 06    | Math                                           | **Partly done**: Number Garden's four activities; no numerals          |
+| 07    | Robots (visual programming)                    | **Partly done**: Robot Ridge's four activities; no conditionals        |
+| 08    | Memory                                         | **Partly done**: Memory Forest's four activities; no second-day recall |
+| 09    | Inventors' lab                                 | **Partly done**: Inventor Island's four activities; no wind shelter    |
+| 10    | Storytelling and geography                     | **Partly done**: Explorer Harbor's four activities; no globe           |
+| 11    | Music and additional skills                    | Not started                                                            |
+| 12    | Adaptive mastery engine                        | Not started (evidence rules exist)                                     |
+| 13    | Parent dashboard                               | Not started (a basic grown-ups area exists)                            |
+| 14    | Accessibility, privacy, performance            | Not started (foundations in place)                                     |
+| 15    | Test and visual QA                             | Not started (test harness in place)                                    |
+| 16    | Vercel release                                 | Not started as a phase. The owner has deployed `main`: see below       |
+| 17    | Polish, expansion, hand-off                    | Not started                                                            |
+
+"Partly done" is meant exactly: for each of those phases, every activity its world's page promised is built,
+tested and playable, and the brief asked for more than that. The tables below say what, item by item.
+
+## Phases 04 to 10 — what was asked, and what there is
+
+The owner's request, made with screenshots of two world pages whose planned activities were marked "Later", was
+to build each game and all worlds. Every one of the twenty-four planned activities on the six world pages is now
+built, as **39 activities with 429 challenges**, and no world page says "Later" or "not open". The briefs for
+these phases (`prompt-series/04` to `10`) describe more than those twenty-four activities; what follows is each
+brief against what exists. Nothing in this section has been seen by a child, a teacher or a speech specialist,
+and **no person has listened to any of the recordings**.
+
+### Phase 04 — voice and onboarding
+
+| Asked for                                                                 | What there is                                                                                                                                                                                                                                              |
+| ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bundled voice clips for prompts, phonemes and feedback; no runtime speech | 395 recordings (4.3 MB), made ahead of time by `scripts/voice/make_voice.py` and shipped with the game. Nothing is synthesised in the browser and nothing is fetched from another site. **Isolated phonemes are deliberately not recorded** (see Phase 05) |
+| First tap unlocks audio; failures, mute, interruption handled             | As Phase 03 built it, now carrying a voice: a line that cannot be heard is not waited for, and an activity that needs sound shows a gate with one button                                                                                                   |
+| One narration at a time, replay, interrupt on leaving, music ducked       | One line at a time; Glim says it again; it stops on pause and on leaving; the cue sounds are turned down under it. There is no music                                                                                                                       |
+| Accurate phoneme audio, validated by a parent or educator                 | **Not done.** Each clip was checked by a speech recogniser (`src/voice/manifest.json`); 13 single words were recognised only inside a sentence. The grown-ups' area lists every clip to listen to and mark. Nobody has                                     |
+| Cache small clips, budgets, offline recovery                              | A clip is fetched when first wanted and kept by the service worker; budgets in `scripts/verify-dist.mjs` (60 kB a clip, 9 MB in all)                                                                                                                       |
+| Three how-to-play demonstrations; skip, repeat, parent assist             | **Not built as a separate thing.** Every activity opens with its own demonstration, which can be repeated                                                                                                                                                  |
+| Optional parent-only placement                                            | **Not built.** Nothing is locked, so nothing needs placing; every skill starts at "not yet observed"                                                                                                                                                       |
+| A picture and a nickname, no real name, birth date or microphone          | As Phase 03 built it                                                                                                                                                                                                                                       |
+| Help when repeated errors look like trouble with the interface            | **Not built.** After three wrong tries at a thing to make, the answer is shown and followed                                                                                                                                                                |
+
+### Phase 05 — Reading Cove
+
+| Asked for                                                         | What there is                                                                                                                                                                                   |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0: sounds around us, sound patterns, rhyme, syllables            | Two activities: what made that sound, and play it back. **No rhyme, no syllables**                                                                                                              |
+| P0/P1: first sounds by ear                                        | Two activities, six first sounds (s, m, f, n, l, r), with the first sound drawn out                                                                                                             |
+| P2: a letter shape linked to its sound                            | Four activities, **15 letters** (s m a t, p i n o, f l c h, u e r), lower case, each taught through key words. **No recording of a sound on its own**: a synthesiser cannot be trusted with one |
+| P3: blending, by ear and then in print                            | Two activities: a word said slowly, then a printed word. **25 words are blended, 14 of them read in print**                                                                                     |
+| P4: segmenting; P5: digraphs, sentences; P6: transfer, nonsense   | **Not built**                                                                                                                                                                                   |
+| At least 10 correspondences, 25 CVC words, 10 decodable sentences | 15 letters; 25 words; **0 sentences**                                                                                                                                                           |
+| No untaught letter in anything to be read                         | Enforced by the content rules (`src/content/rules/readingCove.ts`) and tested                                                                                                                   |
+| Review list and sample pronunciations; audio is a release gate    | The list exists (grown-ups' area → _The voice_). **The gate is not passed: nobody has listened**                                                                                                |
+
+### Phase 06 — Number Garden
+
+| Asked for                                                     | What there is                                                                                                      |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| M0: same and different sets, one-to-one                       | Same amount, up to three (Phase 03's activity)                                                                     |
+| M1: seeing 1 to 3 at a glance, apart from size                | How many, at a glance: a group shown and covered; big and small things in the choices                              |
+| M2: counting to 5, then 10; no advancing by random tapping    | One for each, to five and to ten: things are given one at a time and handed in; a wrong amount is counted back     |
+| M3: frames, comparing, more, fewer, equal, rearrangement      | Which has more, which has fewer, two that are equal; rows, clusters, scatters and frames. **No number line**       |
+| M4 to M7: numerals, bonds, adding and taking away, and beyond | **Not built.** No numeral appears anywhere                                                                         |
+| At least 50 varied trials                                     | 77 challenges, written out from tables by a generator and checked by rules that every answer is the only right one |
+
+### Phase 07 — Robot Ridge
+
+| Asked for                                                  | What there is                                                                                                                      |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| R0: one arrow, one move                                    | One arrow, one move: each tap is carried out at once                                                                               |
+| R1: two or three commands in a row; run, change, run again | Two and three steps in order                                                                                                       |
+| R2: plans of 4 to 10 commands                              | **Not built**: rows are short, to fit a small phone                                                                                |
+| R3: "do it again", with counts shown                       | Do it again: a short row done two, three or four times, shown as dots                                                              |
+| R4: find the broken step                                   | Find the step that went wrong: the row runs wrong first, and one step is changed                                                   |
+| R5: conditionals                                           | **Not built**                                                                                                                      |
+| An interpreter, a solver, puzzles with a checked solution  | `src/engine/robot.ts`; every puzzle is solved by the solver when the pack is built, and a repeat puzzle cannot be done without one |
+| 10 authored puzzles and a tested generator                 | 43 puzzles, three of them drawn from seeds                                                                                         |
+
+### Phase 08 — Memory Forest
+
+| Asked for                                              | What there is                                                                                                                      |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| E0: pairs with the cards face up                       | Find the pairs begins face up, then face down                                                                                      |
+| E1: 2 to 4 things hidden and recognised                | Which one was there?                                                                                                               |
+| E2: things and their order                             | The same order: three or four, lit and named one after another                                                                     |
+| E3: a strategy shown: groups, a silly story, places    | One activity for each: things that go together, who had what, what was where                                                       |
+| E4: the child chooses a strategy                       | **Not built**                                                                                                                      |
+| E5: recall after a delay, in another sitting           | One question at the end of an activity about its very start, counted on its own. **Nothing across sittings**                       |
+| Recognition, order, cued and unaided recall kept apart | Seven skills, never added up; another look counts as help                                                                          |
+| Nothing hidden can be read from the page               | What is covered is not in the page at all, and the cards to answer with are blank while things are on show; both are browser tests |
+
+### Phase 09 — Inventor Island
+
+| Asked for                                               | What there is                                                                                                                                    |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Predict, test, compare, change one thing, test again    | Each activity is a guess that is tested in front of the child, and then a thing that does not work to be mended and tested                       |
+| Bridge, ramp, balance, float                            | Four activities, 52 challenges                                                                                                                   |
+| Wind shelter                                            | **Not built**                                                                                                                                    |
+| Models with stated assumptions and fixtures             | `src/engine/models.ts`, small and deterministic, with tests. They are toy models; their limits are written in the file and not yet in a document |
+| A parent-guided challenge away from the screen for each | Written for each activity, with what to watch out for, on the world's page. **A parent cannot record that it was done**                          |
+| A portfolio card; a captured demonstration              | **Not built**                                                                                                                                    |
+
+### Phase 10 — Explorer Harbor
+
+| Asked for                                                           | What there is                                                                                                                                              |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A story composer: character, setting, goal, trouble, ending         | **Not built**                                                                                                                                              |
+| Beginning, middle, end; what follows; why                           | Four activities: put a story in order and hear it told back; how does it end; what made it happen; what happens next. 8 stories and 8 changes, 37 drawings |
+| Six branching story seeds                                           | **Not built**: the stories are fixed, three pictures each                                                                                                  |
+| A page-turn animation                                               | A story is told back with each picture lifted in turn. **No page turns**                                                                                   |
+| A globe or map with oceans and continents; countries, flags, people | **Not built.** There are four activities about a map of made-up islands: land and water, near and far. Nothing is about a real place or people             |
+| Hotspots that are where the content says                            | The content rules work every map out again from its numbers, and a browser test checks where each place is drawn and what is drawn under it                |
+| 7 region tasks, 15 country or landmark trials                       | **Not built**                                                                                                                                              |
+
+### What was added for all of them
+
+| What                                                                                               | Where                                                          |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| An engine with two kinds of challenge: a choice, and a thing to make that a rule judges            | `src/engine/tasks.ts`, `docs/ARCHITECTURE.md`                  |
+| A lesson frame with a board for each kind of game, and worlds that bring boards of their own       | `src/game/lesson/`, `src/game/worlds/`                         |
+| Content written out by generators and refused by rules unless every answer is the one right answer | `scripts/content/`, `src/content/rules/`, `docs/CURRICULUM.md` |
+| A picture kit of 57 drawings, 15 drawn letters, and each world's own drawings                      | `src/art/`, `docs/ASSETS.md`                                   |
+| World pages with every activity as a picture, and Glim pointing at the next thing not yet finished | `src/game/world/WorldView.tsx`, `src/game/progress.ts`         |
+| The grown-ups' list of skills grouped by world; a list of every recording to listen to and mark    | `src/parent/`                                                  |
 
 ## Phase 03 — what was asked, and where the evidence is
 
@@ -184,32 +294,44 @@ to put it on a phone.
 
 ### Known gaps carried forward (updated at the end of Phase 03)
 
-| Gap                                                                                                                                                                     | Owner phase |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| **Frame rate has still only been measured on a software renderer, never on a real GPU or a phone** (and there it is poor)                                               | owner, 14   |
-| The guide's name, "Glim", has not been checked for prior use                                                                                                            | owner       |
-| **Nothing has run on a real phone or tablet, and nothing is deployed.** Sound on iOS, long presses, the notch, real GPUs                                                | owner, 16   |
-| The answer to a tap made beside a resting finger is shown in Chromium only; on iOS neither the fault nor the fix has been seen                                          | owner, 15   |
-| The answer to a slow press is unit-tested only: a browser on a desk clicks after one, and a phone's is known not to                                                     | owner, 15   |
-| On the two narrowest phones held sideways an island is 81 or 90 pixels wide, not 96                                                                                     | 17          |
-| Two fingers can zoom the page everywhere, on purpose; whether to forbid it on the map and in an activity is undecided                                                   | owner       |
-| Going to an island is a fade, not a journey; nothing on an island answers a tap except by rising                                                                        | 17          |
-| The hub's picture has still islands                                                                                                                                     | 17          |
-| No spoken instructions: "show me again" replays what was shown and its notes. Eleven synthesised motifs and a counting note                                             | 04          |
-| The first-sound slice the brief suggested was not built: it needs a voice. The slice is number sense                                                                    | 04, 05      |
-| One skill, one lesson, eight challenges; no review by an early-years teacher; no child has played it                                                                    | 05–11       |
-| Evidence thresholds are product heuristics; no spaced review, no difficulty adjustment                                                                                  | 12          |
-| Grown-ups area: no session limits, no per-skill history view, no printable summary                                                                                      | 13          |
-| `navigator.storage.persist()` is not requested; Safari may evict unused sites' data                                                                                     | 13, 14      |
-| No update prompt when a new version is waiting (it applies when the tabs are closed)                                                                                    | 14          |
-| The first screen's own files are still preloaded from `index.html`; whether a failed one recovers on reload in Safari is untested                                       | 14          |
-| No privacy/legal review; no dependency licence audit                                                                                                                    | 14          |
-| No image-comparison tests; no Firefox; no physical devices                                                                                                              | 15          |
-| In CI, a browser test that follows a 3D test has taken up to 44.5 of its 60 seconds (see `docs/TEST_RESULTS.md`)                                                        | 15          |
-| Twice in CI a page load in WebKit has waited a minute and passed at the second attempt. Not explained; a test that runs out of time now reports what it was waiting for | 15          |
-| Not deployed; GitHub Actions are pinned to major versions, not commit SHAs                                                                                              | 16          |
+| Gap                                                                                                                                                                         | Owner phase |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| **Frame rate has still only been measured on a software renderer, never on a real GPU or a phone** (and there it is poor)                                                   | owner, 14   |
+| The guide's name, "Glim", has not been checked for prior use                                                                                                                | owner       |
+| **Nothing has run on a real phone or tablet, and nothing is deployed.** Sound on iOS, long presses, the notch, real GPUs                                                    | owner, 16   |
+| The answer to a tap made beside a resting finger is shown in Chromium only; on iOS neither the fault nor the fix has been seen                                              | owner, 15   |
+| The answer to a slow press is unit-tested only: a browser on a desk clicks after one, and a phone's is known not to                                                         | owner, 15   |
+| On the two narrowest phones held sideways an island is 81 or 90 pixels wide, not 96                                                                                         | 17          |
+| Two fingers can zoom the page everywhere, on purpose; whether to forbid it on the map and in an activity is undecided                                                       | owner       |
+| Going to an island is a fade, not a journey; nothing on an island answers a tap except by rising                                                                            | 17          |
+| The hub's picture has still islands                                                                                                                                         | 17          |
+| The voice is synthesised and unheard: no person has listened to any recording, and no single letter-sound is recorded                                                       | 04, 05      |
+| 39 activities and 429 challenges that no early-years teacher has reviewed and no child has played                                                                           | 05–11       |
+| Evidence thresholds are product heuristics; no spaced review, no difficulty adjustment                                                                                      | 12          |
+| Grown-ups area: no session limits, no per-skill history view, no printable summary                                                                                          | 13          |
+| `navigator.storage.persist()` is not requested; Safari may evict unused sites' data                                                                                         | 13, 14      |
+| No update prompt when a new version is waiting (it applies when the tabs are closed)                                                                                        | 14          |
+| The first screen's own files are still preloaded from `index.html`; whether a failed one recovers on reload in Safari is untested                                           | 14          |
+| No privacy/legal review; no dependency licence audit                                                                                                                        | 14          |
+| No image-comparison tests; no Firefox; no physical devices                                                                                                                  | 15          |
+| In CI, a browser test that follows a 3D test has taken up to 44.5 of its 60 seconds (see `docs/TEST_RESULTS.md`)                                                            | 15          |
+| Twice in CI a page load in WebKit has waited a minute and passed at the second attempt. Not explained; a test that runs out of time now reports what it was waiting for     | 15          |
+| The owner's deployment serves `main`; five of the six worlds are not on it until their pull request is merged. GitHub Actions are pinned to major versions, not commit SHAs | 16          |
 
 ## Log
+
+- **2026-11-23** — Phases 04 to 10, as far as the six world pages promised. Asked to build each game and all
+  worlds, the engine was first widened from questions with choices to things a child makes and a rule judges, and
+  the lesson frame from one board to a board for each kind of game. Then the worlds: Number Garden's other three
+  activities, Reading Cove, Memory Forest and Explorer Harbor in this session's own tree, Robot Ridge and Inventor
+  Island by two agents working in copies of the repository, whose work was read, merged and tested with the
+  rest. A voice was added: 395 recordings made ahead of time and checked by a speech recogniser, which rejected a
+  number of lines that were then reworded; no person has listened to any of them. Each brief asked for more than
+  its world page did, and the tables above say what is missing. The owner connected the repository to Vercel
+  and, while the last worlds were being built, merged pull request #5: the engine, the voice and Number Garden's
+  seven activities are on `main` and live, and the smoke tests pass against the live site. The other five
+  worlds are on pull request [#6](https://github.com/JaredVogler2/Training_Academy/pull/6) and are
+  not deployed.
 
 - **2026-11-23** — Phase 03 implemented and verified in browsers, with the owner's added requirement that it work
   on Android and iOS devices on a Vercel deployment. A visit now opens on a front door and runs through to the end

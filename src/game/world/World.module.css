@@ -389,7 +389,9 @@
     font-size: var(--text-xl);
   }
 
+  /* Smaller here, and so in ink: at this size the world's own colour is too pale to read against the paper. */
   .focus {
+    color: var(--ink);
     font-size: var(--text-m);
   }
 

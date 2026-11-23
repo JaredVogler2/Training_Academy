@@ -39,10 +39,13 @@ export const WORLDS: readonly WorldInfo[] = [
     about:
       'Reading starts with listening. Children tune in to sounds, hear the first sound of a word, and only then meet the letter that stands for it — no alphabet needed to begin.',
     activities: [
-      { title: 'Listening for sounds all around', lessons: [] },
-      { title: 'Hearing the first sound in a word', lessons: [] },
-      { title: 'Linking a letter shape to its sound', lessons: [] },
-      { title: 'Blending sounds into words', lessons: [] },
+      { title: 'Listening for sounds all around', lessons: ['rc-listen-01', 'rc-listen-02'] },
+      { title: 'Hearing the first sound in a word', lessons: ['rc-first-01', 'rc-first-02'] },
+      {
+        title: 'Linking a letter shape to its sound',
+        lessons: ['rc-letters-01', 'rc-letters-02', 'rc-letters-03', 'rc-letters-04'],
+      },
+      { title: 'Blending sounds into words', lessons: ['rc-blend-01', 'rc-blend-02'] },
     ],
     role: 'reading',
   },
@@ -67,10 +70,10 @@ export const WORLDS: readonly WorldInfo[] = [
     about:
       'A friendly robot follows picture commands. Children plan a short route, watch it run, and learn to find and fix the one step that went wrong — no typing, no reading.',
     activities: [
-      { title: 'One arrow, one move', lessons: [] },
-      { title: 'Two and three steps in order', lessons: [] },
-      { title: 'Do it again: repeats', lessons: [] },
-      { title: 'Finding the step that went wrong', lessons: [] },
+      { title: 'One arrow, one move', lessons: ['rr-move-01'] },
+      { title: 'Two and three steps in order', lessons: ['rr-steps-01'] },
+      { title: 'Do it again: repeats', lessons: ['rr-repeat-01'] },
+      { title: 'Finding the step that went wrong', lessons: ['rr-mend-01'] },
     ],
     role: 'robot',
   },
@@ -81,10 +84,13 @@ export const WORLDS: readonly WorldInfo[] = [
     about:
       'Short hide-and-find games in a forest, with the tricks that help: grouping things, making up a silly story, walking a familiar path. Practice at remembering, not a measure of anything.',
     activities: [
-      { title: 'Matching pairs', lessons: [] },
-      { title: 'What was hidden?', lessons: [] },
-      { title: 'Remembering an order', lessons: [] },
-      { title: 'Grouping and story tricks', lessons: [] },
+      { title: 'Matching pairs', lessons: ['mf-pairs-01'] },
+      { title: 'What was hidden?', lessons: ['mf-hidden-01'] },
+      { title: 'Remembering an order', lessons: ['mf-order-01'] },
+      {
+        title: 'Grouping and story tricks',
+        lessons: ['mf-groups-01', 'mf-story-01', 'mf-places-01'],
+      },
     ],
     role: 'memory',
   },
@@ -95,10 +101,42 @@ export const WORLDS: readonly WorldInfo[] = [
     about:
       'A workshop for small engineers: guess what will happen, build it, watch, change one thing and try again. Each activity ends with something safe to try together away from the screen.',
     activities: [
-      { title: 'Bridges that hold', lessons: [] },
-      { title: 'Ramps and rolling', lessons: [] },
-      { title: 'Balancing', lessons: [] },
-      { title: 'Float or sink', lessons: [] },
+      {
+        title: 'Bridges that hold',
+        lessons: ['ii-bridge-01'],
+        together: {
+          what: 'Lay a ruler or a strip of card across two low stacks of books and stand a soft toy on it. Then try thicker card, or put a block under the middle. You need: books, card or a ruler, a soft toy, a few big blocks. Mess: only books and blocks to put back. Ask: what happened to the bridge? What changed when you put the block under it?',
+          safety:
+            'Stay with your child. Keep the stacks low and the toys light, and keep small blocks away from a child who still puts things in their mouth.',
+        },
+      },
+      {
+        title: 'Ramps and rolling',
+        lessons: ['ii-ramp-01'],
+        together: {
+          what: 'Prop a big book or a tray on a cushion and let a soft ball roll down onto the floor; mark where it stops with a sock. Then make the ramp higher, and then roll it onto a towel. You need: a tray or big book, a cushion, a soft ball, a towel. Mess: very little, if the floor is clear first. Ask: where did it stop? What made it go further?',
+          safety:
+            'Stay with your child. Roll, never throw; keep it on the floor and away from stairs. A marble or any ball small enough to fit in a mouth can choke a small child: use a big one.',
+        },
+      },
+      {
+        title: 'Balancing',
+        lessons: ['ii-balance-01'],
+        together: {
+          what: 'Rest a ruler across a pencil on the table and put the same big bricks on each end; then move one brick nearer the middle. You need: a ruler, a pencil, four or five big bricks that are all the same. Mess: very little. Ask: which side went down? How did you make it level again?',
+          safety:
+            'Stay with your child. Use bricks too big to swallow and count them back in afterwards; coins and other small things are a choking risk.',
+        },
+      },
+      {
+        title: 'Float or sink',
+        lessons: ['ii-float-01'],
+        together: {
+          what: 'Fill a washing-up bowl a hand deep and gather a few big, safe things: a wooden spoon, a metal spoon, an apple, an empty plastic tub, a big smooth stone. Guess each one first, then try it. You need: the bowl, the things, a towel. Mess: splashes, so put the towel down first. Ask: what did you think would happen? What did happen?',
+          safety:
+            'Never leave a child alone with water, even a little, even for a moment. Stay within reach the whole time and empty the bowl as soon as you finish. Nothing small enough to swallow.',
+        },
+      },
     ],
     role: 'inventor',
   },
@@ -107,12 +145,41 @@ export const WORLDS: readonly WorldInfo[] = [
     name: 'Explorer Harbor',
     focus: 'Stories and the wide world',
     about:
-      'Stories told in pictures — beginning, middle and end, and why things happen — and first ideas about the world: land and water, near and far, places and the people who live there.',
+      'Stories told in pictures — beginning, middle and end, and why things happen — and first ideas about a map: land and water, near and far.',
     activities: [
-      { title: 'Beginning, middle, end', lessons: [] },
-      { title: 'Why did that happen?', lessons: [] },
-      { title: 'Land and water', lessons: [] },
-      { title: 'Near and far', lessons: [] },
+      {
+        title: 'Beginning, middle, end',
+        lessons: ['eh-story-01', 'eh-ending-01'],
+        together: {
+          what: 'Tell the story of something you did today in three parts: first, then, last. Draw the three parts on scraps of paper, mix them up, and put them back in order together. Then let your child tell one for you to draw.',
+          safety:
+            'Nothing to watch out for. Any order your child can give a reason for is worth listening to.',
+        },
+      },
+      {
+        title: 'Why did that happen?',
+        lessons: ['eh-why-01', 'eh-next-01'],
+        together: {
+          what: 'Put an ice cube on a saucer in a warm spot and another in the fridge. Guess together what each will be like after lunch, then look. Ask what made the difference.',
+          safety: 'Ice and water only: nothing hot, and nothing a small child could swallow whole.',
+        },
+      },
+      {
+        title: 'Land and water',
+        lessons: ['eh-water-01', 'eh-land-01'],
+        together: {
+          what: 'Look at a map or a globe together and find the blue. Find a place that is all land and a place that is all water, and trace a shore with a finger.',
+          safety: 'Nothing to watch out for.',
+        },
+      },
+      {
+        title: 'Near and far',
+        lessons: ['eh-near-01', 'eh-far-01'],
+        together: {
+          what: 'Stand still in a room and pick three things. Which is nearest? Which is farthest? Walk to each and count the steps to find out.',
+          safety: 'Clear the floor first, and choose things that are safe to walk up to.',
+        },
+      },
     ],
     role: 'explorer',
   },

@@ -193,8 +193,10 @@ What Glim shows is a script (`src/game/lesson/script.ts`): a few beats on a cloc
 ## Glim, the guide
 
 Glim is a drop of the lighthouse's own light: the keeper's helper, sent out to show the way. Round, warm, slightly
-glowing, in a scarf striped like the lighthouse. Glim does not talk in this phase (voice is Phase 04); everything it
-says, it says with its body.
+glowing, in a scarf striped like the lighthouse. Glim's body says everything first — it points, wonders, is glad —
+and since Phase 04 Glim also speaks: one line at a time, in short plain sentences, never over a sound that is
+part of the question. The voice is a recorded one (see _The voice_, below), and what it says is always written
+beside Glim for the grown-up.
 
 > **The name is provisional.** No check has been made that "Glim" is free to use for a children's product. That is
 > the owner's decision; changing it is one string (`src/app/strings.ts`).
@@ -282,8 +284,9 @@ required to read: names are for the grown-up alongside and for a screen reader.
 
 ## Sound motifs
 
-Synthesised on the device (`src/audio/audioEngine.ts`); there are no audio files. Soft, short, quiet, in one key,
-so that any two can sound together. Everything works with sound off. Voices and music are Phase 04. A unit test
+Synthesised on the device (`src/audio/audioEngine.ts`). Soft, short, quiet, in one key, so that any two can
+sound together. Everything works with sound off except the activities that are about sounds, which say so. There
+is no music. A unit test
 holds every motif to the same limits: under 0.7 seconds, and never louder than a fifth of full volume.
 
 | Motif    | Notes                                       | Means                                                                                   |
@@ -299,6 +302,38 @@ holds every motif to the same limits: under 0.7 seconds, and never louder than a
 | Counting | One note for each thing, climbing the scale | "One, two, three" without the words. Two groups of the same amount play the same notes. |
 | The same | Two notes at once                           | The group and its match, lit together                                                   |
 | Done     | C–E–G and the C above                       | The end of an activity                                                                  |
+
+## Pictures inside an activity
+
+Added in phases 04 to 10. An activity's pictures are a different thing from the map: they are there to be
+counted, named, remembered or put in order, and anything in them that is not the point is in the way.
+
+- **One plain drawing for one thing**, about the middle of a square, in the two-dimensional language above: flat
+  shapes, soft colours, a little ink for an eye or a seam. Nothing a child might count that is not the thing: no
+  spots, petals or windows. The picture kit (`src/art/pictures.tsx`) is 57 of these.
+- **A thing stands on a small soft shadow and nothing else.** A picture that is part of a story is a small scene
+  instead, with ground under it and sky over it, so that a story's pictures can be told from things to choose.
+- **A picture never holds its own answer.** The picture of what became of a snowman has no sun in it; a flag on
+  a map is the same flag on land and on water.
+- **A letter is drawn, not set in a font**, with the strokes a child will later be taught, and only in lower case.
+- **What is hidden is covered by something of the world** — a leaf, in Memory Forest — and is gone, not dimmed.
+- **A map** is blue water with small waves and green land with a rim of sand, so that the two differ in more than
+  colour; its places are far apart; and it keeps its own shape on every screen, so that a place is in the same
+  spot of the picture everywhere.
+- **Lit means "this one, now"**: a thing being named or counted lifts for as long as its word; the right answer
+  gets a sun-coloured edge and a tick, never colour alone; a choice set aside goes quiet and hollow, with no
+  cross and no red.
+
+These drawings were made quickly, to be clear and consistent, and they are. They are not yet the illustration
+the briefs ask for (`docs/QUALITY_REPORT.md`).
+
+## The voice
+
+Added in Phase 04. One voice, a woman's, warm and unhurried, speaking in short sentences a four-year-old would
+say: "Which flag is on the water?", "Not quite. Which one comes first?". It says what is asked, says what was
+right about a right answer, and after a wrong one says what to look at, never that the child was wrong. It is
+synthesised ahead of time and shipped as recordings (`docs/ASSETS.md` → _Audio_), and **no person has yet
+listened to it**: whether it is in fact warm, clear and right is the first thing to find out.
 
 ## Quality tiers
 

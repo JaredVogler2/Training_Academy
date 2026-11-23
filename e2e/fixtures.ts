@@ -1,4 +1,5 @@
 import { test as base, expect, type Locator, type Page } from '@playwright/test';
+import { WORLDS, isOpen } from '../src/game/worlds';
 
 /**
  * What every browser test gets:
@@ -230,6 +231,19 @@ export const WORLD_NAMES = [
 ];
 
 export const LESSON_PATH = '/world/number-garden/play/ng-same-amount-01';
+
+/**
+ * What that activity teaches, as the grown-ups' area lists it. The area lists every world's skills, world by
+ * world, so a test that is about this one asks for it by name.
+ */
+export const LESSON_SKILL = 'math.quantity.match-sets-to-3';
+export const lessonSkill = (page: Page) =>
+  page.locator(`[data-testid="skill"][data-skill="${LESSON_SKILL}"]`);
+
+/** The worlds that have something to play, by name, as the game itself lists them. */
+export const OPEN_WORLDS = WORLDS.filter(isOpen).map((world) => world.name);
+/** A world that has nothing to play yet, where there still is one: its id and its name. */
+export const CLOSED_WORLD = WORLDS.find((world) => !isOpen(world)) ?? null;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Does the page fit the screen?

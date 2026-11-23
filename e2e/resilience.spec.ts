@@ -5,6 +5,7 @@ import {
   finishCorrectly,
   finished,
   holdGateOpen,
+  lessonSkill,
   myTurn,
   next,
   openGrownUps,
@@ -54,7 +55,7 @@ test.describe('when saved data disappears', () => {
 
     await openGrownUps(page);
     await expect(page.getByTestId('player')).toHaveCount(1);
-    await expect(page.getByTestId('skill').first()).toContainText('3 independent successes');
+    await expect(lessonSkill(page)).toContainText('3 independent successes');
   });
 
   test('wiped while the page is open: the next answer is still accepted', async ({
@@ -133,7 +134,7 @@ test.describe('when the browser will not let the game save', () => {
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'reduced');
 
     await press(page.getByRole('link', { name: /Number Garden/ }));
-    await press(page.getByRole('link', { name: 'Play' }));
+    await press(page.getByRole('link', { name: 'Play', exact: true }));
     await finishCorrectly(page, press);
     await expect(finished(page)).toContainText('3 of 3');
 
@@ -144,7 +145,7 @@ test.describe('when the browser will not let the game save', () => {
     await expect(
       page.getByRole('status').filter({ hasText: 'not letting the game save' }),
     ).toBeVisible();
-    await expect(page.getByTestId('skill').first()).toContainText('3 independent successes');
+    await expect(lessonSkill(page)).toContainText('3 independent successes');
   });
 });
 

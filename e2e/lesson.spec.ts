@@ -4,6 +4,7 @@ import {
   expect,
   finishCorrectly,
   finished,
+  lessonSkill,
   myTurn,
   next,
   openGrownUps,
@@ -14,7 +15,7 @@ import {
 } from './fixtures';
 
 const lesson = (page: Page) => page.getByTestId('lesson');
-const skill = (page: Page) => page.getByTestId('skill').first();
+const skill = lessonSkill;
 
 test.describe('the sample activity', () => {
   test('a brand-new player finishes it by looking and tapping, with nothing to read', async ({
@@ -24,7 +25,7 @@ test.describe('the sample activity', () => {
     // From the very first screen, the way a child would: the picture of the world, then the big button.
     await page.goto('/');
     await press(page.getByRole('link', { name: /Number Garden/ }));
-    await press(page.getByRole('link', { name: 'Play' }));
+    await press(page.getByRole('link', { name: 'Play', exact: true }));
     await expect(page).toHaveURL(new RegExp(`${LESSON_PATH}$`));
 
     // First the guide shows how: the matching group is lit and a hand points at it. Nothing is asked yet.
@@ -256,7 +257,7 @@ test.describe('the sample activity', () => {
     await press(page.getByRole('link', { name: 'Leave the activity' }));
     await press(page.getByRole('link', { name: /Number Garden/ }));
     await expect(page.getByRole('heading', { level: 1, name: 'Number Garden' })).toBeVisible();
-    await press(page.getByRole('link', { name: 'Play' }));
+    await press(page.getByRole('link', { name: 'Play', exact: true }));
     await expect(lesson(page).locator('[data-choice]').first()).toBeVisible();
     expect(await stepNumber(page)).toBe(3);
 
@@ -314,10 +315,11 @@ test.describe('the sample activity', () => {
   }) => {
     await page.goto('/world/number-garden/play/no-such-activity');
     await expect(page).toHaveURL(/\/world\/number-garden$/);
-    await expect(page.getByRole('link', { name: 'Play' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
 
+    // Another world's activity is not this world's: back to the world that was named.
     await page.goto('/world/robot-ridge/play/ng-same-amount-01');
     await expect(page).toHaveURL(/\/world\/robot-ridge$/);
-    await expect(page.getByText('This world is not open yet.')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Robot Ridge' })).toBeVisible();
   });
 });

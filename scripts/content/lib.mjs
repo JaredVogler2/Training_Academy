@@ -73,3 +73,21 @@ export async function writePack(pack) {
       `${Object.keys(pack.strings.en).length} lines`,
   );
 }
+
+/** Where a world's extra lines for the voice live: the names of its pictures, and sounds that are not speech. */
+export function voiceLinesPath(world) {
+  return join(root, 'src/voice/lines', `${world}.json`);
+}
+
+export async function voiceLinesText(lines) {
+  const config = await prettier.resolveConfig(voiceLinesPath('any'));
+  return prettier.format(JSON.stringify(lines), { ...config, parser: 'json' });
+}
+
+export async function writeVoiceLines(world, lines) {
+  writeFileSync(voiceLinesPath(world), await voiceLinesText(lines));
+  const count = Object.values(lines.groups)
+    .flatMap((group) => Object.values(group))
+    .reduce((total, section) => total + Object.keys(section).length, 0);
+  console.log(`src/voice/lines/${world}.json: ${count} clips beside the pack's lines`);
+}

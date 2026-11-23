@@ -6,6 +6,11 @@ export interface Playing {
   beat: Beat;
   /** Goes up with every beat, so a picture can start its animation afresh each time it is its turn. */
   turn: number;
+  /**
+   * Something has been uncovered for a look in this run. Until it has, a board that is waiting for that look
+   * offers nothing to answer with.
+   */
+  glanced: boolean;
 }
 
 /**
@@ -25,12 +30,18 @@ export function useScript(
   calm: boolean,
   essential = false,
 ): Playing {
-  const [shown, setShown] = useState<Playing & { run: string }>({ run: '', beat: REST, turn: 0 });
+  const [shown, setShown] = useState<Playing & { run: string }>({
+    run: '',
+    beat: REST,
+    turn: 0,
+    glanced: false,
+  });
   const still = calm && !essential;
 
   useEffect(() => {
     if (!active) return;
     let turn = 0;
+    let glanced = false;
     const timers = script.moments.map((moment) =>
       window.setTimeout(() => {
         const { sound, beat } = moment;
@@ -40,7 +51,8 @@ export function useScript(
         else if (sound?.kind === 'cue') playCue(sound.cue);
         if (beat && !still) {
           turn += 1;
-          setShown({ run, beat, turn });
+          glanced ||= beat.show === 'glance';
+          setShown({ run, beat, turn, glanced });
         }
       }, moment.at),
     );
@@ -51,7 +63,8 @@ export function useScript(
     };
   }, [script, run, active, still]);
 
-  if (still) return { beat: script.settled, turn: 0 };
+  // Standing still, nothing will be uncovered: whatever a look would have shown is not waited for.
+  if (still) return { beat: script.settled, turn: 0, glanced: true };
   // Until this run's first moment arrives (and whenever it is not playing), the board is at rest.
-  return active && shown.run === run ? shown : { beat: REST, turn: 0 };
+  return active && shown.run === run ? shown : { beat: REST, turn: 0, glanced: false };
 }

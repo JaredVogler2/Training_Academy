@@ -1,0 +1,3273 @@
+{
+  "format": "training-academy.content-pack",
+  "schemaVersion": 1,
+  "id": "explorer-harbor",
+  "world": "explorer-harbor",
+  "contentVersion": 1,
+  "strings": {
+    "en": {
+      "eh.hint.not-this": "Not this one.",
+      "eh.story.instruction": "What happened first? Put the story in order.",
+      "eh.story.correct": "Yes. Here is the whole story.",
+      "eh.story.incorrect": "Not quite. Which one comes first?",
+      "eh.story.hint.model": "Look for how it starts. Then look for how it ends.",
+      "eh.story.hint.step": "It starts like this.",
+      "eh.story.hint.reveal": "This is how it goes.",
+      "eh.ending.instruction": "How does the story end?",
+      "eh.ending.correct": "Yes. That is how it ends.",
+      "eh.ending.incorrect": "That is from a different story. Look again.",
+      "eh.ending.hint.model": "Look at the story so far. What is it about?",
+      "eh.ending.hint.reveal": "It ends like this.",
+      "eh.why.incorrect": "That did not do it. Think again.",
+      "eh.why.hint.model": "Look at how it was, and how it is now.",
+      "eh.why.hint.reveal": "This is what did it.",
+      "eh.next.incorrect": "That is not what happens. Think again.",
+      "eh.next.hint.model": "Think about what it does.",
+      "eh.next.hint.reveal": "This is what happens.",
+      "eh.why.snow": "The snowman melted. What made it melt?",
+      "eh.why.snow.correct": "Yes. The sun melted it.",
+      "eh.next.snow": "The sun shines on the snowman. What happens next?",
+      "eh.next.snow.correct": "Yes. The snowman melts.",
+      "eh.why.balloon": "The balloon burst. What made it burst?",
+      "eh.why.balloon.correct": "Yes. The pin burst the balloon.",
+      "eh.next.balloon": "A pin touches the balloon. What happens next?",
+      "eh.next.balloon.correct": "Yes. The balloon bursts.",
+      "eh.why.tower": "The tower fell down. What knocked it down?",
+      "eh.why.tower.correct": "Yes. The ball knocked the tower down.",
+      "eh.next.tower": "A ball rolls into the tower. What happens next?",
+      "eh.next.tower.correct": "Yes. The tower falls down.",
+      "eh.why.seed": "The seed began to grow. What helped it grow?",
+      "eh.why.seed.correct": "Yes. Water helped the seed to grow.",
+      "eh.next.seed": "Water falls on the seed. What happens next?",
+      "eh.next.seed.correct": "Yes. The seed begins to grow.",
+      "eh.why.castle": "The sandcastle is gone. What washed it away?",
+      "eh.why.castle.correct": "Yes. A wave washed it away.",
+      "eh.next.castle": "A wave rolls over the sandcastle. What happens next?",
+      "eh.next.castle.correct": "Yes. The sandcastle is washed flat.",
+      "eh.why.rain": "There is a puddle on the path. What made the puddle?",
+      "eh.why.rain.correct": "Yes. The rain made the puddle.",
+      "eh.next.rain": "Rain falls on the path. What happens next?",
+      "eh.next.rain.correct": "Yes. The rain leaves a puddle.",
+      "eh.why.cheese": "Someone has nibbled the cheese. Who was it?",
+      "eh.why.cheese.correct": "Yes. The mouse nibbled the cheese.",
+      "eh.next.cheese": "A mouse finds the cheese. What happens next?",
+      "eh.next.cheese.correct": "Yes. The mouse nibbles the cheese.",
+      "eh.why.kite": "The kite is up in the sky. What lifted it?",
+      "eh.why.kite.correct": "Yes. The wind lifted the kite.",
+      "eh.next.kite": "The wind blows on the kite. What happens next?",
+      "eh.next.kite.correct": "Yes. The kite flies up high.",
+      "eh.map.hint.reveal": "It is this one.",
+      "eh.water.demo": "This is a map. Green is land. Blue is water. Which flag is on the water?",
+      "eh.water.instruction": "Which flag is on the water?",
+      "eh.water.correct": "Yes. That flag is on the water.",
+      "eh.water.incorrect": "That flag is on the land. Look for the blue water.",
+      "eh.water.hint.model": "The water is the blue part.",
+      "eh.land.demo": "This is a map. Blue is water. Green is land. Which flag is on the land?",
+      "eh.land.instruction": "Which flag is on the land?",
+      "eh.land.correct": "Yes. That flag is on the land.",
+      "eh.land.incorrect": "That flag is on the water. Look for the green land.",
+      "eh.land.hint.model": "The land is the green part.",
+      "eh.near.demo": "Here is a boat. Which island is nearest? Nearest means the shortest way to go.",
+      "eh.near.instruction": "Which island is nearest to the boat?",
+      "eh.near.correct": "Yes. That one is nearest. It is a short way to go.",
+      "eh.near.incorrect": "Another one is nearer. Look again.",
+      "eh.near.hint.model": "Look at the lines. The shortest line goes to the nearest.",
+      "eh.far.demo": "Here is a boat. Which island is farthest away? Farthest means the longest way to go.",
+      "eh.far.instruction": "Which island is farthest from the boat?",
+      "eh.far.correct": "Yes. That one is farthest. It is a long way to go.",
+      "eh.far.incorrect": "Another one is farther away. Look again.",
+      "eh.far.hint.model": "Look at the lines. The longest line goes to the farthest."
+    }
+  },
+  "skills": [
+    {
+      "id": "story.sequence.order-three",
+      "world": "explorer-harbor",
+      "strand": "language-and-world",
+      "title": "Put a story in order",
+      "objective": "Puts three pictures of something that happens into the order it happens in: beginning, middle and end.",
+      "prerequisites": []
+    },
+    {
+      "id": "story.sequence.choose-ending",
+      "world": "explorer-harbor",
+      "strand": "language-and-world",
+      "title": "Say how a story ends",
+      "objective": "Shown the beginning and the middle of a short story, picks the picture it ends with from among the endings of other stories.",
+      "prerequisites": ["story.sequence.order-three"]
+    },
+    {
+      "id": "story.cause.find-cause",
+      "world": "explorer-harbor",
+      "strand": "language-and-world",
+      "title": "Say what made it happen",
+      "objective": "Shown a thing before and after something happened to it, picks what did it from three things, two of which could not have.",
+      "prerequisites": ["story.sequence.order-three"]
+    },
+    {
+      "id": "story.cause.predict",
+      "world": "explorer-harbor",
+      "strand": "language-and-world",
+      "title": "Say what happens next",
+      "objective": "Shown a thing and what is about to happen to it, picks how it will turn out from three pictures.",
+      "prerequisites": ["story.cause.find-cause"]
+    },
+    {
+      "id": "world.map.water",
+      "world": "explorer-harbor",
+      "strand": "language-and-world",
+      "title": "Find water on a map",
+      "objective": "On a simple map of sea and islands, picks the one flag of two or three that stands on water.",
+      "prerequisites": []
+    },
+    {
+      "id": "world.map.land",
+      "world": "explorer-harbor",
+      "strand": "language-and-world",
+      "title": "Find land on a map",
+      "objective": "On a simple map of sea and islands, picks the one flag of two or three that stands on land.",
+      "prerequisites": ["world.map.water"]
+    },
+    {
+      "id": "world.space.nearest",
+      "world": "explorer-harbor",
+      "strand": "language-and-world",
+      "title": "Find the nearest place",
+      "objective": "On a map with a boat and three islands, picks the island nearest to the boat.",
+      "prerequisites": []
+    },
+    {
+      "id": "world.space.farthest",
+      "world": "explorer-harbor",
+      "strand": "language-and-world",
+      "title": "Find the farthest place",
+      "objective": "On a map with a boat and three islands, picks the island farthest from the boat.",
+      "prerequisites": ["world.space.nearest"]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "eh-story-01",
+      "version": 1,
+      "world": "explorer-harbor",
+      "title": "Put the story in order",
+      "summary": "Three pictures show something happening: a seed that grows, a snowman that melts. They are out of order. Your child puts them first, next and last, and then the story is told back, picture by picture.",
+      "skillIds": ["story.sequence.order-three"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["eh-story-01.seed"],
+        "guided": ["eh-story-01.egg", "eh-story-01.tower"],
+        "independent": {
+          "pool": [
+            "eh-story-01.snow",
+            "eh-story-01.balloon",
+            "eh-story-01.castle",
+            "eh-story-01.rain",
+            "eh-story-01.fly"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "eh-story-01.seed",
+          "kind": "make",
+          "skillId": "story.sequence.order-three",
+          "variant": "something-grows",
+          "prompt": { "instruction": "eh.story.instruction" },
+          "task": {
+            "type": "order",
+            "cards": [
+              {
+                "id": "seed1",
+                "label": "A seed sleeps in the soil.",
+                "stimulus": { "type": "picture", "id": "seed1" }
+              },
+              {
+                "id": "seed2",
+                "label": "A little shoot comes up.",
+                "stimulus": { "type": "picture", "id": "seed2" }
+              },
+              {
+                "id": "seed3",
+                "label": "Now it is a flower.",
+                "stimulus": { "type": "picture", "id": "seed3" }
+              }
+            ],
+            "solution": ["seed1", "seed2", "seed3"]
+          },
+          "hints": [
+            { "type": "model", "caption": "eh.story.hint.model" },
+            { "type": "step", "count": 1, "caption": "eh.story.hint.step" },
+            { "type": "reveal", "caption": "eh.story.hint.reveal" }
+          ],
+          "feedback": { "correct": "eh.story.correct", "incorrect": "eh.story.incorrect" }
+        },
+        {
+          "id": "eh-story-01.egg",
+          "kind": "make",
+          "skillId": "story.sequence.order-three",
+          "variant": "something-grows",
+          "prompt": { "instruction": "eh.story.instruction" },
+          "task": {
+            "type": "order",
+            "cards": [
+              {
+                "id": "egg1",
+                "label": "The hen sits on her egg.",
+                "stimulus": { "type": "picture", "id": "egg1" }
+              },
+              {
+                "id": "egg2",
+                "label": "Crack! The egg breaks open.",
+                "stimulus": { "type": "picture", "id": "egg2" }
+              },
+              {
+                "id": "egg3",
+                "label": "A baby chick comes out.",
+                "stimulus": { "type": "picture", "id": "egg3" }
+              }
+            ],
+            "solution": ["egg1", "egg2", "egg3"]
+          },
+          "hints": [
+            { "type": "model", "caption": "eh.story.hint.model" },
+            { "type": "step", "count": 1, "caption": "eh.story.hint.step" },
+            { "type": "reveal", "caption": "eh.story.hint.reveal" }
+          ],
+          "feedback": { "correct": "eh.story.correct", "incorrect": "eh.story.incorrect" }
+        },
+        {
+          "id": "eh-story-01.tower",
+          "kind": "make",
+          "skillId": "story.sequence.order-three",
+          "variant": "made-and-gone",
+          "prompt": { "instruction": "eh.story.instruction" },
+          "task": {
+            "type": "order",
+            "cards": [
+              {
+                "id": "tower1",
+                "label": "Here is one block.",
+                "stimulus": { "type": "picture", "id": "tower1" }
+              },
+              {
+                "id": "tower2",
+                "label": "The blocks make a tall tower.",
+                "stimulus": { "type": "picture", "id": "tower2" }
+              },
+              {
+                "id": "tower3",
+                "label": "Crash! The tower falls down.",
+                "stimulus": { "type": "picture", "id": "tower3" }
+              }
+            ],
+            "solution": ["tower1", "tower2", "tower3"]
+          },
+          "hints": [
+            { "type": "model", "caption": "eh.story.hint.model" },
+            { "type": "step", "count": 1, "caption": "eh.story.hint.step" },
+            { "type": "reveal", "caption": "eh.story.hint.reveal" }
+          ],
+          "feedback": { "correct": "eh.story.correct", "incorrect": "eh.story.incorrect" }
+        },
+        {
+          "id": "eh-story-01.snow",
+          "kind": "make",
+          "skillId": "story.sequence.order-three",
+          "variant": "made-and-gone",
+          "prompt": { "instruction": "eh.story.instruction" },
+          "task": {
+            "type": "order",
+            "cards": [
+              {
+                "id": "snow1",
+                "label": "We roll two balls of snow.",
+                "stimulus": { "type": "picture", "id": "snow1" }
+              },
+              {
+                "id": "snow2",
+                "label": "Now it is a snowman.",
+                "stimulus": { "type": "picture", "id": "snow2" }
+              },
+              {
+                "id": "snow3",
+                "label": "The snowman melts away.",
+                "stimulus": { "type": "picture", "id": "snow3" }
+              }
+            ],
+            "solution": ["snow1", "snow2", "snow3"]
+          },
+          "hints": [
+            { "type": "model", "caption": "eh.story.hint.model" },
+            { "type": "step", "count": 1, "caption": "eh.story.hint.step" },
+            { "type": "reveal", "caption": "eh.story.hint.reveal" }
+          ],
+          "feedback": { "correct": "eh.story.correct", "incorrect": "eh.story.incorrect" }
+        },
+        {
+          "id": "eh-story-01.balloon",
+          "kind": "make",
+          "skillId": "story.sequence.order-three",
+          "variant": "made-and-gone",
+          "prompt": { "instruction": "eh.story.instruction" },
+          "task": {
+            "type": "order",
+            "cards": [
+              {
+                "id": "balloon1",
+                "label": "The balloon is flat.",
+                "stimulus": { "type": "picture", "id": "balloon1" }
+              },
+              {
+                "id": "balloon2",
+                "label": "We blow it up big.",
+                "stimulus": { "type": "picture", "id": "balloon2" }
+              },
+              {
+                "id": "balloon3",
+                "label": "Then the balloon goes pop.",
+                "stimulus": { "type": "picture", "id": "balloon3" }
+              }
+            ],
+            "solution": ["balloon1", "balloon2", "balloon3"]
+          },
+          "hints": [
+            { "type": "model", "caption": "eh.story.hint.model" },
+            { "type": "step", "count": 1, "caption": "eh.story.hint.step" },
+            { "type": "reveal", "caption": "eh.story.hint.reveal" }
+          ],
+          "feedback": { "correct": "eh.story.correct", "incorrect": "eh.story.incorrect" }
+        },
+        {
+          "id": "eh-story-01.castle",
+          "kind": "make",
+          "skillId": "story.sequence.order-three",
+          "variant": "made-and-gone",
+          "prompt": { "instruction": "eh.story.instruction" },
+          "task": {
+            "type": "order",
+            "cards": [
+              {
+                "id": "castle1",
+                "label": "Here is sand, and a bucket.",
+                "stimulus": { "type": "picture", "id": "castle1" }
+              },
+              {
+                "id": "castle2",
+                "label": "Now it is a sandcastle.",
+                "stimulus": { "type": "picture", "id": "castle2" }
+              },
+              {
+                "id": "castle3",
+                "label": "The sea washes it flat.",
+                "stimulus": { "type": "picture", "id": "castle3" }
+              }
+            ],
+            "solution": ["castle1", "castle2", "castle3"]
+          },
+          "hints": [
+            { "type": "model", "caption": "eh.story.hint.model" },
+            { "type": "step", "count": 1, "caption": "eh.story.hint.step" },
+            { "type": "reveal", "caption": "eh.story.hint.reveal" }
+          ],
+          "feedback": { "correct": "eh.story.correct", "incorrect": "eh.story.incorrect" }
+        },
+        {
+          "id": "eh-story-01.rain",
+          "kind": "make",
+          "skillId": "story.sequence.order-three",
+          "variant": "weather",
+          "prompt": { "instruction": "eh.story.instruction" },
+          "task": {
+            "type": "order",
+            "cards": [
+              {
+                "id": "rain1",
+                "label": "A dark cloud comes.",
+                "stimulus": { "type": "picture", "id": "rain1" }
+              },
+              {
+                "id": "rain2",
+                "label": "Down comes the rain.",
+                "stimulus": { "type": "picture", "id": "rain2" }
+              },
+              {
+                "id": "rain3",
+                "label": "Now there is a puddle.",
+                "stimulus": { "type": "picture", "id": "rain3" }
+              }
+            ],
+            "solution": ["rain1", "rain2", "rain3"]
+          },
+          "hints": [
+            { "type": "model", "caption": "eh.story.hint.model" },
+            { "type": "step", "count": 1, "caption": "eh.story.hint.step" },
+            { "type": "reveal", "caption": "eh.story.hint.reveal" }
+          ],
+          "feedback": { "correct": "eh.story.correct", "incorrect": "eh.story.incorrect" }
+        },
+        {
+          "id": "eh-story-01.fly",
+          "kind": "make",
+          "skillId": "story.sequence.order-three",
+          "variant": "something-grows",
+          "prompt": { "instruction": "eh.story.instruction" },
+          "task": {
+            "type": "order",
+            "cards": [
+              {
+                "id": "fly1",
+                "label": "A caterpillar eats a leaf.",
+                "stimulus": { "type": "picture", "id": "fly1" }
+              },
+              {
+                "id": "fly2",
+                "label": "It hides in a cocoon.",
+                "stimulus": { "type": "picture", "id": "fly2" }
+              },
+              {
+                "id": "fly3",
+                "label": "Out comes a butterfly.",
+                "stimulus": { "type": "picture", "id": "fly3" }
+              }
+            ],
+            "solution": ["fly1", "fly2", "fly3"]
+          },
+          "hints": [
+            { "type": "model", "caption": "eh.story.hint.model" },
+            { "type": "step", "count": 1, "caption": "eh.story.hint.step" },
+            { "type": "reveal", "caption": "eh.story.hint.reveal" }
+          ],
+          "feedback": { "correct": "eh.story.correct", "incorrect": "eh.story.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "eh-ending-01",
+      "version": 1,
+      "world": "explorer-harbor",
+      "title": "How does it end?",
+      "summary": "The beginning and the middle of a story are shown and told. Three pictures are offered for the ending: the right one, and the endings of two other stories.",
+      "skillIds": ["story.sequence.choose-ending"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["eh-ending-01.egg"],
+        "guided": ["eh-ending-01.seed", "eh-ending-01.castle"],
+        "independent": {
+          "pool": [
+            "eh-ending-01.fly",
+            "eh-ending-01.snow",
+            "eh-ending-01.tower",
+            "eh-ending-01.balloon",
+            "eh-ending-01.rain"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "eh-ending-01.egg",
+          "kind": "choose-one",
+          "skillId": "story.sequence.choose-ending",
+          "variant": "something-grows",
+          "prompt": {
+            "instruction": "eh.ending.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "story", "parts": ["egg1", "egg2", "egg3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            { "id": "a", "label": "A flower", "stimulus": { "type": "picture", "id": "seed3" } },
+            { "id": "b", "label": "A butterfly", "stimulus": { "type": "picture", "id": "fly3" } },
+            {
+              "id": "c",
+              "label": "A chick beside its broken shell",
+              "stimulus": { "type": "picture", "id": "egg3" }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.ending.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.ending.hint.reveal" }
+          ],
+          "misconceptions": { "a": "ending-of-another-story", "b": "ending-of-another-story" },
+          "feedback": { "correct": "eh.ending.correct", "incorrect": "eh.ending.incorrect" }
+        },
+        {
+          "id": "eh-ending-01.seed",
+          "kind": "choose-one",
+          "skillId": "story.sequence.choose-ending",
+          "variant": "something-grows",
+          "prompt": {
+            "instruction": "eh.ending.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "story", "parts": ["seed1", "seed2", "seed3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "Blocks fallen in a heap",
+              "stimulus": { "type": "picture", "id": "tower3" }
+            },
+            { "id": "b", "label": "A flower", "stimulus": { "type": "picture", "id": "seed3" } },
+            {
+              "id": "c",
+              "label": "A chick beside its broken shell",
+              "stimulus": { "type": "picture", "id": "egg3" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.ending.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.ending.hint.reveal" }
+          ],
+          "misconceptions": { "a": "ending-of-another-story", "c": "ending-of-another-story" },
+          "feedback": { "correct": "eh.ending.correct", "incorrect": "eh.ending.incorrect" }
+        },
+        {
+          "id": "eh-ending-01.castle",
+          "kind": "choose-one",
+          "skillId": "story.sequence.choose-ending",
+          "variant": "made-and-gone",
+          "prompt": {
+            "instruction": "eh.ending.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "story", "parts": ["castle1", "castle2", "castle3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            { "id": "a", "label": "A flower", "stimulus": { "type": "picture", "id": "seed3" } },
+            {
+              "id": "b",
+              "label": "Blocks fallen in a heap",
+              "stimulus": { "type": "picture", "id": "tower3" }
+            },
+            {
+              "id": "c",
+              "label": "Sand washed flat by the sea",
+              "stimulus": { "type": "picture", "id": "castle3" }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.ending.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.ending.hint.reveal" }
+          ],
+          "misconceptions": { "a": "ending-of-another-story", "b": "ending-of-another-story" },
+          "feedback": { "correct": "eh.ending.correct", "incorrect": "eh.ending.incorrect" }
+        },
+        {
+          "id": "eh-ending-01.fly",
+          "kind": "choose-one",
+          "skillId": "story.sequence.choose-ending",
+          "variant": "something-grows",
+          "prompt": {
+            "instruction": "eh.ending.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "story", "parts": ["fly1", "fly2", "fly3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            { "id": "a", "label": "A flower", "stimulus": { "type": "picture", "id": "seed3" } },
+            { "id": "b", "label": "A butterfly", "stimulus": { "type": "picture", "id": "fly3" } },
+            {
+              "id": "c",
+              "label": "A chick beside its broken shell",
+              "stimulus": { "type": "picture", "id": "egg3" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.ending.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.ending.hint.reveal" }
+          ],
+          "misconceptions": { "a": "ending-of-another-story", "c": "ending-of-another-story" },
+          "feedback": { "correct": "eh.ending.correct", "incorrect": "eh.ending.incorrect" }
+        },
+        {
+          "id": "eh-ending-01.snow",
+          "kind": "choose-one",
+          "skillId": "story.sequence.choose-ending",
+          "variant": "made-and-gone",
+          "prompt": {
+            "instruction": "eh.ending.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "story", "parts": ["snow1", "snow2", "snow3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A burst balloon",
+              "stimulus": { "type": "picture", "id": "balloon3" }
+            },
+            {
+              "id": "b",
+              "label": "A puddle with a hat and a carrot in it",
+              "stimulus": { "type": "picture", "id": "snow3" }
+            },
+            {
+              "id": "c",
+              "label": "Blocks fallen in a heap",
+              "stimulus": { "type": "picture", "id": "tower3" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.ending.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.ending.hint.reveal" }
+          ],
+          "misconceptions": { "a": "ending-of-another-story", "c": "ending-of-another-story" },
+          "feedback": { "correct": "eh.ending.correct", "incorrect": "eh.ending.incorrect" }
+        },
+        {
+          "id": "eh-ending-01.tower",
+          "kind": "choose-one",
+          "skillId": "story.sequence.choose-ending",
+          "variant": "made-and-gone",
+          "prompt": {
+            "instruction": "eh.ending.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "story", "parts": ["tower1", "tower2", "tower3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "Sand washed flat by the sea",
+              "stimulus": { "type": "picture", "id": "castle3" }
+            },
+            {
+              "id": "b",
+              "label": "Blocks fallen in a heap",
+              "stimulus": { "type": "picture", "id": "tower3" }
+            },
+            {
+              "id": "c",
+              "label": "A puddle with a hat and a carrot in it",
+              "stimulus": { "type": "picture", "id": "snow3" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.ending.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.ending.hint.reveal" }
+          ],
+          "misconceptions": { "a": "ending-of-another-story", "c": "ending-of-another-story" },
+          "feedback": { "correct": "eh.ending.correct", "incorrect": "eh.ending.incorrect" }
+        },
+        {
+          "id": "eh-ending-01.balloon",
+          "kind": "choose-one",
+          "skillId": "story.sequence.choose-ending",
+          "variant": "made-and-gone",
+          "prompt": {
+            "instruction": "eh.ending.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "story", "parts": ["balloon1", "balloon2", "balloon3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "Blocks fallen in a heap",
+              "stimulus": { "type": "picture", "id": "tower3" }
+            },
+            {
+              "id": "b",
+              "label": "A chick beside its broken shell",
+              "stimulus": { "type": "picture", "id": "egg3" }
+            },
+            {
+              "id": "c",
+              "label": "A burst balloon",
+              "stimulus": { "type": "picture", "id": "balloon3" }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.ending.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.ending.hint.reveal" }
+          ],
+          "misconceptions": { "a": "ending-of-another-story", "b": "ending-of-another-story" },
+          "feedback": { "correct": "eh.ending.correct", "incorrect": "eh.ending.incorrect" }
+        },
+        {
+          "id": "eh-ending-01.rain",
+          "kind": "choose-one",
+          "skillId": "story.sequence.choose-ending",
+          "variant": "weather",
+          "prompt": {
+            "instruction": "eh.ending.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "story", "parts": ["rain1", "rain2", "rain3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A puddle on the path",
+              "stimulus": { "type": "picture", "id": "rain3" }
+            },
+            {
+              "id": "b",
+              "label": "A burst balloon",
+              "stimulus": { "type": "picture", "id": "balloon3" }
+            },
+            { "id": "c", "label": "A butterfly", "stimulus": { "type": "picture", "id": "fly3" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.ending.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.ending.hint.reveal" }
+          ],
+          "misconceptions": { "b": "ending-of-another-story", "c": "ending-of-another-story" },
+          "feedback": { "correct": "eh.ending.correct", "incorrect": "eh.ending.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "eh-why-01",
+      "version": 1,
+      "world": "explorer-harbor",
+      "title": "What made it happen?",
+      "summary": "A thing is shown before and after something happened to it: a balloon, and then a burst balloon. Your child picks what did it from three things. The other two could not have.",
+      "skillIds": ["story.cause.find-cause"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["eh-why-01.balloon"],
+        "guided": ["eh-why-01.rain", "eh-why-01.tower"],
+        "independent": {
+          "pool": [
+            "eh-why-01.snow",
+            "eh-why-01.seed",
+            "eh-why-01.castle",
+            "eh-why-01.cheese",
+            "eh-why-01.kite"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "eh-why-01.balloon",
+          "kind": "choose-one",
+          "skillId": "story.cause.find-cause",
+          "variant": "something-touches-it",
+          "prompt": {
+            "instruction": "eh.why.balloon",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["balloon2", "pin", "balloon3"], "gap": 1 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A watering can",
+              "stimulus": { "type": "picture", "id": "wateringcan" }
+            },
+            { "id": "b", "label": "A pin", "stimulus": { "type": "picture", "id": "pin" } },
+            { "id": "c", "label": "A rain cloud", "stimulus": { "type": "picture", "id": "rain" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.why.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.why.hint.reveal" }
+          ],
+          "misconceptions": { "a": "not-the-cause", "c": "not-the-cause" },
+          "feedback": { "correct": "eh.why.balloon.correct", "incorrect": "eh.why.incorrect" }
+        },
+        {
+          "id": "eh-why-01.rain",
+          "kind": "choose-one",
+          "skillId": "story.cause.find-cause",
+          "variant": "weather",
+          "prompt": {
+            "instruction": "eh.why.rain",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["path", "rain", "rain3"], "gap": 1 }
+            }
+          },
+          "choices": [
+            { "id": "a", "label": "A ball", "stimulus": { "type": "picture", "id": "ball" } },
+            { "id": "b", "label": "The sun", "stimulus": { "type": "picture", "id": "sun" } },
+            { "id": "c", "label": "A rain cloud", "stimulus": { "type": "picture", "id": "rain" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.why.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.why.hint.reveal" }
+          ],
+          "misconceptions": { "a": "not-the-cause", "b": "not-the-cause" },
+          "feedback": { "correct": "eh.why.rain.correct", "incorrect": "eh.why.incorrect" }
+        },
+        {
+          "id": "eh-why-01.tower",
+          "kind": "choose-one",
+          "skillId": "story.cause.find-cause",
+          "variant": "something-touches-it",
+          "prompt": {
+            "instruction": "eh.why.tower",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["tower2", "ball", "tower3"], "gap": 1 }
+            }
+          },
+          "choices": [
+            { "id": "a", "label": "A ball", "stimulus": { "type": "picture", "id": "ball" } },
+            { "id": "b", "label": "The sun", "stimulus": { "type": "picture", "id": "sun" } },
+            { "id": "c", "label": "A pin", "stimulus": { "type": "picture", "id": "pin" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.why.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.why.hint.reveal" }
+          ],
+          "misconceptions": { "b": "not-the-cause", "c": "not-the-cause" },
+          "feedback": { "correct": "eh.why.tower.correct", "incorrect": "eh.why.incorrect" }
+        },
+        {
+          "id": "eh-why-01.snow",
+          "kind": "choose-one",
+          "skillId": "story.cause.find-cause",
+          "variant": "weather",
+          "prompt": {
+            "instruction": "eh.why.snow",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["snow2", "sun", "snow3"], "gap": 1 }
+            }
+          },
+          "choices": [
+            { "id": "a", "label": "A pin", "stimulus": { "type": "picture", "id": "pin" } },
+            { "id": "b", "label": "The sun", "stimulus": { "type": "picture", "id": "sun" } },
+            { "id": "c", "label": "A mouse", "stimulus": { "type": "picture", "id": "mouse" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.why.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.why.hint.reveal" }
+          ],
+          "misconceptions": { "a": "not-the-cause", "c": "not-the-cause" },
+          "feedback": { "correct": "eh.why.snow.correct", "incorrect": "eh.why.incorrect" }
+        },
+        {
+          "id": "eh-why-01.seed",
+          "kind": "choose-one",
+          "skillId": "story.cause.find-cause",
+          "variant": "someone-does-it",
+          "prompt": {
+            "instruction": "eh.why.seed",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["seed1", "wateringcan", "seed2"], "gap": 1 }
+            }
+          },
+          "choices": [
+            { "id": "a", "label": "A ball", "stimulus": { "type": "picture", "id": "ball" } },
+            { "id": "b", "label": "The wind", "stimulus": { "type": "picture", "id": "wind" } },
+            {
+              "id": "c",
+              "label": "A watering can",
+              "stimulus": { "type": "picture", "id": "wateringcan" }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.why.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.why.hint.reveal" }
+          ],
+          "misconceptions": { "a": "not-the-cause", "b": "not-the-cause" },
+          "feedback": { "correct": "eh.why.seed.correct", "incorrect": "eh.why.incorrect" }
+        },
+        {
+          "id": "eh-why-01.castle",
+          "kind": "choose-one",
+          "skillId": "story.cause.find-cause",
+          "variant": "weather",
+          "prompt": {
+            "instruction": "eh.why.castle",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["castle2", "wave", "castle3"], "gap": 1 }
+            }
+          },
+          "choices": [
+            { "id": "a", "label": "The sun", "stimulus": { "type": "picture", "id": "sun" } },
+            { "id": "b", "label": "A mouse", "stimulus": { "type": "picture", "id": "mouse" } },
+            { "id": "c", "label": "A wave", "stimulus": { "type": "picture", "id": "wave" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.why.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.why.hint.reveal" }
+          ],
+          "misconceptions": { "a": "not-the-cause", "b": "not-the-cause" },
+          "feedback": { "correct": "eh.why.castle.correct", "incorrect": "eh.why.incorrect" }
+        },
+        {
+          "id": "eh-why-01.cheese",
+          "kind": "choose-one",
+          "skillId": "story.cause.find-cause",
+          "variant": "someone-does-it",
+          "prompt": {
+            "instruction": "eh.why.cheese",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["cheese1", "mouse", "cheese2"], "gap": 1 }
+            }
+          },
+          "choices": [
+            { "id": "a", "label": "A mouse", "stimulus": { "type": "picture", "id": "mouse" } },
+            { "id": "b", "label": "A wave", "stimulus": { "type": "picture", "id": "wave" } },
+            {
+              "id": "c",
+              "label": "A watering can",
+              "stimulus": { "type": "picture", "id": "wateringcan" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.why.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.why.hint.reveal" }
+          ],
+          "misconceptions": { "b": "not-the-cause", "c": "not-the-cause" },
+          "feedback": { "correct": "eh.why.cheese.correct", "incorrect": "eh.why.incorrect" }
+        },
+        {
+          "id": "eh-why-01.kite",
+          "kind": "choose-one",
+          "skillId": "story.cause.find-cause",
+          "variant": "weather",
+          "prompt": {
+            "instruction": "eh.why.kite",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["kite1", "wind", "kite2"], "gap": 1 }
+            }
+          },
+          "choices": [
+            { "id": "a", "label": "A rain cloud", "stimulus": { "type": "picture", "id": "rain" } },
+            { "id": "b", "label": "A wave", "stimulus": { "type": "picture", "id": "wave" } },
+            { "id": "c", "label": "The wind", "stimulus": { "type": "picture", "id": "wind" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.why.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.why.hint.reveal" }
+          ],
+          "misconceptions": { "a": "not-the-cause", "b": "not-the-cause" },
+          "feedback": { "correct": "eh.why.kite.correct", "incorrect": "eh.why.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "eh-next-01",
+      "version": 1,
+      "world": "explorer-harbor",
+      "title": "What happens next?",
+      "summary": "A thing is shown with what is about to happen to it: a tower, and a ball rolling at it. Your child picks how it will turn out from three pictures.",
+      "skillIds": ["story.cause.predict"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["eh-next-01.tower"],
+        "guided": ["eh-next-01.balloon", "eh-next-01.cheese"],
+        "independent": {
+          "pool": [
+            "eh-next-01.snow",
+            "eh-next-01.seed",
+            "eh-next-01.castle",
+            "eh-next-01.rain",
+            "eh-next-01.kite"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "eh-next-01.tower",
+          "kind": "choose-one",
+          "skillId": "story.cause.predict",
+          "variant": "something-touches-it",
+          "prompt": {
+            "instruction": "eh.next.tower",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["tower2", "ball", "tower3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            { "id": "a", "label": "One block", "stimulus": { "type": "picture", "id": "tower1" } },
+            {
+              "id": "b",
+              "label": "Sand washed flat by the sea",
+              "stimulus": { "type": "picture", "id": "castle3" }
+            },
+            {
+              "id": "c",
+              "label": "Blocks fallen in a heap",
+              "stimulus": { "type": "picture", "id": "tower3" }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.next.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.next.hint.reveal" }
+          ],
+          "misconceptions": { "a": "how-it-was-before", "b": "what-became-of-something-else" },
+          "feedback": { "correct": "eh.next.tower.correct", "incorrect": "eh.next.incorrect" }
+        },
+        {
+          "id": "eh-next-01.balloon",
+          "kind": "choose-one",
+          "skillId": "story.cause.predict",
+          "variant": "something-touches-it",
+          "prompt": {
+            "instruction": "eh.next.balloon",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["balloon2", "pin", "balloon3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A piece of cheese with bites out of it",
+              "stimulus": { "type": "picture", "id": "cheese2" }
+            },
+            {
+              "id": "b",
+              "label": "A burst balloon",
+              "stimulus": { "type": "picture", "id": "balloon3" }
+            },
+            {
+              "id": "c",
+              "label": "A kite flying high",
+              "stimulus": { "type": "picture", "id": "kite2" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.next.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.next.hint.reveal" }
+          ],
+          "misconceptions": {
+            "a": "what-became-of-something-else",
+            "c": "what-became-of-something-else"
+          },
+          "feedback": { "correct": "eh.next.balloon.correct", "incorrect": "eh.next.incorrect" }
+        },
+        {
+          "id": "eh-next-01.cheese",
+          "kind": "choose-one",
+          "skillId": "story.cause.predict",
+          "variant": "someone-does-it",
+          "prompt": {
+            "instruction": "eh.next.cheese",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["cheese1", "mouse", "cheese2"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A piece of cheese with bites out of it",
+              "stimulus": { "type": "picture", "id": "cheese2" }
+            },
+            {
+              "id": "b",
+              "label": "A burst balloon",
+              "stimulus": { "type": "picture", "id": "balloon3" }
+            },
+            {
+              "id": "c",
+              "label": "Sand washed flat by the sea",
+              "stimulus": { "type": "picture", "id": "castle3" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.next.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.next.hint.reveal" }
+          ],
+          "misconceptions": {
+            "b": "what-became-of-something-else",
+            "c": "what-became-of-something-else"
+          },
+          "feedback": { "correct": "eh.next.cheese.correct", "incorrect": "eh.next.incorrect" }
+        },
+        {
+          "id": "eh-next-01.snow",
+          "kind": "choose-one",
+          "skillId": "story.cause.predict",
+          "variant": "weather",
+          "prompt": {
+            "instruction": "eh.next.snow",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["snow2", "sun", "snow3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "Two balls of snow",
+              "stimulus": { "type": "picture", "id": "snow1" }
+            },
+            {
+              "id": "b",
+              "label": "Blocks fallen in a heap",
+              "stimulus": { "type": "picture", "id": "tower3" }
+            },
+            {
+              "id": "c",
+              "label": "A puddle with a hat and a carrot in it",
+              "stimulus": { "type": "picture", "id": "snow3" }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.next.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.next.hint.reveal" }
+          ],
+          "misconceptions": { "a": "how-it-was-before", "b": "what-became-of-something-else" },
+          "feedback": { "correct": "eh.next.snow.correct", "incorrect": "eh.next.incorrect" }
+        },
+        {
+          "id": "eh-next-01.seed",
+          "kind": "choose-one",
+          "skillId": "story.cause.predict",
+          "variant": "someone-does-it",
+          "prompt": {
+            "instruction": "eh.next.seed",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["seed1", "wateringcan", "seed2"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little shoot coming up from the seed",
+              "stimulus": { "type": "picture", "id": "seed2" }
+            },
+            {
+              "id": "b",
+              "label": "A burst balloon",
+              "stimulus": { "type": "picture", "id": "balloon3" }
+            },
+            {
+              "id": "c",
+              "label": "A kite flying high",
+              "stimulus": { "type": "picture", "id": "kite2" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.next.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.next.hint.reveal" }
+          ],
+          "misconceptions": {
+            "b": "what-became-of-something-else",
+            "c": "what-became-of-something-else"
+          },
+          "feedback": { "correct": "eh.next.seed.correct", "incorrect": "eh.next.incorrect" }
+        },
+        {
+          "id": "eh-next-01.castle",
+          "kind": "choose-one",
+          "skillId": "story.cause.predict",
+          "variant": "weather",
+          "prompt": {
+            "instruction": "eh.next.castle",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["castle2", "wave", "castle3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "Sand washed flat by the sea",
+              "stimulus": { "type": "picture", "id": "castle3" }
+            },
+            {
+              "id": "b",
+              "label": "A bucket, a spade and a heap of sand",
+              "stimulus": { "type": "picture", "id": "castle1" }
+            },
+            {
+              "id": "c",
+              "label": "A little shoot coming up from the seed",
+              "stimulus": { "type": "picture", "id": "seed2" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.next.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.next.hint.reveal" }
+          ],
+          "misconceptions": { "b": "how-it-was-before", "c": "what-became-of-something-else" },
+          "feedback": { "correct": "eh.next.castle.correct", "incorrect": "eh.next.incorrect" }
+        },
+        {
+          "id": "eh-next-01.rain",
+          "kind": "choose-one",
+          "skillId": "story.cause.predict",
+          "variant": "weather",
+          "prompt": {
+            "instruction": "eh.next.rain",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["path", "rain", "rain3"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A puddle on the path",
+              "stimulus": { "type": "picture", "id": "rain3" }
+            },
+            {
+              "id": "b",
+              "label": "Blocks fallen in a heap",
+              "stimulus": { "type": "picture", "id": "tower3" }
+            },
+            {
+              "id": "c",
+              "label": "A kite flying high",
+              "stimulus": { "type": "picture", "id": "kite2" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.next.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.next.hint.reveal" }
+          ],
+          "misconceptions": {
+            "b": "what-became-of-something-else",
+            "c": "what-became-of-something-else"
+          },
+          "feedback": { "correct": "eh.next.rain.correct", "incorrect": "eh.next.incorrect" }
+        },
+        {
+          "id": "eh-next-01.kite",
+          "kind": "choose-one",
+          "skillId": "story.cause.predict",
+          "variant": "weather",
+          "prompt": {
+            "instruction": "eh.next.kite",
+            "stimulus": {
+              "type": "scene",
+              "scene": "strip",
+              "of": { "kind": "change", "parts": ["kite1", "wind", "kite2"], "gap": 2 }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A piece of cheese with bites out of it",
+              "stimulus": { "type": "picture", "id": "cheese2" }
+            },
+            {
+              "id": "b",
+              "label": "A kite flying high",
+              "stimulus": { "type": "picture", "id": "kite2" }
+            },
+            {
+              "id": "c",
+              "label": "Blocks fallen in a heap",
+              "stimulus": { "type": "picture", "id": "tower3" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.next.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.next.hint.reveal" }
+          ],
+          "misconceptions": {
+            "a": "what-became-of-something-else",
+            "c": "what-became-of-something-else"
+          },
+          "feedback": { "correct": "eh.next.kite.correct", "incorrect": "eh.next.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "eh-water-01",
+      "version": 1,
+      "world": "explorer-harbor",
+      "title": "Which flag is on the water?",
+      "summary": "A map shows blue sea and green islands, with two or three flags. Your child taps the flag that stands on the water. Every flag is well clear of a shore, so there is never a doubt about which it is.",
+      "skillIds": ["world.map.water"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["eh-water-01.demo"],
+        "guided": ["eh-water-01.guided-two", "eh-water-01.guided-three"],
+        "independent": {
+          "pool": [
+            "eh-water-01.a",
+            "eh-water-01.b",
+            "eh-water-01.c",
+            "eh-water-01.d",
+            "eh-water-01.e",
+            "eh-water-01.f"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "eh-water-01.demo",
+          "kind": "choose-one",
+          "skillId": "world.map.water",
+          "variant": "two-flags-two-islands",
+          "prompt": {
+            "instruction": "eh.water.demo",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "water", "islands": [45, 35, 14, 14, 79, 21, 13, 13] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 9, "y": 14, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 47, "y": 31, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.water.hint.model" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "on-land" },
+          "feedback": { "correct": "eh.water.correct", "incorrect": "eh.water.incorrect" }
+        },
+        {
+          "id": "eh-water-01.guided-two",
+          "kind": "choose-one",
+          "skillId": "world.map.water",
+          "variant": "two-flags-two-islands",
+          "prompt": {
+            "instruction": "eh.water.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "water", "islands": [51, 17, 18, 13, 36, 48, 21, 10] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 17, "y": 20, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 38, "y": 48, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.water.hint.model" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "on-land" },
+          "feedback": { "correct": "eh.water.correct", "incorrect": "eh.water.incorrect" }
+        },
+        {
+          "id": "eh-water-01.guided-three",
+          "kind": "choose-one",
+          "skillId": "world.map.water",
+          "variant": "three-flags-three-islands",
+          "prompt": {
+            "instruction": "eh.water.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "water", "islands": [36, 14, 20, 10, 60, 44, 14, 13, 24, 48, 13, 12] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 22, "y": 47, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 36, "y": 14, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 71, "y": 11, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.water.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "on-land", "b": "on-land" },
+          "feedback": { "correct": "eh.water.correct", "incorrect": "eh.water.incorrect" }
+        },
+        {
+          "id": "eh-water-01.a",
+          "kind": "choose-one",
+          "skillId": "world.map.water",
+          "variant": "three-flags-two-islands",
+          "prompt": {
+            "instruction": "eh.water.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "water", "islands": [39, 46, 19, 13, 81, 25, 14, 13] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 9, "y": 13, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 40, "y": 49, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 83, "y": 27, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.water.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "on-land", "c": "on-land" },
+          "feedback": { "correct": "eh.water.correct", "incorrect": "eh.water.incorrect" }
+        },
+        {
+          "id": "eh-water-01.b",
+          "kind": "choose-one",
+          "skillId": "world.map.water",
+          "variant": "three-flags-three-islands",
+          "prompt": {
+            "instruction": "eh.water.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "water", "islands": [74, 16, 15, 13, 24, 39, 17, 14, 82, 48, 15, 11] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 35, "y": 16, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 74, "y": 13, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 86, "y": 50, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.water.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "on-land", "c": "on-land" },
+          "feedback": { "correct": "eh.water.correct", "incorrect": "eh.water.incorrect" }
+        },
+        {
+          "id": "eh-water-01.c",
+          "kind": "choose-one",
+          "skillId": "world.map.water",
+          "variant": "three-flags-three-islands",
+          "prompt": {
+            "instruction": "eh.water.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "water", "islands": [22, 47, 16, 12, 70, 46, 16, 13, 19, 17, 16, 10] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 18, "y": 51, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 42, "y": 27, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 72, "y": 43, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.water.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "on-land", "c": "on-land" },
+          "feedback": { "correct": "eh.water.correct", "incorrect": "eh.water.incorrect" }
+        },
+        {
+          "id": "eh-water-01.d",
+          "kind": "choose-one",
+          "skillId": "world.map.water",
+          "variant": "three-flags-two-islands",
+          "prompt": {
+            "instruction": "eh.water.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "water", "islands": [65, 26, 18, 10, 25, 19, 14, 14] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 20, "y": 19, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 33, "y": 52, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 74, "y": 25, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.water.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "on-land", "c": "on-land" },
+          "feedback": { "correct": "eh.water.correct", "incorrect": "eh.water.incorrect" }
+        },
+        {
+          "id": "eh-water-01.e",
+          "kind": "choose-one",
+          "skillId": "world.map.water",
+          "variant": "three-flags-three-islands",
+          "prompt": {
+            "instruction": "eh.water.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "water", "islands": [30, 47, 17, 11, 35, 18, 15, 10, 80, 45, 17, 13] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 25, "y": 50, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 40, "y": 18, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 87, "y": 24, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.water.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "on-land", "b": "on-land" },
+          "feedback": { "correct": "eh.water.correct", "incorrect": "eh.water.incorrect" }
+        },
+        {
+          "id": "eh-water-01.f",
+          "kind": "choose-one",
+          "skillId": "world.map.water",
+          "variant": "three-flags-three-islands",
+          "prompt": {
+            "instruction": "eh.water.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "water", "islands": [26, 25, 16, 13, 68, 20, 18, 10, 76, 48, 15, 10] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 10, "y": 48, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 28, "y": 20, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 81, "y": 46, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.water.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "on-land", "c": "on-land" },
+          "feedback": { "correct": "eh.water.correct", "incorrect": "eh.water.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "eh-land-01",
+      "version": 1,
+      "world": "explorer-harbor",
+      "title": "Which flag is on the land?",
+      "summary": "The same kind of map, asked the other way about: your child taps the flag that stands on land.",
+      "skillIds": ["world.map.land"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["eh-land-01.demo"],
+        "guided": ["eh-land-01.guided-two", "eh-land-01.guided-three"],
+        "independent": {
+          "pool": [
+            "eh-land-01.a",
+            "eh-land-01.b",
+            "eh-land-01.c",
+            "eh-land-01.d",
+            "eh-land-01.e",
+            "eh-land-01.f"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "eh-land-01.demo",
+          "kind": "choose-one",
+          "skillId": "world.map.land",
+          "variant": "two-flags-one-island",
+          "prompt": {
+            "instruction": "eh.land.demo",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "land", "islands": [50, 47, 13, 10] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 13, "y": 15, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 51, "y": 47, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.land.hint.model" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "on-water" },
+          "feedback": { "correct": "eh.land.correct", "incorrect": "eh.land.incorrect" }
+        },
+        {
+          "id": "eh-land-01.guided-two",
+          "kind": "choose-one",
+          "skillId": "world.map.land",
+          "variant": "two-flags-one-island",
+          "prompt": {
+            "instruction": "eh.land.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "land", "islands": [56, 15, 19, 11] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 26, "y": 35, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 56, "y": 12, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.land.hint.model" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "on-water" },
+          "feedback": { "correct": "eh.land.correct", "incorrect": "eh.land.incorrect" }
+        },
+        {
+          "id": "eh-land-01.guided-three",
+          "kind": "choose-one",
+          "skillId": "world.map.land",
+          "variant": "three-flags-two-islands",
+          "prompt": {
+            "instruction": "eh.land.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "land", "islands": [82, 21, 15, 13, 38, 14, 16, 11] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 9, "y": 44, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 43, "y": 13, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 66, "y": 47, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.land.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "on-water", "c": "on-water" },
+          "feedback": { "correct": "eh.land.correct", "incorrect": "eh.land.incorrect" }
+        },
+        {
+          "id": "eh-land-01.a",
+          "kind": "choose-one",
+          "skillId": "world.map.land",
+          "variant": "three-flags-one-island",
+          "prompt": {
+            "instruction": "eh.land.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "land", "islands": [46, 46, 19, 13] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 12, "y": 12, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 43, "y": 45, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 82, "y": 13, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.land.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "on-water", "c": "on-water" },
+          "feedback": { "correct": "eh.land.correct", "incorrect": "eh.land.incorrect" }
+        },
+        {
+          "id": "eh-land-01.b",
+          "kind": "choose-one",
+          "skillId": "world.map.land",
+          "variant": "three-flags-two-islands",
+          "prompt": {
+            "instruction": "eh.land.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "land", "islands": [41, 35, 13, 10, 78, 36, 13, 11] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 9, "y": 29, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 43, "y": 39, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 82, "y": 11, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.land.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "on-water", "c": "on-water" },
+          "feedback": { "correct": "eh.land.correct", "incorrect": "eh.land.incorrect" }
+        },
+        {
+          "id": "eh-land-01.c",
+          "kind": "choose-one",
+          "skillId": "world.map.land",
+          "variant": "three-flags-two-islands",
+          "prompt": {
+            "instruction": "eh.land.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "land", "islands": [77, 28, 15, 12, 40, 45, 13, 12] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 11, "y": 53, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 37, "y": 23, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 73, "y": 31, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.land.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "on-water", "b": "on-water" },
+          "feedback": { "correct": "eh.land.correct", "incorrect": "eh.land.incorrect" }
+        },
+        {
+          "id": "eh-land-01.d",
+          "kind": "choose-one",
+          "skillId": "world.map.land",
+          "variant": "three-flags-one-island",
+          "prompt": {
+            "instruction": "eh.land.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "land", "islands": [20, 20, 14, 12] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 24, "y": 23, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 59, "y": 14, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 82, "y": 41, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.land.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "on-water", "c": "on-water" },
+          "feedback": { "correct": "eh.land.correct", "incorrect": "eh.land.incorrect" }
+        },
+        {
+          "id": "eh-land-01.e",
+          "kind": "choose-one",
+          "skillId": "world.map.land",
+          "variant": "three-flags-two-islands",
+          "prompt": {
+            "instruction": "eh.land.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "land", "islands": [68, 26, 20, 10, 27, 42, 13, 14] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 21, "y": 39, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 65, "y": 46, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 86, "y": 13, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.land.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "on-water", "c": "on-water" },
+          "feedback": { "correct": "eh.land.correct", "incorrect": "eh.land.incorrect" }
+        },
+        {
+          "id": "eh-land-01.f",
+          "kind": "choose-one",
+          "skillId": "world.map.land",
+          "variant": "three-flags-two-islands",
+          "prompt": {
+            "instruction": "eh.land.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "land", "islands": [73, 46, 16, 10, 18, 24, 13, 14] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The flag on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 14, "y": 24, "mark": "flag" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The flag in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 51, "y": 52, "mark": "flag" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The flag on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 79, "y": 31, "mark": "flag" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.land.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "on-water", "c": "on-water" },
+          "feedback": { "correct": "eh.land.correct", "incorrect": "eh.land.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "eh-near-01",
+      "version": 1,
+      "world": "explorer-harbor",
+      "title": "Which island is nearest?",
+      "summary": "A boat is on the sea with three small islands round it. Your child taps the island that is nearest to the boat, and the boat sails there. One island is always nearer by a good deal.",
+      "skillIds": ["world.space.nearest"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["eh-near-01.demo"],
+        "guided": ["eh-near-01.guided-a", "eh-near-01.guided-b"],
+        "independent": {
+          "pool": [
+            "eh-near-01.a",
+            "eh-near-01.b",
+            "eh-near-01.c",
+            "eh-near-01.d",
+            "eh-near-01.e",
+            "eh-near-01.f"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "eh-near-01.demo",
+          "kind": "choose-one",
+          "skillId": "world.space.nearest",
+          "variant": "to-the-right",
+          "prompt": {
+            "instruction": "eh.near.demo",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "near", "boat": [12, 36] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 77, "y": 53, "mark": "hut" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 24, "y": 17, "mark": "palm" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 75, "y": 20, "mark": "light" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.near.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "the-farthest", "c": "in-between" },
+          "feedback": { "correct": "eh.near.correct", "incorrect": "eh.near.incorrect" }
+        },
+        {
+          "id": "eh-near-01.guided-a",
+          "kind": "choose-one",
+          "skillId": "world.space.nearest",
+          "variant": "to-the-left",
+          "prompt": {
+            "instruction": "eh.near.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "near", "boat": [87, 44] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 38, "y": 12, "mark": "hut" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 81, "y": 21, "mark": "light" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 41, "y": 45, "mark": "palm" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.near.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "the-farthest", "c": "in-between" },
+          "feedback": { "correct": "eh.near.correct", "incorrect": "eh.near.incorrect" }
+        },
+        {
+          "id": "eh-near-01.guided-b",
+          "kind": "choose-one",
+          "skillId": "world.space.nearest",
+          "variant": "to-the-right",
+          "prompt": {
+            "instruction": "eh.near.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "near", "boat": [64, 26] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 11, "y": 18, "mark": "palm" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 84, "y": 40, "mark": "hut" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 14, "y": 51, "mark": "light" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.near.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "c": "the-farthest", "a": "in-between" },
+          "feedback": { "correct": "eh.near.correct", "incorrect": "eh.near.incorrect" }
+        },
+        {
+          "id": "eh-near-01.a",
+          "kind": "choose-one",
+          "skillId": "world.space.nearest",
+          "variant": "to-the-left",
+          "prompt": {
+            "instruction": "eh.near.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "near", "boat": [19, 52] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 68, "y": 47, "mark": "hut" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 52, "y": 13, "mark": "light" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 9, "y": 32, "mark": "palm" }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.near.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "the-farthest", "a": "in-between" },
+          "feedback": { "correct": "eh.near.correct", "incorrect": "eh.near.incorrect" }
+        },
+        {
+          "id": "eh-near-01.b",
+          "kind": "choose-one",
+          "skillId": "world.space.nearest",
+          "variant": "to-the-left",
+          "prompt": {
+            "instruction": "eh.near.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "near", "boat": [74, 16] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 47, "y": 45, "mark": "hut" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 10, "y": 14, "mark": "light" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 9, "y": 50, "mark": "palm" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.near.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "c": "the-farthest", "b": "in-between" },
+          "feedback": { "correct": "eh.near.correct", "incorrect": "eh.near.incorrect" }
+        },
+        {
+          "id": "eh-near-01.c",
+          "kind": "choose-one",
+          "skillId": "world.space.nearest",
+          "variant": "to-the-right",
+          "prompt": {
+            "instruction": "eh.near.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "near", "boat": [13, 50] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 89, "y": 22, "mark": "palm" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 23, "y": 27, "mark": "hut" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 55, "y": 47, "mark": "light" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.near.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "the-farthest", "c": "in-between" },
+          "feedback": { "correct": "eh.near.correct", "incorrect": "eh.near.incorrect" }
+        },
+        {
+          "id": "eh-near-01.d",
+          "kind": "choose-one",
+          "skillId": "world.space.nearest",
+          "variant": "to-the-right",
+          "prompt": {
+            "instruction": "eh.near.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "near", "boat": [30, 42] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 32, "y": 19, "mark": "light" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 88, "y": 11, "mark": "hut" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 86, "y": 52, "mark": "palm" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.near.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "the-farthest", "c": "in-between" },
+          "feedback": { "correct": "eh.near.correct", "incorrect": "eh.near.incorrect" }
+        },
+        {
+          "id": "eh-near-01.e",
+          "kind": "choose-one",
+          "skillId": "world.space.nearest",
+          "variant": "to-the-right",
+          "prompt": {
+            "instruction": "eh.near.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "near", "boat": [15, 32] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 68, "y": 40, "mark": "light" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 88, "y": 11, "mark": "hut" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 34, "y": 15, "mark": "palm" }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.near.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "the-farthest", "a": "in-between" },
+          "feedback": { "correct": "eh.near.correct", "incorrect": "eh.near.incorrect" }
+        },
+        {
+          "id": "eh-near-01.f",
+          "kind": "choose-one",
+          "skillId": "world.space.nearest",
+          "variant": "to-the-right",
+          "prompt": {
+            "instruction": "eh.near.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "near", "boat": [71, 33] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 90, "y": 51, "mark": "palm" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 30, "y": 11, "mark": "light" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 9, "y": 37, "mark": "hut" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.near.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "c": "the-farthest", "b": "in-between" },
+          "feedback": { "correct": "eh.near.correct", "incorrect": "eh.near.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "eh-far-01",
+      "version": 1,
+      "world": "explorer-harbor",
+      "title": "Which island is farthest?",
+      "summary": "The same boat and three islands, asked the other way about: your child taps the island that is farthest away.",
+      "skillIds": ["world.space.farthest"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["eh-far-01.demo"],
+        "guided": ["eh-far-01.guided-a", "eh-far-01.guided-b"],
+        "independent": {
+          "pool": [
+            "eh-far-01.a",
+            "eh-far-01.b",
+            "eh-far-01.c",
+            "eh-far-01.d",
+            "eh-far-01.e",
+            "eh-far-01.f"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "eh-far-01.demo",
+          "kind": "choose-one",
+          "skillId": "world.space.farthest",
+          "variant": "to-the-left",
+          "prompt": {
+            "instruction": "eh.far.demo",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "far", "boat": [86, 17] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 59, "y": 29, "mark": "palm" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 91, "y": 49, "mark": "hut" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 24, "y": 13, "mark": "light" }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.far.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "the-nearest", "b": "in-between" },
+          "feedback": { "correct": "eh.far.correct", "incorrect": "eh.far.incorrect" }
+        },
+        {
+          "id": "eh-far-01.guided-a",
+          "kind": "choose-one",
+          "skillId": "world.space.farthest",
+          "variant": "to-the-right",
+          "prompt": {
+            "instruction": "eh.far.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "far", "boat": [18, 29] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 33, "y": 49, "mark": "light" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 83, "y": 51, "mark": "palm" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 51, "y": 13, "mark": "hut" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.far.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "the-nearest", "c": "in-between" },
+          "feedback": { "correct": "eh.far.correct", "incorrect": "eh.far.incorrect" }
+        },
+        {
+          "id": "eh-far-01.guided-b",
+          "kind": "choose-one",
+          "skillId": "world.space.farthest",
+          "variant": "to-the-left",
+          "prompt": {
+            "instruction": "eh.far.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "far", "boat": [68, 33] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 17, "y": 51, "mark": "light" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 46, "y": 24, "mark": "hut" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 89, "y": 43, "mark": "palm" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.far.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "c": "the-nearest", "b": "in-between" },
+          "feedback": { "correct": "eh.far.correct", "incorrect": "eh.far.incorrect" }
+        },
+        {
+          "id": "eh-far-01.a",
+          "kind": "choose-one",
+          "skillId": "world.space.farthest",
+          "variant": "to-the-right",
+          "prompt": {
+            "instruction": "eh.far.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "far", "boat": [31, 32] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 47, "y": 49, "mark": "palm" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 66, "y": 11, "mark": "light" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 9, "y": 15, "mark": "hut" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.far.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "the-nearest", "c": "in-between" },
+          "feedback": { "correct": "eh.far.correct", "incorrect": "eh.far.incorrect" }
+        },
+        {
+          "id": "eh-far-01.b",
+          "kind": "choose-one",
+          "skillId": "world.space.farthest",
+          "variant": "to-the-left",
+          "prompt": {
+            "instruction": "eh.far.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "far", "boat": [65, 51] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 80, "y": 25, "mark": "hut" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 28, "y": 17, "mark": "palm" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 35, "y": 53, "mark": "light" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.far.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "the-nearest", "c": "in-between" },
+          "feedback": { "correct": "eh.far.correct", "incorrect": "eh.far.incorrect" }
+        },
+        {
+          "id": "eh-far-01.c",
+          "kind": "choose-one",
+          "skillId": "world.space.farthest",
+          "variant": "to-the-left",
+          "prompt": {
+            "instruction": "eh.far.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "far", "boat": [62, 22] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 16, "y": 34, "mark": "hut" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 87, "y": 38, "mark": "light" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 49, "y": 44, "mark": "palm" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.far.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "c": "the-nearest", "b": "in-between" },
+          "feedback": { "correct": "eh.far.correct", "incorrect": "eh.far.incorrect" }
+        },
+        {
+          "id": "eh-far-01.d",
+          "kind": "choose-one",
+          "skillId": "world.space.farthest",
+          "variant": "to-the-right",
+          "prompt": {
+            "instruction": "eh.far.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "far", "boat": [34, 52] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 19, "y": 23, "mark": "light" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 91, "y": 40, "mark": "hut" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 52, "y": 16, "mark": "palm" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.far.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "a": "the-nearest", "c": "in-between" },
+          "feedback": { "correct": "eh.far.correct", "incorrect": "eh.far.incorrect" }
+        },
+        {
+          "id": "eh-far-01.e",
+          "kind": "choose-one",
+          "skillId": "world.space.farthest",
+          "variant": "to-the-right",
+          "prompt": {
+            "instruction": "eh.far.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "far", "boat": [36, 24] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 58, "y": 39, "mark": "palm" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 13, "y": 14, "mark": "light" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 84, "y": 11, "mark": "hut" }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.far.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "b": "the-nearest", "a": "in-between" },
+          "feedback": { "correct": "eh.far.correct", "incorrect": "eh.far.incorrect" }
+        },
+        {
+          "id": "eh-far-01.f",
+          "kind": "choose-one",
+          "skillId": "world.space.farthest",
+          "variant": "to-the-left",
+          "prompt": {
+            "instruction": "eh.far.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "map",
+              "of": { "ask": "far", "boat": [58, 50] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The island with the palm tree",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 45, "y": 19, "mark": "palm" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The island with the hut",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 13, "y": 32, "mark": "hut" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The island with the lighthouse",
+              "stimulus": {
+                "type": "scene",
+                "scene": "spot",
+                "of": { "x": 76, "y": 36, "mark": "light" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.far.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.map.hint.reveal" }
+          ],
+          "misconceptions": { "c": "the-nearest", "a": "in-between" },
+          "feedback": { "correct": "eh.far.correct", "incorrect": "eh.far.incorrect" }
+        }
+      ]
+    }
+  ]
+}

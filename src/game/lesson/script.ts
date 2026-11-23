@@ -156,8 +156,17 @@ export interface ChooseSituation {
   tried: { id: string; stimulus: Stimulus } | null;
   /** The engine is now showing which choice is right (a wrong try or a hint has left it no other). */
   revealed: boolean;
-  /** The lines that go with this moment, by key. */
-  lines: { instruction: string; feedback: string | null; hint: string | null };
+  /**
+   * The lines that go with this moment, by key. `ask` is what is asked once the prompt has been covered; `correct`
+   * is what is said of the right answer, for a demonstration that says it.
+   */
+  lines: {
+    instruction: string;
+    feedback: string | null;
+    hint: string | null;
+    ask?: string | null;
+    correct?: string | null;
+  };
   seconds: Seconds;
 }
 

@@ -1,0 +1,182 @@
+{
+  "about": "Explorer Harbor's storybook: what each of its drawings shows, the little stories told in three pictures, and the changes that have a cause. The content generator, the world's rules and the drawings all read this one file.",
+  "pictures": {
+    "seed1": "a seed under the soil",
+    "seed2": "a little shoot coming up from the seed",
+    "seed3": "a flower",
+    "egg1": "a hen sitting on her nest",
+    "egg2": "an egg cracking open",
+    "egg3": "a chick beside its broken shell",
+    "snow1": "two balls of snow",
+    "snow2": "a snowman",
+    "snow3": "a puddle with a hat and a carrot in it",
+    "balloon1": "a flat balloon",
+    "balloon2": "a big round balloon",
+    "balloon3": "a burst balloon",
+    "tower1": "one block",
+    "tower2": "a tall tower of blocks",
+    "tower3": "blocks fallen in a heap",
+    "castle1": "a bucket, a spade and a heap of sand",
+    "castle2": "a sandcastle",
+    "castle3": "sand washed flat by the sea",
+    "path": "a dry path",
+    "rain1": "a grey cloud over the path",
+    "rain2": "rain falling on the path",
+    "rain3": "a puddle on the path",
+    "fly1": "a caterpillar on a leaf",
+    "fly2": "a cocoon hanging from a twig",
+    "fly3": "a butterfly",
+    "kite1": "a kite lying on the grass",
+    "kite2": "a kite flying high",
+    "cheese1": "a piece of cheese",
+    "cheese2": "a piece of cheese with bites out of it",
+    "sun": "the sun",
+    "pin": "a pin",
+    "rain": "a rain cloud",
+    "ball": "a ball",
+    "wateringcan": "a watering can",
+    "wave": "a wave",
+    "mouse": "a mouse",
+    "wind": "the wind"
+  },
+  "stories": {
+    "seed": {
+      "panels": ["seed1", "seed2", "seed3"],
+      "told": ["A seed sleeps in the soil.", "A little shoot comes up.", "Now it is a flower."],
+      "neverEnd": []
+    },
+    "egg": {
+      "panels": ["egg1", "egg2", "egg3"],
+      "told": [
+        "The hen sits on her egg.",
+        "Crack! The egg breaks open.",
+        "A baby chick comes out."
+      ],
+      "neverEnd": []
+    },
+    "snow": {
+      "panels": ["snow1", "snow2", "snow3"],
+      "told": ["We roll two balls of snow.", "Now it is a snowman.", "The snowman melts away."],
+      "neverEnd": ["rain3", "castle3"]
+    },
+    "balloon": {
+      "panels": ["balloon1", "balloon2", "balloon3"],
+      "told": ["The balloon is flat.", "We blow it up big.", "Then the balloon goes pop."],
+      "neverEnd": ["kite2"]
+    },
+    "tower": {
+      "panels": ["tower1", "tower2", "tower3"],
+      "told": [
+        "Here is one block.",
+        "The blocks make a tall tower.",
+        "Crash! The tower falls down."
+      ],
+      "neverEnd": []
+    },
+    "castle": {
+      "panels": ["castle1", "castle2", "castle3"],
+      "told": ["Here is sand, and a bucket.", "Now it is a sandcastle.", "The sea washes it flat."],
+      "neverEnd": []
+    },
+    "rain": {
+      "panels": ["rain1", "rain2", "rain3"],
+      "told": ["A dark cloud comes.", "Down comes the rain.", "Now there is a puddle."],
+      "neverEnd": ["snow3", "seed2", "seed3"]
+    },
+    "fly": {
+      "panels": ["fly1", "fly2", "fly3"],
+      "told": ["A caterpillar eats a leaf.", "It hides in a cocoon.", "Out comes a butterfly."],
+      "neverEnd": []
+    }
+  },
+  "changes": {
+    "snow": {
+      "before": "snow2",
+      "cause": "sun",
+      "after": "snow3",
+      "alsoCauses": ["rain", "wateringcan", "wave", "ball", "wind"],
+      "alsoAfters": ["rain3", "castle3"],
+      "why": "The snowman melted. What made it melt?",
+      "because": "Yes. The sun melted it.",
+      "next": "The sun shines on the snowman. What happens next?",
+      "then": "Yes. The snowman melts."
+    },
+    "balloon": {
+      "before": "balloon2",
+      "cause": "pin",
+      "after": "balloon3",
+      "alsoCauses": ["mouse", "sun", "wind", "ball"],
+      "alsoAfters": ["balloon1"],
+      "why": "The balloon burst. What made it burst?",
+      "because": "Yes. The pin burst the balloon.",
+      "next": "A pin touches the balloon. What happens next?",
+      "then": "Yes. The balloon bursts."
+    },
+    "tower": {
+      "before": "tower2",
+      "cause": "ball",
+      "after": "tower3",
+      "alsoCauses": ["wind", "wave", "mouse"],
+      "alsoAfters": [],
+      "why": "The tower fell down. What knocked it down?",
+      "because": "Yes. The ball knocked the tower down.",
+      "next": "A ball rolls into the tower. What happens next?",
+      "then": "Yes. The tower falls down."
+    },
+    "seed": {
+      "before": "seed1",
+      "cause": "wateringcan",
+      "after": "seed2",
+      "alsoCauses": ["rain", "sun"],
+      "alsoAfters": ["seed3", "rain3", "snow3"],
+      "why": "The seed began to grow. What helped it grow?",
+      "because": "Yes. Water helped the seed to grow.",
+      "next": "Water falls on the seed. What happens next?",
+      "then": "Yes. The seed begins to grow."
+    },
+    "castle": {
+      "before": "castle2",
+      "cause": "wave",
+      "after": "castle3",
+      "alsoCauses": ["rain", "wateringcan", "ball", "wind"],
+      "alsoAfters": [],
+      "why": "The sandcastle is gone. What washed it away?",
+      "because": "Yes. A wave washed it away.",
+      "next": "A wave rolls over the sandcastle. What happens next?",
+      "then": "Yes. The sandcastle is washed flat."
+    },
+    "rain": {
+      "before": "path",
+      "cause": "rain",
+      "after": "rain3",
+      "alsoCauses": ["wateringcan", "wave"],
+      "alsoAfters": ["snow3", "seed2", "seed3"],
+      "why": "There is a puddle on the path. What made the puddle?",
+      "because": "Yes. The rain made the puddle.",
+      "next": "Rain falls on the path. What happens next?",
+      "then": "Yes. The rain leaves a puddle."
+    },
+    "cheese": {
+      "before": "cheese1",
+      "cause": "mouse",
+      "after": "cheese2",
+      "alsoCauses": [],
+      "alsoAfters": [],
+      "why": "Someone has nibbled the cheese. Who was it?",
+      "because": "Yes. The mouse nibbled the cheese.",
+      "next": "A mouse finds the cheese. What happens next?",
+      "then": "Yes. The mouse nibbles the cheese."
+    },
+    "kite": {
+      "before": "kite1",
+      "cause": "wind",
+      "after": "kite2",
+      "alsoCauses": [],
+      "alsoAfters": [],
+      "why": "The kite is up in the sky. What lifted it?",
+      "because": "Yes. The wind lifted the kite.",
+      "next": "The wind blows on the kite. What happens next?",
+      "then": "Yes. The kite flies up high."
+    }
+  }
+}

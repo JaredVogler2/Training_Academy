@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { playCue } from '@/audio';
 import { activeProfile, refreshProfiles, useProfiles } from '@/game/profiles';
+import { nextWorld, useFinishedLessons } from '@/game/progress';
 import { WORLDS, isOpen, type WorldInfo } from '@/game/worlds';
 import { HubStage } from '@/render/HubStage';
 import {
@@ -30,10 +31,13 @@ import styles from './Home.module.css';
 function WorldSpot({
   world,
   frame,
+  next,
   onLift,
 }: {
   world: WorldInfo;
   frame: Frame;
+  /** This is the world Glim is pointing at: where the next unfinished thing is. */
+  next: boolean;
   onLift: (place: PlaceId | null) => void;
 }) {
   const open = isOpen(world);
@@ -46,6 +50,7 @@ function WorldSpot({
       data-role={world.role}
       data-world={world.id}
       data-open={open}
+      data-next={next || undefined}
       onClick={() => playCue(open ? 'sail' : 'tap')}
       onPointerEnter={(event) => {
         if (event.pointerType === 'mouse') onLift(world.id);
@@ -77,7 +82,16 @@ function WorldSpot({
  * Glim, afloat between the islands, pointing at the world that has something to play. A tap says hello, and so
  * does arriving from the front door.
  */
-function HubGuide({ frame, arriving }: { frame: Frame; arriving: boolean }) {
+function HubGuide({
+  frame,
+  arriving,
+  open,
+}: {
+  frame: Frame;
+  arriving: boolean;
+  /** The world to point at, if there is one. */
+  open: WorldInfo | null;
+}) {
   const [greeting, setGreeting] = useState(arriving);
   useEffect(() => {
     if (!greeting) return;
@@ -86,7 +100,6 @@ function HubGuide({ frame, arriving }: { frame: Frame; arriving: boolean }) {
   }, [greeting]);
 
   const box = guideBox(frame);
-  const open = WORLDS.find(isOpen);
   // Point from the guide's shoulder to the island: screen y runs downwards, angles run upwards.
   const from = { x: box.left + box.width / 2, y: box.top + box.height * 0.45 };
   const to = open ? hotspotFor(frame, open.id).anchor : null;
@@ -118,6 +131,8 @@ export function Home() {
   const { stage, free, frame } = useHubFrame();
   const [lifted, setLifted] = useState<PlaceId | null>(null);
   const begun = useBegun();
+  // Where the next unfinished thing is: the island Glim points at.
+  const next = nextWorld(useFinishedLessons());
   // Whether this page opened on the front door: if so, Glim greets the child on the map as well.
   const [openedAtDoor] = useState(!begun);
 
@@ -150,13 +165,18 @@ export function Home() {
             {frame &&
               WORLDS.map((world) => (
                 <li key={world.id}>
-                  <WorldSpot world={world} frame={frame} onLift={setLifted} />
+                  <WorldSpot
+                    world={world}
+                    frame={frame}
+                    next={world.id === next?.id}
+                    onLift={setLifted}
+                  />
                 </li>
               ))}
           </ul>
         </nav>
         {/* After the worlds, so the keyboard and a screen reader reach the islands first. */}
-        {frame && begun && <HubGuide frame={frame} arriving={openedAtDoor} />}
+        {frame && begun && <HubGuide frame={frame} arriving={openedAtDoor} open={next} />}
       </div>
     </div>
   );

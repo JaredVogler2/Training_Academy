@@ -90,8 +90,8 @@ test.describe('how the site is served @smoke', () => {
     await page.goto('/');
     await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(6);
     await page.getByRole('link', { name: /Number Garden/ }).click();
-    await expect(page.getByRole('link', { name: 'Play' })).toBeVisible();
-    await page.getByRole('link', { name: 'Play' }).click();
+    await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
+    await page.getByRole('link', { name: 'Play', exact: true }).click();
     await expect(page.getByRole('button', { name: 'My turn' })).toBeVisible();
   });
 });

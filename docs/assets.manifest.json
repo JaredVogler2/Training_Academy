@@ -63,10 +63,39 @@
       "id": "counting-pictures",
       "kind": "vector",
       "origin": "original",
-      "what": "Apple, leaf, snail, acorn",
-      "paths": ["src/game/worlds/number-garden/index.tsx"],
+      "what": "Number Garden: apple, leaf, snail, acorn, bird, mouse, frog, and the friends things are given to",
+      "paths": [
+        "src/game/worlds/number-garden/things.tsx",
+        "src/game/worlds/number-garden/GiveBoard.tsx"
+      ],
       "licence": "Project",
       "madeWith": "Hand-written SVG"
+    },
+    {
+      "id": "picture-kit",
+      "kind": "vector",
+      "origin": "original",
+      "what": "The picture kit: 57 plain drawings of things (a sun, a sock, a hen) and 15 drawn lower-case letters",
+      "paths": ["src/art/pictures.tsx", "src/art/letters.tsx"],
+      "licence": "Project",
+      "madeWith": "Hand-written SVG"
+    },
+    {
+      "id": "world-pictures",
+      "kind": "vector",
+      "origin": "original",
+      "what": "Each world's own drawings: Reading Cove's sound cards and word tiles; Memory Forest's scenes; Robot Ridge's robot and ground; Inventor Island's bridge, ramp, beam and tub; Explorer Harbor's 37 story pictures, its maps, flags, islands and boat",
+      "paths": [
+        "src/game/worlds/reading-cove/index.tsx",
+        "src/game/worlds/memory-forest/index.tsx",
+        "src/game/worlds/robot-ridge/art.tsx",
+        "src/game/worlds/inventor-island/scenes.tsx",
+        "src/game/worlds/explorer-harbor/pictures.tsx",
+        "src/game/worlds/explorer-harbor/index.tsx",
+        "src/game/worlds/explorer-harbor/MapBoard.tsx"
+      ],
+      "licence": "Project",
+      "madeWith": "Hand-written SVG. Explorer Harbor's maps are drawn from numbers written by its content generator"
     },
     {
       "id": "modelling-kit",
@@ -147,22 +176,27 @@
       "id": "voice",
       "kind": "audio",
       "origin": "derived",
-      "what": "The voice: one short recording for every line a child hears, and for single words",
+      "what": "The voice: one short recording for every line a child hears, for single words, and for six sounds that are not speech (a drum, a bell, a shaker, a whistle, a bird, a clock)",
       "paths": [
         "src/assets/voice/en/*/*.mp3",
         "src/voice/manifest.json",
         "src/voice/lines.json",
+        "src/voice/lines/*.json",
         "src/voice/timings/*.json"
       ],
       "licence": "Project",
-      "madeWith": "Synthesised ahead of time by scripts/voice/make_voice.py with piper-tts 1.8.0 (a GPL-3.0 tool, used to make the files and not shipped) and the voice model en_US-kristin-medium from rhasspy/piper-voices (repository licence MIT; its model card says it was trained on public-domain LibriVox recordings). Each clip was checked by a speech recogniser (faster-whisper, small.en); src/voice/manifest.json records the result and whether a person has listened to it"
+      "madeWith": "Synthesised ahead of time by scripts/voice/make_voice.py with piper-tts 1.8.0 (a GPL-3.0 tool, used to make the files and not shipped) and the voice model en_US-kristin-medium from rhasspy/piper-voices (repository licence MIT; its model card says it was trained on public-domain LibriVox recordings). The six sounds are made by the same script from a few lines of arithmetic each. Encoded as MP3 by ffmpeg. Each spoken clip was checked by a speech recogniser (faster-whisper, small.en); src/voice/manifest.json records the result and whether a person has listened to it. No person has"
     },
     {
       "id": "curriculum",
       "kind": "content",
       "origin": "original",
-      "what": "The content packs: every activity's challenges, written out in full, one file for each world",
-      "paths": ["src/content/packs/*.json"],
+      "what": "The content packs: every activity's challenges, written out in full, one file for each world; and the storybook they draw on",
+      "paths": [
+        "src/content/packs/*.json",
+        "src/content/explorer-harbor/storybook.json",
+        "src/art/lexicon.json"
+      ],
       "licence": "Project",
       "madeWith": "Written for this project: by hand, and from tables by the generators in scripts/content (npm run content)"
     },

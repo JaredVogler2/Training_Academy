@@ -1,18 +1,34 @@
 # Deployment
 
-**Status: not deployed.** Nothing in this repository has been published to Vercel, and no Vercel project is
-connected to it (checked against the owner's Vercel team on 2026-11-23: no project is named for it or links to
-`JaredVogler2/Training_Academy`). Everything below is prepared and tested locally; the parts that only a real
-deployment can confirm are listed under _What a first preview must confirm_.
+**Status: the owner has deployed it.** The repository is connected to a Vercel project, `training-academy`, by its
+owner. Production is the `main` branch, at `https://training-academy-dun.vercel.app`.
 
-**The requirement, since Phase 03: it must work on Android and iOS devices when deployed on Vercel.** The code is
-written and tested for that as far as can be done without a device or a deployment. What is left needs both, and
-is the first thing below.
+- **What is live** is what `main` has: the map, the voice, and Number Garden with all seven of its activities.
+  The other five worlds say they are not open. Checked on 2026-11-23, after the owner merged pull request #5:
+  the sixteen smoke tests passed against that address in Chromium as a desktop and as a phone
+  (`BASE_URL=https://training-academy-dun.vercel.app npx playwright test`) — the security headers, addresses at
+  any depth, caching, the installable-app files, a missing file answered with a 404, and the game starting with
+  no error, no warning and no request to anywhere else — and Number Garden's first activity, opened by a tap,
+  fetched its six recordings from the site itself.
+- **The other five worlds are not live.** They are on pull request
+  [#6](https://github.com/JaredVogler2/Training_Academy/pull/6). Merging it publishes them, and that is
+  the owner's decision: nothing was promoted, merged or changed in the Vercel project from a session like this
+  one.
+- **A preview of the pull request is built by Vercel**, at an address of its own behind Vercel's sign-in. The
+  build of the pull request's first commit there reached "Ready" in about half a minute. It was not opened from
+  a session like this one: reaching a protected preview from outside means putting a share link
+  on the deployment, and that is the owner's to ask for. _If the preview is protected_, below, says how to run
+  the smoke tests against it with a bypass secret.
+
+**The requirement, since Phase 03: it must work on Android and iOS devices when deployed on Vercel.** The owner has
+opened the live site on an iPhone, which is the first time this project has been seen on a real device. Nothing
+has been played or heard there to my knowledge, and what is left to check on a device is the first thing below.
 
 ## Trying it on a real phone and tablet
 
-Nothing in this project has yet run on a real phone. Until it has, "works on iOS and Android" is a claim about
-emulators and reasoning. There are two ways to change that; the second is the one that tests the real thing.
+The live site has been opened on an iPhone by its owner. Beyond that, "works on iOS and Android" is still a claim
+about emulators and reasoning, and with a voice in the game there is now more to check by ear. There are two ways
+to put a build on a phone; the second is the one that tests the real thing.
 
 **On your own network, without deploying** (ten minutes; everything works except offline use, which browsers
 switch off for a plain-HTTP address):
@@ -60,6 +76,11 @@ Chrome as they come. Each line is something this phase did that only a device ca
 | 14  | Press a choice slowly: hold it for about half a second, then lift                                                                                                      | Count, like a tap                                                                                                                                       | Nothing happens: a phone takes this for a long press, and the game's answer to that has never met a real one. Note the system and the browser. (Held for more than a second it is meant to do nothing: that is a finger resting) |
 | 15  | Drag a finger down from the top of the map, and about inside an activity                                                                                               | Not reload the page, and not bounce                                                                                                                     | Note which, and the browser                                                                                                                                                                                                      |
 | 16  | Put two fingers on the map and spread them, then try to get back                                                                                                       | Zoom: it is not prevented, on purpose                                                                                                                   | If a child's hand does it by accident and cannot undo it, say so: it can be switched off on the map and in an activity with one rule                                                                                             |
+| 17  | Open an activity with the sound switch on, and listen to Glim                                                                                                          | Say what is written beside it, once, starting within a second of the picture; never two lines at once; stop when the pause button is pressed            | No voice at all: note the system. Late or cut off: note the connection. **Say how it sounds**: this is the first time anyone has heard it                                                                                        |
+| 18  | Open Reading Cove with the sound switch off, then tap an activity                                                                                                      | Show one button, "Turn the sound on", and start when it is tapped                                                                                       | The activity starts in silence, or the button does nothing: note it                                                                                                                                                              |
+| 19  | In Explorer Harbor, open "Which flag is on the water?" upright and sideways, and tap a flag                                                                            | Answer the flag that was tapped, every time, however small the map                                                                                      | A tap answers a different flag, or none: note the phone and which way up                                                                                                                                                         |
+| 20  | In Robot Ridge, Memory Forest and Inventor Island, play one activity each to the end                                                                                   | Reach the end with nothing cut off, nothing too small to press, and nothing that needs reading                                                          | Note the activity, the step and the screen                                                                                                                                                                                       |
+| 21  | Hold "Grown-ups", open "The voice: listen to every recording", and play some                                                                                           | Play each, and keep a mark of "sounds right" or "sounds wrong" after the page is closed and opened again                                                | This list is how the voice gets reviewed: the wrong ones are listed at the foot of it to send on                                                                                                                                 |
 
 Anything that does not do what the middle column says is a fault to fix, and the notes above are what makes it
 quick to find.
@@ -67,7 +88,7 @@ quick to find.
 The app is a static site: `npm run build` writes `dist/`, and that folder is the whole product. No server code, no
 environment variables, no secrets.
 
-## Connecting the repository to Vercel (a person has to do this)
+## Connecting the repository to Vercel (done by the owner; kept for reference)
 
 1. Vercel dashboard → **Add New… → Project** → import `JaredVogler2/Training_Academy`.
 2. Accept what `vercel.json` already states:
@@ -90,8 +111,8 @@ environment variables, no secrets.
    - Leave **Web Analytics** and **Speed Insights** off. The game sends nothing anywhere by design.
    - Keep **Deployment Protection** on for previews.
 
-Do not promote anything to production from this phase. Production release is Phase 16, behind its own checklist and
-an explicit go-ahead.
+Production follows `main`, so merging a pull request is a release. Phase 16's checklist for a public release has
+not been worked through; until it has, treat the live site as the owner's own preview of the game.
 
 ## What `vercel.json` does
 

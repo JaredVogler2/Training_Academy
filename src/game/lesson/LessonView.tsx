@@ -2,10 +2,10 @@ import { useEffect, useState, useSyncExternalStore, type CSSProperties } from 'r
 import { loadChunk } from '@/app/chunks';
 import { recordError } from '@/app/diagnostics';
 import { navigate } from '@/app/navigation';
-import { useReducedMotion } from '@/app/settings';
-import { addVoice, hushVoice, playCue } from '@/audio';
+import { settingsStore, useReducedMotion } from '@/app/settings';
+import { addVoice, audio, hushVoice, playCue } from '@/audio';
 import { findLesson, hasPack, loadPack } from '@/content';
-import type { ContentPack, WorldId } from '@/engine';
+import type { ContentPack, Lesson, WorldId } from '@/engine';
 import { LessonRunner, type RunnerState } from '@/game/lessonRunner';
 import { ensureActiveProfile } from '@/game/profiles';
 import { getRepository, localDay, newId, newSeed, now } from '@/game/services';
@@ -14,7 +14,7 @@ import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds
 import { IslandPicture } from '@/render/IslandPicture';
 import { Guide } from '@/ui/Guide';
 import { ActionButton, ActionLink } from '@/ui/controls';
-import { IconHint, IconHome, IconPause, IconReplay } from '@/ui/icons';
+import { IconHint, IconHome, IconPause, IconReplay, IconSoundOn } from '@/ui/icons';
 import { commonVoice } from '@/voice/common';
 import { PauseSheet } from './PauseSheet';
 import { Stage } from './Stage';
@@ -33,6 +33,7 @@ import styles from './Lesson.module.css';
 interface Loaded {
   runner: LessonRunner;
   pack: ContentPack;
+  lesson: Lesson;
   module: WorldModule;
 }
 
@@ -72,7 +73,7 @@ function openLesson(world: WorldId, lessonId: string): Promise<Loaded | null> {
       elapsed: () => performance.now(),
       onSaveError: (error) => recordError('storage', error),
     });
-    return { runner, pack, module };
+    return { runner, pack, lesson, module };
   })();
   inFlight.set(key, loading);
   void loading.finally(() => inFlight.delete(key)).catch(() => undefined);
@@ -168,8 +169,36 @@ function Finished({
   );
 }
 
-function Player({ runner, pack, module, world }: Loaded & { world: WorldId }) {
+/**
+ * An activity that is all listening, when nothing can be heard: the sound is switched off, or no touch has woken
+ * the audio yet (a page opened straight from its address). Played silently it would be a guessing game, so it
+ * waits, with one large thing to press. The press is itself the touch a browser needs before it will make sound.
+ */
+function SoundGate() {
+  return (
+    <section className={styles.gate} data-testid="lesson-needs-sound">
+      <Guide state="point" aim={62} className={styles.gateGuide} />
+      <ActionButton
+        tone="sun"
+        big
+        round
+        className={styles.gateButton}
+        icon={<IconSoundOn size={56} />}
+        aria-label={lessonText.soundOn}
+        onClick={() => {
+          settingsStore().set({ sound: true });
+          audio().unlock();
+        }}
+      />
+      <p className={styles.caption}>{lessonText.needsSound}</p>
+    </section>
+  );
+}
+
+function Player({ runner, pack, lesson, module, world }: Loaded & { world: WorldId }) {
   const state = useSyncExternalStore(runner.subscribe, runner.getState);
+  const audible = useSyncExternalStore(audio().subscribe, () => audio().canPlayClips);
+  const silenced = lesson.needsSound === true && !audible && state.phase === 'playing';
   const [paused, setPaused] = useState(false);
   const calm = useReducedMotion();
   const outcome = state.phase === 'playing' ? state.feedback?.outcome : undefined;
@@ -200,6 +229,7 @@ function Player({ runner, pack, module, world }: Loaded & { world: WorldId }) {
   const playing = state.phase === 'playing' ? state : null;
   const canHint =
     playing !== null &&
+    !silenced &&
     !playing.answered &&
     playing.view.stage !== 'demo' &&
     playing.view.hintsAvailable > 0;
@@ -210,6 +240,9 @@ function Player({ runner, pack, module, world }: Loaded & { world: WorldId }) {
       data-role={worldById(world).role}
       data-testid="lesson"
       data-paused={paused}
+      // Which challenge is on the screen: for the grown-up who reports a fault, and for the tests.
+      data-challenge={playing?.view.challenge.id}
+      data-stage={playing?.view.stage}
     >
       <div className={styles.bar} inert={paused}>
         <ActionLink
@@ -257,7 +290,9 @@ function Player({ runner, pack, module, world }: Loaded & { world: WorldId }) {
           )}
         </div>
       </div>
-      {playing ? (
+      {silenced ? (
+        <SoundGate />
+      ) : playing ? (
         <Stage
           state={playing}
           runner={runner}
@@ -291,5 +326,13 @@ export default function LessonView({ world, lessonId }: { world: WorldId; lesson
       </div>
     );
   }
-  return <Player runner={load.runner} pack={load.pack} module={load.module} world={world} />;
+  return (
+    <Player
+      runner={load.runner}
+      pack={load.pack}
+      lesson={load.lesson}
+      module={load.module}
+      world={world}
+    />
+  );
 }

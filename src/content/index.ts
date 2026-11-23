@@ -13,7 +13,12 @@ export class ContentError extends Error {
 
 /** Worlds that have authored content. A world without an entry has nothing to play yet. */
 const PACK_LOADERS: Partial<Record<WorldId, () => Promise<{ default: unknown }>>> = {
+  'reading-cove': () => import('./packs/reading-cove.v1.json'),
   'number-garden': () => import('./packs/number-garden.v2.json'),
+  'robot-ridge': () => import('./packs/robot-ridge.v1.json'),
+  'memory-forest': () => import('./packs/memory-forest.v1.json'),
+  'inventor-island': () => import('./packs/inventor-island.v1.json'),
+  'explorer-harbor': () => import('./packs/explorer-harbor.v1.json'),
 };
 
 const loaded = new Map<WorldId, Promise<ContentPack>>();

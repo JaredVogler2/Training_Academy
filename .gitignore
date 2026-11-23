@@ -13,3 +13,5 @@ blob-report/
 .DS_Store
 # Raw working screenshots; the reviewed set lives in docs/review/
 docs/screenshots/
+# Python bytecode from the offline voice tools
+__pycache__/

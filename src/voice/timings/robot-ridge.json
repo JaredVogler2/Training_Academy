@@ -1,0 +1,20 @@
+{
+  "rr.hint.route": 1.85,
+  "rr.mend.correct": 3.08,
+  "rr.mend.hint.model": 2.29,
+  "rr.mend.hint.reveal": 1.77,
+  "rr.mend.incorrect": 4.01,
+  "rr.mend.instruction": 4.34,
+  "rr.move.correct": 2.52,
+  "rr.move.hint.reveal": 1.91,
+  "rr.move.incorrect": 3.13,
+  "rr.move.instruction": 3.05,
+  "rr.repeat.correct": 3.76,
+  "rr.repeat.hint.step": 1.53,
+  "rr.repeat.instruction": 4.92,
+  "rr.steps.correct": 3.2,
+  "rr.steps.hint.reveal": 2.65,
+  "rr.steps.hint.step": 1.48,
+  "rr.steps.incorrect": 3.86,
+  "rr.steps.instruction": 2.63
+}

@@ -51,20 +51,33 @@ That check caught a real defect during this phase (see _Bundle splitting_).
 
 Public surface: `src/engine/index.ts`.
 
-| Function                                                                                | What it does                                                                                                                                                                                    |
-| --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `createSession(lesson, { id, profileId, seed, now, contentVersion })`                   | Plans one sitting: demonstrations, then guided steps, then `count` independent probes drawn from the lesson's pool by the seed. The undrawn pool is kept as a reserve.                          |
-| `getNextChallenge(session, lesson)`                                                     | A pure read: what to show now (challenge, choices in a stable seeded order, which are still available, hints left), or `null` when finished.                                                    |
-| `advanceDemo(session, lesson, now)`                                                     | Moves past a demonstration. Nothing is asked and nothing is recorded.                                                                                                                           |
-| `submitAttempt(session, lesson, { key, choiceId, now, day, durationMs, adultAssist? })` | Decides correctness; returns the next session and the `Attempt` to store, or a rejection (`stale`, `completed`, `not-answerable`, `unknown-choice`, `unavailable-choice`) that changes nothing. |
-| `getHint(session, lesson, now)`                                                         | Shows the next rung of the challenge's authored hint ladder (`model` → `eliminate` → `reveal`). From then on, the answer to that challenge is recorded as assisted.                             |
-| `getSkillEvidence(attempts, skillId, policy?)`                                          | Derives what the record says about one skill.                                                                                                                                                   |
-| `summarizeSession(session, lesson)`                                                     | Tallies for the end-of-lesson line shown to a grown-up.                                                                                                                                         |
+| Function                                                                                | What it does                                                                                                                                                                                                                                                                                   |
+| --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createSession(lesson, { id, profileId, seed, now, contentVersion })`                   | Plans one sitting: demonstrations, then guided steps, then `count` independent probes drawn from the lesson's pool by the seed. The undrawn pool is kept as a reserve.                                                                                                                         |
+| `getNextChallenge(session, lesson)`                                                     | A pure read: what to show now (challenge, choices in a stable seeded order, which are still available, hints left), or `null` when finished.                                                                                                                                                   |
+| `advanceDemo(session, lesson, now)`                                                     | Moves past a demonstration. Nothing is asked and nothing is recorded.                                                                                                                                                                                                                          |
+| `submitAttempt(session, lesson, { key, response, now, day, durationMs, adultAssist? })` | Decides correctness; returns the next session and the `Attempt` to store, or a rejection (`stale`, `completed`, `not-answerable`, `unknown-choice`, `unavailable-choice`, `malformed`) that changes nothing. `response` is a choice's id, or a made thing written as tokens joined by hyphens. |
+| `getHint(session, lesson, now)`                                                         | Shows the next rung of the challenge's authored hint ladder (`model`, then `eliminate` a choice or give a `step` of a thing to make, then `reveal`). From then on, the answer to that challenge is recorded as assisted.                                                                       |
+| `getSkillEvidence(attempts, skillId, policy?)`                                          | Derives what the record says about one skill.                                                                                                                                                                                                                                                  |
+| `summarizeSession(session, lesson)`                                                     | Tallies for the end-of-lesson line shown to a grown-up.                                                                                                                                                                                                                                        |
 
 Things worth knowing:
 
-- **A wrong answer is never a dead end.** The choice just tried is taken away and the child tries again. When only the
-  right choice is left it is revealed; tapping it completes the challenge as an assisted solve.
+- **A challenge is a choice or a thing to make.** A `choose-one` challenge has choices and one right answer. A
+  `make` challenge has a task — give an amount, put cards in order, repeat an order, pick some out, find pairs,
+  write a row of steps for a robot, change the parts of a thing until it works — and `judgeTask`
+  (`src/engine/tasks.ts`) says whether what was made is right, which parts of it were (they are kept), and
+  whether it was done cleanly. Anything that satisfies the rule is right: a robot's row is run
+  (`src/engine/robot.ts`, which also has the solver the content is checked with), and a design is tested by a
+  small exact model (`src/engine/models.ts`). There is no list of accepted answers to drift out of date.
+- **A made thing is written as text** — `egg1-egg2-egg3`, `x2-f-f-l` — so an attempt's record is the same shape
+  for every kind of game, and the format a saved copy is written in did not change.
+- **A wrong answer is never a dead end.** A choice just tried is taken away and the child tries again; when only
+  the right choice is left it is revealed, and tapping it completes the challenge as an assisted solve. A made
+  thing keeps what was right in it; after three wrong tries (unless the challenge says otherwise) the answer is
+  shown, to be followed.
+- **A lesson can end with a question of its own** (`plan.closing`): one or two challenges asked last of all, after
+  any re-probe. Memory Forest uses it to ask about the very start of a sitting.
 - **Double taps are harmless.** Each presentation has a key (`session/step/try`); a second submission with the same key
   is rejected as `stale`.
 - **Re-probing.** An independent challenge that needed help is followed, at the end of the lesson, by a _different_
@@ -90,7 +103,7 @@ functions actually used are bundled.
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ContentPack` → `Skill`, `Lesson`, `Challenge` | Strict objects: an unknown field (a typo) fails validation. `schemaVersion` for the file format, `contentVersion` per pack, `version` per lesson.                                                                         |
 | `Profile`                                      | A nickname and a picture. No real name is asked for, no birth date, nothing else.                                                                                                                                         |
-| `LessonSession`                                | One sitting: seed, planned steps, cursor, the current presentation's tries/hints/eliminated choices, tallies.                                                                                                             |
+| `LessonSession`                                | One sitting: seed, planned steps, cursor, the current presentation's tries/hints/eliminated choices/parts given, tallies.                                                                                                 |
 | `Attempt`                                      | One response: skill, challenge, variant, stage, try index, hint level, assistance, outcome, the choice, a misconception tag, time, local day, bounded duration, content versions. No free text, no coordinates, no audio. |
 
 IDs: skills are dotted (`math.quantity.match-sets-to-3`); lessons are URL-safe slugs (`ng-same-amount-01`) because they
@@ -101,13 +114,29 @@ appear in addresses; challenges are `lesson-id.local-name`.
 `src/content/packs/<world>.v<contentVersion>.json`, loaded by `loadPack(world)` with a dynamic import, so each pack is
 its own chunk. A pack that fails the schema is refused, never half-used.
 
-`src/content/lint.ts` checks what a schema cannot: references, the prerequisite graph (missing, self, cycles), plan
-consistency, hint ladders that never remove the answer and always end by revealing it, and — for quantity challenges —
-that the marked answer is the one and only choice with the right amount, that no two choices show the same amount,
-that the right choice is not simply the same picture as the prompt, and that each distractor's misconception tag
-matches what it shows. It runs in `tests/content`; it is not shipped to the browser.
+**Packs are written by generators.** `scripts/content/<world>.mjs` turns short tables of what to ask into the
+full, explicit pack; `npm run content` writes all six, and the files are committed. The game itself never makes
+a challenge up. `tests/content/generated.test.ts` fails if a pack file is not exactly what its generator writes,
+so a table changed without running the generator, or a pack edited by hand, is found out. Generators draw on a
+seeded random source where they sample (the maps of Explorer Harbor, some of Robot Ridge's grounds), so they
+write the same thing every time.
 
-See `docs/CURRICULUM.md` for the authoring conventions.
+**Packs are refused by rules.** `src/content/lint.ts` checks what a schema cannot — references, the prerequisite
+graph, plan arithmetic, hint ladders, and that each task's marked solution is one its rule accepts. Then the
+world's own rules (`src/content/rules/<world>.ts`) check that the marked answer is the one and only right answer
+to what that world asks: one group with the amount; one word that starts with the sound, and no letter not yet
+taught in anything to read; one picture that was among those hidden; a row that takes the robot to the star and,
+where the lesson is about doing it again, cannot without; a flag that is plainly on water, worked out from the
+map's numbers. A pack whose world has no rules is refused. The lint and the rules run in `tests/content`; they
+are not shipped to the browser.
+
+What a world's rules and its drawing both need lives in the content layer, because that layer may not import
+from the game (ESLint enforces it): `src/art/lexicon.json` (what each kit picture is called and how it is spelt),
+`src/content/explorer-harbor/storybook.json` (the stories and the changes with a cause) and
+`src/content/explorer-harbor/maps.ts` (the maths of a map: what counts as on land, as nearest, as far enough
+apart to press).
+
+See `docs/CURRICULUM.md` for the authoring conventions and what is authored.
 
 ## Storage
 
@@ -317,13 +346,30 @@ state (pointing during a demonstration or a hint, wondering at a new question, g
 after a wrong one), and `app/Home.tsx` moors it on the hub, pointing at the island that is open. It is hidden from
 assistive technology everywhere: the caption beside it says the same thing in words.
 
-## Worlds and the sample activity
+## Worlds and their activities
 
-`game/worlds.ts` lists the six worlds with grown-up-readable descriptions and whether anything is playable. A world
-that is not built shows a plain "not open yet" page with nothing that looks tappable.
+`game/worlds.ts` lists the six worlds with grown-up-readable descriptions, and for each of its activities the
+lessons that make it up and something to try together away from the screen. An activity with no lessons is not
+built, and a world with none shows a plain "not open yet" page with nothing that looks tappable; all six worlds
+now have lessons for every activity, so no such page is reachable, and the code for it remains.
 
-`game/worlds/modules.ts` is the registry of per-world code. Only Number Garden has a module so far (how its pictures
-are drawn); it and its content pack are fetched on entering that world.
+`game/progress.ts` reads which lessons a player has finished, and from that the next lesson in a world and the
+next world: what a world's large Play button goes to, and where Glim points on the map. Nothing is locked.
+
+`game/worlds/modules.ts` is the registry of per-world code. Each world has a module, fetched with its content
+pack on entering that world and never before:
+
+| A module gives | What it is                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Picture`      | How a stimulus is drawn, as a question, a choice or a card; lit when it is named; with its gap filled when its question has been answered   |
+| `describe`     | The same picture in words, for a screen reader                                                                                              |
+| `countable`    | How many things a picture holds, where counting is how the world teaches (Number Garden only)                                               |
+| `chooseScript` | How the world shows off a question with choices: counting, saying a word slowly, uncovering and covering, telling a story as far as it goes |
+| `makeScript`   | The same for a thing to make, where the world has more to say than the board (a story told back picture by picture)                         |
+| `soundOf`      | The recording a picture makes of its own accord when lit or tapped (a drum)                                                                 |
+| `boards`       | Boards for games only this world has, by the kind of task (`program`, `design`, `give`) or the scene a question is about (`scene:map`)      |
+| `linesFor`     | Lines a challenge is told with beside its own, to be fetched before they are wanted                                                         |
+| `voice`        | Where this world's recordings are and how long each lasts                                                                                   |
 
 `game/lessonRunner.ts` runs one sitting: resume or create, answer, hint, next, restart. It updates the screen first and
 saves second; a failed save never interrupts a child (the lesson continues in memory and says it is not saved).
@@ -335,9 +381,12 @@ the shell's top bar is not rendered there.
 
 | Part                | What it does                                                                                                                                                                                                                                |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `LessonView.tsx`    | Draws what the runner says: a bar (home, steps, help, pause), the board (the group and the choices, drawn by the world's module), a foot (Glim, the caption, the way on), and the end of the sitting. It never decides what is right.       |
-| `script.ts`         | Pure. From "what has just happened" (stage, event, amounts) it returns a script: beats (`rest`, `ask`, `count` a group, `same`) and sounds on a clock, with where the board settles. Timings match the counting animation in the CSS.       |
-| `useScript.ts`      | Plays a script with timers: the current beat, and the notes as they fall due. A new run starts from the top; paused or out of sight, nothing plays; with calm motion the board goes straight to where the script settles.                   |
+| `LessonView.tsx`    | Draws what the runner says: a bar (home, steps, help, pause), a board, and the end of the sitting. Where a lesson needs sound and there is none, a gate with one button. It never decides what is right.                                    |
+| `Stage.ts`          | Chooses the board: the world's own for this kind of task or scene if it has one, otherwise the frame's.                                                                                                                                     |
+| `boards/`           | The frame's boards: a question with choices; things to pick out; an order to make or to repeat; pairs to find. `useChoosing` is everything a question with choices needs worked out, for any board that draws one (a map does).             |
+| `frame.tsx`         | What every board shares: what a board is given, the foot (Glim, what Glim is saying, the way on or "Done"), and the small decisions that are the same whatever the game.                                                                    |
+| `script.ts`         | Pure. A script is beats (`rest`, `ask`, `count` a group, `name` one thing, `glance`, `do` a part, `same`) and sounds (a note, a cue, a line to say) on a clock, with where the board settles. A line waits for its recording only if heard. |
+| `useScript.ts`      | Plays a script with timers: the current beat, and the sounds as they fall due. A new run starts from the top; paused or out of sight, nothing plays and the voice stops; with calm motion the board goes straight to where it settles.      |
 | `PauseSheet.tsx`    | A modal `<dialog>`: one button to carry on, the way home, and the sound and calm-motion switches. Opened by the pause button, and by the page going out of sight — so the tap that carries on is also the touch that wakes a phone's audio. |
 | `Lesson.module.css` | One screen, no scrolling, from 320 pixels wide to a desktop, and down to the 342 pixels of height Safari leaves on a phone held sideways.                                                                                                   |
 
@@ -349,21 +398,52 @@ Three things the frame does that are easy to undo by accident:
   not help.
 - **A world says what can be counted** (`WorldModule.countable`). The frame knows nothing about amounts; a world
   that teaches some other way leaves it out and gets scripts with no counting in them.
+- **What is covered is not in the page.** A group to be taken in at a glance, things to remember, the cards to
+  answer with while those are on show, a missing picture: none is rendered until the engine shows it.
+- **Asking again is not help; another look is.** Glim says the words again and shows nothing that the question
+  hides. Uncovering a thing a second time is a hint, asked for and recorded as one.
 
-A world's page (`game/world/WorldView.tsx`) shows the island with the world's emblem pinned to it and, for a world
-that is open, an example of the activity built from the lesson's own demonstration challenge — so it cannot show
-something the activity does not do.
+A world's page (`game/world/WorldView.tsx`) shows the island with the world's emblem pinned to it; one large
+Play button that goes to the next lesson not yet finished; and every lesson as a card with a picture built from
+that lesson's own demonstration challenge — so a card cannot show something the activity does not do. Below, for
+the grown-up, is what each activity is and something to try together away from the screen.
+
+### The voice
+
+Every line a child hears is a file made ahead of time. Nothing is synthesised in the browser and nothing is
+fetched from another site, because both would break the game's rules about other origins and about working
+offline, and because a browser's own speech cannot be checked.
+
+| Part                           | What it does                                                                                                                                                                                                                                        |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scripts/voice/make_voice.py`  | Not part of the game. Reads every line the packs and `src/voice/lines*.json` ask for, says each with a speech synthesiser, has a speech recogniser listen to it, and writes the clip, its length and what was heard. Its README says how to run it. |
+| `src/voice/manifest.json`      | For every clip: its words, its file's hash, how it was checked (`matches`, `in-sentence`, `made` for a sound that is not speech) and whether a person has listened. Nothing is marked as listened to.                                               |
+| `src/assets/voice/en/<group>/` | The clips, one group for each world, one for words shared between worlds, one for lines every activity uses.                                                                                                                                        |
+| `src/audio/voice.ts`           | The `Narrator`: fetches a clip when it is first wanted, decodes it on the game's one audio context, keeps a few dozen decoded, says one line at a time, stops on pause and on leaving, and turns the cue sounds down while it speaks.               |
+| `src/parent/VoiceCheck.tsx`    | In the grown-ups' area: every clip, what it should say and how it was checked, to play and to mark as sounding right or wrong. The marks stay on the device; the wrong ones are listed to send on.                                                  |
+
+Nothing waits on the voice. A line that cannot be heard — sound off, audio not yet woken by a touch, a download
+that failed — is not said, and a script is told it takes no time, so what is shown never stands still for words
+nobody hears. A test fails if a line that can be said has no clip, if a clip is not in the manifest, or if any
+clip was heard as other words (`tests/config/voice.test.ts`).
 
 ## Bundle splitting
 
-| Chunk                                                | When it loads                             |
-| ---------------------------------------------------- | ----------------------------------------- |
-| entry + `react` + `engine` + `profiles`              | first load                                |
-| the hub's pictures (WebP)                            | with the first screen, as images          |
-| `three`, `r3f`, `harbour`, `Hub3D`                   | after the shell, only where 3D is planned |
-| `WorldView`, `LessonView`, `GrownUps`                | on first visit to that route              |
-| `number-garden` (code), `number-garden.v1` (content) | on entering Number Garden                 |
-| `Studio`, `GuideSheet`                               | only at `/studio/…`                       |
+| Chunk                                             | When it loads                             |
+| ------------------------------------------------- | ----------------------------------------- |
+| entry + `react` + `engine` + `profiles`           | first load                                |
+| the hub's pictures (WebP)                         | with the first screen, as images          |
+| `three`, `r3f`, `harbour`, `Hub3D`                | after the shell, only where 3D is planned |
+| `WorldView`, `LessonView`, `GrownUps`             | on first visit to that route              |
+| `engine-play` (judging, the robot, the models)    | with the first activity                   |
+| a world's code and its content pack, each a chunk | on entering that world                    |
+| a recording                                       | the first time its line is wanted         |
+| `VoiceCheck` and the voice manifest               | when a grown-up opens the list            |
+| `Studio`, `GuideSheet`                            | only at `/studio/…`                       |
+
+The first screen imports the engine's schema only (`@/engine/schema`), so that judging, the robot's interpreter
+and the models stay out of it; `npm run verify:dist` fails if any world's code, the 3D code or a recording
+becomes reachable from the first screen.
 
 Rolldown's `codeSplitting` groups are configured with `includeDependenciesRecursively: false`. With the default, the
 React Three Fiber group also captured React itself, which made the 3D chunk a static dependency of the entry — the

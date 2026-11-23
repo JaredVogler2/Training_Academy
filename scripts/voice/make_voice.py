@@ -3,10 +3,20 @@
     python -I scripts/voice/make_voice.py --voice <voice.onnx> --listener <whisper-model-dir> [--only KEY ...]
                                           [--again KEY ...] [--prune] [--check]
 
-What is said comes from two places, and nowhere else:
+What is said comes from these places, and nowhere else:
 
   src/content/packs/*.json   every line of every content pack (`strings.en`): each is spoken as written
-  src/voice/lines.json       the lines every world shares, and single words (counting words, the names of pictures)
+  src/voice/lines.json       the lines every world shares, and the counting words
+  src/voice/lines/*.json     what a world needs beside its lines: the names of its pictures, said plainly, with
+                             the first sound drawn out, and slowly; and sounds that are not speech at all
+
+A clip is of one of five kinds:
+
+  line    a sentence, said as it is written
+  word    one word, cut from the end of a sentence (said alone, the synthesiser clips it)
+  onset   one word with its first sound drawn out: "sssun"
+  slow    one word said slowly, sound running into sound: "mmmaaap"
+  sound   not speech: a drum, a bell. Made from arithmetic, by the recipes at the foot of this file
 
 What is written:
 
@@ -27,10 +37,11 @@ How a clip is checked. Nobody can listen to several hundred clips every time one
 makes them cannot listen at all. So every clip is played to a speech recogniser, and what it heard is written down
 beside what was meant:
 
-  matches       it heard exactly the words that were meant
+  matches       it heard exactly the words that were meant (or a word that sounds the same: "son" for "sun")
   in-sentence   (single words) it heard the word in the sentence the word was cut from, but not from the cut alone;
                 a short word on its own is hard for a recogniser, so this is the usual result for those
   differs       it heard something else; the manifest says what
+  made          (sounds that are not speech) there is nothing to recognise
 
 A sentence is tried several times, because the synthesiser does not say a thing the same way twice, and the first
 take that is heard right is kept. This is a filter for gross faults — a wrong word, a clipped ending, noise — and
@@ -52,6 +63,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PACKS = ROOT / 'src/content/packs'
 LINES = ROOT / 'src/voice/lines.json'
+WORLD_LINES = ROOT / 'src/voice/lines'
 MANIFEST = ROOT / 'src/voice/manifest.json'
 TIMINGS = ROOT / 'src/voice/timings'
 CLIPS = ROOT / 'src/assets/voice/en'
@@ -63,6 +75,20 @@ CARRIER = 'The next word is, {word}.'
 WORD = {'length_scale': 1.2, 'noise_scale': 0.5, 'noise_w_scale': 0.6}
 TAKES = 5
 BITRATE = '48k'
+# A first sound drawn out: the sound is given to the synthesiser this many times over.
+ONSET_REPEATS = 4
+# Ways of saying a word slowly, tried in this order: the synthesiser asked to speak slowly, and a word said at
+# its usual pace stretched afterwards. The first that is still heard as the word is kept.
+SLOW = [('voice', 2.2), ('voice', 2.6), ('stretch', 0.5), ('stretch', 0.45), ('voice', 1.9)]
+SLOW_AT_LEAST = 0.75
+# Words a recogniser may write instead, because they sound exactly the same.
+SOUND_ALIKE = {
+    'sun': {'son'}, 'nose': {'knows'}, 'mat': {'matt'}, 'ant': {'aunt'}, 'fin': {'finn'}, 'ring': {'wring'},
+    'rain': {'reign', 'rein'}, 'seed': {'cede'}, 'axe': {'ax'}, 'ink': {'inc'}, 'net': {'nett'}, 'pin': {'pinn'},
+    'tin': {'tinn'}, 'cot': {'caught', 'cott'}, 'hut': {'hutt'}, 'ram': {'ramm'}, 'pan': {'pann'}, 'can': {'cann'},
+    'one': {'won'}, 'two': {'too', 'to'}, 'four': {'for'}, 'eight': {'ate'}, 'bell': {'belle'}, 'log': {'logue'},
+}
+KINDS = {'lines': 'line', 'words': 'word', 'onsets': 'onset', 'slow': 'slow', 'sounds': 'sound'}
 
 NUMBERS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']
 
@@ -80,12 +106,11 @@ def wanted():
         pack = json.loads(path.read_text())
         for key, text in pack['strings']['en'].items():
             add(key, pack['world'], 'line', text)
-    shared = json.loads(LINES.read_text())
-    for group, kinds in shared['groups'].items():
-        for key, text in kinds.get('lines', {}).items():
-            add(key, group, 'line', text)
-        for key, text in kinds.get('words', {}).items():
-            add(key, group, 'word', text)
+    for path in [LINES, *sorted(WORLD_LINES.glob('*.json'))]:
+        for group, kinds in json.loads(path.read_text())['groups'].items():
+            for section, entries in kinds.items():
+                for key, text in entries.items():
+                    add(key, group, KINDS[section], text)
     for key in clips:
         if not re.fullmatch(r'[a-z0-9]+(?:[.-][a-z0-9]+)*', key):
             raise SystemExit(f'"{key}" cannot be a file name.')
@@ -96,6 +121,11 @@ def plain(text):
     """Words only, the way they are compared: no capitals, no punctuation, numerals spelt out."""
     words = re.sub(r"[^a-z0-9' ]+", ' ', text.lower().replace('’', "'")).split()
     return ' '.join(NUMBERS[int(word)] if word.isdigit() and int(word) < len(NUMBERS) else word for word in words)
+
+
+def same_words(heard, wanted):
+    """The same words, however the recogniser chose to space them: "sand castle" is "sandcastle"."""
+    return heard == wanted or heard.replace(' ', '') == wanted.replace(' ', '')
 
 
 def clip_path(group, key):
@@ -170,6 +200,11 @@ class Studio:
     def heard(self, audio):
         return plain(' '.join(word for word, _, _ in self.words_heard(audio)))
 
+    @staticmethod
+    def same_word(heard, word):
+        target = plain(word)
+        return heard == target or heard in SOUND_ALIKE.get(target, set())
+
     def trimmed(self, audio, lead=0.02, tail=0.05):
         """Without the silence at either end, faded in and out, and at one loudness for every clip."""
         np = self.np
@@ -202,39 +237,106 @@ class Studio:
         for take in range(1, TAKES + 1):
             audio = self.trimmed(self.say(text, SENTENCE))
             heard = self.heard(audio)
-            result = (audio, heard, 'matches' if heard == plain(text) else 'differs', take)
+            result = (audio, heard, 'matches' if same_words(heard, plain(text)) else 'differs', take)
             if result[2] == 'matches':
                 break
         return result
 
-    def word(self, text):
-        """A word cut from the end of a sentence, at the time the recogniser says the word begins."""
+    def last_word(self, audio, text):
+        """The last word of a sentence, cut out at the time the recogniser says it begins, and how it was heard."""
         np = self.np
-        target = plain(text)
+        found = self.words_heard(audio)
+        if not found:
+            return None
+        last_word, start, _ = found[-1]
+        in_sentence = self.same_word(plain(last_word), text)
+        # Cut at the quietest hundredth of a second near where the word is said to begin.
+        frame = int(self.rate * 0.01)
+        low = max(0, int((start - 0.12) * self.rate))
+        high = max(low + 1, min(len(audio) - frame, int((start + 0.12) * self.rate)))
+        begin = min(range(low, high, max(1, frame // 2)), key=lambda at: float(np.mean(audio[at : at + frame] ** 2)))
+        clip = self.trimmed(audio[begin:], lead=0.01)
+        alone = self.heard(clip)
+        check = 'matches' if self.same_word(alone, text) else 'in-sentence' if in_sentence else 'differs'
+        return clip, alone or '(nothing)', check
+
+    def best_of(self, text, takes):
+        """Try each way of making a word in turn; keep the first heard right, or failing that the best there was."""
+        ranks = ['matches', 'in-sentence', 'differs']
         best = None
-        for take in range(1, TAKES + 1):
-            audio = self.say(CARRIER.format(word=text), WORD)
-            found = self.words_heard(audio)
-            if not found:
+        for take, make in enumerate(takes, start=1):
+            result = self.last_word(make(), text)
+            if result is None:
                 continue
-            last_word, start, _ = found[-1]
-            in_sentence = plain(last_word) == target
-            # Cut at the quietest hundredth of a second near where the word is said to begin.
-            frame = int(self.rate * 0.01)
-            low = max(0, int((start - 0.12) * self.rate))
-            high = max(low + 1, min(len(audio) - frame, int((start + 0.12) * self.rate)))
-            begin = min(range(low, high, max(1, frame // 2)), key=lambda at: float(np.mean(audio[at : at + frame] ** 2)))
-            clip = self.trimmed(audio[begin:], lead=0.01)
-            alone = self.heard(clip)
-            check = 'matches' if alone == target else 'in-sentence' if in_sentence else 'differs'
-            rank = ['matches', 'in-sentence', 'differs'].index(check)
-            if best is None or rank < best[4]:
-                best = (clip, alone if check != 'in-sentence' else alone or '(nothing)', check, take, rank)
+            clip, heard, check = result
+            if best is None or ranks.index(check) < ranks.index(best[2]):
+                best = (clip, heard, check, take)
             if check == 'matches':
                 break
         if best is None:
             raise SystemExit(f'Nothing was heard for the word "{text}".')
-        return best[:4]
+        return best
+
+    def word(self, text):
+        """A word cut from the end of a sentence."""
+        return self.best_of(text, [lambda: self.say(CARRIER.format(word=text), WORD)] * TAKES)
+
+    def from_phonemes(self, phonemes, settings):
+        np = self.np
+        ids = self.voice.phonemes_to_ids(phonemes)
+        audio = np.asarray(self.voice.phoneme_ids_to_audio(ids, self.config(**settings))).astype(np.float32).reshape(-1)
+        return audio / 32768.0 if float(np.abs(audio).max()) > 2 else audio
+
+    def onset(self, text):
+        """A word with its first sound drawn out: the sound is given to the synthesiser several times over."""
+        sentence = self.voice.phonemize(CARRIER.format(word=text))[0]
+        alone = [phoneme for phoneme in self.voice.phonemize(text)[0] if phoneme not in '.,!? ']
+        end = len(sentence) - 1 - sentence[::-1].index('.')
+        first = end - len(alone)
+        if sentence[first] in 'ˈˌ':
+            first += 1
+        drawn_out = sentence[:first] + [sentence[first]] * ONSET_REPEATS + sentence[first + 1 :]
+        return self.best_of(text, [lambda: self.from_phonemes(drawn_out, WORD)] * TAKES)
+
+    def stretched(self, audio, tempo):
+        """The same sound, slower, at the same pitch."""
+        np = self.np
+        with tempfile.TemporaryDirectory() as scratch:
+            source, target = Path(scratch) / 'in.wav', Path(scratch) / 'out.wav'
+            with wave.open(str(source), 'wb') as file:
+                file.setnchannels(1)
+                file.setsampwidth(2)
+                file.setframerate(self.rate)
+                file.writeframes((np.clip(audio, -1, 1) * 32767).astype(np.int16).tobytes())
+            # The filter will not go below half speed in one step; two steps get there.
+            steps = f'atempo={tempo}' if tempo >= 0.5 else f'atempo=0.5,atempo={tempo / 0.5:.3f}'
+            subprocess.run(
+                ['ffmpeg', '-v', 'error', '-y', '-i', str(source), '-filter:a', steps, str(target)],
+                check=True,
+            )
+            with wave.open(str(target)) as file:
+                frames = file.readframes(file.getnframes())
+        return np.frombuffer(frames, dtype=np.int16).astype(np.float32) / 32768
+
+    def slow(self, text):
+        """A word said slowly, sound running into sound."""
+        def way(method, amount):
+            if method == 'voice':
+                return lambda: self.say(CARRIER.format(word=text), {**WORD, 'length_scale': amount})
+            return lambda: self.stretched(self.say(CARRIER.format(word=text), WORD), amount)
+
+        clip, heard, check, take = self.best_of(text, [way(method, amount) for method, amount in SLOW])
+        # A word said slowly takes a while to say. One that does not was cut in the wrong place, whatever was heard.
+        if len(clip) / self.rate < SLOW_AT_LEAST:
+            check = 'differs'
+        return clip, heard, check, take
+
+    def sound(self, text):
+        """A sound that is not speech, from its recipe."""
+        recipe = RECIPES.get(text)
+        if recipe is None:
+            raise SystemExit(f'There is no recipe for a sound called "{text}".')
+        return self.trimmed(recipe(self.np, self.rate).astype(self.np.float32)), '', 'made', 1
 
     def write(self, audio, path):
         np = self.np
@@ -330,7 +432,8 @@ def main():
     differs = 0
     for index, key in enumerate(todo, start=1):
         group, kind, text = clips[key]
-        audio, heard, check, takes = studio.word(text) if kind == 'word' else studio.sentence(text)
+        make = {'line': studio.sentence, 'word': studio.word, 'onset': studio.onset, 'slow': studio.slow, 'sound': studio.sound}
+        audio, heard, check, takes = make[kind](text)
         path = clip_path(group, key)
         seconds = studio.write(audio, path)
         manifest['clips'][key] = {
@@ -349,11 +452,110 @@ def main():
         }
         differs += check == 'differs'
         print(f'[{index}/{len(todo)}] {check:11} {key:36} {seconds:4.1f}s  "{text}"' + (f'  heard: "{heard}"' if check != 'matches' else ''))
-        if index % 20 == 0:
+        if index % 5 == 0:
             save(manifest, clips)
     save(manifest, clips)
     total = sum(entry['bytes'] for entry in manifest['clips'].values())
     print(f'{len(todo)} made; {differs} heard differently. {len(manifest["clips"])} clips in all, {total / 1024:.0f} kB.')
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Sounds that are not speech. Each recipe is a few lines of arithmetic: there is no recording behind any of them.
+# They are instruments of the game's own — the drum in the picture makes this sound because the game says so — and
+# not imitations to be recognised from life.
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def _envelope(np, length, rate, attack=0.004, decay=6.0):
+    t = np.arange(length) / rate
+    return np.minimum(1, t / attack) * np.exp(-decay * t)
+
+
+def _noise(np, length, seed):
+    return np.random.default_rng(seed).standard_normal(length)
+
+
+def _band(np, signal, rate, low, high):
+    """Keep what lies between two frequencies, by zeroing the rest of the spectrum."""
+    spectrum = np.fft.rfft(signal)
+    freqs = np.fft.rfftfreq(len(signal), 1 / rate)
+    spectrum[(freqs < low) | (freqs > high)] = 0
+    return np.fft.irfft(spectrum, len(signal))
+
+
+def drum(np, rate):
+    """One low thump: a note that falls as it dies away, with the tap of the stick at the front."""
+    length = int(rate * 0.5)
+    t = np.arange(length) / rate
+    pitch = 62 + 90 * np.exp(-18 * t)
+    body = np.sin(2 * np.pi * np.cumsum(pitch) / rate) * _envelope(np, length, rate, decay=9)
+    tap = _band(np, _noise(np, length, 1), rate, 900, 5000) * _envelope(np, length, rate, attack=0.001, decay=120)
+    return body + 0.35 * tap
+
+
+def bell(np, rate):
+    """One clear ring: a few notes that do not quite agree, the high ones dying first."""
+    length = int(rate * 1.1)
+    t = np.arange(length) / rate
+    partials = [(1, 1.0, 3.5), (2.76, 0.5, 5), (5.4, 0.28, 8), (8.93, 0.14, 12)]
+    return sum(level * np.sin(2 * np.pi * 880 * ratio * t) * _envelope(np, length, rate, decay=decay)
+               for ratio, level, decay in partials)
+
+
+def shaker(np, rate):
+    """Two short rustles: there and back."""
+    length = int(rate * 0.55)
+    out = np.zeros(length)
+    for start, level in ((0.0, 1.0), (0.2, 0.85)):
+        burst = int(rate * 0.16)
+        grain = _band(np, _noise(np, burst, 7 + int(start * 100)), rate, 3500, 9500)
+        t = np.arange(burst) / rate
+        shape = np.minimum(1, t / 0.03) * np.exp(-22 * np.maximum(0, t - 0.03))
+        at = int(rate * start)
+        out[at : at + burst] += level * grain * shape
+    return out
+
+
+def whistle(np, rate):
+    """One breathy toot that lifts a little at the end."""
+    length = int(rate * 0.55)
+    t = np.arange(length) / rate
+    pitch = 1750 + 120 * np.clip((t - 0.3) / 0.25, 0, 1) + 14 * np.sin(2 * np.pi * 6 * t)
+    tone = np.sin(2 * np.pi * np.cumsum(pitch) / rate)
+    breath = 0.12 * _band(np, _noise(np, length, 3), rate, 1500, 6000)
+    shape = np.minimum(1, t / 0.03) * np.minimum(1, (0.55 - t) / 0.08)
+    return (tone + breath) * shape
+
+
+def bird(np, rate):
+    """Three quick chirps, each sliding upwards."""
+    length = int(rate * 0.75)
+    out = np.zeros(length)
+    for start in (0.0, 0.22, 0.44):
+        chirp = int(rate * 0.13)
+        t = np.arange(chirp) / rate
+        pitch = 2600 + 1700 * (t / 0.13) ** 0.7
+        shape = np.sin(np.pi * t / 0.13) ** 2
+        at = int(rate * start)
+        out[at : at + chirp] += np.sin(2 * np.pi * np.cumsum(pitch) / rate) * shape
+    return out
+
+
+def clock(np, rate):
+    """Tick, tock, tick, tock: two small knocks, one a little lower than the other."""
+    length = int(rate * 1.15)
+    out = np.zeros(length)
+    for index, start in enumerate((0.0, 0.3, 0.6, 0.9)):
+        knock = int(rate * 0.06)
+        centre = 2300 if index % 2 == 0 else 1500
+        grain = _band(np, _noise(np, knock, 20 + index), rate, centre - 500, centre + 500)
+        t = np.arange(knock) / rate
+        at = int(rate * start)
+        out[at : at + knock] += grain * np.exp(-90 * t)
+    return out
+
+
+RECIPES = {'drum': drum, 'bell': bell, 'shaker': shaker, 'whistle': whistle, 'bird': bird, 'clock': clock}
 
 
 if __name__ == '__main__':

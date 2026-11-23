@@ -1,0 +1,17 @@
+{
+  "about": "What the voice says for Memory Forest beside the lines of its pack: the names of the pictures it names aloud. Written by scripts/content/memory-forest.mjs; do not edit by hand.",
+  "groups": {
+    "words": {
+      "words": {
+        "word.ant": "ant",
+        "word.bird": "bird",
+        "word.cat": "cat",
+        "word.fish": "fish",
+        "word.fox": "fox",
+        "word.hen": "hen",
+        "word.ram": "ram",
+        "word.rat": "rat"
+      }
+    }
+  }
+}

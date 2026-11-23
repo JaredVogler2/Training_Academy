@@ -13,16 +13,18 @@ import { describe, expect, it } from 'vitest';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (path: string) => readFileSync(join(root, path), 'utf8');
 
+type Kind = 'line' | 'word' | 'onset' | 'slow' | 'sound';
+
 interface Clip {
   group: string;
-  kind: 'line' | 'word';
+  kind: Kind;
   text: string;
   file: string;
   bytes: number;
   seconds: number;
   sha256: string;
   heard: string;
-  check: 'matches' | 'in-sentence' | 'differs';
+  check: 'matches' | 'in-sentence' | 'differs' | 'made';
   takes: number;
   reviewed: string | null;
 }
@@ -32,6 +34,15 @@ const manifest = JSON.parse(read('src/voice/manifest.json')) as {
   clips: Record<string, Clip>;
 };
 const clips = Object.entries(manifest.clips);
+
+/** What each section of a lines file holds. */
+const KINDS: Record<string, Kind> = {
+  lines: 'line',
+  words: 'word',
+  onsets: 'onset',
+  slow: 'slow',
+  sounds: 'sound',
+};
 
 /** Every clip the game asks for, gathered the way the script that makes them gathers it. */
 function wanted(): Map<string, { group: string; kind: string; text: string }> {
@@ -45,15 +56,20 @@ function wanted(): Map<string, { group: string; kind: string; text: string }> {
       found.set(key, { group: pack.world, kind: 'line', text });
     }
   }
-  const shared = JSON.parse(read('src/voice/lines.json')) as {
-    groups: Record<string, { lines?: Record<string, string>; words?: Record<string, string> }>;
-  };
-  for (const [group, kinds] of Object.entries(shared.groups)) {
-    for (const [key, text] of Object.entries(kinds.lines ?? {})) {
-      found.set(key, { group, kind: 'line', text });
-    }
-    for (const [key, text] of Object.entries(kinds.words ?? {})) {
-      found.set(key, { group, kind: 'word', text });
+  const files = [
+    'src/voice/lines.json',
+    ...readdirSync(join(root, 'src/voice/lines')).map((name) => `src/voice/lines/${name}`),
+  ];
+  for (const file of files) {
+    const { groups } = JSON.parse(read(file)) as {
+      groups: Record<string, Record<string, Record<string, string>>>;
+    };
+    for (const [group, sections] of Object.entries(groups)) {
+      for (const [section, entries] of Object.entries(sections)) {
+        const kind = KINDS[section];
+        if (!kind) throw new Error(`${file} has a section called "${section}".`);
+        for (const [key, text] of Object.entries(entries)) found.set(key, { group, kind, text });
+      }
     }
   }
   return found;
@@ -110,7 +126,7 @@ describe('the voice', () => {
   it('is made of short, small clips: a sentence or a word each', () => {
     for (const [key, clip] of clips) {
       expect(clip.seconds, key).toBeGreaterThan(0.15);
-      expect(clip.seconds, key).toBeLessThan(clip.kind === 'word' ? 1.6 : 7);
+      expect(clip.seconds, key).toBeLessThan(clip.kind === 'line' ? 7 : 3);
       expect(clip.bytes, key).toBeLessThan(60 * 1024);
     }
   });
@@ -121,8 +137,10 @@ describe('the voice', () => {
     );
     expect(differing).toEqual(HEARD_DIFFERENTLY);
     // A sentence is either heard word for word or it is listed above: "nearly" is not a result a sentence can have.
+    // A sound that is not speech has nothing to be heard as, and only such a sound may say so.
     for (const [key, clip] of clips) {
       if (clip.kind === 'line') expect(['matches', 'differs'], key).toContain(clip.check);
+      expect(clip.check === 'made', key).toBe(clip.kind === 'sound');
     }
   });
 

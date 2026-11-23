@@ -1,0 +1,1962 @@
+{
+  "format": "training-academy.content-pack",
+  "schemaVersion": 1,
+  "id": "memory-forest",
+  "world": "memory-forest",
+  "contentVersion": 1,
+  "strings": {
+    "en": {
+      "mf.hint.not-this": "Not this one.",
+      "mf.hint.look-again": "Have another look.",
+      "mf.pairs.open.instruction": "Tap two that are the same.",
+      "mf.pairs.open.hint": "Find one. Then find another just like it.",
+      "mf.pairs.instruction": "Turn two cards. Find the two that are the same.",
+      "mf.pairs.hint.model": "Look. Here they all are.",
+      "mf.pairs.correct": "Yes. You found them all.",
+      "mf.pairs.incorrect": "Keep looking.",
+      "mf.hidden.instruction": "Look carefully. Then they hide.",
+      "mf.hidden.ask": "Which of these was there?",
+      "mf.hidden.correct": "Yes. That one was there.",
+      "mf.hidden.incorrect": "That one was not there. Think again.",
+      "mf.hidden.hint.reveal": "It was this one.",
+      "mf.earlier.instruction": "Think back to the very start. Which of these did you see first?",
+      "mf.earlier.hint.model": "There were two things. One was a cat.",
+      "mf.order.instruction": "Watch the order. Then tap them the same way.",
+      "mf.order.correct": "Yes. The same order.",
+      "mf.order.incorrect": "Not that order. Watch again.",
+      "mf.order.hint.model": "Here it is again.",
+      "mf.order.hint.step": "It starts like this.",
+      "mf.order.hint.reveal": "Tap them as I point.",
+      "mf.groups.instruction": "Look. Some of these go together.",
+      "mf.groups.ask": "Which ones did you see?",
+      "mf.groups.correct": "Yes. Those were the ones.",
+      "mf.groups.incorrect": "Not quite. Think of the ones that go together.",
+      "mf.groups.hint.model": "Think of one kind. Then think of the other kind.",
+      "mf.groups.hint.step": "These two were there.",
+      "mf.groups.hint.reveal": "These were all of them.",
+      "mf.story.instruction": "Look who has what. Make a silly picture in your head.",
+      "mf.story.ask": "What did this one have?",
+      "mf.story.correct": "Yes. That is what it had.",
+      "mf.story.incorrect": "That was not this one’s. Think again.",
+      "mf.story.hint.model": "Have another look. Make a silly picture in your head.",
+      "mf.story.hint.reveal": "It had this one.",
+      "mf.places.instruction": "Look where each thing is. Walk the path in your head.",
+      "mf.places.ask": "What was at this place?",
+      "mf.places.correct": "Yes. That is what was there.",
+      "mf.places.incorrect": "That was not at this place. Think again.",
+      "mf.places.hint.model": "Have another look. Walk the path in your head.",
+      "mf.places.hint.reveal": "This was there."
+    }
+  },
+  "skills": [
+    {
+      "id": "memory.recognition.find-pairs",
+      "world": "memory-forest",
+      "strand": "memory",
+      "title": "Find pairs among cards face down",
+      "objective": "Finds every pair among six or eight cards lying face down, in no more turns than remembering where things are would need.",
+      "prerequisites": []
+    },
+    {
+      "id": "memory.recognition.what-was-there",
+      "world": "memory-forest",
+      "strand": "memory",
+      "title": "Know again what was just hidden",
+      "objective": "After looking at two to four things that are then covered, picks out one that was there from pictures of things that were not.",
+      "prerequisites": ["memory.recognition.find-pairs"]
+    },
+    {
+      "id": "memory.recognition.after-a-while",
+      "world": "memory-forest",
+      "strand": "memory",
+      "title": "Know again what was seen a while ago",
+      "objective": "At the end of an activity, picks out a thing shown at its very start and not seen since. One question, kept apart from the others: a longer wait is a different thing to manage.",
+      "prerequisites": ["memory.recognition.what-was-there"]
+    },
+    {
+      "id": "memory.serial.repeat-order",
+      "world": "memory-forest",
+      "strand": "memory",
+      "title": "Remember an order",
+      "objective": "Watches three or four things light up one after another and taps them in the same order.",
+      "prerequisites": ["memory.recognition.what-was-there"]
+    },
+    {
+      "id": "memory.strategy.grouping",
+      "world": "memory-forest",
+      "strand": "memory",
+      "title": "Remember by grouping",
+      "objective": "Looks at four things that fall into two kinds, and after they are put away picks all four out from among others, with nothing to prompt them.",
+      "prerequisites": ["memory.recognition.what-was-there"]
+    },
+    {
+      "id": "memory.strategy.linking",
+      "world": "memory-forest",
+      "strand": "memory",
+      "title": "Remember by linking two things",
+      "objective": "Looks at two or three pairs — who had what — and, shown one of them, says what went with it.",
+      "prerequisites": ["memory.recognition.what-was-there"]
+    },
+    {
+      "id": "memory.strategy.places",
+      "world": "memory-forest",
+      "strand": "memory",
+      "title": "Remember by places",
+      "objective": "Looks at things left at two or three places and, shown one place, says what was there.",
+      "prerequisites": ["memory.recognition.what-was-there"]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "mf-pairs-01",
+      "version": 1,
+      "world": "memory-forest",
+      "title": "Find the pairs",
+      "summary": "Cards lie in rows, two of each picture. First they are face up, to learn how the game goes; then face down, two turned at a time. A pair stays turned; two that differ are looked at and turn back.",
+      "skillIds": ["memory.recognition.find-pairs"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["mf-pairs-01.demo"],
+        "guided": ["mf-pairs-01.guided-face-up", "mf-pairs-01.guided-two"],
+        "independent": {
+          "pool": [
+            "mf-pairs-01.animals",
+            "mf-pairs-01.clothes",
+            "mf-pairs-01.sounds",
+            "mf-pairs-01.sky-and-leaf",
+            "mf-pairs-01.food",
+            "mf-pairs-01.small-animals"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "mf-pairs-01.demo",
+          "kind": "make",
+          "skillId": "memory.recognition.find-pairs",
+          "variant": "two-pairs-face-up",
+          "prompt": { "instruction": "mf.pairs.open.instruction" },
+          "task": {
+            "type": "pairs",
+            "cards": [
+              { "id": "sun", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } },
+              { "id": "moon", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } }
+            ],
+            "par": 2,
+            "open": true
+          },
+          "hints": [{ "type": "model", "caption": "mf.pairs.open.hint" }],
+          "feedback": { "correct": "mf.pairs.correct", "incorrect": "mf.pairs.incorrect" }
+        },
+        {
+          "id": "mf-pairs-01.guided-face-up",
+          "kind": "make",
+          "skillId": "memory.recognition.find-pairs",
+          "variant": "three-pairs-face-up",
+          "prompt": { "instruction": "mf.pairs.open.instruction" },
+          "task": {
+            "type": "pairs",
+            "cards": [
+              { "id": "cat", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+              { "id": "hat", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } }
+            ],
+            "par": 3,
+            "open": true
+          },
+          "hints": [{ "type": "model", "caption": "mf.pairs.open.hint" }],
+          "feedback": { "correct": "mf.pairs.correct", "incorrect": "mf.pairs.incorrect" }
+        },
+        {
+          "id": "mf-pairs-01.guided-two",
+          "kind": "make",
+          "skillId": "memory.recognition.find-pairs",
+          "variant": "two-pairs",
+          "prompt": { "instruction": "mf.pairs.instruction" },
+          "task": {
+            "type": "pairs",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "apple", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } }
+            ],
+            "par": 4
+          },
+          "hints": [{ "type": "model", "caption": "mf.pairs.hint.model" }],
+          "feedback": { "correct": "mf.pairs.correct", "incorrect": "mf.pairs.incorrect" }
+        },
+        {
+          "id": "mf-pairs-01.animals",
+          "kind": "make",
+          "skillId": "memory.recognition.find-pairs",
+          "variant": "three-pairs",
+          "prompt": { "instruction": "mf.pairs.instruction" },
+          "task": {
+            "type": "pairs",
+            "cards": [
+              { "id": "cat", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+              { "id": "hen", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+              { "id": "fox", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } }
+            ],
+            "par": 6
+          },
+          "hints": [{ "type": "model", "caption": "mf.pairs.hint.model" }],
+          "feedback": { "correct": "mf.pairs.correct", "incorrect": "mf.pairs.incorrect" }
+        },
+        {
+          "id": "mf-pairs-01.clothes",
+          "kind": "make",
+          "skillId": "memory.recognition.find-pairs",
+          "variant": "three-pairs",
+          "prompt": { "instruction": "mf.pairs.instruction" },
+          "task": {
+            "type": "pairs",
+            "cards": [
+              { "id": "hat", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+              { "id": "sock", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } },
+              { "id": "cap", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } }
+            ],
+            "par": 6
+          },
+          "hints": [{ "type": "model", "caption": "mf.pairs.hint.model" }],
+          "feedback": { "correct": "mf.pairs.correct", "incorrect": "mf.pairs.incorrect" }
+        },
+        {
+          "id": "mf-pairs-01.sounds",
+          "kind": "make",
+          "skillId": "memory.recognition.find-pairs",
+          "variant": "three-pairs",
+          "prompt": { "instruction": "mf.pairs.instruction" },
+          "task": {
+            "type": "pairs",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "whistle",
+                "label": "whistle",
+                "stimulus": { "type": "picture", "id": "whistle" }
+              }
+            ],
+            "par": 6
+          },
+          "hints": [{ "type": "model", "caption": "mf.pairs.hint.model" }],
+          "feedback": { "correct": "mf.pairs.correct", "incorrect": "mf.pairs.incorrect" }
+        },
+        {
+          "id": "mf-pairs-01.sky-and-leaf",
+          "kind": "make",
+          "skillId": "memory.recognition.find-pairs",
+          "variant": "four-pairs",
+          "prompt": { "instruction": "mf.pairs.instruction" },
+          "task": {
+            "type": "pairs",
+            "cards": [
+              { "id": "sun", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } },
+              { "id": "moon", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } },
+              { "id": "rain", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } },
+              { "id": "leaf", "label": "leaf", "stimulus": { "type": "picture", "id": "leaf" } }
+            ],
+            "par": 8
+          },
+          "hints": [{ "type": "model", "caption": "mf.pairs.hint.model" }],
+          "feedback": { "correct": "mf.pairs.correct", "incorrect": "mf.pairs.incorrect" }
+        },
+        {
+          "id": "mf-pairs-01.food",
+          "kind": "make",
+          "skillId": "memory.recognition.find-pairs",
+          "variant": "four-pairs",
+          "prompt": { "instruction": "mf.pairs.instruction" },
+          "task": {
+            "type": "pairs",
+            "cards": [
+              { "id": "apple", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } },
+              { "id": "egg", "label": "egg", "stimulus": { "type": "picture", "id": "egg" } },
+              { "id": "nut", "label": "nut", "stimulus": { "type": "picture", "id": "nut" } },
+              { "id": "olive", "label": "olive", "stimulus": { "type": "picture", "id": "olive" } }
+            ],
+            "par": 8
+          },
+          "hints": [{ "type": "model", "caption": "mf.pairs.hint.model" }],
+          "feedback": { "correct": "mf.pairs.correct", "incorrect": "mf.pairs.incorrect" }
+        },
+        {
+          "id": "mf-pairs-01.small-animals",
+          "kind": "make",
+          "skillId": "memory.recognition.find-pairs",
+          "variant": "four-pairs",
+          "prompt": { "instruction": "mf.pairs.instruction" },
+          "task": {
+            "type": "pairs",
+            "cards": [
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } },
+              { "id": "bird", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } },
+              { "id": "ant", "label": "ant", "stimulus": { "type": "picture", "id": "ant" } },
+              { "id": "ram", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } }
+            ],
+            "par": 8
+          },
+          "hints": [{ "type": "model", "caption": "mf.pairs.hint.model" }],
+          "feedback": { "correct": "mf.pairs.correct", "incorrect": "mf.pairs.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "mf-hidden-01",
+      "version": 1,
+      "world": "memory-forest",
+      "title": "Which one was there?",
+      "summary": "Two, three or four things are shown, and then a big leaf covers them. Your child says which of some pictures was under the leaf. The others were never there, though some are the same kind of thing. At the very end there is one question about the first things shown, which have not been seen since.",
+      "skillIds": ["memory.recognition.what-was-there", "memory.recognition.after-a-while"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["mf-hidden-01.demo"],
+        "guided": ["mf-hidden-01.guided-two", "mf-hidden-01.guided-three"],
+        "independent": {
+          "pool": [
+            "mf-hidden-01.fox-bell-apple",
+            "mf-hidden-01.hat-moon-fish",
+            "mf-hidden-01.egg-sock-clock",
+            "mf-hidden-01.bird-pan-sun-ring",
+            "mf-hidden-01.ant-whistle-cap-olive",
+            "mf-hidden-01.mug-rat-leaf-drum",
+            "mf-hidden-01.nut-ram-lamp-cup",
+            "mf-hidden-01.octopus-rain-pot-shaker"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        },
+        "closing": ["mf-hidden-01.earlier"]
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "mf-hidden-01.demo",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.what-was-there",
+          "variant": "two-things",
+          "prompt": {
+            "instruction": "mf.hidden.instruction",
+            "stimulus": { "type": "scene", "scene": "things", "of": { "ids": ["cat", "sun"] } },
+            "glance": true,
+            "ask": "mf.hidden.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+            { "id": "b", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.hint.look-again" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "b": "not-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        },
+        {
+          "id": "mf-hidden-01.guided-two",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.what-was-there",
+          "variant": "two-things",
+          "prompt": {
+            "instruction": "mf.hidden.instruction",
+            "stimulus": { "type": "scene", "scene": "things", "of": { "ids": ["fish", "drum"] } },
+            "glance": true,
+            "ask": "mf.hidden.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } },
+            { "id": "b", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.hint.look-again" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "a": "not-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        },
+        {
+          "id": "mf-hidden-01.guided-three",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.what-was-there",
+          "variant": "three-things",
+          "prompt": {
+            "instruction": "mf.hidden.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "things",
+              "of": { "ids": ["hen", "cup", "leaf"] }
+            },
+            "glance": true,
+            "ask": "mf.hidden.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } },
+            { "id": "b", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.hint.look-again" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "a": "not-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        },
+        {
+          "id": "mf-hidden-01.fox-bell-apple",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.what-was-there",
+          "variant": "three-things",
+          "prompt": {
+            "instruction": "mf.hidden.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "things",
+              "of": { "ids": ["fox", "bell", "apple"] }
+            },
+            "glance": true,
+            "ask": "mf.hidden.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+            { "id": "b", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+            { "id": "c", "label": "egg", "stimulus": { "type": "picture", "id": "egg" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.hint.look-again" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-kind-as-shown", "c": "same-kind-as-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        },
+        {
+          "id": "mf-hidden-01.hat-moon-fish",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.what-was-there",
+          "variant": "three-things",
+          "prompt": {
+            "instruction": "mf.hidden.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "things",
+              "of": { "ids": ["hat", "moon", "fish"] }
+            },
+            "glance": true,
+            "ask": "mf.hidden.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } },
+            { "id": "b", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } },
+            { "id": "c", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.hint.look-again" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-kind-as-shown", "c": "same-kind-as-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        },
+        {
+          "id": "mf-hidden-01.egg-sock-clock",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.what-was-there",
+          "variant": "three-things",
+          "prompt": {
+            "instruction": "mf.hidden.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "things",
+              "of": { "ids": ["egg", "sock", "clock"] }
+            },
+            "glance": true,
+            "ask": "mf.hidden.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "nut", "stimulus": { "type": "picture", "id": "nut" } },
+            { "id": "b", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+            { "id": "c", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "mf.hint.look-again" },
+            { "type": "eliminate", "remove": ["b"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-kind-as-shown", "b": "same-kind-as-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        },
+        {
+          "id": "mf-hidden-01.bird-pan-sun-ring",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.what-was-there",
+          "variant": "four-things",
+          "prompt": {
+            "instruction": "mf.hidden.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "things",
+              "of": { "ids": ["bird", "pan", "sun", "ring"] }
+            },
+            "glance": true,
+            "ask": "mf.hidden.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } },
+            { "id": "b", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } },
+            { "id": "c", "label": "pan", "stimulus": { "type": "picture", "id": "pan" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "mf.hint.look-again" },
+            { "type": "eliminate", "remove": ["b"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-kind-as-shown", "b": "same-kind-as-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        },
+        {
+          "id": "mf-hidden-01.ant-whistle-cap-olive",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.what-was-there",
+          "variant": "four-things",
+          "prompt": {
+            "instruction": "mf.hidden.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "things",
+              "of": { "ids": ["ant", "whistle", "cap", "olive"] }
+            },
+            "glance": true,
+            "ask": "mf.hidden.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "olive", "stimulus": { "type": "picture", "id": "olive" } },
+            { "id": "b", "label": "shaker", "stimulus": { "type": "picture", "id": "shaker" } },
+            { "id": "c", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.hint.look-again" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-kind-as-shown", "c": "same-kind-as-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        },
+        {
+          "id": "mf-hidden-01.mug-rat-leaf-drum",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.what-was-there",
+          "variant": "four-things",
+          "prompt": {
+            "instruction": "mf.hidden.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "things",
+              "of": { "ids": ["mug", "rat", "leaf", "drum"] }
+            },
+            "glance": true,
+            "ask": "mf.hidden.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+            { "id": "b", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+            { "id": "c", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "mf.hint.look-again" },
+            { "type": "eliminate", "remove": ["b"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-kind-as-shown", "b": "same-kind-as-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        },
+        {
+          "id": "mf-hidden-01.nut-ram-lamp-cup",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.what-was-there",
+          "variant": "four-things",
+          "prompt": {
+            "instruction": "mf.hidden.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "things",
+              "of": { "ids": ["nut", "ram", "lamp", "cup"] }
+            },
+            "glance": true,
+            "ask": "mf.hidden.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "pot", "stimulus": { "type": "picture", "id": "pot" } },
+            { "id": "b", "label": "lamp", "stimulus": { "type": "picture", "id": "lamp" } },
+            { "id": "c", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.hint.look-again" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-kind-as-shown", "c": "same-kind-as-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        },
+        {
+          "id": "mf-hidden-01.octopus-rain-pot-shaker",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.what-was-there",
+          "variant": "four-things",
+          "prompt": {
+            "instruction": "mf.hidden.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "things",
+              "of": { "ids": ["octopus", "rain", "pot", "shaker"] }
+            },
+            "glance": true,
+            "ask": "mf.hidden.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "elephant", "stimulus": { "type": "picture", "id": "elephant" } },
+            { "id": "b", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } },
+            { "id": "c", "label": "octopus", "stimulus": { "type": "picture", "id": "octopus" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "mf.hint.look-again" },
+            { "type": "eliminate", "remove": ["b"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-kind-as-shown", "b": "same-kind-as-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        },
+        {
+          "id": "mf-hidden-01.earlier",
+          "kind": "choose-one",
+          "skillId": "memory.recognition.after-a-while",
+          "variant": "from-the-start",
+          "prompt": {
+            "instruction": "mf.earlier.instruction",
+            "stimulus": { "type": "sign", "id": "earlier" }
+          },
+          "choices": [
+            { "id": "a", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } },
+            { "id": "b", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } },
+            { "id": "c", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.earlier.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.hidden.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-kind-as-shown", "c": "same-kind-as-shown" },
+          "feedback": { "correct": "mf.hidden.correct", "incorrect": "mf.hidden.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "mf-order-01",
+      "version": 1,
+      "world": "memory-forest",
+      "title": "The same order",
+      "summary": "Animals light up one after another, each with its name, and your child taps them in the same order: two at first, then three, then four. Seeing the order again is help, and is asked for as help.",
+      "skillIds": ["memory.serial.repeat-order"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["mf-order-01.demo"],
+        "guided": ["mf-order-01.guided-two", "mf-order-01.guided-three"],
+        "independent": {
+          "pool": [
+            "mf-order-01.fox-cat-fish",
+            "mf-order-01.hen-fish-fox",
+            "mf-order-01.rat-bird-ram",
+            "mf-order-01.ant-ram-bird",
+            "mf-order-01.fox-hen-cat-fish",
+            "mf-order-01.fish-cat-fox-hen",
+            "mf-order-01.ram-ant-rat-bird",
+            "mf-order-01.bird-rat-ant-ram"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "mf-order-01.demo",
+          "kind": "make",
+          "skillId": "memory.serial.repeat-order",
+          "variant": "two-long",
+          "prompt": { "instruction": "mf.order.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "cat", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+              { "id": "hen", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+              { "id": "fox", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } }
+            ],
+            "solution": ["cat", "fox"]
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.order.hint.model" },
+            { "type": "step", "count": 1, "caption": "mf.order.hint.step" },
+            { "type": "reveal", "caption": "mf.order.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.order.correct", "incorrect": "mf.order.incorrect" }
+        },
+        {
+          "id": "mf-order-01.guided-two",
+          "kind": "make",
+          "skillId": "memory.serial.repeat-order",
+          "variant": "two-long",
+          "prompt": { "instruction": "mf.order.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "cat", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+              { "id": "hen", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+              { "id": "fox", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } }
+            ],
+            "solution": ["hen", "cat"]
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.order.hint.model" },
+            { "type": "step", "count": 1, "caption": "mf.order.hint.step" },
+            { "type": "reveal", "caption": "mf.order.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.order.correct", "incorrect": "mf.order.incorrect" }
+        },
+        {
+          "id": "mf-order-01.guided-three",
+          "kind": "make",
+          "skillId": "memory.serial.repeat-order",
+          "variant": "three-long",
+          "prompt": { "instruction": "mf.order.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "cat", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+              { "id": "hen", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+              { "id": "fox", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } }
+            ],
+            "solution": ["fish", "hen", "cat"]
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.order.hint.model" },
+            { "type": "step", "count": 1, "caption": "mf.order.hint.step" },
+            { "type": "reveal", "caption": "mf.order.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.order.correct", "incorrect": "mf.order.incorrect" }
+        },
+        {
+          "id": "mf-order-01.fox-cat-fish",
+          "kind": "make",
+          "skillId": "memory.serial.repeat-order",
+          "variant": "three-long",
+          "prompt": { "instruction": "mf.order.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "cat", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+              { "id": "hen", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+              { "id": "fox", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } }
+            ],
+            "solution": ["fox", "cat", "fish"]
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.order.hint.model" },
+            { "type": "step", "count": 1, "caption": "mf.order.hint.step" },
+            { "type": "reveal", "caption": "mf.order.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.order.correct", "incorrect": "mf.order.incorrect" }
+        },
+        {
+          "id": "mf-order-01.hen-fish-fox",
+          "kind": "make",
+          "skillId": "memory.serial.repeat-order",
+          "variant": "three-long",
+          "prompt": { "instruction": "mf.order.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "cat", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+              { "id": "hen", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+              { "id": "fox", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } }
+            ],
+            "solution": ["hen", "fish", "fox"]
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.order.hint.model" },
+            { "type": "step", "count": 1, "caption": "mf.order.hint.step" },
+            { "type": "reveal", "caption": "mf.order.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.order.correct", "incorrect": "mf.order.incorrect" }
+        },
+        {
+          "id": "mf-order-01.rat-bird-ram",
+          "kind": "make",
+          "skillId": "memory.serial.repeat-order",
+          "variant": "three-long",
+          "prompt": { "instruction": "mf.order.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "bird", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } },
+              { "id": "ram", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } },
+              { "id": "ant", "label": "ant", "stimulus": { "type": "picture", "id": "ant" } },
+              { "id": "rat", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } }
+            ],
+            "solution": ["rat", "bird", "ram"]
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.order.hint.model" },
+            { "type": "step", "count": 1, "caption": "mf.order.hint.step" },
+            { "type": "reveal", "caption": "mf.order.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.order.correct", "incorrect": "mf.order.incorrect" }
+        },
+        {
+          "id": "mf-order-01.ant-ram-bird",
+          "kind": "make",
+          "skillId": "memory.serial.repeat-order",
+          "variant": "three-long",
+          "prompt": { "instruction": "mf.order.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "bird", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } },
+              { "id": "ram", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } },
+              { "id": "ant", "label": "ant", "stimulus": { "type": "picture", "id": "ant" } },
+              { "id": "rat", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } }
+            ],
+            "solution": ["ant", "ram", "bird"]
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.order.hint.model" },
+            { "type": "step", "count": 1, "caption": "mf.order.hint.step" },
+            { "type": "reveal", "caption": "mf.order.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.order.correct", "incorrect": "mf.order.incorrect" }
+        },
+        {
+          "id": "mf-order-01.fox-hen-cat-fish",
+          "kind": "make",
+          "skillId": "memory.serial.repeat-order",
+          "variant": "four-long",
+          "prompt": { "instruction": "mf.order.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "cat", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+              { "id": "hen", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+              { "id": "fox", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } }
+            ],
+            "solution": ["fox", "hen", "cat", "fish"]
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.order.hint.model" },
+            { "type": "step", "count": 1, "caption": "mf.order.hint.step" },
+            { "type": "reveal", "caption": "mf.order.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.order.correct", "incorrect": "mf.order.incorrect" }
+        },
+        {
+          "id": "mf-order-01.fish-cat-fox-hen",
+          "kind": "make",
+          "skillId": "memory.serial.repeat-order",
+          "variant": "four-long",
+          "prompt": { "instruction": "mf.order.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "cat", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+              { "id": "hen", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+              { "id": "fox", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } }
+            ],
+            "solution": ["fish", "cat", "fox", "hen"]
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.order.hint.model" },
+            { "type": "step", "count": 1, "caption": "mf.order.hint.step" },
+            { "type": "reveal", "caption": "mf.order.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.order.correct", "incorrect": "mf.order.incorrect" }
+        },
+        {
+          "id": "mf-order-01.ram-ant-rat-bird",
+          "kind": "make",
+          "skillId": "memory.serial.repeat-order",
+          "variant": "four-long",
+          "prompt": { "instruction": "mf.order.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "bird", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } },
+              { "id": "ram", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } },
+              { "id": "ant", "label": "ant", "stimulus": { "type": "picture", "id": "ant" } },
+              { "id": "rat", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } }
+            ],
+            "solution": ["ram", "ant", "rat", "bird"]
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.order.hint.model" },
+            { "type": "step", "count": 1, "caption": "mf.order.hint.step" },
+            { "type": "reveal", "caption": "mf.order.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.order.correct", "incorrect": "mf.order.incorrect" }
+        },
+        {
+          "id": "mf-order-01.bird-rat-ant-ram",
+          "kind": "make",
+          "skillId": "memory.serial.repeat-order",
+          "variant": "four-long",
+          "prompt": { "instruction": "mf.order.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "bird", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } },
+              { "id": "ram", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } },
+              { "id": "ant", "label": "ant", "stimulus": { "type": "picture", "id": "ant" } },
+              { "id": "rat", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } }
+            ],
+            "solution": ["bird", "rat", "ant", "ram"]
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.order.hint.model" },
+            { "type": "step", "count": 1, "caption": "mf.order.hint.step" },
+            { "type": "reveal", "caption": "mf.order.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.order.correct", "incorrect": "mf.order.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "mf-groups-01",
+      "version": 1,
+      "world": "memory-forest",
+      "title": "Things that go together",
+      "summary": "Four things are shown, two of one kind and two of another: two animals and two things to wear, say. Then they are put away and your child picks them out from among others. Thinking of them as two pairs is easier than four separate things, and that is the trick being practised.",
+      "skillIds": ["memory.strategy.grouping"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["mf-groups-01.demo"],
+        "guided": ["mf-groups-01.guided-food-music", "mf-groups-01.guided-sky-kitchen"],
+        "independent": {
+          "pool": [
+            "mf-groups-01.animals-clothes",
+            "mf-groups-01.food-music",
+            "mf-groups-01.animals-kitchen",
+            "mf-groups-01.sky-food",
+            "mf-groups-01.music-animals",
+            "mf-groups-01.clothes-sky"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "mf-groups-01.demo",
+          "kind": "make",
+          "skillId": "memory.strategy.grouping",
+          "variant": "animals-and-clothes",
+          "prompt": { "instruction": "mf.groups.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              { "id": "cat", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+              { "id": "hen", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+              { "id": "hat", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+              { "id": "sock", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } },
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "apple", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } }
+            ],
+            "solution": ["cat", "hen", "hat", "sock"],
+            "study": ["cat", "hen", "hat", "sock"],
+            "ask": "mf.groups.ask"
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.groups.hint.model" },
+            { "type": "step", "count": 2, "caption": "mf.groups.hint.step" },
+            { "type": "reveal", "caption": "mf.groups.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.groups.correct", "incorrect": "mf.groups.incorrect" }
+        },
+        {
+          "id": "mf-groups-01.guided-food-music",
+          "kind": "make",
+          "skillId": "memory.strategy.grouping",
+          "variant": "food-and-music",
+          "prompt": { "instruction": "mf.groups.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              { "id": "apple", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } },
+              { "id": "egg", "label": "egg", "stimulus": { "type": "picture", "id": "egg" } },
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } },
+              { "id": "cap", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } }
+            ],
+            "solution": ["apple", "egg", "drum", "bell"],
+            "study": ["apple", "egg", "drum", "bell"],
+            "ask": "mf.groups.ask"
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.groups.hint.model" },
+            { "type": "step", "count": 2, "caption": "mf.groups.hint.step" },
+            { "type": "reveal", "caption": "mf.groups.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.groups.correct", "incorrect": "mf.groups.incorrect" }
+        },
+        {
+          "id": "mf-groups-01.guided-sky-kitchen",
+          "kind": "make",
+          "skillId": "memory.strategy.grouping",
+          "variant": "sky-and-kitchen",
+          "prompt": { "instruction": "mf.groups.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              { "id": "sun", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } },
+              { "id": "moon", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } },
+              { "id": "cup", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } },
+              { "id": "mug", "label": "mug", "stimulus": { "type": "picture", "id": "mug" } },
+              { "id": "fox", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+              { "id": "nut", "label": "nut", "stimulus": { "type": "picture", "id": "nut" } },
+              {
+                "id": "whistle",
+                "label": "whistle",
+                "stimulus": { "type": "picture", "id": "whistle" }
+              }
+            ],
+            "solution": ["sun", "moon", "cup", "mug"],
+            "study": ["sun", "moon", "cup", "mug"],
+            "ask": "mf.groups.ask"
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.groups.hint.model" },
+            { "type": "step", "count": 2, "caption": "mf.groups.hint.step" },
+            { "type": "reveal", "caption": "mf.groups.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.groups.correct", "incorrect": "mf.groups.incorrect" }
+        },
+        {
+          "id": "mf-groups-01.animals-clothes",
+          "kind": "make",
+          "skillId": "memory.strategy.grouping",
+          "variant": "animals-and-clothes",
+          "prompt": { "instruction": "mf.groups.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              { "id": "fox", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } },
+              { "id": "cap", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } },
+              { "id": "ring", "label": "ring", "stimulus": { "type": "picture", "id": "ring" } },
+              { "id": "bird", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } },
+              { "id": "sock", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } },
+              { "id": "moon", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } },
+              { "id": "pan", "label": "pan", "stimulus": { "type": "picture", "id": "pan" } }
+            ],
+            "solution": ["fox", "fish", "cap", "ring"],
+            "study": ["fox", "fish", "cap", "ring"],
+            "ask": "mf.groups.ask"
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.groups.hint.model" },
+            { "type": "step", "count": 2, "caption": "mf.groups.hint.step" },
+            { "type": "reveal", "caption": "mf.groups.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.groups.correct", "incorrect": "mf.groups.incorrect" }
+        },
+        {
+          "id": "mf-groups-01.food-music",
+          "kind": "make",
+          "skillId": "memory.strategy.grouping",
+          "variant": "food-and-music",
+          "prompt": { "instruction": "mf.groups.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              { "id": "nut", "label": "nut", "stimulus": { "type": "picture", "id": "nut" } },
+              { "id": "olive", "label": "olive", "stimulus": { "type": "picture", "id": "olive" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              },
+              {
+                "id": "whistle",
+                "label": "whistle",
+                "stimulus": { "type": "picture", "id": "whistle" }
+              },
+              { "id": "apple", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              { "id": "hen", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+              { "id": "rain", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } }
+            ],
+            "solution": ["nut", "olive", "shaker", "whistle"],
+            "study": ["nut", "olive", "shaker", "whistle"],
+            "ask": "mf.groups.ask"
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.groups.hint.model" },
+            { "type": "step", "count": 2, "caption": "mf.groups.hint.step" },
+            { "type": "reveal", "caption": "mf.groups.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.groups.correct", "incorrect": "mf.groups.incorrect" }
+        },
+        {
+          "id": "mf-groups-01.animals-kitchen",
+          "kind": "make",
+          "skillId": "memory.strategy.grouping",
+          "variant": "animals-and-kitchen",
+          "prompt": { "instruction": "mf.groups.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              { "id": "bird", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } },
+              { "id": "ram", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } },
+              { "id": "pot", "label": "pot", "stimulus": { "type": "picture", "id": "pot" } },
+              { "id": "pan", "label": "pan", "stimulus": { "type": "picture", "id": "pan" } },
+              { "id": "rat", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } },
+              { "id": "cup", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } },
+              { "id": "hat", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+              { "id": "sun", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } }
+            ],
+            "solution": ["bird", "ram", "pot", "pan"],
+            "study": ["bird", "ram", "pot", "pan"],
+            "ask": "mf.groups.ask"
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.groups.hint.model" },
+            { "type": "step", "count": 2, "caption": "mf.groups.hint.step" },
+            { "type": "reveal", "caption": "mf.groups.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.groups.correct", "incorrect": "mf.groups.incorrect" }
+        },
+        {
+          "id": "mf-groups-01.sky-food",
+          "kind": "make",
+          "skillId": "memory.strategy.grouping",
+          "variant": "sky-and-food",
+          "prompt": { "instruction": "mf.groups.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              { "id": "rain", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } },
+              { "id": "sun", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } },
+              { "id": "egg", "label": "egg", "stimulus": { "type": "picture", "id": "egg" } },
+              { "id": "apple", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } },
+              { "id": "moon", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } },
+              { "id": "nut", "label": "nut", "stimulus": { "type": "picture", "id": "nut" } },
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "ant", "label": "ant", "stimulus": { "type": "picture", "id": "ant" } }
+            ],
+            "solution": ["rain", "sun", "egg", "apple"],
+            "study": ["rain", "sun", "egg", "apple"],
+            "ask": "mf.groups.ask"
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.groups.hint.model" },
+            { "type": "step", "count": 2, "caption": "mf.groups.hint.step" },
+            { "type": "reveal", "caption": "mf.groups.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.groups.correct", "incorrect": "mf.groups.incorrect" }
+        },
+        {
+          "id": "mf-groups-01.music-animals",
+          "kind": "make",
+          "skillId": "memory.strategy.grouping",
+          "variant": "music-and-animals",
+          "prompt": { "instruction": "mf.groups.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "hen", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+              { "id": "rat", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } },
+              {
+                "id": "whistle",
+                "label": "whistle",
+                "stimulus": { "type": "picture", "id": "whistle" }
+              },
+              { "id": "cat", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+              { "id": "sock", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } },
+              { "id": "olive", "label": "olive", "stimulus": { "type": "picture", "id": "olive" } }
+            ],
+            "solution": ["bell", "drum", "hen", "rat"],
+            "study": ["bell", "drum", "hen", "rat"],
+            "ask": "mf.groups.ask"
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.groups.hint.model" },
+            { "type": "step", "count": 2, "caption": "mf.groups.hint.step" },
+            { "type": "reveal", "caption": "mf.groups.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.groups.correct", "incorrect": "mf.groups.incorrect" }
+        },
+        {
+          "id": "mf-groups-01.clothes-sky",
+          "kind": "make",
+          "skillId": "memory.strategy.grouping",
+          "variant": "clothes-and-sky",
+          "prompt": { "instruction": "mf.groups.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              { "id": "hat", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+              { "id": "sock", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } },
+              { "id": "moon", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } },
+              { "id": "rain", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } },
+              { "id": "cap", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } },
+              { "id": "sun", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } },
+              { "id": "mug", "label": "mug", "stimulus": { "type": "picture", "id": "mug" } },
+              { "id": "fish", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } }
+            ],
+            "solution": ["hat", "sock", "moon", "rain"],
+            "study": ["hat", "sock", "moon", "rain"],
+            "ask": "mf.groups.ask"
+          },
+          "hints": [
+            { "type": "model", "caption": "mf.groups.hint.model" },
+            { "type": "step", "count": 2, "caption": "mf.groups.hint.step" },
+            { "type": "reveal", "caption": "mf.groups.hint.reveal" }
+          ],
+          "feedback": { "correct": "mf.groups.correct", "incorrect": "mf.groups.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "mf-story-01",
+      "version": 1,
+      "world": "memory-forest",
+      "title": "Who had what?",
+      "summary": "Animals are shown, each with a thing: the cat has the hat, the fox has the drum. Then they are hidden and your child is shown one animal and asked what it had. Making a silly picture in your head of the two together is the trick: say it aloud with your child, the sillier the better.",
+      "skillIds": ["memory.strategy.linking"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["mf-story-01.demo"],
+        "guided": ["mf-story-01.guided-fish", "mf-story-01.guided-ram"],
+        "independent": {
+          "pool": [
+            "mf-story-01.fox-sock",
+            "mf-story-01.hen-drum",
+            "mf-story-01.ant-ring",
+            "mf-story-01.elephant-bell",
+            "mf-story-01.bird-pan",
+            "mf-story-01.cat-apple",
+            "mf-story-01.rat-whistle",
+            "mf-story-01.fish-ring"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "mf-story-01.demo",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.linking",
+          "variant": "two-pairs",
+          "prompt": {
+            "instruction": "mf.story.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pairs",
+              "of": { "owners": ["cat", "fox"], "things": ["hat", "drum"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "cat" },
+            "ask": "mf.story.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+            { "id": "b", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.story.hint.model" },
+            { "type": "reveal", "caption": "mf.story.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another" },
+          "feedback": { "correct": "mf.story.correct", "incorrect": "mf.story.incorrect" }
+        },
+        {
+          "id": "mf-story-01.guided-fish",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.linking",
+          "variant": "two-pairs",
+          "prompt": {
+            "instruction": "mf.story.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pairs",
+              "of": { "owners": ["hen", "fish"], "things": ["sock", "bell"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "fish" },
+            "ask": "mf.story.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+            { "id": "b", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.story.hint.model" },
+            { "type": "reveal", "caption": "mf.story.hint.reveal" }
+          ],
+          "misconceptions": { "b": "belongs-to-another" },
+          "feedback": { "correct": "mf.story.correct", "incorrect": "mf.story.incorrect" }
+        },
+        {
+          "id": "mf-story-01.guided-ram",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.linking",
+          "variant": "two-pairs",
+          "prompt": {
+            "instruction": "mf.story.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pairs",
+              "of": { "owners": ["bird", "ram"], "things": ["cup", "apple"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "ram" },
+            "ask": "mf.story.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } },
+            { "id": "b", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } },
+            { "id": "c", "label": "egg", "stimulus": { "type": "picture", "id": "egg" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.story.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.story.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.story.correct", "incorrect": "mf.story.incorrect" }
+        },
+        {
+          "id": "mf-story-01.fox-sock",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.linking",
+          "variant": "two-pairs",
+          "prompt": {
+            "instruction": "mf.story.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pairs",
+              "of": { "owners": ["bird", "fox"], "things": ["egg", "sock"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "fox" },
+            "ask": "mf.story.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "egg", "stimulus": { "type": "picture", "id": "egg" } },
+            { "id": "b", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } },
+            { "id": "c", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.story.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.story.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.story.correct", "incorrect": "mf.story.incorrect" }
+        },
+        {
+          "id": "mf-story-01.hen-drum",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.linking",
+          "variant": "two-pairs",
+          "prompt": {
+            "instruction": "mf.story.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pairs",
+              "of": { "owners": ["hen", "cat"], "things": ["drum", "cup"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "hen" },
+            "ask": "mf.story.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } },
+            { "id": "b", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+            { "id": "c", "label": "mug", "stimulus": { "type": "picture", "id": "mug" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.story.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.story.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.story.correct", "incorrect": "mf.story.incorrect" }
+        },
+        {
+          "id": "mf-story-01.ant-ring",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.linking",
+          "variant": "three-pairs",
+          "prompt": {
+            "instruction": "mf.story.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pairs",
+              "of": { "owners": ["cat", "ant", "fox"], "things": ["mug", "ring", "egg"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "ant" },
+            "ask": "mf.story.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "mug", "stimulus": { "type": "picture", "id": "mug" } },
+            { "id": "b", "label": "ring", "stimulus": { "type": "picture", "id": "ring" } },
+            { "id": "c", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.story.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.story.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.story.correct", "incorrect": "mf.story.incorrect" }
+        },
+        {
+          "id": "mf-story-01.elephant-bell",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.linking",
+          "variant": "three-pairs",
+          "prompt": {
+            "instruction": "mf.story.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pairs",
+              "of": { "owners": ["hen", "rat", "elephant"], "things": ["cap", "nut", "bell"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "elephant" },
+            "ask": "mf.story.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+            { "id": "b", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } },
+            { "id": "c", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.story.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.story.hint.reveal" }
+          ],
+          "misconceptions": { "b": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.story.correct", "incorrect": "mf.story.incorrect" }
+        },
+        {
+          "id": "mf-story-01.bird-pan",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.linking",
+          "variant": "three-pairs",
+          "prompt": {
+            "instruction": "mf.story.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pairs",
+              "of": { "owners": ["fish", "bird", "ram"], "things": ["hat", "pan", "sock"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "bird" },
+            "ask": "mf.story.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+            { "id": "b", "label": "pan", "stimulus": { "type": "picture", "id": "pan" } },
+            { "id": "c", "label": "pot", "stimulus": { "type": "picture", "id": "pot" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.story.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.story.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.story.correct", "incorrect": "mf.story.incorrect" }
+        },
+        {
+          "id": "mf-story-01.cat-apple",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.linking",
+          "variant": "three-pairs",
+          "prompt": {
+            "instruction": "mf.story.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pairs",
+              "of": { "owners": ["octopus", "cat", "hen"], "things": ["drum", "apple", "moon"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "cat" },
+            "ask": "mf.story.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } },
+            { "id": "b", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+            { "id": "c", "label": "olive", "stimulus": { "type": "picture", "id": "olive" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.story.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.story.hint.reveal" }
+          ],
+          "misconceptions": { "b": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.story.correct", "incorrect": "mf.story.incorrect" }
+        },
+        {
+          "id": "mf-story-01.rat-whistle",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.linking",
+          "variant": "three-pairs",
+          "prompt": {
+            "instruction": "mf.story.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pairs",
+              "of": { "owners": ["fox", "rat", "ant"], "things": ["cup", "whistle", "leaf"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "rat" },
+            "ask": "mf.story.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "whistle", "stimulus": { "type": "picture", "id": "whistle" } },
+            { "id": "b", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } },
+            { "id": "c", "label": "shaker", "stimulus": { "type": "picture", "id": "shaker" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.story.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.story.hint.reveal" }
+          ],
+          "misconceptions": { "b": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.story.correct", "incorrect": "mf.story.incorrect" }
+        },
+        {
+          "id": "mf-story-01.fish-ring",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.linking",
+          "variant": "three-pairs",
+          "prompt": {
+            "instruction": "mf.story.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pairs",
+              "of": { "owners": ["ram", "fish", "elephant"], "things": ["clock", "ring", "sun"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "fish" },
+            "ask": "mf.story.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "ring", "stimulus": { "type": "picture", "id": "ring" } },
+            { "id": "b", "label": "clock", "stimulus": { "type": "picture", "id": "clock" } },
+            { "id": "c", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.story.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.story.hint.reveal" }
+          ],
+          "misconceptions": { "b": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.story.correct", "incorrect": "mf.story.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "mf-places-01",
+      "version": 1,
+      "world": "memory-forest",
+      "title": "What was where?",
+      "summary": "Things are left at places along a path: on the log, in the nest, by the hut. Then they are hidden and your child is shown one place and asked what was there. Walking the path in your head, place by place, is the trick. It works at home too: what is by the door, on the stairs, on the bed?",
+      "skillIds": ["memory.strategy.places"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["mf-places-01.demo"],
+        "guided": ["mf-places-01.guided-nest", "mf-places-01.guided-log"],
+        "independent": {
+          "pool": [
+            "mf-places-01.hut-cat",
+            "mf-places-01.log-sock",
+            "mf-places-01.nest-apple",
+            "mf-places-01.hut-moon",
+            "mf-places-01.log-whistle",
+            "mf-places-01.nest-leaf",
+            "mf-places-01.mat-fish",
+            "mf-places-01.igloo-clock"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "mf-places-01.demo",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.places",
+          "variant": "two-places",
+          "prompt": {
+            "instruction": "mf.places.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "places",
+              "of": { "owners": ["log", "hut"], "things": ["fish", "bell"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "hut" },
+            "ask": "mf.places.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } },
+            { "id": "b", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.places.hint.model" },
+            { "type": "reveal", "caption": "mf.places.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another" },
+          "feedback": { "correct": "mf.places.correct", "incorrect": "mf.places.incorrect" }
+        },
+        {
+          "id": "mf-places-01.guided-nest",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.places",
+          "variant": "two-places",
+          "prompt": {
+            "instruction": "mf.places.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "places",
+              "of": { "owners": ["nest", "log"], "things": ["egg", "cap"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "nest" },
+            "ask": "mf.places.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "egg", "stimulus": { "type": "picture", "id": "egg" } },
+            { "id": "b", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.places.hint.model" },
+            { "type": "reveal", "caption": "mf.places.hint.reveal" }
+          ],
+          "misconceptions": { "b": "belongs-to-another" },
+          "feedback": { "correct": "mf.places.correct", "incorrect": "mf.places.incorrect" }
+        },
+        {
+          "id": "mf-places-01.guided-log",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.places",
+          "variant": "two-places",
+          "prompt": {
+            "instruction": "mf.places.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "places",
+              "of": { "owners": ["hut", "log"], "things": ["apple", "drum"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "log" },
+            "ask": "mf.places.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } },
+            { "id": "b", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+            { "id": "c", "label": "mug", "stimulus": { "type": "picture", "id": "mug" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.places.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.places.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.places.correct", "incorrect": "mf.places.incorrect" }
+        },
+        {
+          "id": "mf-places-01.hut-cat",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.places",
+          "variant": "two-places",
+          "prompt": {
+            "instruction": "mf.places.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "places",
+              "of": { "owners": ["hut", "nest"], "things": ["cat", "nut"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "hut" },
+            "ask": "mf.places.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+            { "id": "b", "label": "nut", "stimulus": { "type": "picture", "id": "nut" } },
+            { "id": "c", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.places.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.places.hint.reveal" }
+          ],
+          "misconceptions": { "b": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.places.correct", "incorrect": "mf.places.incorrect" }
+        },
+        {
+          "id": "mf-places-01.log-sock",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.places",
+          "variant": "two-places",
+          "prompt": {
+            "instruction": "mf.places.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "places",
+              "of": { "owners": ["nest", "log"], "things": ["ring", "sock"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "log" },
+            "ask": "mf.places.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "ring", "stimulus": { "type": "picture", "id": "ring" } },
+            { "id": "b", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } },
+            { "id": "c", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.places.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.places.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.places.correct", "incorrect": "mf.places.incorrect" }
+        },
+        {
+          "id": "mf-places-01.nest-apple",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.places",
+          "variant": "three-places",
+          "prompt": {
+            "instruction": "mf.places.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "places",
+              "of": { "owners": ["log", "nest", "hut"], "things": ["hen", "apple", "drum"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "nest" },
+            "ask": "mf.places.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+            { "id": "b", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } },
+            { "id": "c", "label": "olive", "stimulus": { "type": "picture", "id": "olive" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.places.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.places.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.places.correct", "incorrect": "mf.places.incorrect" }
+        },
+        {
+          "id": "mf-places-01.hut-moon",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.places",
+          "variant": "three-places",
+          "prompt": {
+            "instruction": "mf.places.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "places",
+              "of": { "owners": ["log", "nest", "hut"], "things": ["pan", "ant", "moon"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "hut" },
+            "ask": "mf.places.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "pan", "stimulus": { "type": "picture", "id": "pan" } },
+            { "id": "b", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } },
+            { "id": "c", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.places.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.places.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.places.correct", "incorrect": "mf.places.incorrect" }
+        },
+        {
+          "id": "mf-places-01.log-whistle",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.places",
+          "variant": "three-places",
+          "prompt": {
+            "instruction": "mf.places.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "places",
+              "of": { "owners": ["hut", "log", "nest"], "things": ["cup", "whistle", "bird"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "log" },
+            "ask": "mf.places.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "whistle", "stimulus": { "type": "picture", "id": "whistle" } },
+            { "id": "b", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } },
+            { "id": "c", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.places.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.places.hint.reveal" }
+          ],
+          "misconceptions": { "b": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.places.correct", "incorrect": "mf.places.incorrect" }
+        },
+        {
+          "id": "mf-places-01.nest-leaf",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.places",
+          "variant": "three-places",
+          "prompt": {
+            "instruction": "mf.places.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "places",
+              "of": { "owners": ["nest", "hut", "log"], "things": ["leaf", "rat", "mug"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "nest" },
+            "ask": "mf.places.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "leaf", "stimulus": { "type": "picture", "id": "leaf" } },
+            { "id": "b", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } },
+            { "id": "c", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.places.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.places.hint.reveal" }
+          ],
+          "misconceptions": { "b": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.places.correct", "incorrect": "mf.places.incorrect" }
+        },
+        {
+          "id": "mf-places-01.mat-fish",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.places",
+          "variant": "three-places",
+          "prompt": {
+            "instruction": "mf.places.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "places",
+              "of": { "owners": ["cot", "mat", "igloo"], "things": ["hat", "fish", "egg"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "mat" },
+            "ask": "mf.places.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+            { "id": "b", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } },
+            { "id": "c", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "mf.places.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.places.hint.reveal" }
+          ],
+          "misconceptions": { "a": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.places.correct", "incorrect": "mf.places.incorrect" }
+        },
+        {
+          "id": "mf-places-01.igloo-clock",
+          "kind": "choose-one",
+          "skillId": "memory.strategy.places",
+          "variant": "three-places",
+          "prompt": {
+            "instruction": "mf.places.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "places",
+              "of": { "owners": ["mat", "cot", "igloo"], "things": ["apple", "ram", "clock"] }
+            },
+            "glance": true,
+            "cue": { "type": "picture", "id": "igloo" },
+            "ask": "mf.places.ask"
+          },
+          "choices": [
+            { "id": "a", "label": "clock", "stimulus": { "type": "picture", "id": "clock" } },
+            { "id": "b", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } },
+            { "id": "c", "label": "lamp", "stimulus": { "type": "picture", "id": "lamp" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "mf.places.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "mf.hint.not-this" },
+            { "type": "reveal", "caption": "mf.places.hint.reveal" }
+          ],
+          "misconceptions": { "b": "belongs-to-another", "c": "not-shown" },
+          "feedback": { "correct": "mf.places.correct", "incorrect": "mf.places.incorrect" }
+        }
+      ]
+    }
+  ]
+}

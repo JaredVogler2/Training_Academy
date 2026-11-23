@@ -47,11 +47,16 @@ export function linesOf(state: Playing): {
   instruction: string;
   feedback: string | null;
   hint: string | null;
+  ask: string | null;
+  correct: string;
 } {
+  const { challenge } = state.view;
   return {
-    instruction: state.view.challenge.prompt.instruction,
+    instruction: challenge.prompt.instruction,
     feedback: state.feedback?.caption ?? null,
     hint: state.hint?.caption ?? null,
+    ask: challenge.kind === 'choose-one' ? (challenge.prompt.ask ?? null) : null,
+    correct: challenge.feedback.correct,
   };
 }
 
@@ -60,8 +65,11 @@ export function useSeconds(): Seconds {
   return voice().seconds;
 }
 
-/** Have the lines this step may need on hand before they are wanted. */
-export function usePreparedLines(state: Playing): void {
+/**
+ * Have the lines this step may need on hand before they are wanted: its own, and any more its world says it
+ * tells with (the lines of a story's pictures).
+ */
+export function usePreparedLines(state: Playing, module?: WorldModule): void {
   const { challenge } = state.view;
   useEffect(() => {
     voice().prepare([
@@ -69,8 +77,10 @@ export function usePreparedLines(state: Playing): void {
       challenge.feedback.correct,
       challenge.feedback.incorrect,
       ...challenge.hints.map((hint) => hint.caption),
+      ...(challenge.kind === 'choose-one' && challenge.prompt.ask ? [challenge.prompt.ask] : []),
+      ...(module?.linesFor?.(challenge) ?? []),
     ]);
-  }, [challenge]);
+  }, [challenge, module]);
 }
 
 /**
@@ -141,7 +151,17 @@ export function captionFor(state: Playing, pack: ContentPack): string {
   const text = (key: string) => packText(pack, key);
   if (feedback) return text(feedback.caption);
   if (hint) return text(hint.caption);
-  const instruction = text(view.challenge.prompt.instruction);
+  const { prompt } = view.challenge;
+  // Where something is looked at and then asked about, both are there to read: "Look carefully. Which was there?"
+  const { challenge } = view;
+  const put =
+    'ask' in prompt && prompt.ask
+      ? prompt.ask
+      : challenge.kind === 'make' && challenge.task.type === 'select'
+        ? challenge.task.ask
+        : undefined;
+  const asked = put ? ` ${text(put)}` : '';
+  const instruction = `${text(prompt.instruction)}${asked}`;
   return view.stage === 'demo' ? `${lessonText.watch} ${instruction}` : instruction;
 }
 
@@ -159,6 +179,7 @@ export function Foot({
   after,
   onAgain,
   done,
+  caption,
   children,
 }: {
   state: Playing;
@@ -172,6 +193,11 @@ export function Foot({
   onAgain: () => void;
   /** While a thing is being made: how the child says it is finished. Left out where an answer is a single tap. */
   done?: { ready: boolean; submit: () => void } | undefined;
+  /**
+   * What is being said just now, where it is not the question or what followed an answer: the line of the
+   * picture a story has got to. Left out, the foot says what the lesson says.
+   */
+  caption?: string | undefined;
   children?: ReactNode;
 }) {
   const { view, feedback, answered } = state;
@@ -194,7 +220,7 @@ export function Foot({
         </span>
       </button>
       <p className={styles.caption} role="status" aria-live="polite" data-tone={feedback?.outcome}>
-        {captionFor(state, pack)}
+        {caption ?? captionFor(state, pack)}
       </p>
       {children}
       {demo || answered ? (

@@ -1,0 +1,252 @@
+{
+  "about": "What each picture of the kit (src/art/pictures.tsx) is called, and what Reading Cove needs to know about the word: the letter whose sound it starts with, where that is one of the sounds taught, and whether it is spelt just as it sounds, one letter for each sound, so that it can be sounded out. A word the voice cannot be relied on to say clearly is left as a picture only: \"nut\" is one.",
+  "words": {
+    "sun": {
+      "word": "sun",
+      "starts": "s",
+      "letters": ["s", "u", "n"]
+    },
+    "moon": {
+      "word": "moon",
+      "starts": "m"
+    },
+    "mat": {
+      "word": "mat",
+      "starts": "m",
+      "letters": ["m", "a", "t"]
+    },
+    "map": {
+      "word": "map",
+      "starts": "m",
+      "letters": ["m", "a", "p"]
+    },
+    "man": {
+      "word": "man",
+      "starts": "m",
+      "letters": ["m", "a", "n"]
+    },
+    "pan": {
+      "word": "pan",
+      "starts": "p",
+      "letters": ["p", "a", "n"]
+    },
+    "pin": {
+      "word": "pin",
+      "starts": "p",
+      "letters": ["p", "i", "n"]
+    },
+    "tap": {
+      "word": "tap",
+      "starts": "t",
+      "letters": ["t", "a", "p"]
+    },
+    "tin": {
+      "word": "tin",
+      "starts": "t",
+      "letters": ["t", "i", "n"]
+    },
+    "top": {
+      "word": "top",
+      "starts": "t",
+      "letters": ["t", "o", "p"]
+    },
+    "pot": {
+      "word": "pot",
+      "starts": "p",
+      "letters": ["p", "o", "t"]
+    },
+    "mop": {
+      "word": "mop",
+      "starts": "m",
+      "letters": ["m", "o", "p"]
+    },
+    "fan": {
+      "word": "fan",
+      "starts": "f",
+      "letters": ["f", "a", "n"]
+    },
+    "fin": {
+      "word": "fin",
+      "starts": "f",
+      "letters": ["f", "i", "n"]
+    },
+    "lip": {
+      "word": "lip",
+      "starts": "l",
+      "letters": ["l", "i", "p"]
+    },
+    "cat": {
+      "word": "cat",
+      "starts": "c",
+      "letters": ["c", "a", "t"]
+    },
+    "cap": {
+      "word": "cap",
+      "starts": "c",
+      "letters": ["c", "a", "p"]
+    },
+    "cup": {
+      "word": "cup",
+      "starts": "c",
+      "letters": ["c", "u", "p"]
+    },
+    "can": {
+      "word": "can",
+      "starts": "c",
+      "letters": ["c", "a", "n"]
+    },
+    "hat": {
+      "word": "hat",
+      "starts": "h",
+      "letters": ["h", "a", "t"]
+    },
+    "hen": {
+      "word": "hen",
+      "starts": "h",
+      "letters": ["h", "e", "n"]
+    },
+    "nut": {
+      "word": "nut"
+    },
+    "net": {
+      "word": "net",
+      "starts": "n",
+      "letters": ["n", "e", "t"]
+    },
+    "pen": {
+      "word": "pen",
+      "starts": "p",
+      "letters": ["p", "e", "n"]
+    },
+    "rat": {
+      "word": "rat",
+      "starts": "r",
+      "letters": ["r", "a", "t"]
+    },
+    "hut": {
+      "word": "hut",
+      "starts": "h",
+      "letters": ["h", "u", "t"]
+    },
+    "cot": {
+      "word": "cot",
+      "starts": "c",
+      "letters": ["c", "o", "t"]
+    },
+    "ram": {
+      "word": "ram",
+      "starts": "r",
+      "letters": ["r", "a", "m"]
+    },
+    "sock": {
+      "word": "sock",
+      "starts": "s"
+    },
+    "soap": {
+      "word": "soap",
+      "starts": "s"
+    },
+    "seed": {
+      "word": "seed",
+      "starts": "s"
+    },
+    "mug": {
+      "word": "mug",
+      "starts": "m"
+    },
+    "fish": {
+      "word": "fish",
+      "starts": "f"
+    },
+    "fox": {
+      "word": "fox",
+      "starts": "f"
+    },
+    "nest": {
+      "word": "nest",
+      "starts": "n"
+    },
+    "nose": {
+      "word": "nose",
+      "starts": "n"
+    },
+    "leaf": {
+      "word": "leaf",
+      "starts": "l"
+    },
+    "lamp": {
+      "word": "lamp",
+      "starts": "l"
+    },
+    "log": {
+      "word": "log",
+      "starts": "l"
+    },
+    "rain": {
+      "word": "rain",
+      "starts": "r"
+    },
+    "ring": {
+      "word": "ring",
+      "starts": "r"
+    },
+    "drum": {
+      "word": "drum"
+    },
+    "bell": {
+      "word": "bell"
+    },
+    "shaker": {
+      "word": "shaker"
+    },
+    "whistle": {
+      "word": "whistle"
+    },
+    "bird": {
+      "word": "bird"
+    },
+    "clock": {
+      "word": "clock"
+    },
+    "ant": {
+      "word": "ant",
+      "starts": "a"
+    },
+    "apple": {
+      "word": "apple",
+      "starts": "a"
+    },
+    "axe": {
+      "word": "axe",
+      "starts": "a"
+    },
+    "igloo": {
+      "word": "igloo",
+      "starts": "i"
+    },
+    "ink": {
+      "word": "ink",
+      "starts": "i"
+    },
+    "octopus": {
+      "word": "octopus",
+      "starts": "o"
+    },
+    "olive": {
+      "word": "olive",
+      "starts": "o"
+    },
+    "umbrella": {
+      "word": "umbrella",
+      "starts": "u"
+    },
+    "egg": {
+      "word": "egg",
+      "starts": "e"
+    },
+    "elephant": {
+      "word": "elephant",
+      "starts": "e"
+    }
+  }
+}

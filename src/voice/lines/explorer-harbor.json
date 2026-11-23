@@ -1,0 +1,33 @@
+{
+  "about": "What the voice says for Explorer Harbor beside the lines of its pack: the line each picture of a story is told with. Written by scripts/content/explorer-harbor.mjs from the storybook; do not edit by hand.",
+  "groups": {
+    "explorer-harbor": {
+      "lines": {
+        "eh.panel.seed1": "A seed sleeps in the soil.",
+        "eh.panel.seed2": "A little shoot comes up.",
+        "eh.panel.seed3": "Now it is a flower.",
+        "eh.panel.egg1": "The hen sits on her egg.",
+        "eh.panel.egg2": "Crack! The egg breaks open.",
+        "eh.panel.egg3": "A baby chick comes out.",
+        "eh.panel.snow1": "We roll two balls of snow.",
+        "eh.panel.snow2": "Now it is a snowman.",
+        "eh.panel.snow3": "The snowman melts away.",
+        "eh.panel.balloon1": "The balloon is flat.",
+        "eh.panel.balloon2": "We blow it up big.",
+        "eh.panel.balloon3": "Then the balloon goes pop.",
+        "eh.panel.tower1": "Here is one block.",
+        "eh.panel.tower2": "The blocks make a tall tower.",
+        "eh.panel.tower3": "Crash! The tower falls down.",
+        "eh.panel.castle1": "Here is sand, and a bucket.",
+        "eh.panel.castle2": "Now it is a sandcastle.",
+        "eh.panel.castle3": "The sea washes it flat.",
+        "eh.panel.rain1": "A dark cloud comes.",
+        "eh.panel.rain2": "Down comes the rain.",
+        "eh.panel.rain3": "Now there is a puddle.",
+        "eh.panel.fly1": "A caterpillar eats a leaf.",
+        "eh.panel.fly2": "It hides in a cocoon.",
+        "eh.panel.fly3": "Out comes a butterfly."
+      }
+    }
+  }
+}

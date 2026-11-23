@@ -16,6 +16,8 @@ import { useHubFrame } from '@/render/useHubFrame';
 import { Guide } from '@/ui/Guide';
 import { AvatarPicture } from '@/ui/art';
 import { IconAsleep, IconPlay } from '@/ui/icons';
+import { FrontDoor } from './FrontDoor';
+import { useBegun } from './journey';
 import { Link } from './navigation';
 import { ui } from './strings';
 import styles from './Home.module.css';
@@ -72,10 +74,11 @@ function WorldSpot({
 }
 
 /**
- * Glim, afloat between the islands, pointing at the world that has something to play. A tap says hello.
+ * Glim, afloat between the islands, pointing at the world that has something to play. A tap says hello, and so
+ * does arriving from the front door.
  */
-function HubGuide({ frame }: { frame: Frame }) {
-  const [greeting, setGreeting] = useState(false);
+function HubGuide({ frame, arriving }: { frame: Frame; arriving: boolean }) {
+  const [greeting, setGreeting] = useState(arriving);
   useEffect(() => {
     if (!greeting) return;
     const timer = window.setTimeout(() => setGreeting(false), 1800);
@@ -105,12 +108,18 @@ function HubGuide({ frame }: { frame: Frame }) {
   );
 }
 
-/** The hub: the archipelago, and the six ways into it. */
+/**
+ * The hub: the archipelago, and the six ways into it. A visit begins at the front door, in front of the map; the
+ * map is already there behind it, and comes alive once the child has said who is playing.
+ */
 export function Home() {
   const profiles = useProfiles();
   const player = activeProfile(profiles);
   const { stage, free, frame } = useHubFrame();
   const [lifted, setLifted] = useState<PlaceId | null>(null);
+  const begun = useBegun();
+  // Whether this page opened on the front door: if so, Glim greets the child on the map as well.
+  const [openedAtDoor] = useState(!begun);
 
   useEffect(() => {
     void refreshProfiles();
@@ -119,32 +128,35 @@ export function Home() {
   return (
     <div className={styles.hub} ref={stage} data-arrangement={frame?.layout.arrangement}>
       <div className={styles.free} ref={free} />
-      <HubStage frame={frame} lifted={lifted} />
-      <h1 className="sr-only">{ui.chooseWorld}</h1>
-      {player && (
-        <p className={styles.player}>
-          <AvatarPicture avatar={player.avatar} className={styles.playerPicture} />
-          <span className="sr-only">{ui.player}: </span>
-          <span className={styles.playerName}>{player.name}</span>
-        </p>
-      )}
-      <nav
-        className={styles.worlds}
-        aria-label={ui.worlds}
-        // Names are sized from the islands, so they fit under them on a small phone held sideways.
-        style={{ '--label': `${String(frame ? labelSize(frame.scale) : 15)}px` } as CSSProperties}
-      >
-        <ul>
-          {frame &&
-            WORLDS.map((world) => (
-              <li key={world.id}>
-                <WorldSpot world={world} frame={frame} onLift={setLifted} />
-              </li>
-            ))}
-        </ul>
-      </nav>
-      {/* After the worlds, so the keyboard and a screen reader reach the islands first. */}
-      {frame && <HubGuide frame={frame} />}
+      <HubStage frame={frame} lifted={lifted} waiting={!begun} />
+      {!begun && <FrontDoor profiles={profiles} />}
+      <div className={styles.map} inert={!begun}>
+        <h1 className="sr-only">{ui.chooseWorld}</h1>
+        {player && (
+          <p className={styles.player}>
+            <AvatarPicture avatar={player.avatar} className={styles.playerPicture} />
+            <span className="sr-only">{ui.player}: </span>
+            <span className={styles.playerName}>{player.name}</span>
+          </p>
+        )}
+        <nav
+          className={styles.worlds}
+          aria-label={ui.worlds}
+          // Names are sized from the islands, so they fit under them on a small phone held sideways.
+          style={{ '--label': `${String(frame ? labelSize(frame.scale) : 15)}px` } as CSSProperties}
+        >
+          <ul>
+            {frame &&
+              WORLDS.map((world) => (
+                <li key={world.id}>
+                  <WorldSpot world={world} frame={frame} onLift={setLifted} />
+                </li>
+              ))}
+          </ul>
+        </nav>
+        {/* After the worlds, so the keyboard and a screen reader reach the islands first. */}
+        {frame && begun && <HubGuide frame={frame} arriving={openedAtDoor} />}
+      </div>
     </div>
   );
 }

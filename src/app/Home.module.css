@@ -20,6 +20,11 @@
   pointer-events: none;
 }
 
+/* Everything laid over the picture. It is its own box only so that the front door can switch all of it off at once. */
+.map {
+  display: contents;
+}
+
 .worlds {
   position: absolute;
   inset: 0;

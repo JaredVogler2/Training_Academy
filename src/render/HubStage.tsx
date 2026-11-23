@@ -88,7 +88,16 @@ function whenIdle(run: () => void): () => void {
  * stays — the hub never shows an empty box.
  * (After a lost context the hub stays a picture until it is next opened, when 3D is tried afresh.)
  */
-export function HubStage({ frame, lifted }: { frame: Frame | null; lifted: PlaceId | null }) {
+export function HubStage({
+  frame,
+  lifted,
+  waiting = false,
+}: {
+  frame: Frame | null;
+  lifted: PlaceId | null;
+  /** True while something stands in front of the hub: it stays a picture and the 3D code is not sent for. */
+  waiting?: boolean;
+}) {
   const settings = useSettings();
   const reducedMotion = useReducedMotion();
   const graphics = graphicsOverride() ?? settings.graphics;
@@ -109,11 +118,12 @@ export function HubStage({ frame, lifted }: { frame: Frame | null; lifted: Place
 
   useEffect(() => whenIdle(() => setIdle(true)), []);
 
-  const { Hub3D, failed } = useHub3D(plan.use3d && idle && trouble === null);
+  const wanted = plan.use3d && idle && !waiting;
+  const { Hub3D, failed } = useHub3D(wanted && trouble === null);
   // Not being able to download the 3D code is a reason to keep the picture, like any other.
   const problem: PictureReason | null = trouble ?? (failed ? 'load-failed' : null);
 
-  const show3d = plan.use3d && idle && problem === null;
+  const show3d = wanted && problem === null;
   const mode = show3d && ready ? '3d' : plan.use3d && problem === null ? 'pending' : 'picture';
   const reason = mode === 'picture' ? (problem ?? plan.reason) : null;
 

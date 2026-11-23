@@ -12,6 +12,7 @@
     <meta name="referrer" content="no-referrer" />
     <meta name="robots" content="noindex" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Academy" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
@@ -20,7 +21,13 @@
   </head>
   <body>
     <div id="root">
-      <div class="boot" aria-hidden="true"><div class="boot-mark"></div></div>
+      <div class="boot">
+        <div class="boot-mark" aria-hidden="true"></div>
+        <p class="boot-late">
+          Still getting ready. If nothing appears, the browser on this phone or tablet may be too
+          old for the game: updating the device usually fixes it.
+        </p>
+      </div>
     </div>
     <noscript>
       <p class="noscript">Training Academy needs JavaScript switched on to run.</p>

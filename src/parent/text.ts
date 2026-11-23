@@ -1,4 +1,5 @@
-import type { AvatarId, EvidenceStatus, SkillEvidence } from '@/engine';
+import { avatarNames } from '@/app/strings';
+import type { EvidenceStatus, SkillEvidence } from '@/engine';
 import type { GraphicsOption, MotionOption } from '@/app/settings';
 
 const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
@@ -34,14 +35,7 @@ export const grownUpText = {
   tooMany: 'This device already has the most players it can hold.',
   couldNotSave: 'That could not be saved. Please try again.',
   picture: 'Picture',
-  avatarNames: {
-    sun: 'Sun',
-    moon: 'Moon',
-    leaf: 'Leaf',
-    shell: 'Shell',
-    star: 'Star',
-    drop: 'Drop',
-  } satisfies Record<AvatarId, string>,
+  avatarNames,
   removeTitle: (name: string) => `Remove ${name}?`,
   removeBody:
     'This erases the player and everything recorded about them from this device. It cannot be undone. Save a copy first if you may want it back.',

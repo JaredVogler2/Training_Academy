@@ -8,10 +8,14 @@ import { test as base, expect, type Locator, type Page } from '@playwright/test'
  *     lets pass on its own is a download the browser cancelled because the page had moved on to another document;
  *   - the graphics setting chosen up front (the hub as a picture by default, so only the 3D specs pay for software
  *     rendering);
- *   - `press`, which taps on a touch device and clicks otherwise, so one spec exercises both.
+ *   - `press`, which taps on a touch device and clicks otherwise, so one spec exercises both;
+ *   - a visit that is already past the front door, where the child chooses who is playing, unless the test asks to
+ *     arrive at it (`frontDoor: true`), as a fresh visit does.
  */
 
 export const SETTINGS_KEY = 'training-academy.settings.v1';
+/** What the game keeps for the life of a tab once the child has chosen who is playing (src/app/journey.ts). */
+export const BEGUN_KEY = 'training-academy.begun';
 
 type Graphics = 'auto' | 'low' | 'medium' | 'high' | 'pictures';
 
@@ -24,6 +28,8 @@ interface Guard {
 
 interface Fixtures {
   graphics: Graphics;
+  /** Arrive as a new visit does: at the front door. Off by default, so most specs start on the map. */
+  frontDoor: boolean;
   guard: Guard;
   /** Tap on a touch screen, click otherwise; `position` is measured from the target's top-left corner. */
   press: (target: Locator, options?: { position?: { x: number; y: number } }) => Promise<void>;
@@ -59,6 +65,7 @@ const REMOTE_ALLOWED =
 
 export const test = base.extend<Fixtures>({
   graphics: ['pictures', { option: true }],
+  frontDoor: [false, { option: true }],
 
   guard: [
     async ({ page, baseURL, browserName }, use, testInfo) => {
@@ -125,12 +132,13 @@ export const test = base.extend<Fixtures>({
     { auto: true },
   ],
 
-  page: async ({ page, graphics }, use) => {
+  page: async ({ page, graphics, frontDoor }, use) => {
     // Set before the app starts, and only if the app has not saved its own choice since.
     await page.addInitScript(
-      ({ key, value }) => {
+      ({ key, value, begunKey, begun }) => {
         try {
           if (window.localStorage.getItem(key) === null) window.localStorage.setItem(key, value);
+          if (begun) window.sessionStorage.setItem(begunKey, '1');
         } catch {
           // Storage is blocked in this test; the app falls back to its defaults.
         }
@@ -138,6 +146,8 @@ export const test = base.extend<Fixtures>({
       {
         key: SETTINGS_KEY,
         value: JSON.stringify({ version: 1, sound: true, motion: 'system', graphics }),
+        begunKey: BEGUN_KEY,
+        begun: !frontDoor,
       },
     );
     await use(page);

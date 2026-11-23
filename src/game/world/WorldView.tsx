@@ -81,7 +81,7 @@ export default function WorldView({ world }: { world: WorldId }) {
         </p>
       )}
 
-      <section className={styles.about} aria-labelledby="world-about">
+      <section className={styles.about} aria-labelledby="world-about" data-selectable>
         <h2 id="world-about">{worldText.forGrownUps}</h2>
         <p>{info.about}</p>
         <h3>{worldText.planned}</h3>

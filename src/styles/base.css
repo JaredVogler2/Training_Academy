@@ -24,7 +24,30 @@ body {
   overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* No rubber band, and no pull-to-refresh in the middle of an activity. */
   overscroll-behavior: none;
+  /*
+   * A small finger rests on things. Nothing in the game is selected by it, and iOS shows no call-out ("Open",
+   * "Copy", "Save image") over a link or a picture. What is written for grown-ups opts back in below.
+   */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Everything inside follows, except what says otherwise for itself (a button is still not selected). */
+[data-selectable],
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* A picture or a link is pressed, never dragged off as a ghost of itself. */
+a,
+img {
+  -webkit-user-drag: none;
 }
 
 #root {
@@ -191,7 +214,8 @@ main:focus-visible {
 /* The first paint, before any script has run (see index.html). */
 .boot {
   display: grid;
-  place-items: center;
+  place-content: center;
+  justify-items: center;
   min-height: 100vh;
   min-height: 100dvh;
   background: linear-gradient(var(--sky-top), var(--sky-mid) 55%, var(--sky-low));
@@ -204,6 +228,29 @@ main:focus-visible {
   background: var(--paper);
   box-shadow: var(--shadow-card);
   animation: boot-breathe 1.6s var(--ease-out) infinite alternate;
+}
+
+/*
+ * Said only if the game has still not started after eight seconds: a very slow connection, or a browser too old to
+ * run it at all (in which case nothing else on the page can say so). The game replaces all of this when it starts.
+ */
+.boot-late {
+  max-width: 24rem;
+  margin: 24px 24px 0;
+  padding: 14px 18px;
+  border-radius: var(--radius-m);
+  color: var(--ink);
+  background: var(--paper);
+  font-size: var(--text-s);
+  text-align: center;
+  opacity: 0;
+  animation: boot-late 0.4s linear 8s forwards;
+}
+
+@keyframes boot-late {
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes boot-breathe {

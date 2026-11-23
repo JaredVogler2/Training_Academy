@@ -209,6 +209,13 @@ function Challenge({
 
   // The group and its match are lit together when the script says "the same" (at once, where nothing moves).
   const same = beat.show === 'same';
+  // In a demonstration the answer is not pointed out until the showing gets to it: first the group, then its
+  // match, then the two together. (Where nothing moves, it is simply shown.)
+  const reached =
+    !demo || calm || same || (beat.show === 'count' && beat.group === 'answer') || asked > 0;
+  // After a wrong answer the choice that was tried stays where it is until it has been counted against the
+  // group; only then is it set aside. (Where nothing moves, it is set aside at once.)
+  const comparing = !calm && (turn === 0 || (beat.show === 'count' && beat.group !== 'answer'));
 
   return (
     <>
@@ -228,9 +235,10 @@ function Challenge({
 
         <ul className={styles.choices} data-count={view.choices.length}>
           {view.choices.map(({ choice, available }, index) => {
-            const isAnswer = shown === choice.id;
+            const isAnswer = shown === choice.id && reached;
             const isTried = tried === choice.id;
-            const look = isAnswer ? 'same' : available ? 'open' : 'away';
+            const held = isTried && comparing;
+            const look = isAnswer ? 'same' : available ? 'open' : held ? 'tried' : 'away';
             const hopping = (isAnswer && counting('answer')) || (isTried && counting('tried'));
             const waiting = !available || answered || demo;
             return (
@@ -245,7 +253,7 @@ function Challenge({
                   data-lit={isAnswer && same}
                   data-asking={beat.show === 'ask' && available}
                   data-comparing={isTried && counting('tried')}
-                  data-just-tried={isTried && !available}
+                  data-just-tried={isTried && !held}
                   aria-label={choice.label}
                   aria-disabled={waiting}
                   onClick={() => {

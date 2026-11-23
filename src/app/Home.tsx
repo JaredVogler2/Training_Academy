@@ -132,7 +132,8 @@ export function Home() {
       {!begun && <FrontDoor profiles={profiles} />}
       <div className={styles.map} inert={!begun}>
         <h1 className="sr-only">{ui.chooseWorld}</h1>
-        {player && (
+        {/* Who is playing — once the child has said so. Before that, the front door is asking. */}
+        {player && begun && (
           <p className={styles.player}>
             <AvatarPicture avatar={player.avatar} className={styles.playerPicture} />
             <span className="sr-only">{ui.player}: </span>

@@ -4,6 +4,7 @@
  * with no scrolling and every target large.
  */
 .lesson {
+  position: relative;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: clamp(8px, 1.8vh, 16px);
@@ -13,6 +14,26 @@
   margin: 0 auto;
   padding: calc(10px + var(--safe-top)) calc(var(--gutter) + var(--safe-right))
     calc(12px + var(--safe-bottom)) calc(var(--gutter) + var(--safe-left));
+}
+
+/*
+ * A little of the world behind the activity: two soft hills in the world's own colour, low on the screen and
+ * wider than the frame. They are scenery only — pale, still, and behind everything.
+ */
+.lesson::before {
+  position: absolute;
+  right: 50%;
+  bottom: 0;
+  z-index: -1;
+  width: 100vw;
+  height: clamp(90px, 24vh, 220px);
+  background:
+    radial-gradient(120% 100% at 22% 100%, var(--tint) 0 58%, transparent 58.5%),
+    radial-gradient(110% 86% at 82% 100%, var(--mid) 0 56%, transparent 56.5%);
+  content: '';
+  opacity: 0.5;
+  pointer-events: none;
+  transform: translateX(50%);
 }
 
 .bar {
@@ -32,8 +53,8 @@
   justify-self: end;
 }
 
-/* Controls a child presses are larger than the grown-ups' ones. */
-.barButton {
+/* Controls a child presses are larger than the grown-ups' ones. (Doubled, to outrank the button's own size.) */
+.barButton.barButton {
   width: var(--tap);
   min-width: var(--tap);
   height: var(--tap);
@@ -195,11 +216,14 @@
   animation: set-aside 0.7s var(--ease-out);
 }
 
-/* The choice that was tried comes forward once more while it is counted against the group: "see, not the same". */
-.choice[data-comparing='true'] {
-  opacity: 1;
-  transform: scale(1);
-  animation: none;
+/*
+ * The choice that was tried, before it is set aside: it stays where it is, marked only by a dashed edge, while it
+ * is counted against the group — "see, not the same". Then it is set aside, once.
+ */
+.choice[data-state='tried'] {
+  border-style: dashed;
+  border-color: var(--ink-faint);
+  box-shadow: none;
 }
 
 .tick {
@@ -553,7 +577,8 @@
   font-size: var(--text-l);
 }
 
-.resume {
+/* (Doubled, to outrank the size a large round button has by default.) */
+.resume.resume {
   width: clamp(84px, 22vh, 112px);
   min-width: clamp(84px, 22vh, 112px);
   height: clamp(84px, 22vh, 112px);

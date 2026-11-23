@@ -1,10 +1,13 @@
 // Captures the review screenshots from the RUNNING production build: real pages, real interactions, no mock-ups.
 //
-//   npm run build && npm run screens                          everything, into docs/review/phase-02/
-//   npm run screens -- phase-02/round-1 hub,lesson            some groups, into another folder
+//   npm run build && npm run screens                          everything, into docs/review/phase-03/
+//   npm run screens -- phase-03/round-1 door,lesson           some groups, into another folder
 //
-// Groups: hub, islands, guide, world, lesson, grownups. The folder is relative to docs/review/, so a second set can
-// be kept beside the first for before-and-after comparisons.
+// Groups: door, hub, islands, guide, world, lesson, tips, clickmaps, grownups. The folder is relative to
+// docs/review/, so a second set can be kept beside the first for before-and-after comparisons.
+//
+// A click map is a screenshot with every control outlined and measured: teal where it is at least the 56 pixels a
+// child's control must be, amber from 48 (a grown-up's), red below that.
 //
 // It starts `vite preview` itself (the same server the browser tests use, with the vercel.json headers), drives the
 // game in headless Chromium, and writes JPEGs.
@@ -20,8 +23,18 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const out = join(root, 'docs/review', process.argv[2] ?? 'phase-02');
-const GROUPS = ['hub', 'islands', 'guide', 'world', 'lesson', 'grownups'];
+const out = join(root, 'docs/review', process.argv[2] ?? 'phase-03');
+const GROUPS = [
+  'door',
+  'hub',
+  'islands',
+  'guide',
+  'world',
+  'lesson',
+  'tips',
+  'clickmaps',
+  'grownups',
+];
 const wanted = new Set(process.argv[3] ? process.argv[3].split(',') : GROUPS);
 for (const group of wanted) {
   if (!GROUPS.includes(group))
@@ -37,7 +50,11 @@ const SCREENS = {
   'small-phone': { width: 360, height: 740, touch: true },
   tablet: { width: 768, height: 1024, touch: true },
   desktop: { width: 1366, height: 768, touch: false },
+  // What Safari leaves a page on an iPhone 13 held sideways, with its bars showing: the tightest real screen.
+  'iphone-landscape': { width: 750, height: 342, touch: true },
 };
+/** The five screen shapes every phase reviews, and the tight one. */
+const REVIEW_SCREENS = ['phone', 'phone-landscape', 'small-phone', 'tablet', 'desktop'];
 
 mkdirSync(out, { recursive: true });
 
@@ -69,8 +86,11 @@ const browser = await chromium.launch({
 });
 const problems = [];
 
-/** Open a page on one of the screens and hand it to `steps`, which calls `shot(name)` whenever it likes. */
-async function session(screen, steps, { graphics = 'pictures' } = {}) {
+/**
+ * Open a page on one of the screens and hand it to `steps`, which calls `shot(name)` whenever it likes.
+ * `begun: false` arrives as a new visit does, at the front door.
+ */
+async function session(screen, steps, { graphics = 'pictures', begun = true } = {}) {
   const { width, height, touch } = SCREENS[screen];
   const context = await browser.newContext({
     viewport: { width, height },
@@ -80,12 +100,13 @@ async function session(screen, steps, { graphics = 'pictures' } = {}) {
     serviceWorkers: 'block',
   });
   await context.addInitScript(
-    (value) => {
+    ({ value, begun }) => {
       if (window.localStorage.getItem('training-academy.settings.v1') === null) {
         window.localStorage.setItem('training-academy.settings.v1', value);
       }
+      if (begun) window.sessionStorage.setItem('training-academy.begun', '1');
     },
-    JSON.stringify({ version: 1, sound: true, motion: 'system', graphics }),
+    { value: JSON.stringify({ version: 1, sound: true, motion: 'system', graphics }), begun },
   );
   const page = await context.newPage();
   page.on('console', (message) => {
@@ -106,8 +127,77 @@ async function session(screen, steps, { graphics = 'pictures' } = {}) {
     await page.screenshot({ path: join(out, file), type: 'jpeg', quality: 82 });
     console.log(`  ${file}`);
   };
+  /** A screenshot with every control outlined and measured. The outlines are removed again afterwards. */
+  const clickMap = async (name) => {
+    await page.evaluate(() => {
+      // In front of everything: inside an open dialog if there is one, since a dialog is drawn over the page.
+      const host = document.querySelector('dialog[open]') ?? document.body;
+      const layer = document.createElement('div');
+      layer.id = 'click-map';
+      Object.assign(layer.style, { position: 'fixed', inset: '0', zIndex: '2147483647' });
+      layer.style.pointerEvents = 'none';
+      const controls = document.querySelectorAll(
+        'a[href], button, input, select, textarea, summary, [role="button"], [role="link"]',
+      );
+      for (const control of controls) {
+        if (control.closest('[inert]') || !control.checkVisibility({ visibilityProperty: true })) {
+          continue;
+        }
+        // While a dialog is open, only what is in it can be reached.
+        if (host !== document.body && !host.contains(control)) continue;
+        if (
+          control.getAttribute('aria-disabled') === 'true' &&
+          !control.hasAttribute('data-choice')
+        ) {
+          continue;
+        }
+        const box = control.getBoundingClientRect();
+        if (box.width < 2 || box.height < 2 || box.bottom <= 0 || box.top >= innerHeight) continue;
+        const least = Math.min(box.width, box.height);
+        const colour = least >= 56 ? '#0b8f86' : least >= 48 ? '#c77700' : '#c9302c';
+        const outline = document.createElement('div');
+        Object.assign(outline.style, {
+          position: 'fixed',
+          left: `${box.left}px`,
+          top: `${box.top}px`,
+          width: `${box.width}px`,
+          height: `${box.height}px`,
+          boxSizing: 'border-box',
+          border: `2px solid ${colour}`,
+          borderRadius: '6px',
+          background: `${colour}22`,
+        });
+        const label = document.createElement('span');
+        label.textContent = `${Math.round(box.width)}×${Math.round(box.height)}`;
+        Object.assign(label.style, {
+          position: 'absolute',
+          left: '0',
+          top: '0',
+          padding: '0 4px',
+          borderRadius: '0 0 6px 0',
+          color: '#fff',
+          background: colour,
+          font: '700 10px/14px system-ui, sans-serif',
+        });
+        outline.append(label);
+        layer.append(outline);
+      }
+      host.append(layer);
+    });
+    await shot(`click-map-${name}`);
+    await page.evaluate(() => document.getElementById('click-map')?.remove());
+  };
+  /** Wait until whatever is arriving has arrived: every animation that has an end has reached it. */
+  const arrived = () =>
+    page.evaluate(async () => {
+      const ending = document.getAnimations().filter((animation) => {
+        const end = animation.effect?.getComputedTiming().endTime;
+        return typeof end === 'number' && Number.isFinite(end);
+      });
+      await Promise.all(ending.map((animation) => animation.finished.catch(() => undefined)));
+    });
   try {
-    await steps({ page, press, shot });
+    await steps({ page, press, shot, clickMap, arrived });
   } finally {
     await context.close();
   }
@@ -122,6 +212,19 @@ async function holdGateOpen(page) {
   await page.mouse.down();
   await page.getByRole('heading', { name: 'Players' }).waitFor({ timeout: 30_000 });
   await page.mouse.up();
+}
+
+/** Downloaded, decoded and drawn: a picture still being decoded is left out of the frame a screenshot takes. */
+async function hubPictures(page) {
+  await page.waitForFunction(() => {
+    const images = [...document.querySelectorAll('[data-testid="hub-picture"] img')];
+    return images.length >= 7 && images.every((image) => image.complete && image.naturalWidth > 0);
+  });
+  await page.evaluate(async () => {
+    const images = [...document.querySelectorAll('[data-testid="hub-picture"] img')];
+    await Promise.all(images.map((image) => image.decode().catch(() => undefined)));
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+  });
 }
 
 /** Tap a choice whose amount matches the group to match (`right`), or one that does not. */
@@ -139,6 +242,55 @@ async function choose(page, press, right) {
 
 try {
   console.log(`Writing to ${out}`);
+
+  // The front door: a first visit on every screen shape, and a device two children have played on.
+  if (wanted.has('door')) {
+    for (const screen of [...REVIEW_SCREENS, 'iphone-landscape']) {
+      await session(
+        screen,
+        async ({ page, shot, arrived }) => {
+          await page.goto(`${BASE}/`);
+          await page.getByTestId('front-door').getByRole('button').first().waitFor();
+          await hubPictures(page);
+          await arrived();
+          await shot('door-1-first-visit');
+        },
+        { begun: false },
+      );
+    }
+    for (const screen of ['phone', 'desktop']) {
+      await session(
+        screen,
+        async ({ page, press, shot, arrived }) => {
+          // Two players, made the way a family makes them: one at the front door, one in the grown-ups' area.
+          await page.goto(`${BASE}/`);
+          await press(page.getByTestId('front-door').locator('button[data-avatar="star"]'));
+          await page.getByTestId('front-door').waitFor({ state: 'detached' });
+          await page.goto(`${BASE}/grown-ups`);
+          await holdGateOpen(page);
+          await page.getByRole('button', { name: 'Add a player' }).click();
+          await page.getByLabel('Nickname', { exact: true }).fill('Mina');
+          await page.getByRole('radio', { name: 'Moon' }).check({ force: true });
+          await page.getByRole('button', { name: 'Add', exact: true }).click();
+          await page.getByTestId('player').filter({ hasText: 'Mina' }).waitFor();
+          // A new visit.
+          await page.evaluate(() => window.sessionStorage.clear());
+          await page.goto(`${BASE}/`);
+          await page.getByTestId('front-door').getByRole('button').first().waitFor();
+          await hubPictures(page);
+          await arrived();
+          await shot('door-2-who-is-playing');
+          // And through it: the map, with Glim saying hello before pointing the way.
+          await press(page.getByTestId('front-door').getByRole('button', { name: 'Play as Mina' }));
+          await page.getByTestId('front-door').waitFor({ state: 'detached' });
+          await page.locator('[data-testid="guide"][data-state="wave"]').waitFor();
+          await page.waitForTimeout(400);
+          await shot('door-3-arriving-on-the-map');
+        },
+        { begun: false },
+      );
+    }
+  }
 
   if (wanted.has('hub')) {
     // The hub in 3D at its high tier, on every screen shape.
@@ -251,47 +403,65 @@ try {
   }
 
   // World front doors: one that is open, one that is not.
-  for (const screen of wanted.has('world') ? ['phone', 'desktop'] : []) {
-    await session(screen, async ({ page, shot }) => {
+  for (const screen of wanted.has('world') ? ['phone', 'desktop', 'iphone-landscape'] : []) {
+    await session(screen, async ({ page, shot, arrived }) => {
       await page.goto(`${BASE}/world/number-garden`);
-      await page.getByRole('link', { name: 'Play' }).waitFor();
-      await page.waitForTimeout(500);
+      await page.getByTestId('world-example').waitFor();
+      await arrived();
       await shot('world-open');
       await page.goto(`${BASE}/world/reading-cove`);
       await page.getByText('This world is not open yet.').waitFor();
-      await page.waitForTimeout(300);
+      await arrived();
       await shot('world-not-open');
     });
   }
 
-  // The sample activity, state by state.
+  // The activity, state by state: shown first, asked, answered wrongly, helped, answered, paused, finished.
   for (const screen of wanted.has('lesson')
-    ? ['phone', 'phone-landscape', 'tablet', 'desktop']
+    ? ['phone', 'phone-landscape', 'tablet', 'desktop', 'iphone-landscape']
     : []) {
-    await session(screen, async ({ page, press, shot }) => {
+    await session(screen, async ({ page, press, shot, arrived }) => {
       const next = page.getByRole('button', { name: 'Next' });
+      const lit = page.getByTestId('lesson').locator('[data-same="true"]');
       await page.goto(`${BASE}${LESSON}`);
       await page.getByRole('button', { name: 'My turn' }).waitFor();
-      await page.waitForTimeout(3200);
-      await shot('lesson-1-demonstration');
+      // Glim is counting the group…
+      await page.locator('[data-same] svg[data-counting="true"]').waitFor();
+      await page.waitForTimeout(450);
+      await shot('lesson-1-demonstration-counting');
+      // …and at the end the group and its match are lit together.
+      await lit.waitFor({ timeout: 15_000 });
+      await arrived();
+      await shot('lesson-2-demonstration-the-same');
 
       await press(page.getByRole('button', { name: 'My turn' }));
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(2600);
+      await shot('lesson-3-guided-question');
       await choose(page, press, true);
-      await page.waitForTimeout(1500);
-      await shot('lesson-2-right-answer');
+      await lit.waitFor({ timeout: 15_000 });
+      await arrived();
+      await shot('lesson-4-right-answer');
       await press(next);
       await choose(page, press, true);
       await press(next);
-      await page.waitForTimeout(600);
-      await shot('lesson-3-question');
+      await page.waitForTimeout(1800);
+      await shot('lesson-5-question-on-their-own');
 
       await choose(page, press, false);
-      await page.waitForTimeout(1300);
-      await shot('lesson-4-wrong-answer');
+      // The choice that was tried is being counted against the group.
+      await page.locator('[data-choice][data-comparing="true"]').waitFor({ timeout: 15_000 });
+      await page.waitForTimeout(500);
+      await shot('lesson-6-wrong-answer-compared');
+      await page.waitForTimeout(2500);
       await press(page.getByRole('button', { name: 'Help me' }));
-      await page.waitForTimeout(1400);
-      await shot('lesson-5-hint');
+      await page.waitForTimeout(1200);
+      await shot('lesson-7-help');
+
+      await press(page.getByRole('button', { name: 'Pause' }));
+      await page.getByTestId('lesson-paused').waitFor();
+      await page.waitForTimeout(500);
+      await shot('lesson-8-paused');
+      await press(page.getByRole('button', { name: 'Carry on' }));
 
       for (
         let guard = 0;
@@ -302,9 +472,85 @@ try {
         else await choose(page, press, true);
         await page.waitForTimeout(350);
       }
-      await page.waitForTimeout(900);
-      await shot('lesson-6-finished');
+      await arrived();
+      await shot('lesson-9-finished');
     });
+  }
+
+  // Tooltips: what a mouse or a keyboard is told about a control that is only a picture.
+  if (wanted.has('tips')) {
+    await session('desktop', async ({ page, shot }) => {
+      await page.goto(`${BASE}${LESSON}`);
+      await page.getByRole('button', { name: 'My turn' }).waitFor();
+      await page.getByRole('link', { name: 'Leave the activity' }).focus();
+      await page.keyboard.press('Shift+Tab');
+      await page.keyboard.press('Tab');
+      await page.waitForTimeout(400);
+      await shot('tooltip-1-keyboard-focus');
+      await page.getByRole('button', { name: 'Show me again' }).hover();
+      await page.waitForTimeout(900);
+      await shot('tooltip-2-hover-on-the-guide');
+      await page.goto(`${BASE}/`);
+      await page.getByRole('button', { name: 'Sound' }).hover();
+      await page.waitForTimeout(900);
+      await shot('tooltip-3-hover-on-a-switch');
+    });
+  }
+
+  // Click maps: every control on the screens a child uses, outlined and measured.
+  for (const screen of wanted.has('clickmaps') ? ['phone', 'desktop', 'iphone-landscape'] : []) {
+    await session(
+      screen,
+      async ({ page, press, clickMap, arrived }) => {
+        await page.goto(`${BASE}/`);
+        await page.getByTestId('front-door').getByRole('button').first().waitFor();
+        await hubPictures(page);
+        await arrived();
+        await clickMap('1-front-door');
+        await press(page.getByTestId('front-door').locator('button[data-avatar="drop"]'));
+        await page.getByTestId('front-door').waitFor({ state: 'detached' });
+        await page
+          .locator('[data-testid="guide"][data-state="point"]')
+          .waitFor({ timeout: 15_000 });
+        await clickMap('2-map');
+
+        await press(page.locator('a[data-open="true"]'));
+        await page.getByTestId('world-example').waitFor();
+        await arrived();
+        await clickMap('3-world');
+
+        await press(page.getByRole('link', { name: 'Play' }));
+        await page.getByRole('button', { name: 'My turn' }).waitFor();
+        await page.getByTestId('lesson').locator('[data-same="true"]').waitFor({ timeout: 15_000 });
+        await arrived();
+        await clickMap('4-demonstration');
+        await press(page.getByRole('button', { name: 'My turn' }));
+        await choose(page, press, true);
+        await press(page.getByRole('button', { name: 'Next' }));
+        await choose(page, press, true);
+        await press(page.getByRole('button', { name: 'Next' }));
+        await page.waitForTimeout(2000);
+        await clickMap('5-question');
+        await press(page.getByRole('button', { name: 'Pause' }));
+        await page.getByTestId('lesson-paused').waitFor();
+        await page.waitForTimeout(500);
+        await clickMap('6-paused');
+        await press(page.getByRole('button', { name: 'Carry on' }));
+        const next = page.getByRole('button', { name: 'Next' });
+        for (
+          let guard = 0;
+          guard < 20 && !(await page.getByTestId('lesson-finished').isVisible());
+          guard++
+        ) {
+          if (await next.isVisible()) await press(next);
+          else await choose(page, press, true);
+          await page.waitForTimeout(350);
+        }
+        await arrived();
+        await clickMap('7-finished');
+      },
+      { begun: false },
+    );
   }
 
   // The grown-ups area and the "something went wrong" screens.

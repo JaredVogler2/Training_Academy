@@ -143,8 +143,9 @@
 }
 
 @media (orientation: landscape) and (max-height: 520px) {
+  /* The bar is shorter here; the way home is still a full-size control. */
   .brand {
-    height: 44px;
+    height: var(--tap-small);
   }
 
   .brandMark {

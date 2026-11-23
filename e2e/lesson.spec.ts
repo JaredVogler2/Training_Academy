@@ -212,6 +212,8 @@ test.describe('the sample activity', () => {
     await choose(page, press, true);
     await press(next(page));
     await choose(page, press, false);
+    // The choice that was tried is counted against the group, and then set aside.
+    await expect(lesson(page).locator('[data-choice][data-state="away"]')).toHaveCount(1);
 
     const snapshot = async () => ({
       step: await stepNumber(page),

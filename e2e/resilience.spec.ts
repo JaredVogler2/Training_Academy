@@ -123,6 +123,10 @@ test.describe('when the browser will not let the game save', () => {
       Storage.prototype.removeItem = refuse;
     });
     await page.goto('/');
+    // Nothing can be remembered, not even that this visit has begun: so it begins at the front door, where
+    // choosing a picture still opens the game.
+    await press(page.getByRole('button', { name: 'The star picture' }));
+    await expect(page.getByTestId('front-door')).toHaveCount(0);
     await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(6);
     // Settings still work for this visit.
     await press(page.getByRole('button', { name: 'Calm motion' }));

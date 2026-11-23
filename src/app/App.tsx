@@ -97,14 +97,18 @@ export function App() {
       >
         {ui.skipToContent}
       </a>
-      <TopBar route={route} />
+      {/* An activity has the whole screen: its own bar has the way home, and pause has the two switches. */}
+      {route.name !== 'play' && <TopBar route={route} />}
       <main id="main" ref={main} tabIndex={-1} className={styles.main}>
         <ErrorBoundary
           resetKey={path}
           fallback={(error, retry) => <Trouble error={error} retry={retry} />}
         >
           <Suspense fallback={<Loading />}>
-            <RouteView route={route} />
+            {/* Keyed by address: each page arrives softly, and none inherits another's state. */}
+            <div key={path} className={styles.view}>
+              <RouteView route={route} />
+            </div>
           </Suspense>
         </ErrorBoundary>
       </main>

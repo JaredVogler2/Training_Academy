@@ -56,6 +56,10 @@ interface ActionLinkProps extends ButtonLook {
   className?: string;
   children?: ReactNode;
   'aria-label'?: string;
+  /** Words shown on hover and on keyboard focus, for a button that is only a picture (see base.css). */
+  'data-tip'?: string;
+  'data-tip-side'?: 'top';
+  'data-tip-align'?: 'start' | 'end';
   onPointerEnter?: () => void;
   onFocus?: () => void;
 }
@@ -82,7 +86,7 @@ interface ToggleButtonProps {
   onChange: (pressed: boolean) => void;
   /** What the control is, for assistive technology: "Sound", not "Sound on". The pressed state says the rest. */
   label: string;
-  /** Shown beside the icon where there is room, and as the tooltip: the current state in words. */
+  /** The current state in words: the tooltip, for someone with a mouse or a keyboard. */
   stateText: string;
   icon: ReactNode;
 }
@@ -95,7 +99,8 @@ export function ToggleButton({ pressed, onChange, label, stateText, icon }: Togg
       className={cx(styles.button, styles.round, styles.toggle, pressed && styles.pressed)}
       aria-pressed={pressed}
       aria-label={label}
-      title={stateText}
+      data-tip={stateText}
+      data-tip-align="end"
       onClick={() => onChange(!pressed)}
     >
       {icon}

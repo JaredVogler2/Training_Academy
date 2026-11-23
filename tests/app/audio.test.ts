@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { preferMediaPlayback } from '@/audio';
 import { AudioEngine, type AudioContextLike } from '@/audio/audioEngine';
 
 function fakeContext(initialState = 'suspended') {
@@ -93,7 +94,21 @@ describe('the audio engine', () => {
     }));
     const engine = new AudioEngine(() => context, true);
     engine.unlock();
-    for (const cue of ['tap', 'on', 'off', 'success', 'again', 'step'] as const) engine.play(cue);
+    const cues = [
+      'tap',
+      'on',
+      'off',
+      'success',
+      'again',
+      'step',
+      'hello',
+      'sail',
+      'ask',
+      'same',
+      'done',
+    ] as const;
+    for (const cue of cues) expect(engine.play(cue)).toBe(true);
+    for (let thing = 0; thing < 10; thing++) engine.count(thing);
     expect(Math.max(...levels)).toBeLessThanOrEqual(0.2);
     expect(Math.max(...ends) - context.currentTime).toBeLessThan(0.7);
   });
@@ -162,5 +177,129 @@ describe('the audio engine', () => {
     expect(listener).toHaveBeenCalledTimes(2);
     engine.setEnabled(true);
     expect(listener).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('the first sound on a phone', () => {
+  /** A context that wakes only when the test says so, as a phone's does a moment after the touch. */
+  function slowToWake() {
+    const fake = fakeContext();
+    let wake: () => void = () => undefined;
+    fake.context.resume = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          wake = () => {
+            fake.context.state = 'running';
+            resolve();
+          };
+        }),
+    );
+    return { ...fake, wake: () => wake() };
+  }
+
+  it('plays the cue of the very touch that woke the audio, as soon as it is awake', async () => {
+    const { context, oscillators, wake } = slowToWake();
+    let time = 1000;
+    const engine = new AudioEngine(
+      () => context,
+      true,
+      () => time,
+    );
+    engine.unlock();
+    expect(engine.play('hello')).toBe(false);
+    expect(oscillators).toHaveLength(0);
+
+    time += 120;
+    wake();
+    await settle();
+    expect(oscillators).toHaveLength(3);
+    expect(engine.stats.played).toBe(1);
+  });
+
+  it('keeps only the latest cue, and drops one that has waited too long to belong to the touch', async () => {
+    const { context, oscillators, wake } = slowToWake();
+    let time = 0;
+    const engine = new AudioEngine(
+      () => context,
+      true,
+      () => time,
+    );
+    engine.unlock();
+    engine.play('hello');
+    engine.play('tap');
+    time += 5000;
+    wake();
+    await settle();
+    expect(oscillators).toHaveLength(0);
+
+    // Awake now: the next cue plays at once.
+    expect(engine.play('tap')).toBe(true);
+    expect(oscillators).toHaveLength(1);
+  });
+
+  it('does not keep a cue when nothing is waking the audio, or once sound is switched off', async () => {
+    const { context, oscillators, wake } = slowToWake();
+    const engine = new AudioEngine(() => context, true);
+    // No touch yet: nothing is created and nothing waits.
+    expect(engine.play('tap')).toBe(false);
+    engine.unlock();
+    engine.play('tap');
+    engine.setEnabled(false);
+    wake();
+    await settle();
+    expect(oscillators).toHaveLength(0);
+  });
+});
+
+describe('counting notes', () => {
+  it('climb one step for each thing counted, and stop climbing at the top of the scale', async () => {
+    const { context, oscillators } = fakeContext('running');
+    const engine = new AudioEngine(() => context, true);
+    engine.unlock();
+    await settle();
+    const pitches: number[] = [];
+    for (const index of [0, 1, 2, 9, 40, -3]) {
+      expect(engine.count(index)).toBe(true);
+      const oscillator = oscillators.at(-1) as unknown as {
+        frequency: { setValueAtTime: { mock: { calls: [number, number][] } } };
+      };
+      pitches.push(oscillator.frequency.setValueAtTime.mock.calls[0]?.[0] ?? Number.NaN);
+    }
+    const [first, second, third, tenth, beyond, before] = pitches as [
+      number,
+      number,
+      number,
+      number,
+      number,
+      number,
+    ];
+    expect(second).toBeGreaterThan(first);
+    expect(third).toBeGreaterThan(second);
+    expect(tenth).toBeGreaterThan(third);
+    expect(beyond).toBe(tenth);
+    expect(before).toBe(first);
+  });
+});
+
+describe("the iPhone's silent switch", () => {
+  it('asks Safari to treat the sound as media while sound is on, and gives that back when it is off', () => {
+    const session = { type: 'auto' };
+    const scope = { audioSession: session } as unknown as Navigator;
+    preferMediaPlayback(scope, true);
+    expect(session.type).toBe('playback');
+    preferMediaPlayback(scope, false);
+    expect(session.type).toBe('auto');
+  });
+
+  it('does nothing where the browser has no such setting, or refuses the value', () => {
+    expect(() => preferMediaPlayback({} as Navigator, true)).not.toThrow();
+    const refusing = {
+      audioSession: Object.defineProperty({}, 'type', {
+        set() {
+          throw new TypeError('not a valid type');
+        },
+      }),
+    } as unknown as Navigator;
+    expect(() => preferMediaPlayback(refusing, true)).not.toThrow();
   });
 });

@@ -48,9 +48,13 @@ jobs:
       matrix:
         include:
           - engine: chromium
-            projects: --project=desktop --project=phone --project=phone-landscape --project=tablet --project=small-phone
+            projects: >-
+              --project=desktop --project=phone --project=phone-landscape --project=tablet --project=small-phone
+              --project=android --project=android-landscape
           - engine: webkit
-            projects: --project=webkit-desktop --project=webkit-phone
+            projects: >-
+              --project=webkit-desktop --project=webkit-phone
+              --project=iphone --project=iphone-landscape --project=ipad
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -65,11 +69,14 @@ jobs:
       - run: npx playwright test ${{ matrix.projects }}
         env:
           PW_WEBKIT: ${{ matrix.engine == 'webkit' && '1' || '0' }}
+      # Kept whenever the tests ran, not only when they failed: a test that passed at its second attempt leaves a
+      # trace of that attempt, and that is the only evidence of what went wrong the first time.
       - uses: actions/upload-artifact@v7
-        if: ${{ failure() }}
+        if: ${{ !cancelled() }}
         with:
           name: playwright-${{ matrix.engine }}
           path: |
             playwright-report/
             test-results/
+          if-no-files-found: ignore
           retention-days: 7

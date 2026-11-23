@@ -209,5 +209,9 @@ export function describe(stimulus: PictureProps['stimulus']): string {
   return `${amount} ${stimulus.count === 1 ? stimulus.item : PLURALS[stimulus.item]}`;
 }
 
-const numberGarden: WorldModule = { Picture, describe };
+const numberGarden: WorldModule = {
+  Picture,
+  describe,
+  countable: (stimulus) => stimulus.count,
+};
 export default numberGarden;

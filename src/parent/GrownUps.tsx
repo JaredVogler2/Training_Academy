@@ -65,7 +65,7 @@ let unlocked = false;
 
 function Gate({ onOpen }: { onOpen: () => void }) {
   return (
-    <section className={styles.gate} aria-labelledby="gate-title">
+    <section className={styles.gate} aria-labelledby="gate-title" data-selectable>
       <IconGrownUps size={44} />
       <h1 id="gate-title">{text.gateTitle}</h1>
       <p>{text.gateBody}</p>
@@ -526,7 +526,7 @@ function Area() {
   }, []);
 
   return (
-    <div className={styles.area}>
+    <div className={styles.area} data-selectable>
       <header className={styles.header}>
         <h1>{text.title}</h1>
         <ActionLink to={{ name: 'home' }} icon={<IconHome />}>

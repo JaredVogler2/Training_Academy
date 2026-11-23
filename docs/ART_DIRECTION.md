@@ -25,14 +25,14 @@ dashboard. Nothing in it is dark, sharp, tiny or in a hurry.
 
 ## The view
 
-| Rule                                                                                                     | Why                                                                                                                                                                            |
-| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| One camera angle, always: 36° below the horizontal, no perspective, never turning.                       | A map stays a map. A child learns where things are once. With no perspective, a place on screen is plain arithmetic, so the 3D scene, its picture and the tap areas all agree. |
-| The camera does not sway or drift. Things in the world move; the view does not.                          | Small children track moving things, not a moving frame; and a still view can be drawn once and kept when motion is switched off.                                               |
-| Four arrangements — tall phone, upright tablet, squarish window, wide screen — chosen by the shape left. | Islands should be as large as the screen allows. One arrangement scaled to fit would leave a phone with islands the size of a thumbnail.                                       |
-| Every island is its own button, and the whole island is the button: land, landmark and name.             | The picture is the instruction. A child taps the thing they want; they never have to find a separate tile that stands for it.                                                  |
-| Nothing overlaps: tap areas, names, the guide, boats, rocks and clouds each have their own room.         | A tap must never land on the wrong island, and a name must never be covered. Unit tests hold this for ten screen shapes (`tests/render/archipelago.test.ts`).                  |
-| Depth is shown five ways: overlap, haze, paler water far away, shadows falling one way, clouds' shadows. | Without perspective, depth has to be painted in. Far is up the screen, paler and hazier; near is down the screen, deeper and clearer.                                          |
+| Rule                                                                                                                                      | Why                                                                                                                                                                                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| One camera angle, always: 36° below the horizontal, no perspective, never turning.                                                        | A map stays a map. A child learns where things are once. With no perspective, a place on screen is plain arithmetic, so the 3D scene, its picture and the tap areas all agree.                                                                                        |
+| The camera does not sway or drift. Things in the world move; the view does not.                                                           | Small children track moving things, not a moving frame; and a still view can be drawn once and kept when motion is switched off.                                                                                                                                      |
+| Five arrangements — tall phone, upright tablet, squarish window, wide screen, and one row for a very flat one — chosen by the shape left. | Islands should be as large as the screen allows. One arrangement scaled to fit would leave a phone with islands the size of a thumbnail; and a phone held sideways, once its browser has taken its bars, is so flat that side by side is larger than three rows deep. |
+| Every island is its own button, and the whole island is the button: land, landmark and name.                                              | The picture is the instruction. A child taps the thing they want; they never have to find a separate tile that stands for it.                                                                                                                                         |
+| Nothing overlaps: tap areas, names, the guide, boats, rocks and clouds each have their own room.                                          | A tap must never land on the wrong island, and a name must never be covered. Unit tests hold this for twenty-five screen shapes (`tests/render/archipelago.test.ts`).                                                                                                 |
+| Depth is shown five ways: overlap, haze, paler water far away, shadows falling one way, clouds' shadows.                                  | Without perspective, depth has to be painted in. Far is up the screen, paler and hazier; near is down the screen, deeper and clearer.                                                                                                                                 |
 
 **Layers.** Far: the back row of islands, haze, clouds, the lightest water. Middle: the lighthouse and the islands
 beside it. Near: the front row, the guide's boat, the deepest water. On a tall phone the islands become stepping
@@ -157,6 +157,9 @@ Movement is how the scene shows it is alive, and how the interface answers. It n
 | A name tag pressed                     | Goes down                                                            | 140 ms               | Pressed things look pressed                        |
 | Glim                                   | A pose for each state, and a motion around it                        | 0.3–1.2 s to change  | See below                                          |
 | The picture giving way to the 3D scene | A cross-fade, in place                                               | 700 ms               | Nothing jumps, because both are in the same places |
+| A page arriving                        | A fade and a rise of 8 pixels                                        | 320 ms               | Going somewhere is felt as going somewhere         |
+| The front door                         | The card springs in, the pictures pop in one after another           | 0.5 s, 70 ms apart   | "Here you are": an arrival, once per visit         |
+| Things being counted                   | Each hops in turn, with its own note                                 | 420 ms apart         | One hop, one note, one thing                       |
 
 - **The frame is still; things in it move.** No camera motion, no parallax scrolling, no screen shake.
 - **Two speeds** for the interface: 140 ms for a press, 320 ms for a change of state. A spring only on things that
@@ -171,6 +174,21 @@ Movement is how the scene shows it is alive, and how the interface answers. It n
 
 A still picture says nothing about motion. Motion is reviewed in the running game, and where it could not be seen
 on real hardware the report says so.
+
+### Showing, inside an activity
+
+What Glim shows is a script (`src/game/lesson/script.ts`): a few beats on a clock, each one thing at a time.
+
+- **One thing moves at a time.** The group is counted; then its match; then both are lit. Never two countings at
+  once: the point is that they are the same length.
+- **A right answer and a wrong one are shown in the same way.** Both are counted against the group. One ends with
+  the two lit together and two notes sounding at once; the other ends with the choice set aside. Neither is a
+  reward or a penalty: both are an explanation.
+- **A choice that was tried is set aside once, and only after it has been counted.** Until then it stays where it
+  is with a dashed edge. Set aside, it is pale and hollow. No cross, no red, no shake.
+- **The answer is never lit before the showing reaches it**, even in a demonstration.
+- **The way on arrives when the showing is over**, and works before that for anyone who does not want to wait.
+- **With calm motion** the board goes straight to where the script ends, and nothing is counted aloud.
 
 ## Glim, the guide
 
@@ -213,6 +231,10 @@ says, it says with its body.
 - **Points with light.** When Glim points, sparks travel towards the thing. It is the lighthouse's job: showing
   where to look.
 - **Sixty-four pixels at the least**, wherever it appears; on the hub it is a button that size or larger.
+- **Glim is how a child asks again.** Inside an activity Glim is the "show me again" button, with a small paper
+  badge (a speaker and a returning arrow) beside its feet that must never cover it. Asking is free.
+- **Glim opens the door.** A visit begins with Glim waving from behind the front door's card, and Glim says hello
+  again on the map before pointing the way.
 
 ## The two-dimensional language
 
@@ -228,36 +250,55 @@ painted world without imitating it.
 - **Counting pictures** stay plain single shapes with a soft shadow under each: nothing extra to count.
 - **The same eight roles.** A world's page, its emblem and its island share one colour.
 - **Round, generous, pressable.** Radii of 12, 20 and 28 pixels and pills for buttons; a pressed thing goes down.
+- **A world's emblem is pinned to its island.** On a world's page the picture of the place carries, on a round
+  paper badge at its corner, the drawing of what the place is for: one picture, taken in at a glance.
+- **A little of the world behind an activity.** Two pale hills in the world's own colour, low on the screen, still.
+  Scenery only: an activity's screen is for the activity.
+- **Tooltips are for a mouse and a keyboard.** A control that is only a picture has its words in a small ink
+  label, on hover after a moment and on keyboard focus at once. A finger gets none.
 
 ## Type
 
 Fredoka (rounded, variable) for names, headings and buttons; Nunito (variable) for sentences. Both bundled, Latin
 subset. Island names are sized from the islands themselves — 12 to 17 pixels — so they fit under an island a hundred
-pixels wide on a small phone held sideways, and are never cut short (a browser test checks). A child is never
+pixels wide on a small phone held sideways, and are never cut short (a browser test checks): in a row of islands,
+where there is least room, a name that does not fit on one line takes two. A child is never
 required to read: names are for the grown-up alongside and for a screen reader.
 
 ## Touch
 
-- An island's tap area is its whole box on screen: at least 96 × 96 pixels on the smallest phone, usually twice
-  that.
-- Controls a child presses are 56 pixels or more; grown-ups' controls 48.
+- An island's tap area is its whole box on screen: at least 96 × 96 pixels, usually twice that. The two exceptions
+  are the narrowest phones held sideways, where seven places side by side cannot be that wide: 90 × 112 on an
+  iPhone 13 mini, 81 × 103 on an Android phone 640 pixels wide.
+- A tap counts however many fingers are on the screen, and however slowly it is made, up to a second; a finger
+  that stays longer was resting (`docs/ARCHITECTURE.md` → _More than one finger, or a slow one_).
+- Controls a child presses are 56 pixels or more; grown-ups' controls 48. A click map (`npm run screens`) outlines
+  and measures every control on a screen in those terms: teal from 56, amber from 48, red below.
+- A picture at the front door is 64 pixels or more on the smallest screen; a choice in an activity is far larger.
+- A resting finger selects nothing and opens no menu (`docs/ARCHITECTURE.md` → _A resting finger_).
+- On a phone held sideways the one thing to do — Play, a choice, "carry on" — is on the first screen.
 - The lighthouse is scenery; a tap on it does nothing, and its drawn area never lies inside a tap area.
 - One focus ring everywhere: dark, with a white halo, drawn around the whole island.
 
 ## Sound motifs
 
 Synthesised on the device (`src/audio/audioEngine.ts`); there are no audio files. Soft, short, quiet, in one key,
-so that any two can sound together. Everything works with sound off. Voices and music are Phase 04.
+so that any two can sound together. Everything works with sound off. Voices and music are Phase 04. A unit test
+holds every motif to the same limits: under 0.7 seconds, and never louder than a fifth of full volume.
 
-| Motif    | Notes                    | Means                                                |
-| -------- | ------------------------ | ---------------------------------------------------- |
-| Tap      | One soft blip            | "I felt that"                                        |
-| Hello    | E–G–C, skipping upward   | Glim's own three notes                               |
-| Set sail | A low note and its fifth | Choosing the island that is open                     |
-| Step     | One note                 | Moving on                                            |
-| Yes      | C–E–G rising             | A right answer                                       |
-| Again    | Two level notes          | "Have another look." Not a buzzer; it does not fall. |
-| On / off | Two notes up / two down  | A switch                                             |
+| Motif    | Notes                                       | Means                                                                                   |
+| -------- | ------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Tap      | One soft blip                               | "I felt that"                                                                           |
+| Hello    | E–G–C, skipping upward                      | Glim's own three notes                                                                  |
+| Set sail | A low note and its fifth                    | Choosing the island that is open                                                        |
+| Step     | One note                                    | Moving on                                                                               |
+| Yes      | C–E–G rising                                | A right answer                                                                          |
+| Again    | Two level notes                             | "Have another look." Not a buzzer; it does not fall.                                    |
+| On / off | Two notes up / two down                     | A switch                                                                                |
+| Ask      | Two notes that end up                       | The question being put, or put again                                                    |
+| Counting | One note for each thing, climbing the scale | "One, two, three" without the words. Two groups of the same amount play the same notes. |
+| The same | Two notes at once                           | The group and its match, lit together                                                   |
+| Done     | C–E–G and the C above                       | The end of an activity                                                                  |
 
 ## Quality tiers
 

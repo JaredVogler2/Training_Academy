@@ -182,7 +182,8 @@ describe('ToggleButton', () => {
     );
     const button = screen.getByRole('button', { name: 'Sound' });
     expect(button.getAttribute('aria-pressed')).toBe('false');
-    expect(button.getAttribute('title')).toBe('Sound is off');
+    // The state in words is the tooltip (for a mouse or a keyboard; see base.css).
+    expect(button.getAttribute('data-tip')).toBe('Sound is off');
     fireEvent.click(button);
     expect(onChange).toHaveBeenCalledWith(true);
 

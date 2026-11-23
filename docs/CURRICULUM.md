@@ -151,6 +151,66 @@ Design notes and known limits of this first lesson:
   (Phase 06: "distinguish count from area/size").
 - There is no "none of these" and no comparison (more/fewer); those are later skills.
 
+### The first activity as it is played (Phase 03)
+
+This is the one complete vertical slice. The content above did not change in Phase 03; the frame that plays it did
+(`src/game/lesson/`). What follows is what is actually in the build, by id.
+
+| Id                                 | What it is                                                        |
+| ---------------------------------- | ----------------------------------------------------------------- |
+| `number-garden` (contentVersion 1) | the pack: `src/content/packs/number-garden.v1.json`               |
+| `math.quantity.match-sets-to-3`    | the skill                                                         |
+| `ng-same-amount-01` (version 1)    | the lesson; address `/world/number-garden/play/ng-same-amount-01` |
+| `ng-same-amount-01.demo-two`       | step 1, the demonstration: 2 snails ↔ **2 leaves**, 1 leaf        |
+| `ng-same-amount-01.guided-one`     | step 2, guided: 1 apple ↔ **1 acorn**, 3 acorns                   |
+| `ng-same-amount-01.guided-three`   | step 3, guided: 3 snails ↔ 2 leaves, **3 leaves**                 |
+| `ng-same-amount-01.two-apples`     | independent pool: 2 apples ↔ 3, 1, **2** acorns                   |
+| `ng-same-amount-01.three-leaves`   | independent pool: 3 leaves ↔ **3**, 2, 1 snails                   |
+| `ng-same-amount-01.one-acorn`      | independent pool: 1 acorn ↔ 2, **1**, 3 apples                    |
+| `ng-same-amount-01.two-snails`     | independent pool: 2 snails ↔ 1, **2**, 3 apples                   |
+| `ng-same-amount-01.three-acorns`   | independent pool: 3 acorns ↔ 2, **3**, 1 leaves                   |
+
+A sitting is six steps: the demonstration, the two guided steps in that order, and three of the five independent
+challenges, drawn and ordered by the sitting's seed. If an independent step is answered with help or after a wrong
+try, one more independent step of a different kind is added at the end (at most one), so there is still a chance
+to show the skill unaided: a sitting is then seven steps.
+
+**What each stage looks and sounds like** (the "script" is `src/game/lesson/script.ts`; nothing in it decides
+anything, it only shows what the engine has said):
+
+| Stage                    | What the child meets                                                                                                                                                                                                 | What is recorded                                                                          |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| I do — the demonstration | Glim counts the group, thing by thing, each with a climbing note; then points out its match and counts that, with the same notes; then the two are lit together. Nothing can be answered; "My turn" moves on.        | Nothing. A demonstration is never an attempt.                                             |
+| We do — two guided steps | The question is put (the group is offered, then each choice in turn), and the group is counted with the child. Two choices.                                                                                          | An attempt, stage `guided`. Never counts as independent.                                  |
+| You do — on their own    | The question is put, and that is all. Three choices. Help is there to be asked for.                                                                                                                                  | An attempt, stage `independent`. Independent only if right at the first try with no help. |
+| A right answer           | The choice is ticked and lit; the group is counted, then the answer, with the same notes; both are lit. Glim is glad. The way on appears.                                                                            | —                                                                                         |
+| A wrong answer           | The choice stays where it is, with a dashed edge, while the group and then that choice are counted: a different number of notes. Then it is set aside. Glim tilts its head. With one choice left, that one is shown. | The attempt, and which misunderstanding the choice stands for.                            |
+| Help, a step at a time   | 1: the group is counted again. 2: one wrong group is set aside. 3: the right group is shown. The child still taps it.                                                                                                | The level of help, on the next attempt.                                                   |
+| "Show me again" (Glim)   | Whatever was last shown is shown again from the start.                                                                                                                                                               | Nothing. It is not help.                                                                  |
+| The end                  | The world's island, Glim celebrating, a flower for each thing done; "Again" and the way home. For the grown-up: how many independent steps were right at the first try.                                              | The sitting is marked complete.                                                           |
+
+No step is timed, nothing is lost by a wrong answer, and there is nothing to read: words on the screen are for the
+grown-up alongside and for a screen reader.
+
+**Why going round again, leaving, or refreshing cannot make the record say more than it should** (replay-safe
+progression):
+
+- Attempts are only ever added, each under the id `<sitting>:<number>`; a second tap, a second tab or a retried
+  save cannot add the same attempt twice (three guards: the runner, the engine's key for "this step, this try", and
+  the store's insert-only write).
+- A sitting in progress is resumed exactly — the step, the order of the choices, the choices already set aside, the
+  help already used — by `LessonRunner.start`, as long as the lesson and content versions are the ones it was
+  begun with. A sitting begun on an older version is closed; its attempts stay in the record.
+- A finished sitting is never resumed. "Again", and coming back after finishing, begin a new sitting with a new
+  seed, so the independent steps are drawn and ordered afresh.
+- Playing the same sitting-sized activity ten times in a day does not make a child "independent": the evidence
+  rules count one success per challenge per day, need more than one kind of question, and need more than one day
+  for the top status (see _How evidence is reported_, above).
+- The demonstration, "show me again", pausing, leaving and refreshing record nothing at all.
+
+All of this is exercised in a browser by `e2e/journey.spec.ts` and `e2e/lesson.spec.ts`, and at the level of the
+engine and the runner by `tests/engine/`, `tests/game/lessonRunner.test.ts` and `tests/game/lessonScript.test.ts`.
+
 ## Planned strands (not built)
 
 From the prompt series; the order within a world is the intended teaching order.

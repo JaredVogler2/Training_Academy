@@ -214,7 +214,7 @@ test.describe('sound and motion', () => {
 
     await press(sound);
     await expect(sound).toHaveAttribute('aria-pressed', 'false');
-    await expect(sound).toHaveAttribute('title', 'Sound is off');
+    await expect(sound).toHaveAttribute('data-tip', 'Sound is off');
     await press(motion);
     await expect(motion).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'reduced');

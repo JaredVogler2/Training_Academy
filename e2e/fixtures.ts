@@ -6,12 +6,18 @@ import { test as base, expect, type Locator, type Page } from '@playwright/test'
  *   - a guard that fails the test on any console error or warning, uncaught exception, failed request, or request to
  *     another origin (the game talks to nobody) — unless the test says a specific one is expected. The one thing it
  *     lets pass on its own is a download the browser cancelled because the page had moved on to another document;
+ *   - a note of what it was still waiting for, if it runs out of time: twice in CI a page load in WebKit has waited
+ *     a whole minute and then passed at once on the second attempt, and a silence explains nothing;
  *   - the graphics setting chosen up front (the hub as a picture by default, so only the 3D specs pay for software
  *     rendering);
- *   - `press`, which taps on a touch device and clicks otherwise, so one spec exercises both.
+ *   - `press`, which taps on a touch device and clicks otherwise, so one spec exercises both;
+ *   - a visit that is already past the front door, where the child chooses who is playing, unless the test asks to
+ *     arrive at it (`frontDoor: true`), as a fresh visit does.
  */
 
 export const SETTINGS_KEY = 'training-academy.settings.v1';
+/** What the game keeps for the life of a tab once the child has chosen who is playing (src/app/journey.ts). */
+export const BEGUN_KEY = 'training-academy.begun';
 
 type Graphics = 'auto' | 'low' | 'medium' | 'high' | 'pictures';
 
@@ -24,6 +30,8 @@ interface Guard {
 
 interface Fixtures {
   graphics: Graphics;
+  /** Arrive as a new visit does: at the front door. Off by default, so most specs start on the map. */
+  frontDoor: boolean;
   guard: Guard;
   /** Tap on a touch screen, click otherwise; `position` is measured from the target's top-left corner. */
   press: (target: Locator, options?: { position?: { x: number; y: number } }) => Promise<void>;
@@ -59,6 +67,7 @@ const REMOTE_ALLOWED =
 
 export const test = base.extend<Fixtures>({
   graphics: ['pictures', { option: true }],
+  frontDoor: [false, { option: true }],
 
   guard: [
     async ({ page, baseURL, browserName }, use, testInfo) => {
@@ -78,6 +87,18 @@ export const test = base.extend<Fixtures>({
       });
       page.on('pageerror', (error) => problems.push(`uncaught: ${error.message}`));
 
+      // What has been asked for and not yet answered, and how far the last page load got: said only if the test
+      // runs out of time (below).
+      const unanswered = new Map<object, { path: string; kind: string; since: number }>();
+      const loading = { parsed: false, finished: false };
+      page.on('requestfinished', (request) => unanswered.delete(request));
+      page.on('domcontentloaded', () => {
+        loading.parsed = true;
+      });
+      page.on('load', () => {
+        loading.finished = true;
+      });
+
       // A download still under way when the page starts loading another document is cancelled by the browser. That
       // is not a failure of anything, so a cancelled request counts only if no other document was asked for after
       // it began. (Every other kind of failed request counts, always.)
@@ -85,6 +106,7 @@ export const test = base.extend<Fixtures>({
       const startedIn = new WeakMap<object, number>();
       const cancelled: { line: string; document: number }[] = [];
       page.on('requestfailed', (request) => {
+        unanswered.delete(request);
         const reason = request.failure()?.errorText ?? 'unknown';
         const line = `request failed: ${request.url()} (${reason})`;
         if (/cancell?ed|ERR_ABORTED/i.test(reason)) {
@@ -95,10 +117,19 @@ export const test = base.extend<Fixtures>({
       });
       page.on('request', (request) => {
         // In-app navigation asks for no document; only a real page load does.
-        if (request.isNavigationRequest() && request.frame() === page.mainFrame()) documents += 1;
+        if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+          documents += 1;
+          loading.parsed = false;
+          loading.finished = false;
+        }
         startedIn.set(request, documents);
         const url = new URL(request.url());
         if (url.protocol === 'data:' || url.protocol === 'blob:') return;
+        unanswered.set(request, {
+          path: url.pathname,
+          kind: request.resourceType(),
+          since: Date.now(),
+        });
         if (url.origin === origin) requested.push(url.pathname);
         else problems.push(`request to another origin: ${request.url()}`);
       });
@@ -117,6 +148,25 @@ export const test = base.extend<Fixtures>({
       for (const { line, document } of cancelled) {
         if (document >= documents) problems.push(line);
       }
+      // A test that ran out of time has failed already; this adds what it was waiting for to what is reported.
+      if (testInfo.status === 'timedOut') {
+        const now = Date.now();
+        const waiting = [...unanswered.values()].map(
+          ({ path, kind, since }) =>
+            `${kind} ${path} (asked for ${((now - since) / 1000).toFixed(1)} s before)`,
+        );
+        const reached = loading.finished
+          ? 'had finished loading'
+          : loading.parsed
+            ? 'had been read but had not finished loading'
+            : 'had not been read yet';
+        problems.push(
+          `out of time: the last page asked for ${reached}; ` +
+            (waiting.length === 0
+              ? 'no request was unanswered'
+              : `${String(waiting.length)} unanswered: ${waiting.join('; ')}`),
+        );
+      }
       const unexpected = problems.filter(
         (problem) => !allowed.some((pattern) => pattern.test(problem)),
       );
@@ -125,12 +175,13 @@ export const test = base.extend<Fixtures>({
     { auto: true },
   ],
 
-  page: async ({ page, graphics }, use) => {
+  page: async ({ page, graphics, frontDoor }, use) => {
     // Set before the app starts, and only if the app has not saved its own choice since.
     await page.addInitScript(
-      ({ key, value }) => {
+      ({ key, value, begunKey, begun }) => {
         try {
           if (window.localStorage.getItem(key) === null) window.localStorage.setItem(key, value);
+          if (begun) window.sessionStorage.setItem(begunKey, '1');
         } catch {
           // Storage is blocked in this test; the app falls back to its defaults.
         }
@@ -138,6 +189,8 @@ export const test = base.extend<Fixtures>({
       {
         key: SETTINGS_KEY,
         value: JSON.stringify({ version: 1, sound: true, motion: 'system', graphics }),
+        begunKey: BEGUN_KEY,
+        begun: !frontDoor,
       },
     );
     await use(page);
@@ -150,6 +203,21 @@ export const test = base.extend<Fixtures>({
 
 export { expect };
 export type { Locator, Page };
+
+/**
+ * Wait until whatever is arriving on the page has arrived: every animation that has an end has reached it.
+ * (A page half-way through fading in is not what anyone reads, and measuring its colours then measures the fade.)
+ * Movement that never ends, such as a boat bobbing, is not waited for.
+ */
+export async function arrived(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const ending = document.getAnimations().filter((animation) => {
+      const end = animation.effect?.getComputedTiming().endTime;
+      return typeof end === 'number' && Number.isFinite(end);
+    });
+    await Promise.all(ending.map((animation) => animation.finished.catch(() => undefined)));
+  });
+}
 
 /** The six worlds, as the hub names them. */
 export const WORLD_NAMES = [
@@ -213,6 +281,102 @@ export async function screenFit(page: Page): Promise<ScreenFit> {
     }
     return { sideways, taller: Math.max(0, root.scrollHeight - height) };
   }, screen);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// A phone with a notch
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** What a notch, a camera cut-out and a home bar take from each edge of the screen, in CSS pixels. */
+export interface Insets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+/** A recent iPhone held sideways: its sensor housing at one end, the home bar along the bottom. */
+export const NOTCH_SIDEWAYS: Insets = { top: 0, right: 59, bottom: 21, left: 59 };
+/** The same phone upright, opened from the home screen: the housing at the top, the home bar at the bottom. */
+export const NOTCH_UPRIGHT: Insets = { top: 59, right: 0, bottom: 34, left: 0 };
+
+/**
+ * Tell the page its screen has a notch, before it loads.
+ *
+ * A browser on a desk reports no safe-area insets and cannot be made to. But every rule in the game reads them
+ * through four custom properties (`--safe-top` and the rest, src/styles/tokens.css) and nowhere else, so setting
+ * those on the root element puts every layout exactly where a phone's own insets would. (They are set through the
+ * style object, which the Content-Security-Policy allows; a <style> element would be refused.)
+ */
+export async function giveNotch(page: Page, insets: Insets): Promise<void> {
+  await page.addInitScript((taken) => {
+    const set = () => {
+      const style = document.documentElement.style;
+      style.setProperty('--safe-top', `${String(taken.top)}px`);
+      style.setProperty('--safe-right', `${String(taken.right)}px`);
+      style.setProperty('--safe-bottom', `${String(taken.bottom)}px`);
+      style.setProperty('--safe-left', `${String(taken.left)}px`);
+    };
+    // The root element may not exist yet when this runs.
+    if (document.documentElement instanceof HTMLElement) set();
+    else {
+      new MutationObserver((_records, observer) => {
+        if (!(document.documentElement instanceof HTMLElement)) return;
+        set();
+        observer.disconnect();
+      }).observe(document, { childList: true });
+    }
+  }, insets);
+}
+
+/**
+ * Everything a child sees or presses that lies in the part of the screen a notch or a home bar takes, in words.
+ * Empty when the screen keeps clear of them.
+ *
+ * The picture of the sea runs to every edge, as it should, and is not counted; the islands' tap areas are. On a
+ * page that scrolls, what is lower down is on its way up and is not counted against the bottom edge.
+ */
+export async function underTheNotch(page: Page, insets: Insets): Promise<string[]> {
+  const screen = page.viewportSize();
+  if (!screen) throw new Error('This test has no fixed screen size.');
+  return page.evaluate(
+    ({ width, height, taken }) => {
+      const safe = {
+        left: taken.left,
+        right: width - taken.right,
+        top: taken.top,
+        bottom: height - taken.bottom,
+      };
+      const scrolls = document.documentElement.scrollHeight > height + 1;
+      const found: string[] = [];
+      const seen = document.querySelectorAll(
+        'a[href], button, input, select, textarea, summary, [role="button"], main h1, main h2, main p, main img, main svg',
+      );
+      for (const element of seen) {
+        if (!element.checkVisibility({ visibilityProperty: true })) continue;
+        if (element.closest('[data-testid="hub-stage"]')) continue;
+        const box = element.getBoundingClientRect();
+        if (box.width < 2 || box.height < 2 || box.bottom <= 0 || box.top >= height) continue;
+        const over: string[] = [];
+        if (box.left < safe.left - 0.5)
+          over.push(`${(safe.left - box.left).toFixed(0)} px at the left`);
+        if (box.right > safe.right + 0.5)
+          over.push(`${(box.right - safe.right).toFixed(0)} px at the right`);
+        if (box.top < safe.top - 0.5 && window.scrollY === 0) {
+          over.push(`${(safe.top - box.top).toFixed(0)} px at the top`);
+        }
+        if (!scrolls && box.bottom > safe.bottom + 0.5) {
+          over.push(`${(box.bottom - safe.bottom).toFixed(0)} px at the bottom`);
+        }
+        if (over.length === 0) continue;
+        const words = (element.getAttribute('aria-label') ?? element.textContent).trim();
+        const name = (words === '' ? element.tagName.toLowerCase() : words).slice(0, 40);
+        found.push(`"${name}" is under it by ${over.join(' and ')}`);
+      }
+      return found;
+    },
+    { ...screen, taken: insets },
+  );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

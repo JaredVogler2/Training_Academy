@@ -1,8 +1,10 @@
 import AxeBuilder from '@axe-core/playwright';
 import {
   LESSON_PATH,
+  arrived,
   choose,
   expect,
+  finishCorrectly,
   myTurn,
   next,
   openGrownUps,
@@ -17,6 +19,7 @@ import {
  */
 
 async function expectNoViolations(page: Page, context: string) {
+  await arrived(page);
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
     .analyze();
@@ -74,6 +77,44 @@ test.describe('accessibility', () => {
     await expect(page.getByTestId('lesson').locator('[data-same]')).toContainText(
       /The group to match: (one|two|three) /,
     );
+  });
+
+  test('the activity paused, and finished', async ({ page, press }) => {
+    await page.goto(LESSON_PATH);
+    await press(myTurn(page));
+    await press(page.getByRole('button', { name: 'Pause' }));
+    const sheet = page.getByRole('dialog', { name: 'Paused' });
+    await expect(sheet).toBeVisible();
+    await expectNoViolations(page, 'the pause sheet');
+    // The sheet holds focus, starting on the one thing to do.
+    await expect(sheet.getByRole('button', { name: 'Carry on' })).toBeFocused();
+    await press(sheet.getByRole('button', { name: 'Carry on' }));
+    await expect(sheet).toBeHidden();
+
+    await finishCorrectly(page, press);
+    await expectNoViolations(page, 'the end of the activity');
+  });
+
+  test.describe('the front door', () => {
+    test.use({ frontDoor: true });
+
+    test('for a first visit and for a player who has been before', async ({ page, press }) => {
+      await page.goto('/');
+      const door = page.getByTestId('front-door');
+      await expect(door.getByRole('heading', { name: 'Choose your picture' })).toBeVisible();
+      await expectNoViolations(page, 'the front door, first visit');
+      // Every picture has a name for a screen reader, though none is written on it.
+      await expect(door.getByRole('button')).toHaveCount(6);
+      await expect(door.getByRole('button', { name: 'The star picture' })).toBeVisible();
+
+      await press(door.getByRole('button', { name: 'The star picture' }));
+      await expect(door).toHaveCount(0);
+      await page.evaluate(() => window.sessionStorage.clear());
+      await page.reload();
+      await expect(door.getByRole('heading', { name: 'Who is playing?' })).toBeVisible();
+      await expect(door.getByRole('button', { name: 'Play as Star' })).toBeVisible();
+      await expectNoViolations(page, 'the front door, a player who has been before');
+    });
   });
 
   test('the grown-ups area: the gate, the area, a dialog', async ({ page }) => {

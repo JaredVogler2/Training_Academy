@@ -162,9 +162,57 @@ Two tabs are safe but not live-synchronised.
   reports them, long tasks, hub mode/tier/renderer/frame statistics/draw calls, and errors. Kept in the page's memory
   and shown under Grown-ups → Diagnostics. Nothing is transmitted: the CSP's `connect-src 'self'` and a browser-test
   guard that fails on any cross-origin request both hold that line.
-- **Audio** (`audio/audioEngine.ts`): the audio context is created on the first touch and resumed on later ones (iOS
-  suspends it at will); a cue that cannot play is skipped. Eight short synthesised cues, no audio files. Phase 04
-  adds recorded narration on top of the same unlock and mute handling.
+- **Audio** (`audio/audioEngine.ts`): the audio context is created on the first touch and woken on later ones (iOS
+  suspends it at will). Waking takes a moment, so a cue asked for in that moment waits for it, up to 0.9 seconds —
+  otherwise the sound of the very tap that woke the audio is always lost. Any other cue that cannot play is skipped.
+  Eleven short synthesised cues and a climbing note for counting; no audio files. While sound is on, the game asks
+  Safari to treat it as media (`navigator.audioSession.type = 'playback'`), so that an iPhone's ring/silent switch
+  does not silence a game whose sounds are part of how it teaches. Phase 04 adds recorded narration on top of the
+  same handling.
+- **A resting finger** (`app/touch.ts`, and `styles/base.css`): nothing in the game can be selected, iOS shows no
+  call-out over a link or a picture, and the menu Android opens on a long press is suppressed for touch and pen.
+  Anything marked `data-selectable` — what is written for grown-ups — keeps all of it, and a mouse keeps its right
+  click.
+- **More than one finger, or a slow one** (`app/touch.ts`): a browser answers a tap only while it is the one finger on
+  the screen. A tap made while a thumb rests over the edge of a phone, or a hand leans on a tablet, produces no click
+  at all — measured in Chromium's touch handling, which Chrome on Android shares. So a press by one finger that begins
+  and ends on the same link or button, within a second and 24 pixels, while another finger is down, is answered with
+  the click the browser did not make. So is a slow press by one finger, of between about a third of a second and a
+  second: a phone's browser takes that for a long press, which it answers with a menu of its own or with nothing. The
+  browser is given 100 ms to answer first, and if it answers late instead its click is dropped, so nothing is ever
+  answered twice. One quick finger, fields, scrolling and zooming are left to the browser, and a finger that stays
+  longer than a second was resting. The first is tested by sending real touch sequences through Chromium; the second
+  could only be unit-tested, because a browser on a desk does click after a slow press. Neither has been tried on a
+  phone.
+- **The page itself** (`styles/base.css`): it does not bounce and a pull does not reload it
+  (`overscroll-behavior: none`, on the root element and on the body, since browsers differ in which they read), and
+  two quick taps never zoom (`touch-action: manipulation` on the root). Two fingers still zoom, everywhere: the
+  page is never made impossible to enlarge.
+- **A notch and a home bar** (`styles/tokens.css`): the four safe-area insets are read in one place, into
+  `--safe-top` and the rest, and every rule uses those. The bar, the map, the front door and the activity pad
+  themselves by them; a centred reading page takes `--side`, the gutter and the worse of the two side insets.
+  Because nothing reads the insets directly, a test can give a page a notch by setting four properties
+  (`giveNotch` in `e2e/fixtures.ts`), which no desktop browser will do for it.
+- **Tooltips** (`styles/base.css`): a control that is only a picture carries its words in `data-tip`; they show on
+  hover and on keyboard focus for a fine pointer, and never on a touch screen.
+- **Arriving** (`app/App.module.css`): the routed view is keyed by address and fades in over 320 ms. Nothing waits
+  for it; calm motion removes it. Tests that measure colour wait for it to finish (`arrived()` in
+  `e2e/fixtures.ts`).
+
+### The front door
+
+`app/journey.ts` holds one fact for the life of a tab (in `sessionStorage`): whether this visit has begun. Until it
+has, `app/FrontDoor.tsx` stands in front of the hub: Glim, and a picture to tap for each player this device knows —
+or, if it knows none, the six pictures to choose from, the tap creating the first player. The hub behind it is
+`inert` and stays a picture (`HubStage`'s `waiting` prop: no 3D code is sent for until the door has opened).
+
+The door is only on the home address. A refresh or a deep link into an activity goes straight there, with the
+player last chosen. Where storage is refused altogether the door is simply met on every load, and choosing a
+picture still opens the game. More players are added in the grown-ups' area, not here.
+
+`index.html` carries one more thing for a first paint: a notice, revealed by a CSS animation after eight seconds,
+that the browser may be too old. The game removes it when it starts; if the game's code cannot be parsed at all,
+it is the only thing that can say so.
 
 ## The hub
 
@@ -174,8 +222,12 @@ in real-time 3D — and navigated once, through ordinary links laid over whichev
 ### One layout, three users
 
 `render/archipelago.ts` is plain arithmetic with no graphics library in it. Given the size of the screen and the part
-of it the top bar leaves free, it returns a **frame**: which of four arrangements to use (tall phone, upright
-tablet, squarish window, wide screen), how many pixels a world unit takes, and where each island's middle lands.
+of it the top bar leaves free, it returns a **frame**: which of five arrangements to use (tall phone, upright
+tablet, squarish window, wide screen, and one row for a very flat one), how many pixels a world unit takes, and
+where each island's middle lands. On a flat screen it fits both the low ring and the single row and keeps
+whichever draws the islands larger: a phone held sideways leaves a page as little as 250 pixels of height once
+its browser's bars are counted, and the ring is three rows deep. In the row the guide is moored in front of the
+lighthouse, at a distance worked out from the size things are drawn at.
 
 The camera never turns and has no perspective, so a point in the world is at
 
@@ -192,9 +244,10 @@ times the scale, plus an offset. Three things use that one sum, and so agree to 
 | The links (`app/Home.tsx`)       | Each island's box on screen — the tap area — and the size of its name |
 
 `render/extents.ts` holds the two things both the layout and the pictures depend on: the camera's angle and the room
-each island is given. `tests/render/archipelago.test.ts` checks, for ten screen shapes, that every tap area is at
-least 96 pixels square, that no two overlap, that the lighthouse (which is scenery) never lies inside one, that every
-name fits under its island, and that the guide, the boats, the rocks and the clouds are clear of all of them.
+each island is given. `tests/render/archipelago.test.ts` checks, for twenty-five screen shapes, that every tap area
+is at least 96 pixels square (90 and 81 wide on the two narrowest phones held sideways), that no two overlap, that
+the lighthouse (which is scenery) never lies inside one, that every name fits under its island, and that the guide,
+the boats, the rocks and the clouds are clear of all of them.
 
 ### What is drawn
 
@@ -274,7 +327,32 @@ are drawn); it and its content pack are fetched on entering that world.
 
 `game/lessonRunner.ts` runs one sitting: resume or create, answer, hint, next, restart. It updates the screen first and
 saves second; a failed save never interrupts a child (the lesson continues in memory and says it is not saved).
-`game/lesson/LessonView.tsx` is the lesson frame shared by every future world.
+
+### The lesson frame
+
+`game/lesson/` is the frame every world's activities are played in. On the `play` route it has the whole screen:
+the shell's top bar is not rendered there.
+
+| Part                | What it does                                                                                                                                                                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LessonView.tsx`    | Draws what the runner says: a bar (home, steps, help, pause), the board (the group and the choices, drawn by the world's module), a foot (Glim, the caption, the way on), and the end of the sitting. It never decides what is right.       |
+| `script.ts`         | Pure. From "what has just happened" (stage, event, amounts) it returns a script: beats (`rest`, `ask`, `count` a group, `same`) and sounds on a clock, with where the board settles. Timings match the counting animation in the CSS.       |
+| `useScript.ts`      | Plays a script with timers: the current beat, and the notes as they fall due. A new run starts from the top; paused or out of sight, nothing plays; with calm motion the board goes straight to where the script settles.                   |
+| `PauseSheet.tsx`    | A modal `<dialog>`: one button to carry on, the way home, and the sound and calm-motion switches. Opened by the pause button, and by the page going out of sight — so the tap that carries on is also the touch that wakes a phone's audio. |
+| `Lesson.module.css` | One screen, no scrolling, from 320 pixels wide to a desktop, and down to the 342 pixels of height Safari leaves on a phone held sideways.                                                                                                   |
+
+Three things the frame does that are easy to undo by accident:
+
+- **The answer is shown only when the engine shows it** (`view.shownAnswer`, or an answer already given). In a
+  demonstration it is additionally held back until the script reaches it.
+- **Glim is the "show me again" button.** It restarts the current script and tells the engine nothing: asking is
+  not help.
+- **A world says what can be counted** (`WorldModule.countable`). The frame knows nothing about amounts; a world
+  that teaches some other way leaves it out and gets scripts with no counting in them.
+
+A world's page (`game/world/WorldView.tsx`) shows the island with the world's emblem pinned to it and, for a world
+that is open, an example of the activity built from the lesson's own demonstration challenge — so it cannot show
+something the activity does not do.
 
 ## Bundle splitting
 
@@ -354,6 +432,10 @@ deliberately stores nothing outside `/immutable/`.
 
 ## Browser support
 
-Target: current Chrome, Edge, Firefox and Safari, and iOS/iPadOS Safari 16.4 or later. Verified in this phase:
-headless Chromium locally, and Chromium and WebKit in CI. Not verified: any physical device, Firefox, real Safari. See
-`docs/TEST_RESULTS.md`.
+Target: current Chrome, Edge, Firefox and Safari; iOS and iPadOS Safari 16.4 or later; Chrome on Android 111 or later.
+(The floor is what the build is compiled for — Vite's default, "widely available" browsers — and what the styles use.
+An older browser gets the "may be too old" notice instead of a blank page.)
+
+Verified: headless Chromium locally; Chromium and WebKit in CI, including as a Pixel 7, an iPhone 13 and an iPad
+(the screen their browsers leave a page, their pixel ratio, touch, their user agent — emulated on desktop engines).
+Not verified: any physical device, Firefox, real Safari, real Chrome on Android. See `docs/TEST_RESULTS.md`.

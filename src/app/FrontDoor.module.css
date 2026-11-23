@@ -1,0 +1,229 @@
+/*
+ * The front door: a paper card on the water, in front of the map the child is about to sail into. The map is there
+ * behind a pale veil, so the door reads as the way in to it and not as a different place.
+ */
+.door {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: calc(var(--topbar) + var(--safe-top) + 12px) calc(var(--gutter) + var(--safe-right))
+    calc(16px + var(--safe-bottom)) calc(var(--gutter) + var(--safe-left));
+  background: linear-gradient(rgb(223 242 250 / 78%), rgb(150 220 226 / 62%));
+  animation: veil-in var(--gentle) linear both;
+}
+
+.door[data-opening='true'] {
+  animation: veil-out var(--gentle) linear both;
+  pointer-events: none;
+}
+
+.card {
+  position: relative;
+  display: grid;
+  gap: clamp(10px, 2.4vh, 20px);
+  justify-items: center;
+  width: min(100%, 580px);
+  /* Room at the top for Glim, who stands half behind the card's edge. */
+  padding: clamp(40px, 8vh, 60px) clamp(6px, 3vw, 24px) clamp(2px, 2vh, 12px);
+  border-radius: var(--radius-l);
+  background: var(--paper);
+  box-shadow: var(--shadow-card);
+  animation: card-in 0.5s var(--ease-spring) both;
+}
+
+.door[data-opening='true'] .card {
+  animation: card-out var(--gentle) var(--ease-out) both;
+}
+
+.guide {
+  --size: clamp(76px, 15vh, 108px);
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -64%);
+}
+
+.title {
+  font-size: var(--text-xl);
+  text-align: center;
+}
+
+.players {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(10px, 2.6vw, 20px);
+  justify-content: center;
+  /* A very long list of players scrolls inside the card; the card itself always fits the screen. */
+  max-height: 56vh;
+  max-height: 56dvh;
+  /* Room inside the scrolling box for the pictures' shadows, which it would otherwise cut off. */
+  padding: 8px 10px 26px;
+  overflow-y: auto;
+}
+
+.player {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  border-radius: var(--radius-m);
+  color: var(--ink);
+  font-family: var(--font-display);
+  -webkit-tap-highlight-color: transparent;
+  animation: arrive 0.4s var(--ease-spring) both;
+  animation-delay: calc(var(--order, 0) * 70ms + 180ms);
+}
+
+/* The picture is the button: a white disc with a lip, which goes down when it is pressed. */
+.face {
+  display: grid;
+  place-items: center;
+  width: clamp(76px, 20vw, 116px);
+  aspect-ratio: 1;
+  border: 5px solid var(--white);
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow:
+    0 var(--lip) 0 rgb(34 48 79 / 16%),
+    0 10px 18px rgb(34 48 79 / 12%);
+  transition:
+    transform var(--quick) var(--ease-out),
+    box-shadow var(--quick) var(--ease-out),
+    border-color var(--quick) linear;
+}
+
+.face svg {
+  width: 78%;
+  height: 78%;
+}
+
+@media (hover: hover) {
+  .player:hover .face {
+    border-color: var(--sun);
+    transform: translateY(-3px);
+  }
+}
+
+.player:active .face {
+  box-shadow: 0 1px 0 rgb(34 48 79 / 16%);
+  transform: translateY(calc(var(--lip) - 1px));
+}
+
+.player:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.player:focus-visible .face {
+  outline: 4px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.name {
+  max-width: 8.5em;
+  padding: 2px 12px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A phone on its side: Glim beside the card instead of above it, and one row of pictures. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .door {
+    padding-top: calc(var(--topbar) + var(--safe-top) + 4px);
+    padding-bottom: calc(6px + var(--safe-bottom));
+  }
+
+  .card {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 14px;
+    align-items: center;
+    width: min(100%, 760px);
+    padding: 10px 10px 0;
+  }
+
+  .guide {
+    --size: clamp(60px, 22vh, 84px);
+
+    /* Still positioned: the guide's drawing is laid out inside this box. */
+    position: relative;
+    top: auto;
+    left: auto;
+    grid-row: 1 / 3;
+    transform: none;
+  }
+
+  .title {
+    font-size: var(--text-l);
+  }
+
+  .players {
+    max-height: 52vh;
+    max-height: 52dvh;
+    padding: 6px 8px 20px;
+  }
+
+  .face {
+    width: clamp(64px, 19vh, 84px);
+  }
+
+  .name {
+    font-size: var(--text-s);
+  }
+}
+
+@keyframes veil-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes veil-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes card-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.97);
+  }
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

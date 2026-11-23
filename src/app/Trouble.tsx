@@ -8,7 +8,7 @@ import styles from './App.module.css';
 export function Trouble({ error, retry }: { error: Error; retry: () => void }) {
   const offline = error instanceof ChunkLoadError;
   return (
-    <section className={styles.notice} role="alert">
+    <section className={styles.notice} role="alert" data-selectable>
       <h1>{offline ? ui.troubleOfflineTitle : ui.troubleTitle}</h1>
       <p>{offline ? ui.troubleOfflineBody : ui.troubleBody}</p>
       <div className={styles.noticeActions}>
@@ -36,7 +36,7 @@ export function Trouble({ error, retry }: { error: Error; retry: () => void }) {
 
 export function NotFound() {
   return (
-    <section className={styles.notice}>
+    <section className={styles.notice} data-selectable>
       <h1>{ui.notFoundTitle}</h1>
       <p>{ui.notFoundBody}</p>
       <div className={styles.noticeActions}>

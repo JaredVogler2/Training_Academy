@@ -371,8 +371,10 @@ test.describe('the map', () => {
     // A tap target a small child can hit, clear of every island.
     const box = await glim.boundingBox();
     if (!box) throw new Error('The guide is not on screen.');
-    expect(box.width).toBeGreaterThanOrEqual(64);
-    expect(box.height).toBeGreaterThanOrEqual(64);
+    // (To half a pixel: a size read back from a browser is a float, and at three device pixels to one a box
+    // that is 64 pixels high came back as 63.99997.)
+    expect(box.width).toBeGreaterThanOrEqual(63.5);
+    expect(box.height).toBeGreaterThanOrEqual(63.5);
     for (const world of await worlds(page).all()) {
       const other = await world.boundingBox();
       if (!other) continue;

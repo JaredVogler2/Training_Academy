@@ -12,8 +12,8 @@ import { EXTENTS, PITCH, PLACES, type PlaceId } from './extents';
  * times a scale, plus an offset. Three things use that one sum and therefore agree to the pixel: the 3D scene's
  * camera, the picture the hub falls back to, and the tappable areas with their labels.
  *
- * The seven places are arranged differently for a tall phone, an upright tablet, a squarish window and a wide
- * screen, so the islands are as large as the screen allows and never hide one another.
+ * The seven places are arranged differently for a tall phone, an upright tablet, a squarish window, a wide screen
+ * and a very flat one, so the islands are as large as the screen allows and never hide one another.
  */
 
 export { EXTENTS, PITCH, PLACES, type Extent, type PlaceId } from './extents';
@@ -26,7 +26,7 @@ export interface Spot {
   z: number;
 }
 
-export type Arrangement = 'tall' | 'upright' | 'ring' | 'wide';
+export type Arrangement = 'tall' | 'upright' | 'ring' | 'wide' | 'strip';
 
 /** What floats between the islands. Every position is a point on the water. */
 export interface Extras {
@@ -187,7 +187,42 @@ function wide(): Omit<Layout, 'arrangement'> {
   };
 }
 
-/** Choose the arrangement for a free area of the given width-to-height ratio. */
+/** Water kept between neighbours standing in one row, in world units. */
+const ROW_GAP = 0.4;
+
+/**
+ * A very flat screen: one row, the lighthouse in the middle, the worlds in teaching order from left to right.
+ *
+ * A phone held sideways is flatter than it looks. Of the 360 pixels a common Android phone is high that way round,
+ * the browser's own bars and the game's leave some 200, and the low ring of `wide` — three rows deep — draws its
+ * islands under 70 pixels wide there, with their name tags running into one another. Side by side, nothing stands
+ * behind anything, so the width alone decides the size.
+ *
+ * The guide is moored in front of the lighthouse. How far in front depends on the size things are drawn at (the
+ * guide never gets smaller than a child can tap), so `frameFor` says where.
+ */
+function strip(): Omit<Layout, 'arrangement'> {
+  const first = EXTENTS.academy.radius + WORLD.radius + ROW_GAP;
+  const step = WORLD.radius * 2 + ROW_GAP;
+  return {
+    spots: {
+      academy: { x: 0, z: 0 },
+      'reading-cove': { x: -(first + 2 * step), z: 0 },
+      'number-garden': { x: -(first + step), z: 0 },
+      'robot-ridge': { x: -first, z: 0 },
+      'memory-forest': { x: first, z: 0 },
+      'inventor-island': { x: first + step, z: 0 },
+      'explorer-harbor': { x: first + 2 * step, z: 0 },
+    },
+    // The row takes the whole width and most of the height: there is no open water left for boats to potter in.
+    extras: { guide: { x: 0, z: EXTENTS.academy.radius }, boats: [], rocks: [], clouds: [] },
+  };
+}
+
+/**
+ * Choose the arrangement for a free area of the given width-to-height ratio.
+ * (On a flat screen `frameFor` also tries the single row, `strip`, and keeps whichever draws the islands larger.)
+ */
 export function arrange(aspect: number): Layout {
   if (aspect < 0.62) return { arrangement: 'tall', ...tall() };
   if (aspect < 1.3) return { arrangement: 'upright', ...upright(aspect) };
@@ -228,7 +263,7 @@ export const COMPACT_LABELS_BELOW = 24;
 
 /**
  * How wide a place's name may be: it may overhang its island a little on each side, but never the edge of the
- * screen.
+ * screen, and never as far as the name of a neighbour standing in the same row.
  */
 export function labelWidth(frame: Frame, place: PlaceId): number {
   const { box } = hotspotFor(frame, place);
@@ -236,7 +271,20 @@ export function labelWidth(frame: Frame, place: PlaceId): number {
     box.left - frame.free.left,
     frame.free.left + frame.free.width - (box.left + box.width),
   );
-  return box.width + 2 * clamp(toEdge - 1, 0, box.width * 0.16);
+  const name = labelBox(frame, place);
+  let toNeighbour = Infinity;
+  for (const other of PLACES) {
+    if (other === place || other === 'academy') continue;
+    const theirs = labelBox(frame, other);
+    const level = theirs.top < name.top + name.height && name.top < theirs.top + theirs.height;
+    if (!level) continue;
+    const apart = Math.max(
+      theirs.left - (name.left + name.width),
+      name.left - (theirs.left + theirs.width),
+    );
+    toNeighbour = Math.min(toNeighbour, apart / 2);
+  }
+  return box.width + 2 * clamp(Math.min(toEdge, toNeighbour) - 1, 0, box.width * 0.16);
 }
 
 /** Height in CSS pixels kept under each island for its name, at a given number of pixels to the world unit. */
@@ -250,6 +298,8 @@ export const LABEL_ROOM_MOST = labelRoom(1000);
 export const MAX_SCALE = 92;
 
 const MARGIN = { side: 0.03, top: 10, bottom: 10 };
+/** Pixels of water between the lighthouse's island and the guide moored in front of it, in a row. */
+const MOORING = 4;
 
 /** Across-and-up position of a world point, in world units on the screen plane. */
 function flat(x: number, y: number, z: number): { u: number; v: number } {
@@ -261,7 +311,17 @@ function flat(x: number, y: number, z: number): { u: number; v: number } {
  * `free` is that part, in the stage's own coordinates.
  */
 export function frameFor(stage: { width: number; height: number }, free: Box): Frame {
-  const layout = arrange(free.width / Math.max(free.height, 1));
+  const frame = fit(stage, free, arrange(free.width / Math.max(free.height, 1)));
+  if (frame.layout.arrangement !== 'wide') return frame;
+  // A flat screen can hold the places in a low ring or side by side in one row: whichever draws them larger.
+  // (The row wins a tie. Where the two are the same size the ring is already cramped: it is three rows deep, and
+  // names, which do not shrink below a size that can be read, have begun to crowd the boats.)
+  const row = fit(stage, free, { arrangement: 'strip', ...strip() });
+  return row.scale >= frame.scale ? row : frame;
+}
+
+function fit(stage: { width: number; height: number }, free: Box, arranged: Layout): Frame {
+  let layout = arranged;
   let left = Infinity;
   let right = -Infinity;
   let top = -Infinity;
@@ -278,12 +338,36 @@ export function frameFor(stage: { width: number; height: number }, free: Box): F
 
   const roomAcross = free.width * (1 - 2 * MARGIN.side);
   const roomDown = free.height - MARGIN.top - MARGIN.bottom - LABEL_ROOM_MOST;
-  const scale = Math.max(
+  let scale = Math.max(
     1,
     Math.min(roomAcross / (right - left), roomDown / (top - bottom), MAX_SCALE),
   );
+  let spare = roomDown - (top - bottom) * scale;
 
-  const spare = roomDown - (top - bottom) * scale;
+  if (layout.arrangement === 'strip') {
+    // Under the row there is either a name or, in the middle, the guide: moored just in front of the lighthouse,
+    // and lower than the names. Both must fit, and the guide does not shrink with the islands below a size a
+    // child can tap, so the largest scale that fits is searched for rather than divided out.
+    const shore = EXTENTS.academy.radius * DEPTH;
+    const room = free.height - MARGIN.top - MARGIN.bottom;
+    const needs = (at: number) =>
+      top * at + Math.max(-bottom * at + LABEL_ROOM_MOST, shore * at + MOORING + guideSize(at));
+    let most = Math.min(roomAcross / (right - left), MAX_SCALE);
+    if (needs(most) > room) {
+      let least = 1;
+      for (let step = 0; step < 40; step++) {
+        const middle = (least + most) / 2;
+        if (needs(middle) > room) most = middle;
+        else least = middle;
+      }
+      most = least;
+    }
+    scale = Math.max(1, most);
+    spare = Math.max(0, room - needs(scale));
+    const mooredAt = EXTENTS.academy.radius + (MOORING + 0.72 * guideSize(scale)) / (DEPTH * scale);
+    layout = { ...layout, extras: { ...layout.extras, guide: { x: 0, z: mooredAt } } };
+  }
+
   const origin = {
     x: free.left + free.width / 2 - (scale * (left + right)) / 2,
     y: free.top + MARGIN.top + spare / 2 + scale * top,
@@ -373,11 +457,16 @@ export function labelBox(frame: Frame, place: PlaceId): Box {
 export const GUIDE_SPAN = 2.4;
 export const GUIDE_MIN = 64;
 
+/** How large the guide is drawn, in CSS pixels: with the islands, but never smaller than a child can tap. */
+function guideSize(scale: number): number {
+  return Math.max(GUIDE_MIN, GUIDE_SPAN * scale);
+}
+
 /** The square the guide and their boat are drawn in. */
 export function guideBox(frame: Frame): Box {
   const spot = frame.layout.extras.guide;
   const anchor = project(frame, spot.x, 0, spot.z);
-  const size = Math.max(GUIDE_MIN, GUIDE_SPAN * frame.scale);
+  const size = guideSize(frame.scale);
   // The boat sits on the water at the anchor; most of the guide is above it.
   return { left: anchor.x - size / 2, top: anchor.y - size * 0.72, width: size, height: size };
 }

@@ -17,6 +17,8 @@ export interface WorldModule {
   Picture: ComponentType<PictureProps>;
   /** The picture in words, for screen readers: "two snails". */
   describe(stimulus: Stimulus): string;
+  /** How many separate things the picture holds, where counting them is how this world teaches. */
+  countable?(stimulus: Stimulus): number;
 }
 
 const MODULES: Partial<Record<WorldId, () => Promise<{ default: WorldModule }>>> = {

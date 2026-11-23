@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   ONE_ANSWER_FOR,
+  SLOW_FROM,
   TAP_AT_MOST,
   TAP_SLOP,
   WAIT_FOR_CLICK,
@@ -100,7 +101,7 @@ function browserClicks(target: Element, at: number): boolean {
   return !event.defaultPrevented;
 }
 
-describe('more than one finger on the screen', () => {
+describe('more than one finger on the screen, or a slow one', () => {
   let remove: () => void;
   let sea: HTMLElement;
   let button: HTMLButtonElement;
@@ -139,14 +140,39 @@ describe('more than one finger on the screen', () => {
     vi.useRealTimers();
   });
 
-  it('leaves one finger alone entirely to the browser', () => {
+  it('leaves one quick finger entirely to the browser', () => {
     finger('pointerdown', button, 1, 0);
-    finger('pointerup', button, 1, 80);
+    finger('pointerup', button, 1, SLOW_FROM - 1);
     later(1000);
     expect(clicks).toBe(0);
     // And the browser's own click goes through as ever.
-    expect(browserClicks(button, 82)).toBe(true);
+    expect(browserClicks(button, SLOW_FROM + 1)).toBe(true);
     expect(clicks).toBe(1);
+  });
+
+  it('answers a slow press by one finger, which a phone takes for a long press and leaves unanswered', () => {
+    finger('pointerdown', button, 1, 0);
+    finger('pointerup', button, 1, 600);
+    expect(clicks).toBe(0);
+    later(WAIT_FOR_CLICK);
+    expect(clicks).toBe(1);
+    later(2000);
+    expect(clicks).toBe(1);
+  });
+
+  it('adds nothing to a slow press that the browser answers itself', () => {
+    finger('pointerdown', button, 1, 0);
+    finger('pointerup', button, 1, 600);
+    expect(browserClicks(button, 602)).toBe(true);
+    later(1000);
+    expect(clicks).toBe(1);
+  });
+
+  it('takes a finger that stays longer than a second to have been resting', () => {
+    finger('pointerdown', button, 1, 0);
+    finger('pointerup', button, 1, TAP_AT_MOST + 1);
+    later(1000);
+    expect(clicks).toBe(0);
   });
 
   it('answers a tap made while a thumb rests on the screen, once', () => {
@@ -267,12 +293,40 @@ describe('more than one finger on the screen', () => {
     expect(clicks).toBe(0);
   });
 
+  /** The browser's own report that a finger has lifted, with how many are still down. */
+  const lifted = (target: Element, at: number, left: number) => {
+    const event = new Event('touchend', { bubbles: true });
+    Object.defineProperty(event, 'touches', { value: Array.from({ length: left }) });
+    Object.defineProperty(event, 'timeStamp', { value: at });
+    target.dispatchEvent(event);
+  };
+
   it('starts afresh once every finger is off the screen, even if it was never told one had lifted', () => {
     finger('pointerdown', sea, 1, 0, { x: 300, y: 300 });
-    const lifted = new Event('touchend', { bubbles: true });
-    Object.defineProperty(lifted, 'touches', { value: [] });
-    sea.dispatchEvent(lifted);
+    lifted(sea, 500, 0);
+    later(1);
     // One finger alone again: the browser's business.
+    finger('pointerdown', button, 2, 900);
+    finger('pointerup', button, 2, 960);
+    later(1000);
+    expect(clicks).toBe(0);
+  });
+
+  it('does not mind which way round the browser reports the last finger lifting', () => {
+    // The thumb lifts first; the tapping finger is the last one down, and "none left" arrives before its own lift.
+    finger('pointerdown', sea, 1, 0, { x: 300, y: 300 });
+    finger('pointerdown', button, 2, 900);
+    finger('pointerup', sea, 1, 930, { x: 300, y: 300 });
+    lifted(sea, 930, 1);
+    lifted(button, 960, 0);
+    finger('pointerup', button, 2, 960);
+    later(WAIT_FOR_CLICK);
+    expect(clicks).toBe(1);
+  });
+
+  it('forgets everything when the page loses the screen', () => {
+    finger('pointerdown', sea, 1, 0, { x: 300, y: 300 });
+    window.dispatchEvent(new Event('blur'));
     finger('pointerdown', button, 2, 900);
     finger('pointerup', button, 2, 960);
     later(1000);

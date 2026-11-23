@@ -5,6 +5,8 @@ import {
   arrived,
   choose,
   expect,
+  finishCorrectly,
+  finished,
   giveNotch,
   hubPicturesLoaded,
   myTurn,
@@ -125,7 +127,7 @@ for (const [name, width, height, narrowest] of [
   test.describe(`in the little height a browser leaves ${name}`, () => {
     test.use({ viewport: { width, height } });
 
-    test('the islands stand side by side, each large enough to hit, none touching, every name whole', async ({
+    test('the map is one row of islands that do not touch, and an activity fits from its first screen to its last', async ({
       page,
       press,
     }) => {
@@ -168,6 +170,21 @@ for (const [name, width, height, narrowest] of [
         const box = await choice.boundingBox();
         expect(Math.min(box?.width ?? 0, box?.height ?? 0)).toBeGreaterThanOrEqual(96);
       }
+
+      // The end fits as well: the card clear of the way home above it, and its two buttons wholly on screen.
+      await finishCorrectly(page, press);
+      await arrived(page);
+      expect(await screenFit(page)).toEqual({ sideways: [], taller: 0 });
+      const card = await finished(page).boundingBox();
+      const home = await page.getByRole('link', { name: 'Leave the activity' }).boundingBox();
+      if (!card || !home) throw new Error('The end of the activity is not on screen.');
+      expect(card.y).toBeGreaterThanOrEqual(home.y + home.height - 0.5);
+      for (const way of await finished(page)
+        .getByRole('button')
+        .or(finished(page).getByRole('link'))
+        .all()) {
+        await expect(way).toBeInViewport({ ratio: 1 });
+      }
     });
   });
 }
@@ -198,7 +215,7 @@ test.describe('small hands', () => {
     return point;
   }
 
-  test('a tap counts while another finger rests on the screen, and counts once', async ({
+  test('a tap counts while another finger rests on the screen, and a slow press counts: each once', async ({
     page,
   }) => {
     const client = await page.context().newCDPSession(page);
@@ -254,6 +271,14 @@ test.describe('small hands', () => {
     await expect(sound).toHaveAttribute('aria-pressed', 'true');
     await page.waitForTimeout(900);
     await expect(sound).toHaveAttribute('aria-pressed', 'true');
+    // One finger, pressing slowly. (This browser answers a slow press itself; a phone's may not. Either way: once.)
+    const slow = { id: 1, ...(await middleOf(sound)) };
+    await touch('touchStart', [slow]);
+    await page.waitForTimeout(600);
+    await touch('touchEnd', [slow]);
+    await expect(sound).toHaveAttribute('aria-pressed', 'false');
+    await page.waitForTimeout(900);
+    await expect(sound).toHaveAttribute('aria-pressed', 'false');
 
     // An island opens, and an activity can be played, with the thumb where it was.
     await tapBesideThumb(page.getByRole('link', { name: /Number Garden/ }));

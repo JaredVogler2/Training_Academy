@@ -544,6 +544,29 @@
   }
 }
 
+/*
+ * The flattest screens: a phone on its side leaves a page some 260 pixels of height once its browser has taken its
+ * bars. The end of an activity gives up its wide margins and a little of its picture there, so that the card
+ * clears the way home above it and its two buttons clear the bottom of the screen.
+ */
+@media (orientation: landscape) and (max-height: 320px) {
+  .finished {
+    gap: 6px;
+    padding: 10px 18px;
+  }
+
+  .finishedArt {
+    width: 88px;
+    height: 88px;
+    /* Glim stands a little outside the picture, and must not stand on what is written beside it. */
+    margin-right: 12px;
+  }
+
+  .finished h1 {
+    font-size: var(--text-l);
+  }
+}
+
 /* The activity, paused: a sheet of paper in front of everything, with one thing to do. */
 .pause {
   width: min(92vw, 23rem);

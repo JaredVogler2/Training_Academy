@@ -12,9 +12,16 @@
  * game that does not answer. So a short press that begins and ends on the same thing while another finger is on the
  * screen is answered here, once, with the click the browser would otherwise have made.
  *
+ * **A slow press.** A phone's browser takes a press held for more than about four tenths of a second for a long
+ * press, and answers a long press with a menu of its own or with nothing — never with a click. A small child presses
+ * slowly and hard. So a press of up to a second that ends where it began is answered in the same way. (A browser on
+ * a desk does click after a slow press, so this one could not be seen to fail here; it is how phones are known to
+ * behave, and the answer is harmless where they do not.)
+ *
  * It only ever adds a click where the browser gave none: the browser is given a moment to answer first, and if it
- * answers late instead, its click is dropped. One finger alone is left entirely to the browser, and so are fields,
- * scrolling and zooming (the browser takes those fingers back, and says so).
+ * answers late instead, its click is dropped. One quick finger is left entirely to the browser, and so are fields,
+ * scrolling and zooming (the browser takes those fingers back, and says so). A finger that stays longer than a
+ * second was resting, and presses nothing.
  */
 
 /** What a tap can press. Fields and their labels are left to the browser. */
@@ -22,6 +29,8 @@ const PRESSABLE = 'a[href], button, [role="button"], summary';
 
 /** A tap, even a small child's slow one, is over within this long; a finger that rests stays longer (ms). */
 export const TAP_AT_MOST = 1000;
+/** A press held this long may have been taken for a long press, which a phone's browser does not answer (ms). */
+export const SLOW_FROM = 350;
 /** How far a finger may slide between landing and lifting and still have tapped (CSS pixels). */
 export const TAP_SLOP = 24;
 /** How long the browser is given to answer a tap itself before the game answers for it (ms). */
@@ -76,8 +85,11 @@ export function installTouchGuards(target: Window): () => void {
     if (!press) return;
     down.delete(event.pointerId);
     const { pressed } = press;
-    if (!press.crowded || !pressed) return;
-    if (event.timeStamp - press.at > TAP_AT_MOST) return;
+    if (!pressed) return;
+    const held = event.timeStamp - press.at;
+    if (held > TAP_AT_MOST) return;
+    // One finger, and quick: the browser's to answer, and it does.
+    if (!press.crowded && held < SLOW_FROM) return;
     if (Math.hypot(event.clientX - press.x, event.clientY - press.y) > TAP_SLOP) return;
     const { clientX: x, clientY: y, timeStamp: at } = event;
     clearTimeout(waiting.get(pressed));
@@ -102,10 +114,24 @@ export function installTouchGuards(target: Window): () => void {
     down.delete(event.pointerId);
   };
 
-  /** However it came about, no finger is on the screen any more. */
+  /**
+   * The browser says no finger is on the screen any more. Whatever came down before that has lifted, even if the
+   * lift itself was never reported; forgetting it keeps one lost report from making every later tap look crowded.
+   * It is done a moment later, because a browser may say "none left" before it reports the last finger lifting,
+   * and that finger may be the tap.
+   */
   const allUp = (event: Event) => {
     const touches = (event as Partial<TouchEvent>).touches;
-    if (touches === undefined || touches.length === 0) down.clear();
+    if (touches !== undefined && touches.length > 0) return;
+    const endedAt = event.timeStamp;
+    setTimeout(() => {
+      for (const [finger, press] of down) if (press.at <= endedAt) down.delete(finger);
+    }, 0);
+  };
+
+  /** The page lost the screen altogether: nothing is being pressed. */
+  const away = () => {
+    down.clear();
   };
 
   const click = (event: MouseEvent) => {
@@ -145,7 +171,7 @@ export function installTouchGuards(target: Window): () => void {
   target.addEventListener('pointercancel', fingerTaken, watching);
   target.addEventListener('touchend', allUp, watching);
   target.addEventListener('touchcancel', allUp, watching);
-  target.addEventListener('blur', allUp);
+  target.addEventListener('blur', away);
   target.addEventListener('click', click, { capture: true });
   target.addEventListener('contextmenu', menu);
   return () => {
@@ -154,7 +180,7 @@ export function installTouchGuards(target: Window): () => void {
     target.removeEventListener('pointercancel', fingerTaken, { capture: true });
     target.removeEventListener('touchend', allUp, { capture: true });
     target.removeEventListener('touchcancel', allUp, { capture: true });
-    target.removeEventListener('blur', allUp);
+    target.removeEventListener('blur', away);
     target.removeEventListener('click', click, { capture: true });
     target.removeEventListener('contextmenu', menu);
     for (const timer of waiting.values()) clearTimeout(timer);

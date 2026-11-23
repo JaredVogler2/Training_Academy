@@ -6,6 +6,8 @@ import { test as base, expect, type Locator, type Page } from '@playwright/test'
  *   - a guard that fails the test on any console error or warning, uncaught exception, failed request, or request to
  *     another origin (the game talks to nobody) — unless the test says a specific one is expected. The one thing it
  *     lets pass on its own is a download the browser cancelled because the page had moved on to another document;
+ *   - a note of what it was still waiting for, if it runs out of time: twice in CI a page load in WebKit has waited
+ *     a whole minute and then passed at once on the second attempt, and a silence explains nothing;
  *   - the graphics setting chosen up front (the hub as a picture by default, so only the 3D specs pay for software
  *     rendering);
  *   - `press`, which taps on a touch device and clicks otherwise, so one spec exercises both;
@@ -85,6 +87,18 @@ export const test = base.extend<Fixtures>({
       });
       page.on('pageerror', (error) => problems.push(`uncaught: ${error.message}`));
 
+      // What has been asked for and not yet answered, and how far the last page load got: said only if the test
+      // runs out of time (below).
+      const unanswered = new Map<object, { path: string; kind: string; since: number }>();
+      const loading = { parsed: false, finished: false };
+      page.on('requestfinished', (request) => unanswered.delete(request));
+      page.on('domcontentloaded', () => {
+        loading.parsed = true;
+      });
+      page.on('load', () => {
+        loading.finished = true;
+      });
+
       // A download still under way when the page starts loading another document is cancelled by the browser. That
       // is not a failure of anything, so a cancelled request counts only if no other document was asked for after
       // it began. (Every other kind of failed request counts, always.)
@@ -92,6 +106,7 @@ export const test = base.extend<Fixtures>({
       const startedIn = new WeakMap<object, number>();
       const cancelled: { line: string; document: number }[] = [];
       page.on('requestfailed', (request) => {
+        unanswered.delete(request);
         const reason = request.failure()?.errorText ?? 'unknown';
         const line = `request failed: ${request.url()} (${reason})`;
         if (/cancell?ed|ERR_ABORTED/i.test(reason)) {
@@ -102,10 +117,19 @@ export const test = base.extend<Fixtures>({
       });
       page.on('request', (request) => {
         // In-app navigation asks for no document; only a real page load does.
-        if (request.isNavigationRequest() && request.frame() === page.mainFrame()) documents += 1;
+        if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+          documents += 1;
+          loading.parsed = false;
+          loading.finished = false;
+        }
         startedIn.set(request, documents);
         const url = new URL(request.url());
         if (url.protocol === 'data:' || url.protocol === 'blob:') return;
+        unanswered.set(request, {
+          path: url.pathname,
+          kind: request.resourceType(),
+          since: Date.now(),
+        });
         if (url.origin === origin) requested.push(url.pathname);
         else problems.push(`request to another origin: ${request.url()}`);
       });
@@ -123,6 +147,25 @@ export const test = base.extend<Fixtures>({
 
       for (const { line, document } of cancelled) {
         if (document >= documents) problems.push(line);
+      }
+      // A test that ran out of time has failed already; this adds what it was waiting for to what is reported.
+      if (testInfo.status === 'timedOut') {
+        const now = Date.now();
+        const waiting = [...unanswered.values()].map(
+          ({ path, kind, since }) =>
+            `${kind} ${path} (asked for ${((now - since) / 1000).toFixed(1)} s before)`,
+        );
+        const reached = loading.finished
+          ? 'had finished loading'
+          : loading.parsed
+            ? 'had been read but had not finished loading'
+            : 'had not been read yet';
+        problems.push(
+          `out of time: the last page asked for ${reached}; ` +
+            (waiting.length === 0
+              ? 'no request was unanswered'
+              : `${String(waiting.length)} unanswered: ${waiting.join('; ')}`),
+        );
       }
       const unexpected = problems.filter(
         (problem) => !allowed.some((pattern) => pattern.test(problem)),

@@ -698,6 +698,18 @@ try {
         await page.getByTestId('lesson').locator('[data-choice]').first().waitFor();
         await page.waitForTimeout(2000);
         await shot('phones-3-question-on-a-flat-screen');
+        const next = page.getByRole('button', { name: 'Next' });
+        for (
+          let guard = 0;
+          guard < 20 && !(await page.getByTestId('lesson-finished').isVisible());
+          guard++
+        ) {
+          if (await next.isVisible()) await press(next);
+          else await choose(page, press, true);
+          await page.waitForTimeout(350);
+        }
+        await arrived();
+        await shot('phones-10-finished-on-a-flat-screen');
       });
     }
     // The same map as the 3D scene draws it.

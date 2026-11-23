@@ -251,6 +251,12 @@ export default function WorldView({ world }: { world: WorldId }) {
               <li key={activity.title} data-ready={ready}>
                 <span>{activity.title}</span>
                 <span className={styles.stage}>{ready ? worldText.ready : worldText.later}</span>
+                {ready && activity.together && (
+                  <p className={styles.together}>
+                    <strong>{worldText.together}</strong> {activity.together.what}{' '}
+                    <em>{activity.together.safety}</em>
+                  </p>
+                )}
               </li>
             );
           })}

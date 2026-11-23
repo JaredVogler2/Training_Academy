@@ -311,6 +311,21 @@
   white-space: nowrap;
 }
 
+/* Something to try together away from the screen: under the activity it belongs to, across the whole row. */
+.together {
+  grid-column: 2 / -1;
+  color: var(--ink-soft);
+  font-size: var(--text-s);
+  line-height: 1.4;
+}
+
+.together em {
+  display: block;
+  margin-top: 4px;
+  font-style: normal;
+  font-weight: 800;
+}
+
 .planned li[data-ready='true'] .stage {
   color: var(--ink);
   background: var(--sun);

@@ -7,6 +7,7 @@ export const worldText = {
   activities: 'Everything to play here',
   whatIsHere: 'What this world teaches',
   ready: 'Ready',
+  together: 'To try together, away from the screen:',
   later: 'Later',
   done: 'done',
   doneNote: (title: string) => `${title}: done. Tap to play it again.`,

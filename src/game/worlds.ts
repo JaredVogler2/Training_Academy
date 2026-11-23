@@ -24,6 +24,11 @@ export interface Activity {
   title: string;
   /** The lessons that make it up, easiest first, by id. None, where the activity has not been built. */
   lessons: string[];
+  /**
+   * Something to try together away from the screen, where the activity has one, with what to watch out for.
+   * It is written for the grown-up and shown only to them.
+   */
+  together?: { what: string; safety: string };
 }
 
 export const WORLDS: readonly WorldInfo[] = [

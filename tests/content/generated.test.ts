@@ -14,6 +14,7 @@ import {
   buildReadingCovePack,
   buildReadingCoveVoice,
 } from '../../scripts/content/reading-cove.mjs';
+import { buildRobotRidgePack } from '../../scripts/content/robot-ridge.mjs';
 
 /**
  * A content pack that is written by a generator must be exactly what the generator writes: someone who changes the
@@ -24,6 +25,7 @@ describe.each([
   ['reading-cove', buildReadingCovePack],
   ['memory-forest', buildMemoryForestPack],
   ['explorer-harbor', buildExplorerHarborPack],
+  ['robot-ridge', buildRobotRidgePack],
 ])('%s', (_world, build) => {
   it('is the pack its generator writes, to the letter', async () => {
     const pack = build();

@@ -70,10 +70,10 @@ export const WORLDS: readonly WorldInfo[] = [
     about:
       'A friendly robot follows picture commands. Children plan a short route, watch it run, and learn to find and fix the one step that went wrong — no typing, no reading.',
     activities: [
-      { title: 'One arrow, one move', lessons: [] },
-      { title: 'Two and three steps in order', lessons: [] },
-      { title: 'Do it again: repeats', lessons: [] },
-      { title: 'Finding the step that went wrong', lessons: [] },
+      { title: 'One arrow, one move', lessons: ['rr-move-01'] },
+      { title: 'Two and three steps in order', lessons: ['rr-steps-01'] },
+      { title: 'Do it again: repeats', lessons: ['rr-repeat-01'] },
+      { title: 'Finding the step that went wrong', lessons: ['rr-mend-01'] },
     ],
     role: 'robot',
   },

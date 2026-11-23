@@ -3,6 +3,7 @@ import { explorerHarborRules } from './explorerHarbor';
 import { memoryForestRules } from './memoryForest';
 import { numberGardenRules } from './numberGarden';
 import { readingCoveRules } from './readingCove';
+import { robotRidgeRules } from './robotRidge';
 import type { WorldRules } from './types';
 
 export type { Report, WorldRules } from './types';
@@ -13,4 +14,5 @@ export const WORLD_RULES: Partial<Record<WorldId, WorldRules>> = {
   'memory-forest': memoryForestRules,
   'reading-cove': readingCoveRules,
   'explorer-harbor': explorerHarborRules,
+  'robot-ridge': robotRidgeRules,
 };

@@ -68,6 +68,7 @@ const MODULES: Partial<Record<WorldId, () => Promise<{ default: WorldModule }>>>
   'reading-cove': () => import('./reading-cove'),
   'memory-forest': () => import('./memory-forest'),
   'explorer-harbor': () => import('./explorer-harbor'),
+  'robot-ridge': () => import('./robot-ridge'),
 };
 
 export function hasWorldModule(world: WorldId): boolean {

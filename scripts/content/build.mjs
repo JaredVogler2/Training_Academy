@@ -8,10 +8,12 @@ import { writePack, writeVoiceLines } from './lib.mjs';
 import { buildMemoryForestPack, buildMemoryForestVoice } from './memory-forest.mjs';
 import { buildNumberGardenPack } from './number-garden.mjs';
 import { buildReadingCovePack, buildReadingCoveVoice } from './reading-cove.mjs';
+import { buildRobotRidgePack } from './robot-ridge.mjs';
 
 for (const pack of [
   buildReadingCovePack(),
   buildNumberGardenPack(),
+  buildRobotRidgePack(),
   buildMemoryForestPack(),
   buildExplorerHarborPack(),
 ]) {

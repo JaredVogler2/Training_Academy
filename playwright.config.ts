@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { defineConfig, webkit, type Project } from '@playwright/test';
+import { defineConfig, devices, webkit, type Project } from '@playwright/test';
 
 /**
  * Browser tests run against the production build, served by `vite preview` under the same headers, rewrites and
@@ -10,6 +10,12 @@ import { defineConfig, webkit, type Project } from '@playwright/test';
  *   phone-landscape, tablet, small-phone   Chromium; the specs tagged @layout.
  *   webkit-desktop, webkit-phone           WebKit; every spec. Run when a WebKit build is installed (CI installs
  *                                          one). WebKit is Safari's engine, not an iPhone: see docs/TEST_RESULTS.md.
+ *   android, android-landscape             Chromium as a Pixel 7: the screen its browser leaves a page, its pixel
+ *                                          ratio, its user agent. The specs tagged @layout or @journey.
+ *   iphone, iphone-landscape, ipad         WebKit as an iPhone 13 and an iPad, likewise; with the WebKit projects.
+ *
+ * The named devices are emulations: the right size, pixel ratio, touch and user agent on a desktop engine. They
+ * catch what depends on those. They are not the devices (docs/TEST_RESULTS.md says what that leaves untested).
  *
  * Against a deployment: `BASE_URL=https://… npx playwright test` runs the specs tagged @smoke against that URL and
  * starts no local server. If the deployment is protected, set VERCEL_AUTOMATION_BYPASS_SECRET.
@@ -62,6 +68,18 @@ const projects: Project[] = [
   },
 ];
 
+/** The specs that are about fitting a screen and about playing through: what a particular device can change. */
+const ON_DEVICES = /@layout|@journey/;
+
+projects.push(
+  { name: 'android', grep: ON_DEVICES, use: { ...devices['Pixel 7'], ...chromium } },
+  {
+    name: 'android-landscape',
+    grep: ON_DEVICES,
+    use: { ...devices['Pixel 7 landscape'], ...chromium },
+  },
+);
+
 if (webkitInstalled()) {
   projects.push(
     {
@@ -72,6 +90,9 @@ if (webkitInstalled()) {
       name: 'webkit-phone',
       use: { browserName: 'webkit', ...touch, viewport: { width: 390, height: 844 } },
     },
+    { name: 'iphone', grep: ON_DEVICES, use: { ...devices['iPhone 13'] } },
+    { name: 'iphone-landscape', grep: ON_DEVICES, use: { ...devices['iPhone 13 landscape'] } },
+    { name: 'ipad', grep: ON_DEVICES, use: { ...devices['iPad (gen 7)'] } },
   );
 }
 

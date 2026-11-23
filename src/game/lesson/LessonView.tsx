@@ -282,6 +282,8 @@ function Challenge({
           className={styles.again}
           aria-label={lessonText.sayAgain}
           data-tip={lessonText.sayAgain}
+          data-tip-side="top"
+          data-tip-align="start"
           onClick={() => {
             playCue('tap');
             setAsked((times) => times + 1);
@@ -416,6 +418,8 @@ function Player({ runner, pack, module, world }: Loaded & { world: WorldId }) {
           className={styles.barButton}
           icon={<IconHome />}
           aria-label={lessonText.leave}
+          data-tip={lessonText.leave}
+          data-tip-align="start"
         />
         {playing ? (
           <Steps index={playing.view.stepIndex} count={playing.view.stepCount} />
@@ -443,6 +447,7 @@ function Player({ runner, pack, module, world }: Loaded & { world: WorldId }) {
                 icon={<IconPause />}
                 aria-label={lessonText.pause}
                 data-tip={lessonText.pause}
+                data-tip-align="end"
                 onClick={() => {
                   playCue('tap');
                   setPaused(true);

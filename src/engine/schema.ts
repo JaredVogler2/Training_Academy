@@ -75,11 +75,21 @@ const StringKeySchema = v.pipe(v.string(), v.regex(STRING_KEY, 'string key'));
 // Authored content
 // ---------------------------------------------------------------------------------------------------------------------
 
-/** Things to count. Each is one plain shape, with no spots, petals or other parts a child might count instead. */
-export const ITEM_KINDS = ['apple', 'leaf', 'snail', 'acorn'] as const;
+/**
+ * Things to count, and friends to give them to. Each is one plain shape, with no spots, petals or other parts a
+ * child might count instead.
+ */
+export const ITEM_KINDS = ['apple', 'leaf', 'snail', 'acorn', 'bird', 'mouse', 'frog'] as const;
 export type ItemKind = (typeof ITEM_KINDS)[number];
 
-export const ARRANGEMENTS = ['row', 'cluster'] as const;
+/**
+ * How a set is laid out.
+ *   row      lines of up to three (four, when there are more than six)
+ *   cluster  the pattern a die or a domino would show
+ *   scatter  no pattern: wherever they fell
+ *   frame    lines of five, the way two hands hold ten
+ */
+export const ARRANGEMENTS = ['row', 'cluster', 'scatter', 'frame'] as const;
 export type Arrangement = (typeof ARRANGEMENTS)[number];
 
 /** A set of identical things, shown as pictures. No numeral is ever part of it. */
@@ -88,10 +98,71 @@ const QuantityStimulusSchema = v.strictObject({
   item: v.picklist(ITEM_KINDS),
   count: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(10)),
   arrangement: v.picklist(ARRANGEMENTS),
+  /** Drawn smaller or larger than usual, so that how much room a set takes is not a clue to how many it holds. */
+  size: v.optional(v.picklist(['small', 'big'])),
+});
+export type QuantityStimulus = v.InferOutput<typeof QuantityStimulusSchema>;
+
+/** One thing from the picture kit (src/art): a sun, a sock. The kit decides how it is drawn and what it is called. */
+const PictureStimulusSchema = v.strictObject({
+  type: v.literal('picture'),
+  id: slug('picture id'),
 });
 
-/** What a renderer is asked to show. Later worlds add their own members (sounds, pictures, programs…). */
-export const StimulusSchema = v.variant('type', [QuantityStimulusSchema]);
+/** Something to listen to: a recorded clip, shown as a thing to tap that plays it. */
+const SoundStimulusSchema = v.strictObject({
+  type: v.literal('sound'),
+  /** The clip's key in the voice manifest. */
+  clip: StringKeySchema,
+});
+
+/** A letter, or the two letters that together write one sound, on a tile. */
+const LetterStimulusSchema = v.strictObject({
+  type: v.literal('letter'),
+  letters: v.pipe(v.string(), v.regex(/^[a-z]{1,2}$/, 'one or two lowercase letters')),
+});
+
+/** A written word, one tile for each sound in it. */
+const WordStimulusSchema = v.strictObject({
+  type: v.literal('word'),
+  /** The picture the word names; the kit knows how it is spelt, sound by sound. */
+  id: slug('picture id'),
+});
+
+/** A picture that stands for the question being asked ("which has more?"), drawn by the world it belongs to. */
+const SignStimulusSchema = v.strictObject({
+  type: v.literal('sign'),
+  id: slug('sign id'),
+});
+
+const SceneValueSchema = v.union([
+  v.string(),
+  v.number(),
+  v.boolean(),
+  v.array(v.union([v.string(), v.number()])),
+]);
+
+/**
+ * A picture only one world knows how to draw: a robot's grid, a bridge over a stream, a map. The engine carries it
+ * and never looks inside; the world's own module checks what is in it (and the content tests check every one).
+ */
+const SceneStimulusSchema = v.strictObject({
+  type: v.literal('scene'),
+  scene: slug('scene'),
+  of: v.record(v.pipe(v.string(), v.regex(/^[a-z][A-Za-z0-9]*$/)), SceneValueSchema),
+});
+export type SceneStimulus = v.InferOutput<typeof SceneStimulusSchema>;
+
+/** What a renderer is asked to show. */
+export const StimulusSchema = v.variant('type', [
+  QuantityStimulusSchema,
+  PictureStimulusSchema,
+  SoundStimulusSchema,
+  LetterStimulusSchema,
+  WordStimulusSchema,
+  SignStimulusSchema,
+  SceneStimulusSchema,
+]);
 export type Stimulus = v.InferOutput<typeof StimulusSchema>;
 
 const ChoiceSchema = v.strictObject({
@@ -105,8 +176,9 @@ export type Choice = v.InferOutput<typeof ChoiceSchema>;
 /**
  * One rung of a challenge's hint ladder. Asking for any rung marks the next answer as assisted.
  *   model      re-teach the idea without giving the answer away
- *   eliminate  take wrong choices off the table
- *   reveal     show the answer; the child still gets to tap it
+ *   eliminate  take wrong choices off the table (a question with choices)
+ *   step       show the first part, or parts, of what is to be made (a thing to make)
+ *   reveal     show the answer; the child still gets to give it
  */
 const HintSchema = v.variant('type', [
   v.strictObject({ type: v.literal('model'), caption: StringKeySchema }),
@@ -115,9 +187,20 @@ const HintSchema = v.variant('type', [
     remove: v.pipe(v.array(ChoiceIdSchema), v.minLength(1)),
     caption: StringKeySchema,
   }),
+  v.strictObject({
+    type: v.literal('step'),
+    /** How many more parts of the answer this rung gives. */
+    count: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(6)),
+    caption: StringKeySchema,
+  }),
   v.strictObject({ type: v.literal('reveal'), caption: StringKeySchema }),
 ]);
 export type Hint = v.InferOutput<typeof HintSchema>;
+
+const FeedbackSchema = v.strictObject({
+  correct: StringKeySchema,
+  incorrect: StringKeySchema,
+});
 
 const ChooseOneChallengeSchema = v.strictObject({
   id: ChallengeIdSchema,
@@ -128,19 +211,194 @@ const ChooseOneChallengeSchema = v.strictObject({
   prompt: v.strictObject({
     instruction: StringKeySchema,
     stimulus: StimulusSchema,
+    /**
+     * Shown for a moment and then covered, so that it has to be taken in at a glance or held in mind. Nothing is
+     * timed against the child: the choices wait as long as they like, and it can be shown again for the asking.
+     */
+    glance: v.optional(v.boolean()),
   }),
   choices: v.pipe(v.array(ChoiceSchema), v.minLength(2), v.maxLength(4)),
   answer: ChoiceIdSchema,
   hints: v.pipe(v.array(HintSchema), v.minLength(1), v.maxLength(4)),
   /** Why each distractor is tempting, for the grown-up report and for later adaptivity. */
   misconceptions: v.optional(v.record(ChoiceIdSchema, slug('misconception'))),
-  feedback: v.strictObject({
-    correct: StringKeySchema,
-    incorrect: StringKeySchema,
-  }),
+  feedback: FeedbackSchema,
+});
+export type ChooseOneChallenge = v.InferOutput<typeof ChooseOneChallengeSchema>;
+
+// A thing to make. Where a question with choices is answered by picking, these are answered by doing: giving out so
+// many, putting things in order, picking out the ones that belong, turning cards over. Each is judged by a rule
+// (src/engine/tasks.ts), never by comparing with one stored string, and every one has an answer that can be shown.
+
+/** An id that can be joined to others with "-" to write an answer down. */
+const TOKEN = /^[a-z0-9]+$/;
+const token = (what: string) =>
+  v.pipe(v.string(), v.regex(TOKEN, `${what} must be lowercase letters and digits only`));
+
+const CardSchema = v.strictObject({
+  id: token('card id'),
+  stimulus: StimulusSchema,
+  label: text(80),
+});
+export type Card = v.InferOutput<typeof CardSchema>;
+
+/** Give out exactly as many as are wanted: one for each of the friends shown. */
+const GiveTaskSchema = v.strictObject({
+  type: v.literal('give'),
+  /** The friends who each want one. How many of them there are is the answer. */
+  want: QuantityStimulusSchema,
+  /** What is given out. */
+  item: v.picklist(ITEM_KINDS),
+  /** How many there are to give from: always more than are wanted. */
+  pile: v.pipe(v.number(), v.integer(), v.minValue(2), v.maxValue(12)),
+  /** A place is marked for each one wanted, so that giving is matching one to one. */
+  places: v.boolean(),
 });
 
-export const ChallengeSchema = v.variant('kind', [ChooseOneChallengeSchema]);
+/** Put every card in its place: first, next, last. */
+const OrderTaskSchema = v.strictObject({
+  type: v.literal('order'),
+  cards: v.pipe(v.array(CardSchema), v.minLength(2), v.maxLength(5)),
+  solution: v.pipe(v.array(token('card id')), v.minLength(2), v.maxLength(5)),
+});
+
+/** Do again what was just shown: the same things, in the same order. */
+const EchoTaskSchema = v.strictObject({
+  type: v.literal('echo'),
+  cards: v.pipe(v.array(CardSchema), v.minLength(2), v.maxLength(6)),
+  solution: v.pipe(v.array(token('card id')), v.minLength(1), v.maxLength(6)),
+});
+
+/** Pick out every card that belongs, and none that does not. */
+const SelectTaskSchema = v.strictObject({
+  type: v.literal('select'),
+  cards: v.pipe(v.array(CardSchema), v.minLength(3), v.maxLength(9)),
+  solution: v.pipe(v.array(token('card id')), v.minLength(1), v.maxLength(6)),
+  /** What is looked at first and then put away: the things to remember. Left out when nothing is hidden. */
+  study: v.optional(v.pipe(v.array(token('card id')), v.minLength(1), v.maxLength(6))),
+  /** What is asked once they have been put away ("which ones did you see?"). Needed exactly when there is a study. */
+  ask: v.optional(StringKeySchema),
+});
+
+/** Turn the cards over two at a time until every pair has been found. */
+const PairsTaskSchema = v.strictObject({
+  type: v.literal('pairs'),
+  /** One of each; the board holds two. */
+  cards: v.pipe(v.array(CardSchema), v.minLength(2), v.maxLength(6)),
+  /** Turns (two cards each) within which finding them all shows remembering, not luck. */
+  par: positiveInt,
+});
+
+/** A square of a robot's grid: [column, row], counted from the top left, from nought. */
+const CellSchema = v.tuple([
+  v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(5)),
+  v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(4)),
+]);
+
+export const FACINGS = ['north', 'east', 'south', 'west'] as const;
+export type Facing = (typeof FACINGS)[number];
+
+/** What a robot can be told to do: one step forward, or a quarter turn where it stands. */
+export const COMMANDS = ['forward', 'left', 'right'] as const;
+export type Command = (typeof COMMANDS)[number];
+
+/**
+ * A program as it is written down: commands by their first letter, joined with "-", and in front of them, where
+ * the whole program is to be done more than once, how many times ("x3-f-l"). See src/engine/robot.ts.
+ */
+const ProgramTextSchema = v.pipe(
+  v.string(),
+  v.regex(/^(?:x[2-4]-)?[flr](?:-[flr])*$/, 'a program is commands f, l and r, joined by "-"'),
+);
+
+/** Tell a robot how to get to where it is going: build a program, run it, mend it. */
+const ProgramTaskSchema = v.strictObject({
+  type: v.literal('program'),
+  grid: v.strictObject({
+    columns: v.pipe(v.number(), v.integer(), v.minValue(2), v.maxValue(6)),
+    rows: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(5)),
+  }),
+  start: v.strictObject({ at: CellSchema, facing: v.picklist(FACINGS) }),
+  goal: CellSchema,
+  /** Squares the robot cannot enter. */
+  rocks: v.pipe(v.array(CellSchema), v.maxLength(12)),
+  /** The commands there are to use. */
+  commands: v.pipe(v.array(v.picklist(COMMANDS)), v.minLength(1), v.maxLength(3)),
+  /** How many commands a program may hold. */
+  slots: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(8)),
+  /** The most times the whole program may be done over; 1 where there is no doing it again. */
+  repeats: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(4)),
+  /** Each command is carried out as it is tapped, with nothing to build first: for meeting the commands. */
+  live: v.boolean(),
+  /** A program to start from that has a mistake in it, for finding and mending. */
+  given: v.optional(ProgramTextSchema),
+  /** A program that gets there: the one shown when the answer is shown. Any program that gets there is right. */
+  solution: ProgramTextSchema,
+});
+
+export const WORKBENCHES = ['bridge', 'ramp', 'balance', 'boat'] as const;
+export type Workbench = (typeof WORKBENCHES)[number];
+
+/**
+ * Make a thing that works: choose a value for each part that can be changed, test it, and change it. What happens
+ * is said by a small model of the thing (src/engine/models.ts), the same every time. Any design that works is right.
+ */
+const DesignTaskSchema = v.strictObject({
+  type: v.literal('design'),
+  /** Which workbench this is: which model says what happens. */
+  model: v.picklist(WORKBENCHES),
+  /** What is fixed in this challenge: how wide the gap is, who has to cross, what is already on the beam. */
+  given: v.record(
+    v.pipe(v.string(), v.regex(/^[a-z][A-Za-z0-9]*$/)),
+    v.union([v.string(), v.number()]),
+  ),
+  /** What can be changed, in the order it is written down, each with the values it can take. */
+  controls: v.pipe(
+    v.array(
+      v.strictObject({
+        id: token('control id'),
+        options: v.pipe(v.array(token('option')), v.minLength(2), v.maxLength(5)),
+      }),
+    ),
+    v.minLength(1),
+    v.maxLength(3),
+  ),
+  /** A design that works, one value for each control: the one shown when the answer is shown. */
+  solution: v.pipe(v.array(token('option')), v.minLength(1), v.maxLength(3)),
+});
+
+export const TaskSchema = v.variant('type', [
+  GiveTaskSchema,
+  OrderTaskSchema,
+  EchoTaskSchema,
+  SelectTaskSchema,
+  PairsTaskSchema,
+  ProgramTaskSchema,
+  DesignTaskSchema,
+]);
+export type Task = v.InferOutput<typeof TaskSchema>;
+export type ProgramTask = v.InferOutput<typeof ProgramTaskSchema>;
+export type DesignTask = v.InferOutput<typeof DesignTaskSchema>;
+
+const MakeChallengeSchema = v.strictObject({
+  id: ChallengeIdSchema,
+  kind: v.literal('make'),
+  skillId: SkillIdSchema,
+  variant: slug('variant'),
+  prompt: v.strictObject({
+    instruction: StringKeySchema,
+    /** A picture that goes with the task, where it has one. */
+    stimulus: v.optional(StimulusSchema),
+  }),
+  task: TaskSchema,
+  hints: v.pipe(v.array(HintSchema), v.minLength(1), v.maxLength(4)),
+  /** Wrong tries after which the answer is shown, so that nobody is ever stuck. */
+  maxTries: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(5))),
+  feedback: FeedbackSchema,
+});
+export type MakeChallenge = v.InferOutput<typeof MakeChallengeSchema>;
+
+export const ChallengeSchema = v.variant('kind', [ChooseOneChallengeSchema, MakeChallengeSchema]);
 export type Challenge = v.InferOutput<typeof ChallengeSchema>;
 
 export const SkillSchema = v.strictObject({
@@ -164,6 +422,8 @@ export const LessonSchema = v.strictObject({
   summary: text(300),
   skillIds: v.pipe(v.array(SkillIdSchema), v.minLength(1)),
   estimatedMinutes: v.pipe(v.number(), v.minValue(1), v.maxValue(5)),
+  /** True when the activity is about listening, and so cannot be done with the sound off. */
+  needsSound: v.optional(v.boolean()),
   plan: v.strictObject({
     /** Worked examples the guide shows first. Nothing is asked and nothing is recorded. */
     demo: v.pipe(v.array(ChallengeIdSchema), v.minLength(1)),

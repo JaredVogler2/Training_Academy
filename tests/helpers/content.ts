@@ -1,10 +1,11 @@
-import numberGarden from '@/content/packs/number-garden.v1.json';
+import numberGarden from '@/content/packs/number-garden.v2.json';
 import {
   advanceDemo,
   createSession,
   getHint,
   getNextChallenge,
   parseContentPack,
+  solutionOf,
   submitAttempt,
   type Attempt,
   type ChallengeView,
@@ -33,23 +34,67 @@ export function newSession(lesson: Lesson, seed = 7, id = `s-${seed}`, now = T0)
   return createSession(lesson, { id, profileId: 'p-1', seed, now, contentVersion: 1 });
 }
 
+/**
+ * The right answer to what is being shown. Only a test may know it: the screen is told the answer by the engine
+ * when, and only when, the lesson is showing it.
+ */
+export function answerTo(view: ChallengeView): string {
+  const { challenge } = view;
+  if (challenge.kind === 'choose-one') return challenge.answer;
+  const { task } = challenge;
+  // Pairs has no answer to give, only a number of turns: the fewest there could be.
+  return solutionOf(task) ?? String(task.type === 'pairs' ? task.cards.length : 0);
+}
+
+/** An answer that is wrong, if what is being shown can be answered wrongly at all. */
+export function wrongAnswerTo(view: ChallengeView): string | null {
+  const { challenge } = view;
+  if (challenge.kind === 'choose-one') {
+    return (
+      view.choices.find((c) => c.available && c.choice.id !== challenge.answer)?.choice.id ?? null
+    );
+  }
+  const { task } = challenge;
+  switch (task.type) {
+    case 'give':
+      return String(task.want.count === task.pile ? task.want.count - 1 : task.want.count + 1);
+    case 'order':
+      return [...task.solution].reverse().join('-');
+    case 'echo': {
+      const other = task.cards.find((card) => card.id !== task.solution[0]);
+      return other ? [other.id, ...task.solution.slice(1)].join('-') : null;
+    }
+    case 'select': {
+      const extra = task.cards.find((card) => !task.solution.includes(card.id));
+      return extra ? [...task.solution, extra.id].sort().join('-') : null;
+    }
+    case 'pairs':
+      return null;
+    case 'program':
+      // One command, which is never the whole of an authored journey.
+      return task.solution.split('-').at(-1) === 'l' ? 'r' : 'l';
+    case 'design': {
+      const [first] = task.controls;
+      const other = first?.options.find((option) => option !== task.solution[0]);
+      return other ? [other, ...task.solution.slice(1)].join('-') : null;
+    }
+  }
+}
+
 /** What a simulated child does with one presentation. */
-export type Move = { type: 'answer'; choiceId: string; adultAssist?: boolean } | { type: 'hint' };
+export type Move = { type: 'answer'; response: string; adultAssist?: boolean } | { type: 'hint' };
 export type Player = (view: ChallengeView) => Move;
 
-export const answerCorrectly: Player = (view) => ({
+export const answerCorrectly: Player = (view) => ({ type: 'answer', response: answerTo(view) });
+
+/** Gives a wrong answer first whenever there still is one to give. */
+export const answerWrongFirst: Player = (view) => ({
   type: 'answer',
-  choiceId: view.challenge.answer,
+  response: (view.shownAnswer === null ? wrongAnswerTo(view) : null) ?? answerTo(view),
 });
 
-/** Picks a wrong choice first whenever one is still on the table. */
-export const answerWrongFirst: Player = (view) => {
-  const wrong = view.choices.find((c) => c.available && c.choice.id !== view.challenge.answer);
-  return { type: 'answer', choiceId: wrong ? wrong.choice.id : view.challenge.answer };
-};
-
 export const hintThenAnswer: Player = (view) =>
-  view.hintsUsed === 0 ? { type: 'hint' } : { type: 'answer', choiceId: view.challenge.answer };
+  view.hintsUsed === 0 ? { type: 'hint' } : { type: 'answer', response: answerTo(view) };
 
 export interface Playthrough {
   session: LessonSession;
@@ -85,7 +130,7 @@ export function play(
     }
     const result = submitAttempt(session, lesson, {
       key: view.key,
-      choiceId: move.choiceId,
+      response: move.response,
       now,
       day: dayOf(now),
       durationMs: 3000,

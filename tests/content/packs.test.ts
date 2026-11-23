@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { hasPack, loadPack, packText } from '@/content';
 import { lintPack, quantityMisconception, type LintIssue } from '@/content/lint';
-import { WORLD_IDS, parseContentPack, type ContentPack } from '@/engine';
+import { WORLD_IDS, parseContentPack } from '@/engine';
 import { numberGardenPack } from '../helpers/content';
+import { fixturePack } from '../helpers/fixturePack';
 
 const packFiles = import.meta.glob<{ default: unknown }>('../../src/content/packs/*.json', {
   eager: true,
@@ -10,11 +11,27 @@ const packFiles = import.meta.glob<{ default: unknown }>('../../src/content/pack
 
 const codes = (issues: LintIssue[]) => issues.map((issue) => issue.code);
 
-/** A deep copy of the sample pack to break on purpose. */
-function broken(mutate: (pack: ContentPack) => void): LintIssue[] {
+/**
+ * A pack to break on purpose. It is handed over untyped: the point of these tests is to write what the types
+ * would refuse, and see that the lint refuses it too.
+ */
+type Loose = Record<string, any>;
+
+/** A deep copy of Number Garden's pack, broken, and linted with Number Garden's own rules. */
+function broken(mutate: (pack: Loose) => void): LintIssue[] {
   const pack = structuredClone(numberGardenPack());
   mutate(pack);
   return lintPack(pack);
+}
+
+/**
+ * The same for the pack made for the tests, which has one of every kind of thing to make. No world's rules apply
+ * to it: only the checks every pack gets.
+ */
+function brokenFixture(mutate: (pack: Loose) => void): LintIssue[] {
+  const pack = structuredClone(fixturePack());
+  mutate(pack);
+  return lintPack(pack, [], () => undefined);
 }
 
 describe('shipped content packs', () => {
@@ -62,42 +79,44 @@ describe('loading a pack', () => {
   });
 
   it('refuses a world with no content instead of inventing some', async () => {
-    const empty = WORLD_IDS.filter((world) => !hasPack(world));
-    expect(empty.length).toBeGreaterThan(0);
-    for (const world of empty) await expect(loadPack(world)).rejects.toThrow(/No content/);
+    for (const world of WORLD_IDS.filter((id) => !hasPack(id))) {
+      await expect(loadPack(world)).rejects.toThrow(/No content/);
+    }
   });
 });
 
 describe('the content schema refuses malformed packs', () => {
-  const base = () => structuredClone(numberGardenPack()) as unknown as Record<string, any>;
+  const base = () => structuredClone(numberGardenPack()) as unknown as Loose;
+  const give = (p: Loose) => p.lessons[2].challenges[0];
 
   it.each([
-    ['an unknown field (a typo)', (p: Record<string, any>) => (p.lessons[0].sumary = 'x')],
-    ['an unknown world', (p: Record<string, any>) => (p.world = 'candy-castle')],
-    ['a skill id that is not dotted', (p: Record<string, any>) => (p.skills[0].id = 'Counting')],
-    ['a lesson id with a dot', (p: Record<string, any>) => (p.lessons[0].id = 'ng.same.amount')],
+    ['an unknown field (a typo)', (p: Loose) => (p.lessons[0].sumary = 'x')],
+    ['an unknown world', (p: Loose) => (p.world = 'candy-castle')],
+    ['a skill id that is not dotted', (p: Loose) => (p.skills[0].id = 'Counting')],
+    ['a lesson id with a dot', (p: Loose) => (p.lessons[0].id = 'ng.same.amount')],
+    ['a single-choice challenge', (p: Loose) => p.lessons[0].challenges[0].choices.pop()],
+    ['a challenge with no hints', (p: Loose) => (p.lessons[0].challenges[0].hints = [])],
+    ['a lesson with no demonstration', (p: Loose) => (p.lessons[0].plan.demo = [])],
+    ['a lesson with no guided practice', (p: Loose) => (p.lessons[0].plan.guided = [])],
+    ['an activity longer than five minutes', (p: Loose) => (p.lessons[0].estimatedMinutes = 12)],
+    ['a quantity of zero', (p: Loose) => (p.lessons[0].challenges[0].prompt.stimulus.count = 0)],
+    ['a future format version', (p: Loose) => (p.schemaVersion = 2)],
+    ['a kind of challenge nobody has built', (p: Loose) => (give(p).kind = 'draw')],
+    ['a kind of task nobody has built', (p: Loose) => (give(p).task.type = 'juggle')],
+    ['a thing to make with no task', (p: Loose) => delete give(p).task],
+    ['a pile of nothing', (p: Loose) => (give(p).task.pile = 0)],
     [
-      'a single-choice challenge',
-      (p: Record<string, any>) => p.lessons[0].challenges[0].choices.pop(),
+      'a card id that could not be written down',
+      (p: Loose) => {
+        p.lessons[6].challenges[0].task.cards[0].id = 'a-b';
+      },
     ],
     [
-      'a challenge with no hints',
-      (p: Record<string, any>) => (p.lessons[0].challenges[0].hints = []),
+      'a picture of nothing in particular',
+      (p: Loose) => {
+        p.lessons[0].challenges[0].prompt.stimulus = { type: 'hologram' };
+      },
     ],
-    ['a lesson with no demonstration', (p: Record<string, any>) => (p.lessons[0].plan.demo = [])],
-    [
-      'a lesson with no guided practice',
-      (p: Record<string, any>) => (p.lessons[0].plan.guided = []),
-    ],
-    [
-      'an activity longer than five minutes',
-      (p: Record<string, any>) => (p.lessons[0].estimatedMinutes = 12),
-    ],
-    [
-      'a quantity of zero',
-      (p: Record<string, any>) => (p.lessons[0].challenges[0].prompt.stimulus.count = 0),
-    ],
-    ['a future format version', (p: Record<string, any>) => (p.schemaVersion = 2)],
   ])('%s', (_name, mutate) => {
     const pack = base();
     mutate(pack);
@@ -114,127 +133,39 @@ describe('the content schema refuses malformed packs', () => {
 });
 
 describe('the content lint catches authoring mistakes', () => {
+  it('accepts the pack made for the tests, which has one of every kind of thing to make', () => {
+    expect(brokenFixture(() => undefined)).toEqual([]);
+  });
+
   it('the wrong choice marked as the answer', () => {
     const issues = broken((pack) => {
-      const challenge = pack.lessons[0]!.challenges[3]!;
-      challenge.answer = 'a';
+      pack.lessons[0].challenges[3].answer = 'a';
     });
     expect(codes(issues)).toContain('quantity-answer-wrong');
   });
 
   it('two choices that are both right', () => {
     const issues = broken((pack) => {
-      pack.lessons[0]!.challenges[3]!.choices[0]!.stimulus.count = 2;
+      pack.lessons[0].challenges[3].choices[0].stimulus.count = 2;
     });
     expect(codes(issues)).toEqual(expect.arrayContaining(['quantity-answer-count']));
   });
 
-  it('no choice that is right', () => {
-    const issues = broken((pack) => {
-      pack.lessons[0]!.challenges[3]!.prompt.stimulus.count = 7;
-    });
-    expect(codes(issues)).toContain('quantity-answer-count');
-  });
-
   it('an answer that is the same picture as the prompt', () => {
     const issues = broken((pack) => {
-      const challenge = pack.lessons[0]!.challenges[0]!;
-      challenge.choices[1]!.stimulus = { ...challenge.prompt.stimulus };
+      const challenge = pack.lessons[0].challenges[0];
+      challenge.choices[1].stimulus = { ...challenge.prompt.stimulus };
     });
     expect(codes(issues)).toContain('quantity-picture-match');
   });
 
-  it('a mislabelled misconception', () => {
-    const issues = broken((pack) => {
-      pack.lessons[0]!.challenges[3]!.misconceptions = { a: 'one-fewer', b: 'one-fewer' };
-    });
-    expect(codes(issues)).toContain('misconception-wrong');
-  });
-
-  it('a hint that removes the right answer', () => {
-    const issues = broken((pack) => {
-      pack.lessons[0]!.challenges[3]!.hints[1] = {
-        type: 'eliminate',
-        remove: ['c'],
-        caption: 'ng.same-amount.hint.eliminate',
-      };
-    });
-    expect(codes(issues)).toContain('hint-eliminate-target');
-  });
-
-  it('a hint ladder that can leave a child stuck', () => {
-    const issues = broken((pack) => {
-      pack.lessons[0]!.challenges[3]!.hints.pop();
-    });
-    expect(codes(issues)).toContain('hint-ladder-end');
-  });
-
-  it('a reveal before the last rung', () => {
-    const issues = broken((pack) => {
-      pack.lessons[0]!.challenges[3]!.hints.reverse();
-    });
-    expect(codes(issues)).toContain('hint-reveal-early');
-  });
-
-  it('a plan that refers to a challenge that does not exist', () => {
-    const issues = broken((pack) => {
-      pack.lessons[0]!.plan.guided.push('ng-same-amount-01.missing');
-    });
-    expect(codes(issues)).toContain('plan-reference');
-  });
-
-  it('a challenge used twice in one plan', () => {
-    const issues = broken((pack) => {
-      pack.lessons[0]!.plan.guided.push('ng-same-amount-01.demo-two');
-    });
-    expect(codes(issues)).toContain('plan-duplicate');
-  });
-
-  it('drawing more probes than the pool holds', () => {
-    const issues = broken((pack) => {
-      pack.lessons[0]!.plan.independent.count = 9;
-    });
-    expect(codes(issues)).toContain('plan-count');
-  });
-
-  it('an independent pool with only one presentation', () => {
-    const issues = broken((pack) => {
-      for (const challenge of pack.lessons[0]!.challenges) challenge.variant = 'same';
-    });
-    expect(codes(issues)).toContain('plan-variants');
-  });
-
-  it('a success bar higher than the lesson can reach', () => {
-    const issues = broken((pack) => {
-      pack.lessons[0]!.successCriteria.independentFirstTryCorrect = 4;
-    });
-    expect(codes(issues)).toContain('success-criteria');
-  });
-
   it('a challenge filed under the wrong lesson or skill', () => {
     const issues = broken((pack) => {
-      pack.lessons[0]!.challenges[0]!.id = 'other-lesson.demo-two';
-      pack.lessons[0]!.challenges[1]!.skillId = 'math.counting.count-to-5';
+      pack.lessons[0].challenges[0].id = 'other-lesson.demo-two';
+      pack.lessons[0].challenges[1].skillId = 'math.counting.count-to-5';
     });
     expect(codes(issues)).toEqual(
       expect.arrayContaining(['challenge-id-prefix', 'challenge-skill', 'plan-reference']),
-    );
-  });
-
-  it('a missing string', () => {
-    const issues = broken((pack) => {
-      delete pack.strings.en['ng.same-amount.correct'];
-    });
-    expect(codes(issues)).toContain('string-missing');
-  });
-
-  it('duplicate ids', () => {
-    const issues = broken((pack) => {
-      pack.skills.push(structuredClone(pack.skills[0]!));
-      pack.lessons[0]!.challenges[1]!.id = pack.lessons[0]!.challenges[0]!.id;
-    });
-    expect(codes(issues)).toEqual(
-      expect.arrayContaining(['skill-id-duplicate', 'challenge-id-duplicate']),
     );
   });
 
@@ -275,16 +206,26 @@ describe('the content lint catches authoring mistakes', () => {
   });
 });
 
+/** The names of the rules a source file can report: every hyphenated word in quotes that is not known data. */
+function rulesIn(source: string, data: readonly string[]): string[] {
+  return [...new Set([...source.matchAll(/'([a-z]+(?:-[a-z]+)+)'/g)].map((match) => match[1]!))]
+    .filter((name) => !data.includes(name))
+    .sort();
+}
+
 /**
- * Every rule the lint has, each proven to fire on a copy of the real pack broken in exactly that way. The last test
- * reads the lint's own source, so a rule added without a case here fails the suite.
+ * Every rule the lint has for every pack, each proven to fire on a copy of a real pack broken in exactly that way.
+ * The last test reads the lint's own source, so a rule added without a case here fails the suite.
  */
 describe('every lint rule fires', () => {
-  const lesson = (pack: ContentPack) => pack.lessons[0]!;
+  const lesson = (pack: Loose) => pack.lessons[0];
   /** An independent challenge with three choices: a, b and the answer c. */
-  const three = (pack: ContentPack) => lesson(pack).challenges[3]!;
+  const three = (pack: Loose) => lesson(pack).challenges[3];
+  /** The fixture's things to make, by name. */
+  const made = (pack: Loose, name: string) =>
+    pack.lessons[0].challenges.find((challenge: Loose) => challenge.id.endsWith(`.${name}`));
 
-  const BREAK: Record<string, (pack: ContentPack) => void> = {
+  const BREAK: Record<string, (pack: Loose) => void> = {
     'challenge-id-prefix': (pack) => {
       three(pack).id = 'another-lesson.two-apples';
     },
@@ -292,34 +233,19 @@ describe('every lint rule fires', () => {
       three(pack).skillId = 'math.counting.count-to-5';
     },
     'choice-id-duplicate': (pack) => {
-      three(pack).choices[1]!.id = three(pack).choices[0]!.id;
+      three(pack).choices[1].id = three(pack).choices[0].id;
     },
     'choice-label-duplicate': (pack) => {
-      three(pack).choices[1]!.label = three(pack).choices[0]!.label;
+      three(pack).choices[1].label = three(pack).choices[0].label;
     },
     'answer-missing': (pack) => {
       three(pack).answer = 'z';
     },
-    'quantity-answer-count': (pack) => {
-      three(pack).prompt.stimulus.count = 9;
-    },
-    'quantity-answer-wrong': (pack) => {
-      three(pack).answer = 'a';
-    },
-    'quantity-duplicate-choice': (pack) => {
-      three(pack).choices[0]!.stimulus.count = three(pack).choices[1]!.stimulus.count;
-    },
-    'quantity-picture-match': (pack) => {
-      three(pack).choices[2]!.stimulus = { ...three(pack).prompt.stimulus };
-    },
-    'misconception-missing': (pack) => {
-      delete three(pack).misconceptions;
-    },
-    'misconception-wrong': (pack) => {
-      three(pack).misconceptions = { a: 'one-fewer', b: 'one-fewer' };
-    },
     'misconception-target': (pack) => {
       three(pack).misconceptions = { a: 'one-more', b: 'one-fewer', c: 'one-more' };
+    },
+    'hint-step-choices': (pack) => {
+      three(pack).hints[0] = { type: 'step', count: 1, caption: 'ng.same-amount.hint.model' };
     },
     'hint-eliminate-target': (pack) => {
       three(pack).hints[1] = {
@@ -360,7 +286,7 @@ describe('every lint rule fires', () => {
       lesson(pack).plan.guided.push('ng-same-amount-01.not-written');
     },
     'plan-duplicate': (pack) => {
-      lesson(pack).plan.guided.push(lesson(pack).plan.demo[0]!);
+      lesson(pack).plan.guided.push(lesson(pack).plan.demo[0]);
     },
     'plan-count': (pack) => {
       lesson(pack).plan.independent.count = 6;
@@ -375,30 +301,123 @@ describe('every lint rule fires', () => {
       lesson(pack).plan.independent.pool.pop();
     },
     'challenge-id-duplicate': (pack) => {
-      lesson(pack).challenges[1]!.id = lesson(pack).challenges[0]!.id;
+      lesson(pack).challenges[1].id = lesson(pack).challenges[0].id;
     },
     'success-criteria': (pack) => {
       lesson(pack).successCriteria.independentFirstTryCorrect = 4;
     },
     'skill-id-duplicate': (pack) => {
-      pack.skills.push(structuredClone(pack.skills[0]!));
+      pack.skills.push(structuredClone(pack.skills[0]));
     },
     'skill-world': (pack) => {
-      pack.skills[0]!.world = 'robot-ridge';
+      pack.skills[0].world = 'robot-ridge';
     },
     'skill-untaught': (pack) => {
-      pack.skills.push({ ...pack.skills[0]!, id: 'math.quantity.nobody-teaches-this' });
+      pack.skills.push({ ...pack.skills[0], id: 'math.quantity.nobody-teaches-this' });
     },
     'skill-prerequisite-unknown': (pack) => {
-      pack.skills[0]!.prerequisites = ['math.counting.not-defined'];
+      pack.skills[0].prerequisites = ['math.counting.not-defined'];
     },
     'skill-prerequisite-self': (pack) => {
-      pack.skills[0]!.prerequisites = [pack.skills[0]!.id];
+      pack.skills[0].prerequisites = [pack.skills[0].id];
     },
     'skill-prerequisite-cycle': (pack) => {
-      const first = pack.skills[0]!;
+      const first = pack.skills[0];
       pack.skills.push({ ...first, id: 'math.quantity.second', prerequisites: [first.id] });
       first.prerequisites = ['math.quantity.second'];
+    },
+  };
+
+  /** Rules about things to make, each broken on the pack made for the tests. */
+  const BREAK_MADE: Record<string, (pack: Loose) => void> = {
+    'card-id-duplicate': (pack) => {
+      const { cards } = made(pack, 'select-two').task;
+      cards[1].id = cards[0].id;
+    },
+    'card-label-duplicate': (pack) => {
+      const { cards } = made(pack, 'select-two').task;
+      cards[1].label = cards[0].label;
+    },
+    'solution-card': (pack) => {
+      made(pack, 'echo-two').task.solution = ['fox', 'wolf'];
+    },
+    'order-solution': (pack) => {
+      made(pack, 'order-three').task.solution = ['seed', 'sprout'];
+    },
+    'select-solution': (pack) => {
+      made(pack, 'select-two').task.solution = ['cat', 'cat'];
+    },
+    'select-all': (pack) => {
+      made(pack, 'select-two').task.solution = ['cat', 'dog', 'hat', 'drum'];
+    },
+    'select-study': (pack) => {
+      made(pack, 'recall-two').task.study = ['key', 'cup'];
+    },
+    'select-ask': (pack) => {
+      delete made(pack, 'recall-two').task.ask;
+    },
+    'pairs-par': (pack) => {
+      made(pack, 'pairs-three').task.par = 2;
+    },
+    'give-pile': (pack) => {
+      made(pack, 'give-four').task.pile = 4;
+    },
+    'hint-eliminate-task': (pack) => {
+      made(pack, 'give-four').hints[0] = {
+        type: 'eliminate',
+        remove: ['a'],
+        caption: 'fx.hint.model',
+      };
+    },
+    'hint-step-task': (pack) => {
+      made(pack, 'pairs-three').hints = [
+        { type: 'step', count: 1, caption: 'fx.hint.step' },
+        { type: 'model', caption: 'fx.hint.model' },
+      ];
+    },
+    'hint-step-all': (pack) => {
+      made(pack, 'order-three').hints[1].count = 3;
+    },
+    'hint-reveal-task': (pack) => {
+      made(pack, 'pairs-three').hints.push({ type: 'reveal', caption: 'fx.hint.reveal' });
+    },
+    'program-off-grid': (pack) => {
+      made(pack, 'round-the-rock').task.goal = [5, 0];
+    },
+    'program-no-journey': (pack) => {
+      made(pack, 'round-the-rock').task.goal = [0, 2];
+    },
+    'program-rock': (pack) => {
+      made(pack, 'round-the-rock').task.rocks = [[2, 0]];
+    },
+    'program-solution-unbuildable': (pack) => {
+      made(pack, 'round-the-rock').task.slots = 4;
+    },
+    'program-solution-wrong': (pack) => {
+      made(pack, 'round-the-rock').task.solution = 'f-f-r-f';
+    },
+    'program-solution-long': (pack) => {
+      made(pack, 'round-the-rock').task.rocks = [];
+      made(pack, 'round-the-rock').task.solution = 'f-f-r-f-f-f';
+    },
+    'program-given-unbuildable': (pack) => {
+      made(pack, 'mend-it').task.given = 'f-l-f-f';
+    },
+    'program-given-works': (pack) => {
+      made(pack, 'mend-it').task.given = 'f-f-f';
+    },
+    'design-control-duplicate': (pack) => {
+      const { controls } = made(pack, 'ramp').task;
+      controls.push(structuredClone(controls[0]));
+    },
+    'design-solution-unbuildable': (pack) => {
+      made(pack, 'ramp').task.solution = ['steep'];
+    },
+    'design-solution-wrong': (pack) => {
+      made(pack, 'ramp').task.solution = ['low'];
+    },
+    'design-nothing-to-find': (pack) => {
+      made(pack, 'ramp').task.controls[0].options = ['mid', 'mid'];
     },
   };
 
@@ -406,14 +425,116 @@ describe('every lint rule fires', () => {
     expect(codes(broken(BREAK[code]!))).toContain(code);
   });
 
+  it.each(Object.keys(BREAK_MADE))('%s', (code) => {
+    expect(codes(brokenFixture(BREAK_MADE[code]!))).toContain(code);
+  });
+
+  it('a pack for a world that has no rules of its own is refused', () => {
+    expect(codes(lintPack(numberGardenPack(), [], null))).toContain('world-rules');
+  });
+
   it('has a case here for every rule in the lint', async () => {
     const source = (await import('@/content/lint.ts?raw')).default;
-    const inSource = new Set(
-      [...source.matchAll(/'([a-z]+(?:-[a-z]+)+)'/g)]
-        .map((match) => match[1]!)
-        // The misconception tags are data the lint produces, not rule names.
-        .filter((name) => !['one-more', 'one-fewer', 'many-more', 'many-fewer'].includes(name)),
+    // A kind of challenge, not a rule.
+    expect(rulesIn(source, ['choose-one'])).toEqual(
+      [...Object.keys(BREAK), ...Object.keys(BREAK_MADE), 'world-rules'].sort(),
     );
-    expect([...inSource].sort()).toEqual(Object.keys(BREAK).sort());
+  });
+});
+
+/** Number Garden's own rules: what makes an answer about amounts right. */
+describe('every Number Garden rule fires', () => {
+  const challenge = (pack: Loose, lesson: number, index: number) =>
+    pack.lessons[lesson].challenges[index];
+  /** Same amount: an independent challenge with three choices, a, b and the answer c. */
+  const three = (pack: Loose) => challenge(pack, 0, 3);
+  /** One for each: three snails, with places. */
+  const give = (pack: Loose) => challenge(pack, 2, 0);
+  /** Which has more: two leaves against four apples. */
+  const more = (pack: Loose) => challenge(pack, 4, 0);
+  /** Two that are equal, out of four groups: 2, 3, 3 and 4. */
+  const equal = (pack: Loose) => challenge(pack, 6, 9);
+
+  const BREAK: Record<string, (pack: Loose) => void> = {
+    'quantity-choice': (pack) => {
+      three(pack).choices[0].stimulus = { type: 'picture', id: 'sun' };
+    },
+    'quantity-answer-count': (pack) => {
+      three(pack).prompt.stimulus.count = 9;
+    },
+    'quantity-answer-wrong': (pack) => {
+      three(pack).answer = 'a';
+    },
+    'quantity-duplicate-choice': (pack) => {
+      three(pack).choices[0].stimulus.count = three(pack).choices[1].stimulus.count;
+    },
+    'quantity-picture-match': (pack) => {
+      three(pack).choices[2].stimulus = { ...three(pack).prompt.stimulus };
+    },
+    'quantity-size': (pack) => {
+      three(pack).choices[0].stimulus = {
+        ...three(pack).choices[0].stimulus,
+        count: 3,
+        arrangement: 'cluster',
+        size: 'big',
+      };
+    },
+    'misconception-missing': (pack) => {
+      delete three(pack).misconceptions;
+    },
+    'misconception-wrong': (pack) => {
+      three(pack).misconceptions = { a: 'one-fewer', b: 'one-fewer' };
+    },
+    'compare-tie': (pack) => {
+      more(pack).choices[0].stimulus.count = more(pack).choices[1].stimulus.count;
+    },
+    'compare-answer-wrong': (pack) => {
+      more(pack).answer = 'a';
+    },
+    'give-pile-small': (pack) => {
+      give(pack).task.pile = Number(give(pack).task.want.count) + 1;
+    },
+    'give-same-thing': (pack) => {
+      give(pack).task.item = give(pack).task.want.item;
+    },
+    'equal-pair': (pack) => {
+      equal(pack).task.solution = ['b'];
+    },
+    'equal-answer-wrong': (pack) => {
+      equal(pack).task.solution = ['a', 'b'];
+    },
+    'equal-second-pair': (pack) => {
+      equal(pack).task.cards[3].stimulus.count = equal(pack).task.cards[0].stimulus.count;
+    },
+    'number-garden-task': (pack) => {
+      give(pack).task = {
+        type: 'order',
+        cards: equal(pack).task.cards.slice(0, 2),
+        solution: ['a', 'b'],
+      };
+    },
+    'number-garden-question': (pack) => {
+      three(pack).prompt.stimulus = { type: 'picture', id: 'sun' };
+    },
+  };
+
+  it('the cases below break what they think they break', () => {
+    const pack = numberGardenPack() as unknown as Loose;
+    expect(three(pack).choices.map((choice: Loose) => choice.id)).toEqual(['a', 'b', 'c']);
+    expect(three(pack).answer).toBe('c');
+    expect(give(pack).task.type).toBe('give');
+    expect(more(pack).prompt.stimulus).toEqual({ type: 'sign', id: 'more' });
+    expect(equal(pack).task.cards.map((card: Loose) => card.stimulus.count)).toEqual([2, 3, 3, 4]);
+  });
+
+  it.each(Object.keys(BREAK))('%s', (code) => {
+    expect(codes(broken(BREAK[code]!))).toContain(code);
+  });
+
+  it('has a case here for every rule Number Garden has', async () => {
+    const source = (await import('@/content/rules/numberGarden.ts?raw')).default;
+    // What a wrong choice is tagged with is data the rules produce, not a rule.
+    const tags = ['bigger-looks-more', 'picked-fewer', 'smaller-looks-fewer', 'picked-more'];
+    expect(rulesIn(source, [...tags, 'choose-one'])).toEqual(Object.keys(BREAK).sort());
   });
 });

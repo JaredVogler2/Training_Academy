@@ -8,9 +8,11 @@ import {
   type Hint,
   type Lesson,
   type LessonSession,
+  type MakeChallenge,
   type Stage,
   type Step,
 } from './schema';
+import { cardIdsOf, judgeTask, solutionOf, solutionParts } from './tasks';
 
 /**
  * Lesson progression. Every function here is pure: it takes a session and returns a new one, never touches a clock,
@@ -24,9 +26,14 @@ import {
  *                      evidence. A challenge that needed help is followed, at the end of the lesson, by a re-probe:
  *                      a *different* challenge for the same skill, while the reserve and the lesson's limit allow.
  *
- * A wrong answer is never a dead end: the choice just tried is taken away and the child tries again. When only the
- * right choice is left it is revealed, and tapping it finishes the challenge as an assisted solve.
+ * A wrong answer is never a dead end. Where there are choices, the one just tried is taken away and the child tries
+ * again; when only the right choice is left it is revealed. Where there is a thing to make, the child changes what
+ * they made and tries again; after a few tries the answer is shown. Either way, giving the answer that is being
+ * shown finishes the challenge as an assisted solve.
  */
+
+/** Wrong tries at a thing to make before the answer is shown, unless the challenge says otherwise. */
+export const DEFAULT_MAX_TRIES = 3;
 
 /** A bug in the caller or in unvalidated content, never something a child can cause by tapping. */
 export class EngineError extends Error {
@@ -57,17 +64,33 @@ export interface ChallengeView {
   stage: Stage;
   isReprobe: boolean;
   challenge: Challenge;
-  /** In the order they should be shown; the order is stable for the life of the step. */
+  /** A question's choices, in the order they should be shown; the order is stable for the life of the step. */
   choices: ChoiceView[];
+  /**
+   * The cards of a thing to make, by id, in the order they should be laid out: seeded, and the same on every call.
+   * (Pairs lists each card twice.) Empty where there are none.
+   */
+  cards: string[];
   tryIndex: number;
   hintsUsed: number;
   hintsAvailable: number;
-  /** The right choice, when the lesson is showing it (a demonstration, or after a reveal); otherwise `null`. */
+  /**
+   * The right answer, when the lesson is showing it (a demonstration, or after a reveal); otherwise `null`. The id
+   * of a choice, or a thing to make written the way src/engine/tasks.ts writes one.
+   */
   shownAnswer: string | null;
+  /** The first parts of the answer to a thing to make, where hints have given them. */
+  given: string[];
 }
 
 export type RejectionReason =
-  'completed' | 'not-answerable' | 'stale' | 'unknown-choice' | 'unavailable-choice';
+  | 'completed'
+  | 'not-answerable'
+  | 'stale'
+  | 'unknown-choice'
+  | 'unavailable-choice'
+  /** An answer this task could not be given at all. */
+  | 'malformed';
 
 export interface Feedback {
   outcome: 'correct' | 'incorrect';
@@ -79,11 +102,14 @@ export interface Feedback {
   next: 'retry' | 'advance' | 'complete';
   /** True when the retry now shows the answer because nothing else is left. */
   revealed: boolean;
+  /** The parts of a wrong made answer that were right, for the child to keep. */
+  right: string[];
 }
 
 export interface SubmitInput {
   key: string;
-  choiceId: string;
+  /** The id of the choice picked, or the thing made, written the way src/engine/tasks.ts writes one. */
+  response: string;
   now: number;
   /** Local calendar day of `now`, `YYYY-MM-DD`. */
   day: string;
@@ -141,7 +167,36 @@ function presentationKey(session: LessonSession): string {
 
 /** Display order of a step's choices: seeded, and the same on every call. */
 function choiceOrder(session: LessonSession, challenge: Challenge): Choice[] {
+  if (challenge.kind !== 'choose-one') return [];
   return rngFor(session.seed, 'choices', session.cursor, challenge.id).shuffle(challenge.choices);
+}
+
+/** Where the cards of a thing to make are laid out: seeded, and the same on every call. */
+function cardOrder(session: LessonSession, challenge: Challenge): string[] {
+  if (challenge.kind !== 'make') return [];
+  const { task } = challenge;
+  const ids = cardIdsOf(task);
+  // What is echoed is shown in its places first; moving the places afterwards would be a different game.
+  if (task.type === 'echo' || ids.length === 0) return ids;
+  const shuffled = rngFor(session.seed, 'cards', session.cursor, challenge.id).shuffle(ids);
+  // Cards to put in order must not be dealt already in order.
+  if (task.type === 'order' && shuffled.every((id, index) => id === task.solution[index])) {
+    return [...shuffled.slice(1), ...shuffled.slice(0, 1)];
+  }
+  return shuffled;
+}
+
+/** How many parts of a made answer the hints shown so far have given. */
+function partsGiven(challenge: MakeChallenge, hintLevel: number): number {
+  const parts = solutionParts(challenge.task).length;
+  const given = challenge.hints
+    .slice(0, hintLevel)
+    .reduce((total, hint) => total + (hint.type === 'step' ? hint.count : 0), 0);
+  return Math.min(parts, given);
+}
+
+function answerOf(challenge: Challenge): string | null {
+  return challenge.kind === 'choose-one' ? challenge.answer : solutionOf(challenge.task);
 }
 
 function advance(session: LessonSession, now: number): LessonSession {
@@ -212,10 +267,15 @@ export function getNextChallenge(session: LessonSession, lesson: Lesson): Challe
       choice,
       available: !presentation.eliminated.includes(choice.id),
     })),
+    cards: cardOrder(session, challenge),
     tryIndex: presentation.tryIndex,
     hintsUsed: presentation.hintLevel,
     hintsAvailable: step.stage === 'demo' ? 0 : challenge.hints.length - presentation.hintLevel,
-    shownAnswer: showAnswer ? challenge.answer : null,
+    shownAnswer: showAnswer ? answerOf(challenge) : null,
+    given:
+      challenge.kind === 'make' && step.stage !== 'demo'
+        ? solutionParts(challenge.task).slice(0, partsGiven(challenge, presentation.hintLevel))
+        : [],
   };
 }
 
@@ -267,17 +327,32 @@ export function submitAttempt(
 
   const challenge = challengeOf(lesson, step.challengeId);
   const { presentation } = session;
-  if (!challenge.choices.some((choice) => choice.id === input.choiceId)) {
-    return reject('unknown-choice');
-  }
-  if (presentation.eliminated.includes(input.choiceId)) return reject('unavailable-choice');
+  const { response } = input;
 
-  const correct = input.choiceId === challenge.answer;
+  let correct: boolean;
+  /** Right, and reached in a way that shows the skill (see `Judgement.clean`). */
+  let clean: boolean;
+  let misconception: string | undefined;
+  let right: string[] = [];
+  if (challenge.kind === 'choose-one') {
+    if (!challenge.choices.some((choice) => choice.id === response)) {
+      return reject('unknown-choice');
+    }
+    if (presentation.eliminated.includes(response)) return reject('unavailable-choice');
+    correct = response === challenge.answer;
+    clean = correct;
+    misconception = correct ? undefined : challenge.misconceptions?.[response];
+  } else {
+    const judgement = judgeTask(challenge.task, response);
+    if (!judgement) return reject('malformed');
+    ({ correct, clean, misconception } = judgement);
+    right = judgement.right ?? [];
+  }
+
   const adultAssist = input.adultAssist === true;
   const firstTry = presentation.tryIndex === 0;
   const unassisted = presentation.hintLevel === 0 && !adultAssist;
-  const independent = correct && step.stage === 'independent' && firstTry && unassisted;
-  const misconception = correct ? undefined : challenge.misconceptions?.[input.choiceId];
+  const independent = clean && step.stage === 'independent' && firstTry && unassisted;
 
   const attempt: Attempt = {
     schemaVersion: RECORD_SCHEMA_VERSION,
@@ -296,7 +371,7 @@ export function submitAttempt(
     hintLevel: presentation.hintLevel,
     assistance: adultAssist ? 'adult' : presentation.hintLevel > 0 ? 'hint' : 'none',
     outcome: correct ? 'correct' : 'incorrect',
-    response: input.choiceId,
+    response,
     ...(misconception === undefined ? {} : { misconception }),
     at: input.now,
     day: input.day,
@@ -304,9 +379,15 @@ export function submitAttempt(
   };
 
   if (!correct) {
-    const eliminated = [...presentation.eliminated, input.choiceId];
-    const remaining = challenge.choices.filter((choice) => !eliminated.includes(choice.id));
-    const revealed = presentation.revealed || remaining.length <= 1;
+    let eliminated = presentation.eliminated;
+    let revealed = presentation.revealed;
+    if (challenge.kind === 'choose-one') {
+      eliminated = [...eliminated, response];
+      const remaining = challenge.choices.filter((choice) => !eliminated.includes(choice.id));
+      revealed ||= remaining.length <= 1;
+    } else {
+      revealed ||= presentation.tryIndex + 1 >= (challenge.maxTries ?? DEFAULT_MAX_TRIES);
+    }
     return {
       accepted: true,
       attempt,
@@ -328,11 +409,12 @@ export function submitAttempt(
         misconception: misconception ?? null,
         next: 'retry',
         revealed,
+        right,
       },
     };
   }
 
-  const cleanFirstTry = firstTry && unassisted;
+  const cleanFirstTry = clean && firstTry && unassisted;
   let { steps, reserve, reprobesUsed } = session;
   if (step.stage === 'independent' && !cleanFirstTry) {
     const reprobe = takeReprobe(session, lesson, challenge);
@@ -369,6 +451,7 @@ export function submitAttempt(
       misconception: null,
       next: next.status === 'completed' ? 'complete' : 'advance',
       revealed: false,
+      right: [],
     },
   };
 }
@@ -390,20 +473,27 @@ export function getHint(session: LessonSession, lesson: Lesson, now: number): Hi
     return { session, hint: null, hintsUsed: presentation.hintLevel, hintsAvailable: 0 };
   }
 
-  const distractors = challenge.choices
-    .map((choice) => choice.id)
-    .filter((choiceId) => choiceId !== challenge.answer);
-  let eliminated = presentation.eliminated;
-  if (hint.type === 'eliminate') {
-    eliminated = [
-      ...new Set([...eliminated, ...hint.remove.filter((id) => distractors.includes(id))]),
-    ];
-  } else if (hint.type === 'reveal') {
-    eliminated = distractors;
-  }
-  const revealed =
-    presentation.revealed || hint.type === 'reveal' || eliminated.length >= distractors.length;
   const hintLevel = presentation.hintLevel + 1;
+  let eliminated = presentation.eliminated;
+  let revealed = presentation.revealed || hint.type === 'reveal';
+  if (challenge.kind === 'choose-one') {
+    const distractors = challenge.choices
+      .map((choice) => choice.id)
+      .filter((choiceId) => choiceId !== challenge.answer);
+    if (hint.type === 'eliminate') {
+      eliminated = [
+        ...new Set([...eliminated, ...hint.remove.filter((id) => distractors.includes(id))]),
+      ];
+    } else if (hint.type === 'reveal') {
+      eliminated = distractors;
+    }
+    revealed ||= eliminated.length >= distractors.length;
+  } else {
+    // Every part given is the answer shown.
+    revealed ||=
+      solutionOf(challenge.task) !== null &&
+      partsGiven(challenge, hintLevel) >= solutionParts(challenge.task).length;
+  }
 
   return {
     session: {

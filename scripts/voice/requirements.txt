@@ -1,0 +1,5 @@
+# What scripts/voice/make_voice.py needs. None of this ships with the game: it is used to make the clips, once.
+piper-tts==1.8.0
+faster-whisper==1.2.1
+numpy==2.5.5
+scipy==1.18.1

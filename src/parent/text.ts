@@ -88,6 +88,8 @@ export const grownUpText = {
     pictures: 'Pictures only (no 3D)',
   } satisfies Record<GraphicsOption, string>,
 
+  voice: 'The voice: listen to every recording',
+  voiceLoading: 'Fetching the recordings…',
   diagnostics: 'Diagnostics',
   diagnosticsBody:
     'Measured on this device, during this visit, and shown only here. Nothing on this list is sent anywhere.',

@@ -51,7 +51,7 @@ test.describe('the sample activity', () => {
 
     await finishCorrectly(page, press);
     await expect(finished(page).getByRole('heading', { name: 'All done!' })).toBeVisible();
-    await expect(finished(page)).toContainText('3 of 3 matched at the first try, with no help.');
+    await expect(finished(page)).toContainText('3 of 3 right at the first try, with no help.');
 
     // Home again, and the game now knows who is playing.
     await press(finished(page).getByRole('link', { name: 'Islands' }));
@@ -100,7 +100,7 @@ test.describe('the sample activity', () => {
     await press(next(page));
     await finishCorrectly(page, press);
     // One more question was added at the end to try the idea again with a different picture.
-    await expect(finished(page)).toContainText('3 of 4 matched at the first try, with no help.');
+    await expect(finished(page)).toContainText('3 of 4 right at the first try, with no help.');
 
     await openGrownUps(page);
     await expect(skill(page)).toContainText('3 independent successes');

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { playCue } from '@/audio';
-import { AVATAR_IDS, type AvatarId } from '@/engine';
+import { AVATAR_IDS, type AvatarId } from '@/engine/schema';
 import { createProfile, setActiveProfile, type ProfilesState } from '@/game/profiles';
 import { Guide } from '@/ui/Guide';
 import { AvatarPicture } from '@/ui/art';

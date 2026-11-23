@@ -1,0 +1,2952 @@
+{
+  "format": "training-academy.content-pack",
+  "schemaVersion": 1,
+  "id": "number-garden",
+  "world": "number-garden",
+  "contentVersion": 2,
+  "strings": {
+    "en": {
+      "ng.same-amount.instruction": "Which group has the same amount?",
+      "ng.same-amount.correct": "Yes. The same amount.",
+      "ng.same-amount.incorrect": "Not the same amount. Look again.",
+      "ng.same-amount.hint.model": "Touch them one by one.",
+      "ng.same-amount.hint.eliminate": "This group has a different amount.",
+      "ng.same-amount.hint.reveal": "This group has the same amount.",
+      "ng.glance.instruction": "Take a quick look. Which group has the same amount?",
+      "ng.glance.hint.model": "Here it is again. Take another look.",
+      "ng.give.instruction": "Give one to each friend.",
+      "ng.give.correct": "Yes. One for each.",
+      "ng.give.incorrect": "Not one for each yet. Let us count.",
+      "ng.give.hint.model": "Count the friends. Touch them one by one.",
+      "ng.give.hint.step": "Here are some to start with.",
+      "ng.give.hint.reveal": "Fill every place. One for each.",
+      "ng.more.instruction": "Which group has more?",
+      "ng.more.correct": "Yes. That group has more.",
+      "ng.more.incorrect": "That group has fewer. Look again.",
+      "ng.more.hint.reveal": "This group has more.",
+      "ng.fewer.instruction": "Which group has fewer?",
+      "ng.fewer.correct": "Yes. That group has fewer.",
+      "ng.fewer.incorrect": "That group has more. Look again.",
+      "ng.fewer.hint.reveal": "This group has fewer.",
+      "ng.compare.hint.model": "Count each group.",
+      "ng.compare.hint.eliminate": "Not this group.",
+      "ng.equal.instruction": "Find the two groups with the same amount.",
+      "ng.equal.correct": "Yes. These two are equal.",
+      "ng.equal.incorrect": "Those are not equal. Look again.",
+      "ng.equal.hint.step": "This is one of them.",
+      "ng.equal.hint.reveal": "These two are equal."
+    }
+  },
+  "skills": [
+    {
+      "id": "math.quantity.match-sets-to-3",
+      "world": "number-garden",
+      "strand": "number-sense",
+      "title": "Match small groups by amount",
+      "objective": "Sees that two groups of up to three things have the same amount, even when the things and how they are laid out are different. No numerals and no counting words are needed.",
+      "prerequisites": []
+    },
+    {
+      "id": "math.quantity.subitize-to-4",
+      "world": "number-garden",
+      "strand": "number-sense",
+      "title": "See small amounts at a glance",
+      "objective": "Sees how many are in a group of up to four when it is shown only for a moment, without counting one by one, and matches it to a group of the same amount.",
+      "prerequisites": ["math.quantity.match-sets-to-3"]
+    },
+    {
+      "id": "math.counting.give-to-5",
+      "world": "number-garden",
+      "strand": "number-sense",
+      "title": "Give one for each, up to five",
+      "objective": "Gives out exactly as many things as there are friends, up to five, one for each, and stops there without places to fill.",
+      "prerequisites": ["math.quantity.match-sets-to-3"]
+    },
+    {
+      "id": "math.counting.give-to-10",
+      "world": "number-garden",
+      "strand": "number-sense",
+      "title": "Give one for each, up to ten",
+      "objective": "Gives out exactly as many things as there are friends, from six to ten, keeping count of how many have been given.",
+      "prerequisites": ["math.counting.give-to-5"]
+    },
+    {
+      "id": "math.comparison.more-to-6",
+      "world": "number-garden",
+      "strand": "number-sense",
+      "title": "Find which group has more",
+      "objective": "Picks the group with more out of two or three groups of up to six, including when the smaller group is made of bigger things.",
+      "prerequisites": ["math.quantity.match-sets-to-3"]
+    },
+    {
+      "id": "math.comparison.fewer-to-6",
+      "world": "number-garden",
+      "strand": "number-sense",
+      "title": "Find which group has fewer",
+      "objective": "Picks the group with fewer out of two or three groups of up to six, including when the larger group is made of smaller things.",
+      "prerequisites": ["math.comparison.more-to-6"]
+    },
+    {
+      "id": "math.comparison.equal-to-6",
+      "world": "number-garden",
+      "strand": "number-sense",
+      "title": "Find two groups that are equal",
+      "objective": "Out of three or four groups of up to six, finds the two that have the same amount, whatever they are made of and however they are laid out.",
+      "prerequisites": ["math.quantity.match-sets-to-3"]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "ng-same-amount-01",
+      "version": 1,
+      "world": "number-garden",
+      "title": "Same amount, up to three",
+      "summary": "The guide shows one example, then your child matches groups of one, two and three things by how many there are.",
+      "skillIds": ["math.quantity.match-sets-to-3"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["ng-same-amount-01.demo-two"],
+        "guided": ["ng-same-amount-01.guided-one", "ng-same-amount-01.guided-three"],
+        "independent": {
+          "pool": [
+            "ng-same-amount-01.two-apples",
+            "ng-same-amount-01.three-leaves",
+            "ng-same-amount-01.one-acorn",
+            "ng-same-amount-01.two-snails",
+            "ng-same-amount-01.three-acorns"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "ng-same-amount-01.demo-two",
+          "kind": "choose-one",
+          "skillId": "math.quantity.match-sets-to-3",
+          "variant": "demo-two",
+          "prompt": {
+            "instruction": "ng.same-amount.instruction",
+            "stimulus": { "type": "quantity", "item": "snail", "count": 2, "arrangement": "row" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "one leaf",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "two leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 2, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.same-amount.hint.model" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-fewer" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-same-amount-01.guided-one",
+          "kind": "choose-one",
+          "skillId": "math.quantity.match-sets-to-3",
+          "variant": "guided-one",
+          "prompt": {
+            "instruction": "ng.same-amount.instruction",
+            "stimulus": { "type": "quantity", "item": "apple", "count": 1, "arrangement": "row" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "one acorn",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "three acorns",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 3, "arrangement": "row" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.same-amount.hint.model" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "b": "many-more" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-same-amount-01.guided-three",
+          "kind": "choose-one",
+          "skillId": "math.quantity.match-sets-to-3",
+          "variant": "guided-three",
+          "prompt": {
+            "instruction": "ng.same-amount.instruction",
+            "stimulus": { "type": "quantity", "item": "snail", "count": 3, "arrangement": "row" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "three leaves",
+              "stimulus": {
+                "type": "quantity",
+                "item": "leaf",
+                "count": 3,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.same-amount.hint.model" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-fewer" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-same-amount-01.two-apples",
+          "kind": "choose-one",
+          "skillId": "math.quantity.match-sets-to-3",
+          "variant": "two-as-cluster",
+          "prompt": {
+            "instruction": "ng.same-amount.instruction",
+            "stimulus": { "type": "quantity", "item": "apple", "count": 2, "arrangement": "row" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "three acorns",
+              "stimulus": {
+                "type": "quantity",
+                "item": "acorn",
+                "count": 3,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "b",
+              "label": "one acorn",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "two acorns",
+              "stimulus": {
+                "type": "quantity",
+                "item": "acorn",
+                "count": 2,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "ng.same-amount.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-more", "b": "one-fewer" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-same-amount-01.three-leaves",
+          "kind": "choose-one",
+          "skillId": "math.quantity.match-sets-to-3",
+          "variant": "three-as-row",
+          "prompt": {
+            "instruction": "ng.same-amount.instruction",
+            "stimulus": { "type": "quantity", "item": "leaf", "count": 3, "arrangement": "cluster" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "three snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 3, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "two snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "one snail",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 1, "arrangement": "row" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.same-amount.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "b": "one-fewer", "c": "many-fewer" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-same-amount-01.one-acorn",
+          "kind": "choose-one",
+          "skillId": "math.quantity.match-sets-to-3",
+          "variant": "one",
+          "prompt": {
+            "instruction": "ng.same-amount.instruction",
+            "stimulus": { "type": "quantity", "item": "acorn", "count": 1, "arrangement": "row" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "one apple",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "three apples",
+              "stimulus": {
+                "type": "quantity",
+                "item": "apple",
+                "count": 3,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.same-amount.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-more", "c": "many-more" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-same-amount-01.two-snails",
+          "kind": "choose-one",
+          "skillId": "math.quantity.match-sets-to-3",
+          "variant": "two-as-row",
+          "prompt": {
+            "instruction": "ng.same-amount.instruction",
+            "stimulus": {
+              "type": "quantity",
+              "item": "snail",
+              "count": 2,
+              "arrangement": "cluster"
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "one apple",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "two apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "three apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 3, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.same-amount.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-fewer", "c": "one-more" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-same-amount-01.three-acorns",
+          "kind": "choose-one",
+          "skillId": "math.quantity.match-sets-to-3",
+          "variant": "three-as-cluster",
+          "prompt": {
+            "instruction": "ng.same-amount.instruction",
+            "stimulus": { "type": "quantity", "item": "acorn", "count": 3, "arrangement": "row" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two leaves",
+              "stimulus": {
+                "type": "quantity",
+                "item": "leaf",
+                "count": 2,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "b",
+              "label": "three leaves",
+              "stimulus": {
+                "type": "quantity",
+                "item": "leaf",
+                "count": 3,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "c",
+              "label": "one leaf",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 1, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.same-amount.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-fewer", "c": "many-fewer" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ng-glance-01",
+      "version": 1,
+      "world": "number-garden",
+      "title": "How many, at a glance",
+      "summary": "A small group is shown for a moment and then covered. Your child finds the group with the same amount, by seeing how many there were rather than counting.",
+      "skillIds": ["math.quantity.subitize-to-4"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["ng-glance-01.demo-two"],
+        "guided": ["ng-glance-01.guided-one", "ng-glance-01.guided-three"],
+        "independent": {
+          "pool": [
+            "ng-glance-01.two-scattered",
+            "ng-glance-01.three-pattern",
+            "ng-glance-01.four-pattern",
+            "ng-glance-01.three-line",
+            "ng-glance-01.four-scattered",
+            "ng-glance-01.one-alone",
+            "ng-glance-01.four-line",
+            "ng-glance-01.two-line"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "ng-glance-01.demo-two",
+          "kind": "choose-one",
+          "skillId": "math.quantity.subitize-to-4",
+          "variant": "two-cluster",
+          "prompt": {
+            "instruction": "ng.glance.instruction",
+            "stimulus": {
+              "type": "quantity",
+              "item": "snail",
+              "count": 2,
+              "arrangement": "cluster"
+            },
+            "glance": true
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "one leaf",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "two leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 2, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.glance.hint.model" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-fewer" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-glance-01.guided-one",
+          "kind": "choose-one",
+          "skillId": "math.quantity.subitize-to-4",
+          "variant": "one-row",
+          "prompt": {
+            "instruction": "ng.glance.instruction",
+            "stimulus": { "type": "quantity", "item": "apple", "count": 1, "arrangement": "row" },
+            "glance": true
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "one acorn",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "two acorns",
+              "stimulus": {
+                "type": "quantity",
+                "item": "acorn",
+                "count": 2,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.glance.hint.model" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "b": "one-more" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-glance-01.guided-three",
+          "kind": "choose-one",
+          "skillId": "math.quantity.subitize-to-4",
+          "variant": "three-cluster",
+          "prompt": {
+            "instruction": "ng.glance.instruction",
+            "stimulus": {
+              "type": "quantity",
+              "item": "acorn",
+              "count": 3,
+              "arrangement": "cluster"
+            },
+            "glance": true
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "three leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 3, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.glance.hint.model" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-fewer" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-glance-01.two-scattered",
+          "kind": "choose-one",
+          "skillId": "math.quantity.subitize-to-4",
+          "variant": "two-scatter",
+          "prompt": {
+            "instruction": "ng.glance.instruction",
+            "stimulus": {
+              "type": "quantity",
+              "item": "leaf",
+              "count": 2,
+              "arrangement": "scatter"
+            },
+            "glance": true
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "one apple",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "two apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "three apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 3, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.glance.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-fewer", "c": "one-more" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-glance-01.three-pattern",
+          "kind": "choose-one",
+          "skillId": "math.quantity.subitize-to-4",
+          "variant": "three-cluster",
+          "prompt": {
+            "instruction": "ng.glance.instruction",
+            "stimulus": {
+              "type": "quantity",
+              "item": "apple",
+              "count": 3,
+              "arrangement": "cluster"
+            },
+            "glance": true
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "three snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 3, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "four snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 4, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.glance.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-fewer", "c": "one-more" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-glance-01.four-pattern",
+          "kind": "choose-one",
+          "skillId": "math.quantity.subitize-to-4",
+          "variant": "four-cluster",
+          "prompt": {
+            "instruction": "ng.glance.instruction",
+            "stimulus": {
+              "type": "quantity",
+              "item": "acorn",
+              "count": 4,
+              "arrangement": "cluster"
+            },
+            "glance": true
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "three leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 3, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "four leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 4, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "five leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 5, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.glance.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-fewer", "c": "one-more" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-glance-01.three-line",
+          "kind": "choose-one",
+          "skillId": "math.quantity.subitize-to-4",
+          "variant": "three-row",
+          "prompt": {
+            "instruction": "ng.glance.instruction",
+            "stimulus": { "type": "quantity", "item": "snail", "count": 3, "arrangement": "row" },
+            "glance": true
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "three acorns",
+              "stimulus": {
+                "type": "quantity",
+                "item": "acorn",
+                "count": 3,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "b",
+              "label": "two acorns",
+              "stimulus": {
+                "type": "quantity",
+                "item": "acorn",
+                "count": 2,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "c",
+              "label": "four acorns",
+              "stimulus": {
+                "type": "quantity",
+                "item": "acorn",
+                "count": 4,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.glance.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "b": "one-fewer", "c": "one-more" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-glance-01.four-scattered",
+          "kind": "choose-one",
+          "skillId": "math.quantity.subitize-to-4",
+          "variant": "four-scatter",
+          "prompt": {
+            "instruction": "ng.glance.instruction",
+            "stimulus": {
+              "type": "quantity",
+              "item": "leaf",
+              "count": 4,
+              "arrangement": "scatter"
+            },
+            "glance": true
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "four apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 4, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "three apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 3, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "two apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 2, "arrangement": "row" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.glance.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "b": "one-fewer", "c": "many-fewer" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-glance-01.one-alone",
+          "kind": "choose-one",
+          "skillId": "math.quantity.subitize-to-4",
+          "variant": "one-scatter",
+          "prompt": {
+            "instruction": "ng.glance.instruction",
+            "stimulus": {
+              "type": "quantity",
+              "item": "acorn",
+              "count": 1,
+              "arrangement": "scatter"
+            },
+            "glance": true
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "one snail",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "three snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 3, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.glance.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-more", "c": "many-more" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-glance-01.four-line",
+          "kind": "choose-one",
+          "skillId": "math.quantity.subitize-to-4",
+          "variant": "four-row",
+          "prompt": {
+            "instruction": "ng.glance.instruction",
+            "stimulus": { "type": "quantity", "item": "apple", "count": 4, "arrangement": "row" },
+            "glance": true
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "five leaves",
+              "stimulus": {
+                "type": "quantity",
+                "item": "leaf",
+                "count": 5,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "b",
+              "label": "four leaves",
+              "stimulus": {
+                "type": "quantity",
+                "item": "leaf",
+                "count": 4,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "c",
+              "label": "three leaves",
+              "stimulus": {
+                "type": "quantity",
+                "item": "leaf",
+                "count": 3,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.glance.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-more", "c": "one-fewer" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        },
+        {
+          "id": "ng-glance-01.two-line",
+          "kind": "choose-one",
+          "skillId": "math.quantity.subitize-to-4",
+          "variant": "two-row",
+          "prompt": {
+            "instruction": "ng.glance.instruction",
+            "stimulus": { "type": "quantity", "item": "snail", "count": 2, "arrangement": "row" },
+            "glance": true
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "three acorns",
+              "stimulus": {
+                "type": "quantity",
+                "item": "acorn",
+                "count": 3,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "b",
+              "label": "one acorn",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "two acorns",
+              "stimulus": {
+                "type": "quantity",
+                "item": "acorn",
+                "count": 2,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "ng.glance.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "ng.same-amount.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.same-amount.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-more", "b": "one-fewer" },
+          "feedback": {
+            "correct": "ng.same-amount.correct",
+            "incorrect": "ng.same-amount.incorrect"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ng-give-01",
+      "version": 1,
+      "world": "number-garden",
+      "title": "One for each, up to five",
+      "summary": "Some friends each want one thing. Your child gives out exactly enough, one for each, and says when they are done. With help each friend has a place to fill; then there are no places and your child keeps count.",
+      "skillIds": ["math.counting.give-to-5"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["ng-give-01.demo-three"],
+        "guided": ["ng-give-01.guided-two", "ng-give-01.guided-four"],
+        "independent": {
+          "pool": [
+            "ng-give-01.three-mice",
+            "ng-give-01.four-birds",
+            "ng-give-01.five-snails",
+            "ng-give-01.four-frogs",
+            "ng-give-01.five-mice",
+            "ng-give-01.three-birds",
+            "ng-give-01.five-frogs"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "ng-give-01.demo-three",
+          "kind": "make",
+          "skillId": "math.counting.give-to-5",
+          "variant": "three-row",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "snail", "count": 3, "arrangement": "row" },
+            "item": "leaf",
+            "pile": 6,
+            "places": true
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-01.guided-two",
+          "kind": "make",
+          "skillId": "math.counting.give-to-5",
+          "variant": "two-row",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "mouse", "count": 2, "arrangement": "row" },
+            "item": "acorn",
+            "pile": 5,
+            "places": true
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-01.guided-four",
+          "kind": "make",
+          "skillId": "math.counting.give-to-5",
+          "variant": "four-row",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "bird", "count": 4, "arrangement": "row" },
+            "item": "apple",
+            "pile": 7,
+            "places": true
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 2, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-01.three-mice",
+          "kind": "make",
+          "skillId": "math.counting.give-to-5",
+          "variant": "three-row",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "mouse", "count": 3, "arrangement": "row" },
+            "item": "acorn",
+            "pile": 6,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-01.four-birds",
+          "kind": "make",
+          "skillId": "math.counting.give-to-5",
+          "variant": "four-cluster",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "bird", "count": 4, "arrangement": "cluster" },
+            "item": "apple",
+            "pile": 7,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 2, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-01.five-snails",
+          "kind": "make",
+          "skillId": "math.counting.give-to-5",
+          "variant": "five-row",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "snail", "count": 5, "arrangement": "row" },
+            "item": "leaf",
+            "pile": 8,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 2, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-01.four-frogs",
+          "kind": "make",
+          "skillId": "math.counting.give-to-5",
+          "variant": "four-scatter",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "frog", "count": 4, "arrangement": "scatter" },
+            "item": "leaf",
+            "pile": 7,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 2, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-01.five-mice",
+          "kind": "make",
+          "skillId": "math.counting.give-to-5",
+          "variant": "five-cluster",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "mouse", "count": 5, "arrangement": "cluster" },
+            "item": "acorn",
+            "pile": 8,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 2, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-01.three-birds",
+          "kind": "make",
+          "skillId": "math.counting.give-to-5",
+          "variant": "three-scatter",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "bird", "count": 3, "arrangement": "scatter" },
+            "item": "apple",
+            "pile": 6,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-01.five-frogs",
+          "kind": "make",
+          "skillId": "math.counting.give-to-5",
+          "variant": "five-scatter",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "frog", "count": 5, "arrangement": "scatter" },
+            "item": "leaf",
+            "pile": 8,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 2, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "ng-give-02",
+      "version": 1,
+      "world": "number-garden",
+      "title": "One for each, up to ten",
+      "summary": "The same game with more friends, six to ten of them, often standing five to a line the way two hands hold ten. Your child gives one to each and keeps count.",
+      "skillIds": ["math.counting.give-to-10"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["ng-give-02.demo-six"],
+        "guided": ["ng-give-02.guided-seven", "ng-give-02.guided-nine"],
+        "independent": {
+          "pool": [
+            "ng-give-02.six-birds",
+            "ng-give-02.seven-frogs",
+            "ng-give-02.eight-snails",
+            "ng-give-02.eight-mice",
+            "ng-give-02.nine-birds",
+            "ng-give-02.ten-frogs",
+            "ng-give-02.ten-snails",
+            "ng-give-02.seven-mice"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "ng-give-02.demo-six",
+          "kind": "make",
+          "skillId": "math.counting.give-to-10",
+          "variant": "six-frame",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "frog", "count": 6, "arrangement": "frame" },
+            "item": "leaf",
+            "pile": 9,
+            "places": true
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 3, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-02.guided-seven",
+          "kind": "make",
+          "skillId": "math.counting.give-to-10",
+          "variant": "seven-frame",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "snail", "count": 7, "arrangement": "frame" },
+            "item": "leaf",
+            "pile": 10,
+            "places": true
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 3, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-02.guided-nine",
+          "kind": "make",
+          "skillId": "math.counting.give-to-10",
+          "variant": "nine-frame",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "mouse", "count": 9, "arrangement": "frame" },
+            "item": "acorn",
+            "pile": 12,
+            "places": true
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 4, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-02.six-birds",
+          "kind": "make",
+          "skillId": "math.counting.give-to-10",
+          "variant": "six-row",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "bird", "count": 6, "arrangement": "row" },
+            "item": "apple",
+            "pile": 9,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 3, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-02.seven-frogs",
+          "kind": "make",
+          "skillId": "math.counting.give-to-10",
+          "variant": "seven-frame",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "frog", "count": 7, "arrangement": "frame" },
+            "item": "leaf",
+            "pile": 10,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 3, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-02.eight-snails",
+          "kind": "make",
+          "skillId": "math.counting.give-to-10",
+          "variant": "eight-row",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "snail", "count": 8, "arrangement": "row" },
+            "item": "leaf",
+            "pile": 11,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 4, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-02.eight-mice",
+          "kind": "make",
+          "skillId": "math.counting.give-to-10",
+          "variant": "eight-frame",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "mouse", "count": 8, "arrangement": "frame" },
+            "item": "acorn",
+            "pile": 11,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 4, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-02.nine-birds",
+          "kind": "make",
+          "skillId": "math.counting.give-to-10",
+          "variant": "nine-frame",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "bird", "count": 9, "arrangement": "frame" },
+            "item": "apple",
+            "pile": 12,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 4, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-02.ten-frogs",
+          "kind": "make",
+          "skillId": "math.counting.give-to-10",
+          "variant": "ten-frame",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "frog", "count": 10, "arrangement": "frame" },
+            "item": "leaf",
+            "pile": 12,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 5, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-02.ten-snails",
+          "kind": "make",
+          "skillId": "math.counting.give-to-10",
+          "variant": "ten-row",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "snail", "count": 10, "arrangement": "row" },
+            "item": "leaf",
+            "pile": 12,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 5, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        },
+        {
+          "id": "ng-give-02.seven-mice",
+          "kind": "make",
+          "skillId": "math.counting.give-to-10",
+          "variant": "seven-row",
+          "prompt": { "instruction": "ng.give.instruction" },
+          "task": {
+            "type": "give",
+            "want": { "type": "quantity", "item": "mouse", "count": 7, "arrangement": "row" },
+            "item": "acorn",
+            "pile": 10,
+            "places": false
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.give.hint.model" },
+            { "type": "step", "count": 3, "caption": "ng.give.hint.step" },
+            { "type": "reveal", "caption": "ng.give.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.give.correct", "incorrect": "ng.give.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "ng-more-01",
+      "version": 1,
+      "world": "number-garden",
+      "title": "Which has more?",
+      "summary": "Two or three groups of up to six things. Your child finds the one with more. Sometimes the smaller group is drawn with bigger things, so that more has to mean how many, not how much room.",
+      "skillIds": ["math.comparison.more-to-6"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["ng-more-01.demo"],
+        "guided": ["ng-more-01.guided-one-three", "ng-more-01.guided-five-three"],
+        "independent": {
+          "pool": [
+            "ng-more-01.two-three",
+            "ng-more-01.four-three",
+            "ng-more-01.four-five",
+            "ng-more-01.six-four",
+            "ng-more-01.five-six",
+            "ng-more-01.one-two",
+            "ng-more-01.big-two-small-four",
+            "ng-more-01.big-three-small-five",
+            "ng-more-01.two-four-five",
+            "ng-more-01.three-one-two"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "ng-more-01.demo",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "by-two",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "four apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 4, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-fewer" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.guided-one-three",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "by-two",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "one acorn",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "three snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 3, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-fewer" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.guided-five-three",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "by-two",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "five apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 5, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "three leaves",
+              "stimulus": {
+                "type": "quantity",
+                "item": "leaf",
+                "count": 3,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "b": "picked-fewer" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.two-three",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "by-one",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "three acorns",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 3, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-fewer" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.four-three",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "by-one",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "four leaves",
+              "stimulus": {
+                "type": "quantity",
+                "item": "leaf",
+                "count": 4,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "b",
+              "label": "three apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 3, "arrangement": "row" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "b": "picked-fewer" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.four-five",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "by-one",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "four acorns",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 4, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "five snails",
+              "stimulus": {
+                "type": "quantity",
+                "item": "snail",
+                "count": 5,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-fewer" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.six-four",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "by-two",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "six apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 6, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "four leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 4, "arrangement": "row" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "b": "picked-fewer" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.five-six",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "by-one",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "five snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 5, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "six apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 6, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-fewer" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.one-two",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "by-one",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "one leaf",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "two acorns",
+              "stimulus": {
+                "type": "quantity",
+                "item": "acorn",
+                "count": 2,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-fewer" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.big-two-small-four",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "big-things-are-fewer",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two apples",
+              "stimulus": {
+                "type": "quantity",
+                "item": "apple",
+                "count": 2,
+                "arrangement": "row",
+                "size": "big"
+              }
+            },
+            {
+              "id": "b",
+              "label": "four acorns",
+              "stimulus": {
+                "type": "quantity",
+                "item": "acorn",
+                "count": 4,
+                "arrangement": "row",
+                "size": "small"
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "a": "bigger-looks-more" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.big-three-small-five",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "big-things-are-fewer",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "three leaves",
+              "stimulus": {
+                "type": "quantity",
+                "item": "leaf",
+                "count": 3,
+                "arrangement": "row",
+                "size": "big"
+              }
+            },
+            {
+              "id": "b",
+              "label": "five snails",
+              "stimulus": {
+                "type": "quantity",
+                "item": "snail",
+                "count": 5,
+                "arrangement": "row",
+                "size": "small"
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "a": "bigger-looks-more" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.two-four-five",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "three-groups",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two acorns",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "four apples",
+              "stimulus": {
+                "type": "quantity",
+                "item": "apple",
+                "count": 4,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "c",
+              "label": "five leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 5, "arrangement": "row" }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "ng.compare.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-fewer", "b": "picked-fewer" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        },
+        {
+          "id": "ng-more-01.three-one-two",
+          "kind": "choose-one",
+          "skillId": "math.comparison.more-to-6",
+          "variant": "three-groups",
+          "prompt": {
+            "instruction": "ng.more.instruction",
+            "stimulus": { "type": "sign", "id": "more" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "three snails",
+              "stimulus": {
+                "type": "quantity",
+                "item": "snail",
+                "count": 3,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "b",
+              "label": "one leaf",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 1, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "two apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 2, "arrangement": "row" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "ng.compare.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.more.hint.reveal" }
+          ],
+          "misconceptions": { "b": "picked-fewer", "c": "picked-fewer" },
+          "feedback": { "correct": "ng.more.correct", "incorrect": "ng.more.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "ng-fewer-01",
+      "version": 1,
+      "world": "number-garden",
+      "title": "Which has fewer?",
+      "summary": "Two or three groups of up to six things. Your child finds the one with fewer. Sometimes the larger group is drawn with smaller things, so that fewer has to mean how many.",
+      "skillIds": ["math.comparison.fewer-to-6"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["ng-fewer-01.demo"],
+        "guided": ["ng-fewer-01.guided-three-one", "ng-fewer-01.guided-three-five"],
+        "independent": {
+          "pool": [
+            "ng-fewer-01.three-two",
+            "ng-fewer-01.three-four",
+            "ng-fewer-01.five-four",
+            "ng-fewer-01.four-six",
+            "ng-fewer-01.six-five",
+            "ng-fewer-01.two-one",
+            "ng-fewer-01.small-four-big-two",
+            "ng-fewer-01.small-five-big-three",
+            "ng-fewer-01.five-two-four",
+            "ng-fewer-01.two-three-one"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "ng-fewer-01.demo",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "by-two",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "four apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 4, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "two snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 2, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-more" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.guided-three-one",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "by-two",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "three leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 3, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "one acorn",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 1, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-more" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.guided-three-five",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "by-two",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "three snails",
+              "stimulus": {
+                "type": "quantity",
+                "item": "snail",
+                "count": 3,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "b",
+              "label": "five apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 5, "arrangement": "row" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "b": "picked-more" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.three-two",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "by-one",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "three acorns",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 3, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "two leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 2, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-more" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.three-four",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "by-one",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "three apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 3, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "four snails",
+              "stimulus": {
+                "type": "quantity",
+                "item": "snail",
+                "count": 4,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "b": "picked-more" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.five-four",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "by-one",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "five leaves",
+              "stimulus": {
+                "type": "quantity",
+                "item": "leaf",
+                "count": 5,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "b",
+              "label": "four acorns",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 4, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-more" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.four-six",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "by-two",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "four snails",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 4, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "six apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 6, "arrangement": "row" }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "b": "picked-more" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.six-five",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "by-one",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "six acorns",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 6, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "five leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 5, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-more" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.two-one",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "by-one",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two apples",
+              "stimulus": {
+                "type": "quantity",
+                "item": "apple",
+                "count": 2,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "b",
+              "label": "one snail",
+              "stimulus": { "type": "quantity", "item": "snail", "count": 1, "arrangement": "row" }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-more" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.small-four-big-two",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "small-things-are-more",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "four leaves",
+              "stimulus": {
+                "type": "quantity",
+                "item": "leaf",
+                "count": 4,
+                "arrangement": "row",
+                "size": "small"
+              }
+            },
+            {
+              "id": "b",
+              "label": "two apples",
+              "stimulus": {
+                "type": "quantity",
+                "item": "apple",
+                "count": 2,
+                "arrangement": "row",
+                "size": "big"
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "a": "smaller-looks-fewer" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.small-five-big-three",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "small-things-are-more",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "five acorns",
+              "stimulus": {
+                "type": "quantity",
+                "item": "acorn",
+                "count": 5,
+                "arrangement": "row",
+                "size": "small"
+              }
+            },
+            {
+              "id": "b",
+              "label": "three snails",
+              "stimulus": {
+                "type": "quantity",
+                "item": "snail",
+                "count": 3,
+                "arrangement": "row",
+                "size": "big"
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "a": "smaller-looks-fewer" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.five-two-four",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "three-groups",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "five leaves",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 5, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "two acorns",
+              "stimulus": { "type": "quantity", "item": "acorn", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "c",
+              "label": "four apples",
+              "stimulus": {
+                "type": "quantity",
+                "item": "apple",
+                "count": 4,
+                "arrangement": "cluster"
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "ng.compare.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-more", "c": "picked-more" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        },
+        {
+          "id": "ng-fewer-01.two-three-one",
+          "kind": "choose-one",
+          "skillId": "math.comparison.fewer-to-6",
+          "variant": "three-groups",
+          "prompt": {
+            "instruction": "ng.fewer.instruction",
+            "stimulus": { "type": "sign", "id": "fewer" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "two apples",
+              "stimulus": { "type": "quantity", "item": "apple", "count": 2, "arrangement": "row" }
+            },
+            {
+              "id": "b",
+              "label": "three snails",
+              "stimulus": {
+                "type": "quantity",
+                "item": "snail",
+                "count": 3,
+                "arrangement": "cluster"
+              }
+            },
+            {
+              "id": "c",
+              "label": "one leaf",
+              "stimulus": { "type": "quantity", "item": "leaf", "count": 1, "arrangement": "row" }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "ng.compare.hint.eliminate" },
+            { "type": "reveal", "caption": "ng.fewer.hint.reveal" }
+          ],
+          "misconceptions": { "a": "picked-more", "b": "picked-more" },
+          "feedback": { "correct": "ng.fewer.correct", "incorrect": "ng.fewer.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "ng-equal-01",
+      "version": 1,
+      "world": "number-garden",
+      "title": "Two that are equal",
+      "summary": "Three or four groups, and two of them have the same amount. Your child picks out those two. The things and the way they are laid out differ, so the only way is to compare how many.",
+      "skillIds": ["math.comparison.equal-to-6"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["ng-equal-01.demo"],
+        "guided": ["ng-equal-01.guided-ones", "ng-equal-01.guided-threes"],
+        "independent": {
+          "pool": [
+            "ng-equal-01.twos",
+            "ng-equal-01.fours",
+            "ng-equal-01.threes",
+            "ng-equal-01.fives",
+            "ng-equal-01.fours-again",
+            "ng-equal-01.sixes",
+            "ng-equal-01.threes-of-four",
+            "ng-equal-01.fives-of-four"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "ng-equal-01.demo",
+          "kind": "make",
+          "skillId": "math.comparison.equal-to-6",
+          "variant": "three-groups",
+          "prompt": { "instruction": "ng.equal.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              {
+                "id": "a",
+                "label": "two leaves",
+                "stimulus": { "type": "quantity", "item": "leaf", "count": 2, "arrangement": "row" }
+              },
+              {
+                "id": "b",
+                "label": "two snails",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "snail",
+                  "count": 2,
+                  "arrangement": "cluster"
+                }
+              },
+              {
+                "id": "c",
+                "label": "three apples",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "apple",
+                  "count": 3,
+                  "arrangement": "row"
+                }
+              }
+            ],
+            "solution": ["a", "b"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.equal.hint.step" },
+            { "type": "reveal", "caption": "ng.equal.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.equal.correct", "incorrect": "ng.equal.incorrect" }
+        },
+        {
+          "id": "ng-equal-01.guided-ones",
+          "kind": "make",
+          "skillId": "math.comparison.equal-to-6",
+          "variant": "three-groups",
+          "prompt": { "instruction": "ng.equal.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              {
+                "id": "a",
+                "label": "one acorn",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "acorn",
+                  "count": 1,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "b",
+                "label": "two apples",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "apple",
+                  "count": 2,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "c",
+                "label": "one leaf",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "leaf",
+                  "count": 1,
+                  "arrangement": "scatter"
+                }
+              }
+            ],
+            "solution": ["a", "c"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.equal.hint.step" },
+            { "type": "reveal", "caption": "ng.equal.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.equal.correct", "incorrect": "ng.equal.incorrect" }
+        },
+        {
+          "id": "ng-equal-01.guided-threes",
+          "kind": "make",
+          "skillId": "math.comparison.equal-to-6",
+          "variant": "three-groups",
+          "prompt": { "instruction": "ng.equal.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              {
+                "id": "a",
+                "label": "three snails",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "snail",
+                  "count": 3,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "b",
+                "label": "five acorns",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "acorn",
+                  "count": 5,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "c",
+                "label": "three apples",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "apple",
+                  "count": 3,
+                  "arrangement": "cluster"
+                }
+              }
+            ],
+            "solution": ["a", "c"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.equal.hint.step" },
+            { "type": "reveal", "caption": "ng.equal.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.equal.correct", "incorrect": "ng.equal.incorrect" }
+        },
+        {
+          "id": "ng-equal-01.twos",
+          "kind": "make",
+          "skillId": "math.comparison.equal-to-6",
+          "variant": "three-groups",
+          "prompt": { "instruction": "ng.equal.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              {
+                "id": "a",
+                "label": "two apples",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "apple",
+                  "count": 2,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "b",
+                "label": "three leaves",
+                "stimulus": { "type": "quantity", "item": "leaf", "count": 3, "arrangement": "row" }
+              },
+              {
+                "id": "c",
+                "label": "two acorns",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "acorn",
+                  "count": 2,
+                  "arrangement": "cluster"
+                }
+              }
+            ],
+            "solution": ["a", "c"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.equal.hint.step" },
+            { "type": "reveal", "caption": "ng.equal.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.equal.correct", "incorrect": "ng.equal.incorrect" }
+        },
+        {
+          "id": "ng-equal-01.fours",
+          "kind": "make",
+          "skillId": "math.comparison.equal-to-6",
+          "variant": "three-groups",
+          "prompt": { "instruction": "ng.equal.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              {
+                "id": "a",
+                "label": "four snails",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "snail",
+                  "count": 4,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "b",
+                "label": "four apples",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "apple",
+                  "count": 4,
+                  "arrangement": "cluster"
+                }
+              },
+              {
+                "id": "c",
+                "label": "three leaves",
+                "stimulus": { "type": "quantity", "item": "leaf", "count": 3, "arrangement": "row" }
+              }
+            ],
+            "solution": ["a", "b"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.equal.hint.step" },
+            { "type": "reveal", "caption": "ng.equal.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.equal.correct", "incorrect": "ng.equal.incorrect" }
+        },
+        {
+          "id": "ng-equal-01.threes",
+          "kind": "make",
+          "skillId": "math.comparison.equal-to-6",
+          "variant": "three-groups",
+          "prompt": { "instruction": "ng.equal.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              {
+                "id": "a",
+                "label": "three acorns",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "acorn",
+                  "count": 3,
+                  "arrangement": "cluster"
+                }
+              },
+              {
+                "id": "b",
+                "label": "two snails",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "snail",
+                  "count": 2,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "c",
+                "label": "three leaves",
+                "stimulus": { "type": "quantity", "item": "leaf", "count": 3, "arrangement": "row" }
+              }
+            ],
+            "solution": ["a", "c"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.equal.hint.step" },
+            { "type": "reveal", "caption": "ng.equal.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.equal.correct", "incorrect": "ng.equal.incorrect" }
+        },
+        {
+          "id": "ng-equal-01.fives",
+          "kind": "make",
+          "skillId": "math.comparison.equal-to-6",
+          "variant": "three-groups",
+          "prompt": { "instruction": "ng.equal.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              {
+                "id": "a",
+                "label": "five leaves",
+                "stimulus": { "type": "quantity", "item": "leaf", "count": 5, "arrangement": "row" }
+              },
+              {
+                "id": "b",
+                "label": "four apples",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "apple",
+                  "count": 4,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "c",
+                "label": "five snails",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "snail",
+                  "count": 5,
+                  "arrangement": "cluster"
+                }
+              }
+            ],
+            "solution": ["a", "c"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.equal.hint.step" },
+            { "type": "reveal", "caption": "ng.equal.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.equal.correct", "incorrect": "ng.equal.incorrect" }
+        },
+        {
+          "id": "ng-equal-01.fours-again",
+          "kind": "make",
+          "skillId": "math.comparison.equal-to-6",
+          "variant": "three-groups",
+          "prompt": { "instruction": "ng.equal.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              {
+                "id": "a",
+                "label": "four apples",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "apple",
+                  "count": 4,
+                  "arrangement": "cluster"
+                }
+              },
+              {
+                "id": "b",
+                "label": "five acorns",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "acorn",
+                  "count": 5,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "c",
+                "label": "four leaves",
+                "stimulus": { "type": "quantity", "item": "leaf", "count": 4, "arrangement": "row" }
+              }
+            ],
+            "solution": ["a", "c"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.equal.hint.step" },
+            { "type": "reveal", "caption": "ng.equal.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.equal.correct", "incorrect": "ng.equal.incorrect" }
+        },
+        {
+          "id": "ng-equal-01.sixes",
+          "kind": "make",
+          "skillId": "math.comparison.equal-to-6",
+          "variant": "three-groups",
+          "prompt": { "instruction": "ng.equal.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              {
+                "id": "a",
+                "label": "six snails",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "snail",
+                  "count": 6,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "b",
+                "label": "five leaves",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "leaf",
+                  "count": 5,
+                  "arrangement": "cluster"
+                }
+              },
+              {
+                "id": "c",
+                "label": "six acorns",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "acorn",
+                  "count": 6,
+                  "arrangement": "scatter"
+                }
+              }
+            ],
+            "solution": ["a", "c"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.equal.hint.step" },
+            { "type": "reveal", "caption": "ng.equal.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.equal.correct", "incorrect": "ng.equal.incorrect" }
+        },
+        {
+          "id": "ng-equal-01.threes-of-four",
+          "kind": "make",
+          "skillId": "math.comparison.equal-to-6",
+          "variant": "four-groups",
+          "prompt": { "instruction": "ng.equal.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              {
+                "id": "a",
+                "label": "two apples",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "apple",
+                  "count": 2,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "b",
+                "label": "three leaves",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "leaf",
+                  "count": 3,
+                  "arrangement": "cluster"
+                }
+              },
+              {
+                "id": "c",
+                "label": "three snails",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "snail",
+                  "count": 3,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "d",
+                "label": "four acorns",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "acorn",
+                  "count": 4,
+                  "arrangement": "row"
+                }
+              }
+            ],
+            "solution": ["b", "c"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.equal.hint.step" },
+            { "type": "reveal", "caption": "ng.equal.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.equal.correct", "incorrect": "ng.equal.incorrect" }
+        },
+        {
+          "id": "ng-equal-01.fives-of-four",
+          "kind": "make",
+          "skillId": "math.comparison.equal-to-6",
+          "variant": "four-groups",
+          "prompt": { "instruction": "ng.equal.instruction" },
+          "task": {
+            "type": "select",
+            "cards": [
+              {
+                "id": "a",
+                "label": "four acorns",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "acorn",
+                  "count": 4,
+                  "arrangement": "cluster"
+                }
+              },
+              {
+                "id": "b",
+                "label": "five apples",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "apple",
+                  "count": 5,
+                  "arrangement": "row"
+                }
+              },
+              {
+                "id": "c",
+                "label": "six leaves",
+                "stimulus": { "type": "quantity", "item": "leaf", "count": 6, "arrangement": "row" }
+              },
+              {
+                "id": "d",
+                "label": "five snails",
+                "stimulus": {
+                  "type": "quantity",
+                  "item": "snail",
+                  "count": 5,
+                  "arrangement": "cluster"
+                }
+              }
+            ],
+            "solution": ["b", "d"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ng.compare.hint.model" },
+            { "type": "step", "count": 1, "caption": "ng.equal.hint.step" },
+            { "type": "reveal", "caption": "ng.equal.hint.reveal" }
+          ],
+          "feedback": { "correct": "ng.equal.correct", "incorrect": "ng.equal.incorrect" }
+        }
+      ]
+    }
+  ]
+}

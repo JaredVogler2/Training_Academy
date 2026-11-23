@@ -1,0 +1,25 @@
+{
+  "about": "Lines for the voice that do not come from a content pack: what every world shares, and single words. scripts/voice/make_voice.py makes a clip for each (and for every line of every pack).",
+  "groups": {
+    "common": {
+      "lines": {
+        "lesson.watch": "Watch first.",
+        "lesson.done": "All done!",
+        "lesson.paused": "Paused. Tap the arrow to carry on.",
+        "door.hello": "Hello! Who is playing today?"
+      },
+      "words": {
+        "count.1": "one",
+        "count.2": "two",
+        "count.3": "three",
+        "count.4": "four",
+        "count.5": "five",
+        "count.6": "six",
+        "count.7": "seven",
+        "count.8": "eight",
+        "count.9": "nine",
+        "count.10": "ten"
+      }
+    }
+  }
+}

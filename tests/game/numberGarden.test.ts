@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { ARRANGEMENTS, type ITEM_KINDS } from '@/engine';
-import { describe as describePicture, layout, thingScale } from '@/game/worlds/number-garden';
+import {
+  describe as describePicture,
+  layout,
+  thingScale,
+} from '@/game/worlds/number-garden/things';
 
 describe('Number Garden pictures', () => {
   it('places exactly as many things as asked, for every amount and layout', () => {
@@ -20,7 +24,9 @@ describe('Number Garden pictures', () => {
             const [ax, ay] = places[a]!;
             const [bx, by] = places[b]!;
             // A thing is 40 across before scaling; neighbours must not touch.
-            expect(Math.hypot(ax - bx, ay - by)).toBeGreaterThan(40 * thingScale(count));
+            expect(Math.hypot(ax - bx, ay - by)).toBeGreaterThan(
+              40 * thingScale(count, arrangement),
+            );
           }
         }
       }
@@ -32,7 +38,7 @@ describe('Number Garden pictures', () => {
       for (let count = 1; count <= 10; count++) {
         // The picture box is x 18–182, y 6–126; a thing reaches 20 from its centre before scaling, and its
         // shadow a little further below.
-        const reach = 20 * thingScale(count);
+        const reach = 20 * thingScale(count, arrangement);
         for (const [x, y] of layout(count, arrangement)) {
           expect(x - reach).toBeGreaterThanOrEqual(18);
           expect(x + reach).toBeLessThanOrEqual(182);
@@ -50,7 +56,7 @@ describe('Number Garden pictures', () => {
   });
 
   it('draws every set of up to six at the same size, so size is not a clue to the amount', () => {
-    const sizes = new Set([1, 2, 3, 4, 5, 6].map(thingScale));
+    const sizes = new Set([1, 2, 3, 4, 5, 6].map((count) => thingScale(count)));
     expect(sizes.size).toBe(1);
   });
 

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { getSkillEvidence, isIndependentSuccess, type Lesson } from '@/engine';
 import { LessonRunner, type RunnerDeps, type RunnerState } from '@/game/lessonRunner';
 import { MemoryDriver, Repository, StorageError, migrate, type WriteOp } from '@/storage';
-import { T0, numberGardenPack, sampleLesson } from '../helpers/content';
+import { T0, answerTo, numberGardenPack, sampleLesson } from '../helpers/content';
 
 const pack = numberGardenPack();
 const lesson = sampleLesson();
@@ -70,7 +70,7 @@ async function finish(runner: LessonRunner): Promise<void> {
     const state = runner.getState();
     if (state.phase === 'finished') return;
     if (state.view.stage === 'demo' || state.answered) await runner.next();
-    else await runner.answer(state.view.challenge.answer);
+    else await runner.answer(answerTo(state.view));
   }
   throw new Error('The lesson did not finish.');
 }
@@ -111,10 +111,10 @@ describe('LessonRunner', () => {
     const runner = await LessonRunner.start(w.deps());
     await runner.next();
     const before = playing(runner);
-    await runner.answer(before.view.challenge.answer);
+    await runner.answer(answerTo(before.view));
     const after = playing(runner);
     expect(after.answered).toBe(true);
-    expect(after.picked).toBe(before.view.challenge.answer);
+    expect(after.picked).toBe(answerTo(before.view));
     expect(after.feedback).toMatchObject({ outcome: 'correct', next: 'advance' });
     expect(after.view.challenge.id).toBe(before.view.challenge.id);
 
@@ -127,7 +127,7 @@ describe('LessonRunner', () => {
     const runner = await LessonRunner.start(w.deps());
     await runner.next();
     const before = playing(runner);
-    const wrong = before.view.choices.find((c) => c.choice.id !== before.view.challenge.answer)!;
+    const wrong = before.view.choices.find((c) => c.choice.id !== answerTo(before.view))!;
     await runner.answer(wrong.choice.id);
 
     const after = playing(runner);
@@ -137,7 +137,7 @@ describe('LessonRunner', () => {
     expect(after.view.choices.find((c) => c.choice.id === wrong.choice.id)?.available).toBe(false);
     expect(after.view.tryIndex).toBe(1);
 
-    await runner.answer(after.view.challenge.answer);
+    await runner.answer(answerTo(after.view));
     expect(playing(runner).answered).toBe(true);
     const attempts = await w.repository.listAttempts(PROFILE);
     expect(attempts.map((a) => a.outcome)).toEqual(['incorrect', 'correct']);
@@ -152,11 +152,11 @@ describe('LessonRunner', () => {
     await runner.next();
     const view = playing(runner).view;
     await Promise.all([
-      runner.answer(view.challenge.answer),
-      runner.answer(view.challenge.answer),
-      runner.answer(view.challenge.answer),
+      runner.answer(answerTo(view)),
+      runner.answer(answerTo(view)),
+      runner.answer(answerTo(view)),
     ]);
-    await runner.answer(view.challenge.answer);
+    await runner.answer(answerTo(view));
     expect(await w.repository.listAttempts(PROFILE)).toHaveLength(1);
   });
 
@@ -177,7 +177,7 @@ describe('LessonRunner', () => {
     expect(state.hint?.type).toBe('model');
     expect(state.view.hintsUsed).toBe(1);
 
-    await runner.answer(state.view.challenge.answer);
+    await runner.answer(answerTo(state.view));
     const [attempt] = await w.repository.listAttempts(PROFILE);
     expect(attempt).toMatchObject({ hintLevel: 1, assistance: 'hint', outcome: 'correct' });
   });
@@ -185,7 +185,7 @@ describe('LessonRunner', () => {
   it('resumes after a reload at the same question, in the same order, with the same help showing', async () => {
     const first = await LessonRunner.start(w.deps());
     await first.next();
-    await first.answer(playing(first).view.challenge.answer);
+    await first.answer(answerTo(playing(first).view));
     await first.next();
     await first.hint();
     const before = playing(first);
@@ -206,7 +206,7 @@ describe('LessonRunner', () => {
   it('does not resume a sitting of an older version of the lesson', async () => {
     const first = await LessonRunner.start(w.deps());
     await first.next();
-    await first.answer(playing(first).view.challenge.answer);
+    await first.answer(answerTo(playing(first).view));
     const oldSession = (await w.repository.findActiveSession(PROFILE, lesson.id))!;
 
     const revised: Lesson = { ...lesson, version: lesson.version + 1 };
@@ -260,10 +260,10 @@ describe('LessonRunner', () => {
     expect(playing(here).view.key).toBe(view.key);
 
     // The other tab answers correctly and moves on.
-    await there.answer(view.challenge.answer);
+    await there.answer(answerTo(view));
     await there.next();
     // This tab, still showing the old question, answers wrongly.
-    const wrong = view.choices.find((c) => c.choice.id !== view.challenge.answer)!;
+    const wrong = view.choices.find((c) => c.choice.id !== answerTo(view))!;
     await here.answer(wrong.choice.id);
 
     expect(playing(here).view).toEqual(playing(there).view);
@@ -276,7 +276,7 @@ describe('LessonRunner', () => {
     const runner = await LessonRunner.start(w.deps());
     await runner.next();
     w.clock.now += 6500;
-    await runner.answer(playing(runner).view.challenge.answer);
+    await runner.answer(answerTo(playing(runner).view));
     const [attempt] = await w.repository.listAttempts(PROFILE);
     expect(attempt?.durationMs).toBeGreaterThanOrEqual(6500);
     expect(attempt?.durationMs).toBeLessThan(9000);

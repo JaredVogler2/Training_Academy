@@ -41,6 +41,9 @@ export default defineConfig({
     // Everything Vite emits is content-hashed and lands in /immutable/, which vercel.json caches forever.
     // Files in public/assets keep their names and are revalidated instead.
     assetsDir: 'immutable',
+    // A clip of the voice is a file of its own however small it is: written into a script as text it would be
+    // downloaded with that script whether or not it is ever played, and could not be kept on its own for offline.
+    assetsInlineLimit: (file) => (file.endsWith('.mp3') ? false : undefined),
     sourcemap: false,
     // three.js alone is larger than Vite's default warning threshold; scripts/verify-dist.mjs holds the real budgets.
     chunkSizeWarningLimit: 900,
@@ -74,6 +77,14 @@ export default defineConfig({
               priority: 10,
             },
             {
+              // The part of the engine that runs a lesson: judging answers, a robot's programs, the workbench
+              // models, what the record shows. The first screen needs none of it (it needs only the shapes of
+              // what is stored), so it is kept out of the chunk the first screen fetches.
+              name: 'engine-play',
+              test: /src[\\/]engine[\\/](session|tasks|robot|models|evidence)\.ts$/,
+              priority: 6,
+            },
+            {
               // The harbour itself: the modelling kit, the islands, the water. The hub and the studio both use it,
               // and each stays a small chunk of its own that asks for this one.
               name: 'harbour',
@@ -89,7 +100,8 @@ export default defineConfig({
     // Vercel sends no CORS headers for static files, so neither does the preview.
     cors: false,
     host: '127.0.0.1',
-    port: 4173,
+    // The browser tests start this preview and expect it here (playwright.config.ts).
+    port: Number(process.env.E2E_PORT ?? 4173),
     strictPort: true,
   },
 });

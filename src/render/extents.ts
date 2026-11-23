@@ -1,4 +1,4 @@
-import { WORLD_IDS, type WorldId } from '@/engine';
+import { WORLD_IDS, type WorldId } from '@/engine/schema';
 
 /**
  * The few numbers that both the layout (archipelago.ts) and the pictures of the islands (sprites.ts) depend on:

@@ -1,6 +1,6 @@
 /**
- * The game's sounds: a handful of soft, synthesised cues. No audio files, no network, and nothing a lesson depends
- * on — the game is fully usable muted. Phase 04 adds recorded narration on top of the same unlock and mute handling.
+ * The game's sounds: a handful of soft, synthesised cues, and the recorded clips of the voice (src/audio/voice.ts),
+ * which are played through the same unlock and mute handling. The cues need no files and no network.
  *
  * Browsers only let a page make sound after the person has touched it, and iOS Safari suspends audio whenever it
  * likes: a phone call, another app, the screen locking. So the context is created on the first gesture and woken on
@@ -20,6 +20,22 @@ export interface AudioContextLike {
   resume(): Promise<void>;
   createOscillator(): OscillatorLike;
   createGain(): GainLike;
+  /** Recorded clips. A browser without these two still plays the cues. */
+  decodeAudioData?(data: ArrayBuffer): Promise<unknown>;
+  createBufferSource?(): BufferSourceLike;
+}
+
+export interface BufferSourceLike {
+  buffer: unknown;
+  onended: ((event: never) => unknown) | null;
+  connect(destination: unknown): unknown;
+  start(when?: number): void;
+  stop(when?: number): void;
+}
+
+/** A clip that is playing, so that it can be cut short. */
+export interface PlayingClip {
+  stop(): void;
 }
 
 interface ParamLike {
@@ -145,6 +161,10 @@ const COUNTING_NOTES = [
 /** How long a cue will wait for the audio to wake before it is too late to be the sound of that touch. */
 const WAIT_FOR_WAKE_MS = 900;
 
+/** How loud a recorded clip is played, and how far the cues step back while one is speaking. */
+const CLIP_LEVEL = 0.95;
+const DUCKED = 0.3;
+
 export class AudioEngine {
   private context: AudioContextLike | null = null;
   private enabled: boolean;
@@ -154,6 +174,9 @@ export class AudioEngine {
   /** The cue asked for while the context was waking, and when. Only the latest is kept. */
   private waiting: { wave: OscillatorType; notes: Note[]; since: number } | null = null;
   private readonly listeners = new Set<() => void>();
+  /** Every cue goes through this one gain, so that they can all step back while the voice is speaking. */
+  private bus: GainLike | null = null;
+  private speaking = 0;
   /** Cues actually scheduled, and cues skipped because of an error. */
   readonly stats = { played: 0, failed: 0 };
 
@@ -234,6 +257,94 @@ export class AudioEngine {
     return this.sound('sine', [{ frequency, at: 0, seconds: 0.16, level: 0.15 }]);
   }
 
+  /** Whether a recorded clip could be heard if it were played now. */
+  get canPlayClips(): boolean {
+    const context = this.context;
+    return (
+      this.state === 'ready' &&
+      typeof context?.decodeAudioData === 'function' &&
+      typeof context.createBufferSource === 'function'
+    );
+  }
+
+  /** Turn a downloaded clip into something that can be played. `null` when this browser cannot, or the file is bad. */
+  async decode(data: ArrayBuffer): Promise<unknown> {
+    const context = this.context;
+    if (!context || typeof context.decodeAudioData !== 'function') return null;
+    try {
+      return await context.decodeAudioData(data);
+    } catch {
+      this.stats.failed += 1;
+      return null;
+    }
+  }
+
+  /**
+   * Play a decoded clip now. The cues step back while it plays. Returns a handle to cut it short, or `null` if it
+   * cannot be played at this moment; `ended` is called once, when it finishes or is cut short.
+   */
+  playClip(buffer: unknown, ended: () => void = () => undefined): PlayingClip | null {
+    const context = this.context;
+    if (!this.canPlayClips || !context || typeof context.createBufferSource !== 'function') {
+      return null;
+    }
+    try {
+      const source = context.createBufferSource();
+      const gain = context.createGain();
+      source.buffer = buffer;
+      gain.gain.setValueAtTime(CLIP_LEVEL, context.currentTime);
+      source.connect(gain);
+      gain.connect(context.destination);
+      let over = false;
+      const finish = () => {
+        if (over) return;
+        over = true;
+        this.speaking = Math.max(0, this.speaking - 1);
+        this.duck();
+        ended();
+      };
+      source.onended = finish;
+      this.speaking += 1;
+      this.duck();
+      source.start(context.currentTime + 0.01);
+      this.stats.played += 1;
+      return {
+        stop: () => {
+          try {
+            source.stop();
+          } catch {
+            // Already stopped.
+          }
+          finish();
+        },
+      };
+    } catch {
+      this.stats.failed += 1;
+      return null;
+    }
+  }
+
+  private duck(): void {
+    const context = this.context;
+    if (!context || !this.bus) return;
+    try {
+      this.bus.gain.setValueAtTime(this.speaking > 0 ? DUCKED : 1, context.currentTime);
+    } catch {
+      // The cues stay as loud as they were.
+    }
+  }
+
+  /** Where cues are sent: one gain in front of the speakers. */
+  private output(context: AudioContextLike): unknown {
+    if (!this.bus) {
+      const bus = context.createGain();
+      bus.gain.setValueAtTime(this.speaking > 0 ? DUCKED : 1, context.currentTime);
+      bus.connect(context.destination);
+      this.bus = bus;
+    }
+    return this.bus;
+  }
+
   private playWhatWaited(): void {
     const waited = this.waiting;
     this.waiting = null;
@@ -252,6 +363,7 @@ export class AudioEngine {
     }
     try {
       const start = context.currentTime + 0.01;
+      const output = this.output(context);
       for (const note of notes) {
         const oscillator = context.createOscillator();
         const gain = context.createGain();
@@ -262,7 +374,7 @@ export class AudioEngine {
         gain.gain.linearRampToValueAtTime(note.level, start + note.at + 0.012);
         gain.gain.exponentialRampToValueAtTime(0.0001, start + note.at + note.seconds);
         oscillator.connect(gain);
-        gain.connect(context.destination);
+        gain.connect(output);
         oscillator.start(start + note.at);
         oscillator.stop(start + note.at + note.seconds + 0.03);
       }

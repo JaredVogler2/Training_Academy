@@ -1,4 +1,5 @@
 import {
+  Suspense,
   useEffect,
   useId,
   useRef,
@@ -6,6 +7,8 @@ import {
   useSyncExternalStore,
   type SyntheticEvent,
 } from 'react';
+import { lazyView } from '@/app/chunks';
+import { audio, voice } from '@/audio';
 import { getDiagnostics, subscribeDiagnostics } from '@/app/diagnostics';
 import {
   GRAPHICS_OPTIONS,
@@ -486,6 +489,11 @@ function Diagnostics() {
       `Loaded: ${chunk.name}`,
       chunk.ok ? `${chunk.ms} ms` : `failed after ${chunk.ms} ms`,
     ]),
+    [
+      'Voice',
+      `${voice().stats.said} lines said, ${voice().stats.unheard} not heard, this visit` +
+        (audio().canPlayClips ? '' : ' (recordings cannot be played right now)'),
+    ],
     ['Errors this visit', String(diagnostics.errors.length)],
   ];
   return (
@@ -508,6 +516,29 @@ function Diagnostics() {
             </li>
           ))}
         </ul>
+      )}
+    </details>
+  );
+}
+
+/** The recordings of the voice, to listen to. Fetched only when the section is opened: it is a long list. */
+const VoiceCheck = lazyView('voice-check', () => import('./VoiceCheck'));
+
+function Voice() {
+  const [opened, setOpened] = useState(false);
+  return (
+    <details
+      className={styles.card}
+      data-testid="voice"
+      onToggle={(event) => {
+        if (event.currentTarget.open) setOpened(true);
+      }}
+    >
+      <summary>{text.voice}</summary>
+      {opened && (
+        <Suspense fallback={<p className={styles.small}>{text.voiceLoading}</p>}>
+          <VoiceCheck />
+        </Suspense>
       )}
     </details>
   );
@@ -539,6 +570,7 @@ function Area() {
       <Evidence key={playing?.id ?? 'nobody'} profile={playing} />
       <Data profile={playing} onDialog={setDialog} />
       <DeviceSettings />
+      <Voice />
       <Diagnostics />
 
       <Modal

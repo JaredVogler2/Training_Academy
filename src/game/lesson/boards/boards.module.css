@@ -1,0 +1,495 @@
+/*
+ * Boards for things to make, shared by every world: picking out the ones that belong, putting cards in order,
+ * turning cards over to find pairs. Each fills the middle of the lesson frame (see Lesson.module.css) and never
+ * scrolls.
+ */
+
+/* Picking out the ones that belong. */
+.select {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  gap: clamp(8px, 1.6vh, 14px);
+  min-height: 0;
+}
+
+.select[data-study='true'] {
+  grid-template-rows: minmax(0, 0.7fr) minmax(0, 1.3fr);
+}
+
+/* The things to remember: in view while they are looked at, under the cover once they have been put away. */
+.study {
+  position: relative;
+  min-height: 0;
+}
+
+.studied {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: clamp(6px, 2vw, 16px);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.studied > li {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  animation: card-in 0.4s var(--ease-spring) both;
+  animation-delay: calc(var(--order, 0) * 0.14s);
+}
+
+.cards {
+  display: grid;
+  grid-auto-rows: minmax(0, 1fr);
+  gap: clamp(8px, 1.6vh, 14px);
+  min-height: 0;
+  transition: opacity var(--gentle) linear;
+}
+
+/* While the things to remember are in view, the cards wait, turned low: looking comes before answering. */
+.cards[data-waiting='true'] {
+  opacity: 0.25;
+}
+
+.cards > li {
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Many cards: three across, however narrow the screen. */
+.cards[data-count='5'],
+.cards[data-count='6'],
+.cards[data-count='7'],
+.cards[data-count='8'],
+.cards[data-count='9'] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cards[data-count='4'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 64px;
+  padding: 6px;
+  border: 4px solid var(--white);
+  border-radius: 22px;
+  background: var(--white);
+  box-shadow:
+    0 var(--lip) 0 rgb(34 48 79 / 16%),
+    0 12px 20px rgb(34 48 79 / 12%);
+  transition:
+    transform var(--quick) var(--ease-out),
+    box-shadow var(--quick) var(--ease-out),
+    border-color var(--gentle) linear,
+    background-color var(--gentle) linear;
+}
+
+.card[aria-disabled='true'] {
+  cursor: default;
+}
+
+.card[aria-disabled='false']:active {
+  transform: translateY(calc(var(--lip) - 1px));
+  box-shadow: 0 1px 0 rgb(34 48 79 / 16%);
+}
+
+/* Picked: lifted, with a sun border and a tick — never colour alone. */
+.card[data-picked='true'] {
+  border-color: var(--yes);
+  background: #fff6d2;
+  transform: translateY(-4px);
+}
+
+.card[data-lit='true'] {
+  animation: card-settle 0.5s var(--ease-spring);
+}
+
+@media (min-width: 600px) {
+  .cards[data-count='3'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cards[data-count='4'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* A phone on its side: the things to remember on the left, the cards in rows on the right. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .select[data-study='true'] {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.5fr);
+  }
+
+  .cards[data-count='3'],
+  .cards[data-count='4'] {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-auto-flow: column;
+  }
+
+  .cards[data-count='5'],
+  .cards[data-count='6'],
+  .cards[data-count='7'],
+  .cards[data-count='8'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .cards[data-count='9'] {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .card {
+    min-height: 0;
+    padding: 3px;
+    border-width: 3px;
+    border-radius: 16px;
+  }
+}
+
+/* A card that has gone to a place leaves its room behind it, so that the others do not shuffle along. */
+.card[data-gone='true'] {
+  visibility: hidden;
+}
+
+/*
+ * Putting cards in order. The places are along the top, one after another the way a story runs; the cards wait
+ * underneath. Each place carries its number as marks — one, two, three — never as a numeral.
+ */
+.order {
+  display: grid;
+  grid-template-rows: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: clamp(8px, 1.6vh, 14px);
+  min-height: 0;
+}
+
+.slots,
+.tray {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: clamp(6px, 1.6vw, 14px);
+  min-height: 0;
+}
+
+.slots {
+  padding: clamp(6px, 1.4vh, 12px);
+  border: 4px dashed var(--mid);
+  border-radius: var(--radius-l);
+  background: var(--tint);
+  transition:
+    border-color var(--gentle) linear,
+    background-color var(--gentle) linear;
+}
+
+.slots[data-same='true'] {
+  border-style: solid;
+  border-color: var(--yes);
+  background: #fff6d2;
+}
+
+.slots > li,
+.tray > li {
+  min-width: 0;
+  min-height: 0;
+}
+
+.slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 56px;
+  padding: 4px 4px 16px;
+  border: 3px dashed var(--ink-faint);
+  border-radius: 18px;
+  background: rgb(255 255 255 / 55%);
+}
+
+.slot[data-filled='true'] {
+  border-style: solid;
+  border-color: var(--white);
+  background: var(--white);
+}
+
+.slot[data-fixed='true'] {
+  border-color: var(--yes);
+}
+
+.slot[aria-disabled='true'] {
+  cursor: default;
+}
+
+.slotted,
+.ghost {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.slotted {
+  animation: card-in 0.3s var(--ease-spring) both;
+}
+
+/* Where the answer is being shown: the card that belongs here, faintly, until it is put here. */
+.ghost {
+  opacity: 0.32;
+}
+
+.slotMarks {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  display: flex;
+  gap: 3px;
+  transform: translateX(-50%);
+}
+
+.slotMarks > i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--deep);
+}
+
+/*
+ * Doing again what was shown. The things keep the places they were shown in; whichever is being shown, or has
+ * just been tapped, is lit — lifted, with a sun edge, never by colour alone.
+ */
+.echo {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: clamp(8px, 1.6vh, 14px);
+  min-height: 0;
+}
+
+.echoCards,
+.pairCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  gap: clamp(8px, 2vw, 16px);
+  min-height: 0;
+}
+
+.echoCards[data-count='3'],
+.echoCards[data-count='5'],
+.echoCards[data-count='6'],
+.pairCards[data-count='6'],
+.pairCards[data-count='12'] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.echoCards > li,
+.pairCards > li {
+  min-width: 0;
+  min-height: 0;
+}
+
+.echoCard {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 64px;
+  padding: 6px;
+  border: 4px solid var(--white);
+  border-radius: 24px;
+  background: var(--white);
+  box-shadow:
+    0 var(--lip) 0 rgb(34 48 79 / 16%),
+    0 12px 20px rgb(34 48 79 / 12%);
+  transition:
+    transform var(--quick) var(--ease-out),
+    border-color var(--quick) linear,
+    background-color var(--quick) linear;
+}
+
+.echoCard[aria-disabled='true'] {
+  cursor: default;
+}
+
+.echoCard[data-lit='true'] {
+  border-color: var(--yes);
+  background: #fff6d2;
+  transform: translateY(-6px) scale(1.05);
+}
+
+/* One mark for each thing in the sequence, filled as it is tapped: how far along, with nothing to read. */
+.echoMarks {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.echoMarks > li {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--white);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 55%);
+}
+
+.echoMarks > li[data-done='true'] {
+  border-color: var(--deep);
+  background: var(--deep);
+}
+
+/*
+ * Finding pairs. A card face down is the world's own colour with a leaf-vein pattern; face up it is white paper
+ * with its picture. A pair that has been found stays face up with a sun edge.
+ */
+.pairs {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+}
+
+.pairCards[data-count='8'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pairCard {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 56px;
+  padding: 0;
+  border: 4px solid var(--white);
+  border-radius: 20px;
+  background:
+    repeating-linear-gradient(-32deg, transparent 0 14px, rgb(255 255 255 / 18%) 14px 18px),
+    var(--mid);
+  box-shadow:
+    0 var(--lip) 0 rgb(34 48 79 / 16%),
+    0 10px 18px rgb(34 48 79 / 12%);
+  transition:
+    transform var(--quick) var(--ease-out),
+    background-color var(--quick) linear,
+    border-color var(--gentle) linear;
+}
+
+.pairCard[data-up='true'] {
+  background: var(--white);
+  animation: turn-over 0.28s var(--ease-out);
+}
+
+.pairCard[data-found='true'] {
+  border-color: var(--yes);
+  background: #fff6d2;
+}
+
+.pairCard[aria-disabled='true'] {
+  cursor: default;
+}
+
+.pairFace {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 6px;
+}
+
+@media (min-width: 600px) {
+  .echoCards[data-count='4'],
+  .pairCards[data-count='8'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .pairCards[data-count='12'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* A phone on its side: everything in rows, as wide as the screen. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .order {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .slot {
+    min-height: 0;
+    padding-bottom: 12px;
+  }
+
+  .echo {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .echoMarks {
+    flex-direction: column;
+  }
+
+  .echoCards,
+  .pairCards[data-count='4'] {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-auto-flow: column;
+  }
+
+  .pairCards[data-count='6'] {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .pairCards[data-count='8'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .pairCards[data-count='12'] {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .echoCard,
+  .pairCard {
+    min-height: 0;
+    border-width: 3px;
+    border-radius: 16px;
+  }
+}
+
+@keyframes turn-over {
+  from {
+    transform: scaleX(0.2);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes card-settle {
+  0% {
+    transform: translateY(-4px) scale(1);
+  }
+  45% {
+    transform: translateY(-4px) scale(1.05);
+  }
+  100% {
+    transform: translateY(-4px) scale(1);
+  }
+}

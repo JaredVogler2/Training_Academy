@@ -1,0 +1,141 @@
+import { createHash } from 'node:crypto';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from 'vitest';
+
+/**
+ * The voice is files made ahead of time (scripts/voice/make_voice.py). These tests keep the files, the list of them
+ * and the words the game shows saying the same thing: a line that is changed without its clip being made again, a
+ * clip nothing asks for, a file swapped for another — each fails here.
+ */
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+const read = (path: string) => readFileSync(join(root, path), 'utf8');
+
+interface Clip {
+  group: string;
+  kind: 'line' | 'word';
+  text: string;
+  file: string;
+  bytes: number;
+  seconds: number;
+  sha256: string;
+  heard: string;
+  check: 'matches' | 'in-sentence' | 'differs';
+  takes: number;
+  reviewed: string | null;
+}
+
+const manifest = JSON.parse(read('src/voice/manifest.json')) as {
+  voice: Record<string, unknown>;
+  clips: Record<string, Clip>;
+};
+const clips = Object.entries(manifest.clips);
+
+/** Every clip the game asks for, gathered the way the script that makes them gathers it. */
+function wanted(): Map<string, { group: string; kind: string; text: string }> {
+  const found = new Map<string, { group: string; kind: string; text: string }>();
+  for (const name of readdirSync(join(root, 'src/content/packs'))) {
+    const pack = JSON.parse(read(`src/content/packs/${name}`)) as {
+      world: string;
+      strings: { en: Record<string, string> };
+    };
+    for (const [key, text] of Object.entries(pack.strings.en)) {
+      found.set(key, { group: pack.world, kind: 'line', text });
+    }
+  }
+  const shared = JSON.parse(read('src/voice/lines.json')) as {
+    groups: Record<string, { lines?: Record<string, string>; words?: Record<string, string> }>;
+  };
+  for (const [group, kinds] of Object.entries(shared.groups)) {
+    for (const [key, text] of Object.entries(kinds.lines ?? {})) {
+      found.set(key, { group, kind: 'line', text });
+    }
+    for (const [key, text] of Object.entries(kinds.words ?? {})) {
+      found.set(key, { group, kind: 'word', text });
+    }
+  }
+  return found;
+}
+
+/**
+ * Clips the speech recogniser heard differently from what was meant, each with what it heard and why the clip is
+ * kept all the same. A clip that is heard differently and is not listed here fails the suite: make it again
+ * (`--again KEY`), or reword the line, or — only after listening to it — list it.
+ */
+const HEARD_DIFFERENTLY: Record<string, string> = {};
+
+describe('the voice', () => {
+  it('has a clip for every line the game can say, and for nothing else', () => {
+    const asked = wanted();
+    expect(clips.map(([key]) => key).sort()).toEqual([...asked.keys()].sort());
+    for (const [key, clip] of clips) {
+      expect({ group: clip.group, kind: clip.kind, text: clip.text }, key).toEqual(asked.get(key));
+    }
+  });
+
+  it('keeps each clip where the manifest says, unchanged since it was made', () => {
+    for (const [key, clip] of clips) {
+      expect(clip.file, key).toBe(`src/assets/voice/en/${clip.group}/${key}.mp3`);
+      const path = join(root, clip.file);
+      expect(existsSync(path), clip.file).toBe(true);
+      const bytes = readFileSync(path);
+      expect(bytes.length, key).toBe(clip.bytes);
+      expect(createHash('sha256').update(bytes).digest('hex'), key).toBe(clip.sha256);
+    }
+  });
+
+  it('has no clip lying about that the manifest does not know', () => {
+    const known = new Set(clips.map(([, clip]) => clip.file));
+    const base = 'src/assets/voice/en';
+    const onDisk = readdirSync(join(root, base)).flatMap((group) =>
+      statSync(join(root, base, group)).isDirectory()
+        ? readdirSync(join(root, base, group)).map((name) => `${base}/${group}/${name}`)
+        : [`${base}/${group}`],
+    );
+    expect(onDisk.filter((file) => !known.has(file))).toEqual([]);
+  });
+
+  it('tells the game how long each clip lasts, group by group', () => {
+    const groups = new Map<string, Record<string, number>>();
+    for (const [key, clip] of clips) {
+      groups.set(clip.group, { ...groups.get(clip.group), [key]: clip.seconds });
+    }
+    for (const [group, timings] of groups) {
+      expect(JSON.parse(read(`src/voice/timings/${group}.json`)), group).toEqual(timings);
+    }
+  });
+
+  it('is made of short, small clips: a sentence or a word each', () => {
+    for (const [key, clip] of clips) {
+      expect(clip.seconds, key).toBeGreaterThan(0.15);
+      expect(clip.seconds, key).toBeLessThan(clip.kind === 'word' ? 1.6 : 7);
+      expect(clip.bytes, key).toBeLessThan(60 * 1024);
+    }
+  });
+
+  it('was heard to say what it should by a speech recogniser, clip by clip', () => {
+    const differing = Object.fromEntries(
+      clips.filter(([, clip]) => clip.check === 'differs').map(([key, clip]) => [key, clip.heard]),
+    );
+    expect(differing).toEqual(HEARD_DIFFERENTLY);
+    // A sentence is either heard word for word or it is listed above: "nearly" is not a result a sentence can have.
+    for (const [key, clip] of clips) {
+      if (clip.kind === 'line') expect(['matches', 'differs'], key).toContain(clip.check);
+    }
+  });
+
+  it('says of every clip whether a person has listened to it: a date, or not yet', () => {
+    for (const [key, clip] of clips) {
+      expect(clip.reviewed === null || /^\d{4}-\d{2}-\d{2}$/.test(clip.reviewed), key).toBe(true);
+    }
+  });
+
+  it('records what it was made with', () => {
+    expect(manifest.voice).toMatchObject({
+      model: expect.stringMatching(/\.onnx$/),
+      modelSha256: expect.stringMatching(/^[0-9a-f]{64}$/),
+    });
+  });
+});

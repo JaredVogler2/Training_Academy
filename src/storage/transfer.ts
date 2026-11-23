@@ -7,7 +7,7 @@ import {
   type Attempt,
   type LessonSession,
   type Profile,
-} from '@/engine';
+} from '@/engine/schema';
 import { checksumOf } from './checksum';
 
 /**

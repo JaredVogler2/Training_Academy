@@ -1,24 +1,51 @@
 import type { ComponentType } from 'react';
 import { loadChunk } from '@/app/chunks';
-import type { Stimulus, WorldId } from '@/engine';
+import { addVoice, type VoiceBank } from '@/audio';
+import type { MakeChallenge, Stimulus, WorldId } from '@/engine';
+import type { BoardProps } from '@/game/lesson/frame';
+import type { ChooseSituation, MakeSituation, Script } from '@/game/lesson/script';
 
 /**
- * A world's own code: how its challenges are drawn (and, as the worlds are built, their scenes and mini-games).
- * Each is a separate chunk, fetched the first time that world is entered and never before.
+ * A world's own code: how its challenges are drawn, how its questions are shown off, the boards of the games only
+ * it has, and its lines for the voice. Each is a separate chunk, fetched the first time that world is entered and
+ * never before.
  */
 
 export interface PictureProps {
   stimulus: Stimulus;
   /** When true, the things in the picture light up one after another: "count them with me". */
   counting?: boolean;
+  /** Where it is being shown, for a picture that is drawn differently as a question than as an answer. */
+  place?: 'prompt' | 'choice' | 'card';
+  /** It is being named or played at this moment. */
+  sounding?: boolean;
+  /** Given to a picture that is itself something to tap (a sound to hear again): what tapping it asks for. */
+  onAgain?: () => void;
 }
 
 export interface WorldModule {
   Picture: ComponentType<PictureProps>;
-  /** The picture in words, for screen readers: "two snails". */
-  describe(stimulus: Stimulus): string;
+  /**
+   * The picture in words, for screen readers: "two snails". Where it is what a question is asked about, the words
+   * say so: "the group to match: two snails".
+   */
+  describe(stimulus: Stimulus, place?: 'prompt' | 'choice' | 'card'): string;
   /** How many separate things the picture holds, where counting them is how this world teaches. */
   countable?(stimulus: Stimulus): number;
+  /** How this world shows off a question with choices. Left out, the lesson frame points and lights. */
+  chooseScript?(situation: ChooseSituation): Script;
+  /**
+   * How this world shows off a thing to make, where it has more to say than the board does on its own (a story
+   * told card by card). `null` leaves it to the board.
+   */
+  makeScript?(situation: MakeSituation, challenge: MakeChallenge): Script | null;
+  /**
+   * Boards for games only this world has, by what they are for: a kind of task (`program`), or a scene a question
+   * is asked about (`scene:map`). The lesson frame has boards of its own for everything else.
+   */
+  boards?: Readonly<Record<string, ComponentType<BoardProps>>>;
+  /** This world's lines for the voice. */
+  voice: VoiceBank;
 }
 
 const MODULES: Partial<Record<WorldId, () => Promise<{ default: WorldModule }>>> = {
@@ -32,5 +59,8 @@ export function hasWorldModule(world: WorldId): boolean {
 export function loadWorldModule(world: WorldId): Promise<WorldModule> {
   const loader = MODULES[world];
   if (!loader) return Promise.reject(new Error(`${world} has no module yet.`));
-  return loadChunk(`module:${world}`, loader).then((module) => module.default);
+  return loadChunk(`module:${world}`, loader).then((module) => {
+    addVoice(module.default.voice);
+    return module.default;
+  });
 }

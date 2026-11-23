@@ -144,13 +144,27 @@
       "madeWith": "Synthesised on the device with the Web Audio API; no audio files"
     },
     {
+      "id": "voice",
+      "kind": "audio",
+      "origin": "derived",
+      "what": "The voice: one short recording for every line a child hears, and for single words",
+      "paths": [
+        "src/assets/voice/en/*/*.mp3",
+        "src/voice/manifest.json",
+        "src/voice/lines.json",
+        "src/voice/timings/*.json"
+      ],
+      "licence": "Project",
+      "madeWith": "Synthesised ahead of time by scripts/voice/make_voice.py with piper-tts 1.8.0 (a GPL-3.0 tool, used to make the files and not shipped) and the voice model en_US-kristin-medium from rhasspy/piper-voices (repository licence MIT; its model card says it was trained on public-domain LibriVox recordings). Each clip was checked by a speech recogniser (faster-whisper, small.en); src/voice/manifest.json records the result and whether a person has listened to it"
+    },
+    {
       "id": "curriculum",
       "kind": "content",
       "origin": "original",
-      "what": "Number Garden, version 1",
-      "paths": ["src/content/packs/number-garden.v1.json"],
+      "what": "The content packs: every activity's challenges, written out in full, one file for each world",
+      "paths": ["src/content/packs/*.json"],
       "licence": "Project",
-      "madeWith": "Written for this project"
+      "madeWith": "Written for this project: by hand, and from tables by the generators in scripts/content (npm run content)"
     },
     {
       "id": "site-files",

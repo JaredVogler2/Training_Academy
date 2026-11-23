@@ -294,3 +294,58 @@
   margin: 0;
   overflow-wrap: anywhere;
 }
+
+/* The voice: every recording, to listen to. */
+.voiceGroup {
+  margin: 14px 0 6px;
+  font-size: var(--text-m);
+  text-transform: capitalize;
+}
+
+.voiceList {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+}
+
+.voiceRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* One a recogniser heard differently stands out, in more than colour. */
+.voiceRow[data-check='differs'] {
+  padding-left: 8px;
+  border-left: 4px solid var(--try-deep);
+}
+
+.voicePlay {
+  display: grid;
+  place-items: center;
+  width: var(--tap-small);
+  height: var(--tap-small);
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--sun);
+}
+
+.voiceMark {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: var(--tap-small);
+  font-size: var(--text-s);
+}
+
+.voiceMarked {
+  width: 100%;
+  padding: 8px 10px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-s);
+  font: inherit;
+  font-size: var(--text-s);
+}

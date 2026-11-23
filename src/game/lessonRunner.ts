@@ -28,7 +28,7 @@ export type RunnerState =
       view: ChallengeView;
       /** The result of the latest answer to this challenge, if there has been one. */
       feedback: Feedback | null;
-      /** The choice the latest answer picked. */
+      /** The latest answer: the choice picked, or the thing made as the engine writes one down. */
       picked: string | null;
       /** The hint most recently asked for on this challenge. */
       hint: Hint | null;
@@ -165,8 +165,11 @@ export class LessonRunner {
     }
   }
 
-  /** The child picked a choice. Ignored while a previous answer is still being handled, or after a correct one. */
-  async answer(choiceId: string): Promise<void> {
+  /**
+   * The child gave an answer: picked a choice, or made the thing asked for. Ignored while a previous answer is
+   * still being handled, or after a correct one.
+   */
+  async answer(response: string): Promise<void> {
     const state = this.state;
     if (this.busy || state.phase !== 'playing' || state.answered || state.view.stage === 'demo') {
       return;
@@ -174,7 +177,7 @@ export class LessonRunner {
     const at = this.deps.now();
     const result = submitAttempt(this.session, this.deps.lesson, {
       key: state.view.key,
-      choiceId,
+      response,
       now: at,
       day: this.deps.localDay(at),
       durationMs: this.deps.elapsed() - this.shownAt,
@@ -186,11 +189,11 @@ export class LessonRunner {
     this.shownAt = this.deps.elapsed();
     if (result.feedback.outcome === 'correct') {
       // Keep the answered challenge on screen until the child moves on.
-      this.setState({ ...state, feedback: result.feedback, picked: choiceId, answered: true });
+      this.setState({ ...state, feedback: result.feedback, picked: response, answered: true });
     } else {
       const retry = getNextChallenge(this.session, this.deps.lesson);
       if (retry) {
-        this.setState({ ...state, view: retry, feedback: result.feedback, picked: choiceId });
+        this.setState({ ...state, view: retry, feedback: result.feedback, picked: response });
       }
     }
     try {

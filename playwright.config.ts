@@ -21,7 +21,8 @@ import { defineConfig, devices, webkit, type Project } from '@playwright/test';
  * starts no local server. If the deployment is protected, set VERCEL_AUTOMATION_BYPASS_SECRET.
  */
 
-const PORT = 4173;
+// E2E_PORT lets two checkouts on one machine test at the same time without meeting on a port.
+const PORT = Number(process.env.E2E_PORT ?? 4173);
 const remote = process.env.BASE_URL ?? process.env.PLAYWRIGHT_BASE_URL;
 const baseURL = remote ?? `http://127.0.0.1:${PORT}`;
 const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;

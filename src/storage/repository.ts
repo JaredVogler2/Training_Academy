@@ -8,7 +8,7 @@ import {
   type LessonSession,
   type ParseResult,
   type Profile,
-} from '@/engine';
+} from '@/engine/schema';
 import { StorageError, type DriverKind, type StorageDriver, type WriteOp } from './driver';
 import { DATA_VERSION } from './migrations';
 import { buildBundle, readBundle, type ExportBundle, type ImportProblem } from './transfer';

@@ -29,8 +29,12 @@ const BUDGET_KB = {
   hubPictures: 330,
   /** Any other on-demand chunk (a world, the lesson frame, the grown-ups area, a content pack). */
   lazyChunk: 30,
-  /** Everything in dist, uncompressed. */
-  totalRaw: 2600,
+  /** Everything in dist but the voice, uncompressed. */
+  totalRaw: 2900,
+  /** One clip of the voice (MP3, measured as it is): a sentence or a word, never a recording of any length. */
+  voiceClip: 60,
+  /** Every clip of the voice together. Each is fetched only when it is first wanted, and kept after that. */
+  voiceTotal: 9000,
 };
 
 /** Chunks that must never be part of the first load. */
@@ -44,7 +48,10 @@ const LAZY_ONLY = [
   /^WorldView-/,
   /^LessonView-/,
   /^GrownUps-/,
-  /^number-garden/,
+  /^VoiceCheck-/,
+  /^engine-play-/,
+  // A world's own code and its content pack, whichever world it is.
+  /^(reading-cove|number-garden|robot-ridge|memory-forest|inventor-island|explorer-harbor)/,
 ];
 const HUB_3D = [/^three-/, /^r3f-/, /^Hub3D-/, /^harbour-/];
 
@@ -157,7 +164,12 @@ const hubFiles = allScripts.filter((file) =>
   HUB_3D.some((pattern) => pattern.test(baseName(file))),
 );
 const hub3d = sum(hubFiles, gzipSize);
-const totalRaw = sum(relativeFiles, (file) => statSync(file).size);
+const clips = relativeFiles.filter((file) => /^immutable\/.*\.mp3$/.test(file));
+const totalRaw = sum(
+  relativeFiles.filter((file) => !clips.includes(file)),
+  (file) => statSync(file).size,
+);
+const voiceTotal = sum(clips, (file) => statSync(file).size);
 
 const within = (label, bytes, budget) =>
   check(bytes <= budget * 1024, `${label}: ${kb(bytes)} kB of ${budget} kB`);
@@ -172,7 +184,21 @@ within(
   sum(pictures, (file) => statSync(file).size),
   BUDGET_KB.hubPictures,
 );
-within('whole build (uncompressed)', totalRaw, BUDGET_KB.totalRaw);
+within('whole build without the voice (uncompressed)', totalRaw, BUDGET_KB.totalRaw);
+within(`the voice, ${clips.length} clips`, voiceTotal, BUDGET_KB.voiceTotal);
+const largestClip = clips.reduce(
+  (largest, file) => Math.max(largest, statSync(join(dist, file)).size),
+  0,
+);
+within('the largest clip of the voice', largestClip, BUDGET_KB.voiceClip);
+// The first screen says nothing: no clip is named by anything the first load fetches.
+for (const file of initial) {
+  if (!inDist(file)) continue;
+  check(
+    !/\.mp3["'`]/.test(readFileSync(join(dist, file), 'utf8')),
+    `${baseName(file)} names no clip of the voice (the voice loads with a lesson, not before)`,
+  );
+}
 for (const file of allScripts) {
   if (initial.has(file) || hubFiles.includes(file)) continue;
   within(
@@ -284,7 +310,8 @@ for (const file of allScripts.sort()) {
 }
 console.log(
   `\nFirst load: ${kb(initialScript)} kB script + ${kb(initialStyles)} kB styles (gzip), ${kb(fonts)} kB fonts.` +
-    `\n3D hub: ${kb(hub3d)} kB (gzip), on demand. Whole build: ${kb(totalRaw)} kB uncompressed, ${relativeFiles.length} files.\n`,
+    `\n3D hub: ${kb(hub3d)} kB (gzip), on demand. Whole build: ${kb(totalRaw)} kB uncompressed without the voice, ` +
+    `${relativeFiles.length} files. The voice: ${clips.length} clips, ${kb(voiceTotal)} kB.\n`,
 );
 console.log(notes.join('\n'));
 

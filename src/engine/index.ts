@@ -1,9 +1,14 @@
 /**
  * The learning engine's public surface. Headless, deterministic TypeScript: see docs/ARCHITECTURE.md.
+ *
+ * What the first screen needs of it — the shapes of what is stored, the names of the worlds — it takes straight
+ * from `./schema` (and `./random`), so that the part that runs a lesson is not fetched until there is a lesson.
+ * scripts/verify-dist.mjs fails the build if that part turns up in the first load.
  */
 export * from './schema';
 export { createRng, hashString, rngFor, type Rng } from './random';
 export {
+  DEFAULT_MAX_TRIES,
   EngineError,
   advanceDemo,
   createSession,
@@ -21,6 +26,29 @@ export {
   type SubmitInput,
   type SubmitResult,
 } from './session';
+export {
+  cardIdsOf,
+  judgeTask,
+  quantityMisconception,
+  solutionOf,
+  solutionParts,
+  tokensOf,
+  writeTokens,
+  type Judgement,
+} from './tasks';
+export {
+  fitsTask,
+  parseProgram,
+  runProgram,
+  solveProgram,
+  writeProgram,
+  type Move,
+  type Pose,
+  type Program,
+  type Run,
+  type RunOutcome,
+} from './robot';
+export { MODELS, readDesign, testDesign, type Model, type TestResult } from './models';
 export {
   DEFAULT_EVIDENCE_POLICY,
   getSkillEvidence,

@@ -17,6 +17,7 @@ import {
 import {
   T0,
   answerCorrectly,
+  answerTo,
   answerWrongFirst,
   dayOf,
   hintThenAnswer,
@@ -44,16 +45,16 @@ function reach(stage: 'guided' | 'independent', seed = 7): LessonSession {
       session = advanceDemo(session, lesson, T0);
       continue;
     }
-    const result = answer(session, view.challenge.answer);
+    const result = answer(session, answerTo(view));
     if (!result.accepted) throw new Error(result.reason);
     session = result.session;
   }
 }
 
-function answer(session: LessonSession, choiceId: string, extra: { adultAssist?: boolean } = {}) {
+function answer(session: LessonSession, response: string, extra: { adultAssist?: boolean } = {}) {
   return submitAttempt(session, lesson, {
     key: viewOf(session).key,
-    choiceId,
+    response,
     now: T0 + 1000,
     day: dayOf(T0),
     durationMs: 1800,
@@ -62,7 +63,7 @@ function answer(session: LessonSession, choiceId: string, extra: { adultAssist?:
 }
 
 function wrongChoice(view: ChallengeView): string {
-  const wrong = view.choices.find((c) => c.available && c.choice.id !== view.challenge.answer);
+  const wrong = view.choices.find((c) => c.available && c.choice.id !== answerTo(view));
   if (!wrong) throw new Error('No wrong choice left.');
   return wrong.choice.id;
 }
@@ -119,7 +120,7 @@ describe('getNextChallenge', () => {
   it('shows the answer during a demonstration and hides it during a question', () => {
     const demo = viewOf(newSession(lesson));
     expect(demo.stage).toBe('demo');
-    expect(demo.shownAnswer).toBe(demo.challenge.answer);
+    expect(demo.shownAnswer).toBe(answerTo(demo));
     expect(demo.hintsAvailable).toBe(0);
 
     const question = viewOf(reach('guided'));
@@ -148,7 +149,7 @@ describe('demonstrations', () => {
     const view = viewOf(session);
     const rejected = submitAttempt(session, lesson, {
       key: view.key,
-      choiceId: view.challenge.answer,
+      response: answerTo(view),
       now: T0,
       day: dayOf(T0),
       durationMs: 0,
@@ -202,7 +203,9 @@ describe('answering', () => {
       independent: false,
       next: 'retry',
     });
-    expect(result.feedback.misconception).toBe(view.challenge.misconceptions?.[wrong]);
+    expect(result.feedback.misconception).toBe(
+      view.challenge.kind === 'choose-one' ? view.challenge.misconceptions?.[wrong] : undefined,
+    );
     expect(result.attempt).toMatchObject({ outcome: 'incorrect', tryIndex: 0, response: wrong });
     expect(result.session.cursor).toBe(session.cursor);
 
@@ -225,8 +228,8 @@ describe('answering', () => {
       session = result.session;
       view = viewOf(session);
     }
-    expect(view.shownAnswer).toBe(view.challenge.answer);
-    const last = answer(session, view.challenge.answer);
+    expect(view.shownAnswer).toBe(answerTo(view));
+    const last = answer(session, answerTo(view));
     if (!last.accepted) throw new Error(last.reason);
     expect(last.attempt.outcome).toBe('correct');
     expect(last.feedback.independent).toBe(false);
@@ -237,7 +240,7 @@ describe('answering', () => {
     const session = reach('independent');
     const first = answer(session, wrongChoice(viewOf(session)));
     if (!first.accepted) throw new Error(first.reason);
-    const second = answer(first.session, viewOf(first.session).challenge.answer);
+    const second = answer(first.session, answerTo(viewOf(first.session)));
     if (!second.accepted) throw new Error(second.reason);
 
     expect(second.attempt).toMatchObject({ outcome: 'correct', tryIndex: 1, stage: 'independent' });
@@ -251,7 +254,7 @@ describe('answering', () => {
 
   it('adult help is labelled and is never independent evidence', () => {
     const session = reach('independent');
-    const result = answer(session, viewOf(session).challenge.answer, { adultAssist: true });
+    const result = answer(session, answerTo(viewOf(session)), { adultAssist: true });
     if (!result.accepted) throw new Error(result.reason);
     expect(result.attempt.assistance).toBe('adult');
     expect(result.feedback.independent).toBe(false);
@@ -260,7 +263,7 @@ describe('answering', () => {
 
   it('a guided step is never independent evidence, however it goes', () => {
     const session = reach('guided');
-    const result = answer(session, viewOf(session).challenge.answer);
+    const result = answer(session, answerTo(viewOf(session)));
     if (!result.accepted) throw new Error(result.reason);
     expect(result.attempt.stage).toBe('guided');
     expect(result.feedback.independent).toBe(false);
@@ -272,7 +275,7 @@ describe('answering', () => {
     const view = viewOf(session);
     const input = {
       key: view.key,
-      choiceId: view.challenge.answer,
+      response: answerTo(view),
       now: T0,
       day: dayOf(T0),
       durationMs: 900,
@@ -292,7 +295,7 @@ describe('answering', () => {
     const { session } = play(lesson, newSession(lesson), answerCorrectly);
     const result = submitAttempt(session, lesson, {
       key: 'anything',
-      choiceId: 'a',
+      response: 'a',
       now: T0,
       day: dayOf(T0),
       durationMs: 0,
@@ -307,7 +310,7 @@ describe('answering', () => {
     const submit = (durationMs: number) =>
       submitAttempt(session, lesson, {
         key: view.key,
-        choiceId: view.challenge.answer,
+        response: answerTo(view),
         now: T0,
         day: dayOf(T0),
         durationMs,
@@ -338,7 +341,7 @@ describe('re-probing after help', () => {
     for (;;) {
       const view = viewOf(current);
       if (view.challenge.id !== missed.id) break;
-      const result = answer(current, view.challenge.answer);
+      const result = answer(current, answerTo(view));
       if (!result.accepted) throw new Error(result.reason);
       current = result.session;
     }
@@ -371,7 +374,7 @@ describe('re-probing after help', () => {
     const session = reach('guided');
     const first = answer(session, wrongChoice(viewOf(session)));
     if (!first.accepted) throw new Error(first.reason);
-    const second = answer(first.session, viewOf(first.session).challenge.answer);
+    const second = answer(first.session, answerTo(viewOf(first.session)));
     if (!second.accepted) throw new Error(second.reason);
     expect(second.session.steps).toHaveLength(session.steps.length);
   });
@@ -392,9 +395,9 @@ describe('hints', () => {
     expect(given.at(-1)).toBe('reveal');
 
     const view = viewOf(session);
-    expect(view.shownAnswer).toBe(challenge.answer);
+    expect(view.shownAnswer).toBe(answerTo(view));
     expect(view.choices.filter((c) => c.available).map((c) => c.choice.id)).toEqual([
-      challenge.answer,
+      answerTo(view),
     ]);
     expect(view.hintsAvailable).toBe(0);
     expect(getHint(session, lesson, T0)).toMatchObject({ hint: null, hintsAvailable: 0 });
@@ -403,9 +406,8 @@ describe('hints', () => {
   it('never takes the right answer away', () => {
     for (let seed = 0; seed < 25; seed++) {
       let session = reach('independent', seed);
-      const challenge = viewOf(session).challenge;
       for (let rung = 0; rung < 6; rung++) session = getHint(session, lesson, T0).session;
-      expect(session.presentation.eliminated).not.toContain(challenge.answer);
+      expect(session.presentation.eliminated).not.toContain(answerTo(viewOf(session)));
     }
   });
 
@@ -415,7 +417,7 @@ describe('hints', () => {
     expect(hinted.hint?.type).toBe('model');
     expect(hinted.hintsUsed).toBe(1);
 
-    const result = answer(hinted.session, viewOf(hinted.session).challenge.answer);
+    const result = answer(hinted.session, answerTo(viewOf(hinted.session)));
     if (!result.accepted) throw new Error(result.reason);
     expect(result.attempt).toMatchObject({
       outcome: 'correct',
@@ -475,7 +477,7 @@ describe('invariants under arbitrary play', () => {
         ];
       return pick === 'hint' || pick === undefined
         ? { type: 'hint' }
-        : { type: 'answer', choiceId: pick };
+        : { type: 'answer', response: pick };
     };
 
   it('always finishes, never over-counts, and only ever writes valid records', () => {

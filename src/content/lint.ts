@@ -1,10 +1,28 @@
-import type { Challenge, ContentPack, Lesson } from '@/engine';
+import {
+  fitsTask,
+  parseProgram,
+  quantityMisconception,
+  runProgram,
+  solutionOf,
+  solutionParts,
+  solveProgram,
+  testDesign,
+  type Challenge,
+  type ChooseOneChallenge,
+  type ContentPack,
+  type DesignTask,
+  type Lesson,
+  type MakeChallenge,
+  type ProgramTask,
+} from '@/engine';
+import { WORLD_RULES, type Report, type WorldRules } from './rules';
 
 /**
  * Checks on authored content that a schema cannot express: references, the prerequisite graph, and whether each
  * challenge is actually *correct* (the marked answer is the one and only right one).
  *
- * The schema says a pack is well-formed; this says it is safe to teach with. It runs in the unit tests
+ * The schema says a pack is well-formed; this says it is safe to teach with. What makes an answer right depends on
+ * what is being taught, so each world brings its own rules for that (src/content/rules). It runs in the unit tests
  * (tests/content), so a pack with an error cannot be merged; it is not shipped to the browser.
  */
 
@@ -16,13 +34,9 @@ export interface LintIssue {
   message: string;
 }
 
-/** The tag a quantity distractor should carry, from how far it is from the target. */
-export function quantityMisconception(target: number, chosen: number): string {
-  const difference = chosen - target;
-  if (difference === 1) return 'one-more';
-  if (difference === -1) return 'one-fewer';
-  return difference > 0 ? 'many-more' : 'many-fewer';
-}
+export type { Report } from './rules';
+
+export { quantityMisconception };
 
 function duplicates<T>(values: readonly T[]): T[] {
   const seen = new Set<T>();
@@ -57,19 +71,8 @@ function findCycle(graph: Map<string, readonly string[]>): string[] | null {
   return null;
 }
 
-function lintChallenge(
-  challenge: Challenge,
-  lesson: Lesson,
-  strings: Record<string, string>,
-  report: (code: string, message: string, severity?: LintIssue['severity']) => void,
-): void {
-  if (!challenge.id.startsWith(`${lesson.id}.`)) {
-    report('challenge-id-prefix', `id must start with "${lesson.id}."`);
-  }
-  if (!lesson.skillIds.includes(challenge.skillId)) {
-    report('challenge-skill', `skill ${challenge.skillId} is not one of the lesson's skills`);
-  }
-
+/** A question with choices: the choices are told apart, the answer is one of them, the hints never remove it. */
+function lintChoices(challenge: ChooseOneChallenge, report: Report): void {
   const choiceIds = challenge.choices.map((choice) => choice.id);
   for (const id of duplicates(choiceIds))
     report('choice-id-duplicate', `choice id "${id}" is used twice`);
@@ -80,52 +83,6 @@ function lintChallenge(
     report('answer-missing', `answer "${challenge.answer}" is not one of the choices`);
   }
   const distractors = choiceIds.filter((id) => id !== challenge.answer);
-
-  // The marked answer must be the only correct choice.
-  const target = challenge.prompt.stimulus;
-  const matching = challenge.choices.filter((choice) => choice.stimulus.count === target.count);
-  if (matching.length !== 1) {
-    report(
-      'quantity-answer-count',
-      `${matching.length} choices show ${target.count}; exactly one must`,
-    );
-  } else if (matching[0]?.id !== challenge.answer) {
-    report(
-      'quantity-answer-wrong',
-      `"${challenge.answer}" is marked correct but "${matching[0]?.id}" is the group of ${target.count}`,
-    );
-  }
-  for (const count of duplicates(challenge.choices.map((choice) => choice.stimulus.count))) {
-    report('quantity-duplicate-choice', `two choices both show ${count}`);
-  }
-  for (const choice of matching) {
-    if (
-      choice.stimulus.item === target.item &&
-      choice.stimulus.arrangement === target.arrangement
-    ) {
-      report(
-        'quantity-picture-match',
-        `"${choice.id}" is the same picture as the prompt, so it can be matched without attending to amount`,
-      );
-    }
-  }
-  for (const choice of challenge.choices) {
-    if (choice.id === challenge.answer) continue;
-    const expected = quantityMisconception(target.count, choice.stimulus.count);
-    const actual = challenge.misconceptions?.[choice.id];
-    if (actual === undefined) {
-      report(
-        'misconception-missing',
-        `distractor "${choice.id}" has no misconception tag`,
-        'warning',
-      );
-    } else if (actual !== expected) {
-      report(
-        'misconception-wrong',
-        `distractor "${choice.id}" is tagged "${actual}" but shows ${choice.stimulus.count} against ${target.count} ("${expected}")`,
-      );
-    }
-  }
   for (const id of Object.keys(challenge.misconceptions ?? {})) {
     if (!distractors.includes(id)) {
       report(
@@ -138,6 +95,9 @@ function lintChallenge(
   // Hint ladder: never removes the answer, ends by revealing it, and does not reveal early.
   challenge.hints.forEach((hint, index) => {
     const last = index === challenge.hints.length - 1;
+    if (hint.type === 'step') {
+      report('hint-step-choices', `hint ${index + 1} gives a part of an answer that has no parts`);
+    }
     if (hint.type === 'eliminate') {
       for (const id of hint.remove) {
         if (!distractors.includes(id)) {
@@ -161,16 +121,193 @@ function lintChallenge(
       report('hint-ladder-end', 'the last hint must reveal the answer so a child is never stuck');
     }
   });
+}
 
+/** A robot's task: everything is on the grid, the answer shown gets there, and nothing shorter could be tapped out. */
+function lintProgram(task: ProgramTask, report: Report): void {
+  const { columns, rows } = task.grid;
+  const on = ([column, row]: readonly [number, number]) => column < columns && row < rows;
+  const same = (a: readonly [number, number], b: readonly [number, number]) =>
+    a[0] === b[0] && a[1] === b[1];
+  for (const cell of [task.start.at, task.goal, ...task.rocks]) {
+    if (!on(cell)) report('program-off-grid', `[${cell.join(', ')}] is not on the grid`);
+  }
+  if (same(task.start.at, task.goal))
+    report('program-no-journey', 'the robot starts where it is going');
+  for (const rock of task.rocks) {
+    if (same(rock, task.start.at) || same(rock, task.goal)) {
+      report('program-rock', `a rock lies on ${same(rock, task.goal) ? 'the goal' : 'the start'}`);
+    }
+  }
+  const shown = parseProgram(task.solution);
+  if (!shown || !fitsTask(task, shown)) {
+    report(
+      'program-solution-unbuildable',
+      'the answer shown cannot be built from what the task offers',
+    );
+  } else if (runProgram(task, shown).outcome !== 'arrived') {
+    report('program-solution-wrong', 'the answer shown does not get the robot there');
+  } else {
+    const shortest = solveProgram(task);
+    if (shortest && shortest.commands.length < shown.commands.length) {
+      report(
+        'program-solution-long',
+        'there is a shorter program than the answer shown',
+        'warning',
+      );
+    }
+  }
+  if (task.given !== undefined) {
+    const start = parseProgram(task.given);
+    if (!start || !fitsTask(task, start)) {
+      report(
+        'program-given-unbuildable',
+        'the program to mend cannot be built from what the task offers',
+      );
+    } else if (runProgram(task, start).outcome === 'arrived') {
+      report('program-given-works', 'the program to mend has nothing wrong with it');
+    }
+  }
+}
+
+/** A workbench task: the design shown is one the controls allow, and it works. */
+function lintDesign(task: DesignTask, report: Report): void {
+  for (const id of duplicates(task.controls.map((control) => control.id))) {
+    report('design-control-duplicate', `control "${id}" is there twice`);
+  }
+  const shown = testDesign(task, task.solution);
+  if (!shown)
+    report('design-solution-unbuildable', 'the design shown is not one the controls allow');
+  else if (!shown.works)
+    report('design-solution-wrong', `the design shown does not work: ${shown.outcome}`);
+  // There has to be something to find out: at least one design that does not work.
+  const all = task.controls.reduce<string[][]>(
+    (designs, control) =>
+      designs.flatMap((design) => control.options.map((option) => [...design, option])),
+    [[]],
+  );
+  if (shown && all.every((design) => testDesign(task, design)?.works)) {
+    report('design-nothing-to-find', 'every design works, so there is nothing to find out');
+  }
+}
+
+/** A thing to make: its cards are told apart, its answer can be made from them, its hints lead to it. */
+function lintTask(challenge: MakeChallenge, report: Report): void {
+  const { task } = challenge;
+  if (task.type === 'program') lintProgram(task, report);
+  else if (task.type === 'design') lintDesign(task, report);
+  else if (task.type !== 'give') {
+    const ids = task.cards.map((card) => card.id);
+    for (const id of duplicates(ids)) report('card-id-duplicate', `card id "${id}" is used twice`);
+    for (const label of duplicates(task.cards.map((card) => card.label))) {
+      report('card-label-duplicate', `two cards are both labelled "${label}"`);
+    }
+    if (task.type !== 'pairs') {
+      for (const id of task.solution) {
+        if (!ids.includes(id)) report('solution-card', `the answer uses "${id}", which is no card`);
+      }
+    }
+    if (task.type === 'order') {
+      if (task.solution.length !== ids.length || duplicates(task.solution).length > 0) {
+        report('order-solution', 'the answer must put every card in a place, once');
+      }
+    }
+    if (task.type === 'select') {
+      if (duplicates(task.solution).length > 0)
+        report('select-solution', 'the answer lists a card twice');
+      if (task.solution.length >= ids.length) {
+        report('select-all', 'every card belongs, so there is nothing to tell apart');
+      }
+      for (const id of task.study ?? []) {
+        if (!task.solution.includes(id)) {
+          report('select-study', `"${id}" is shown to be remembered but is not part of the answer`);
+        }
+      }
+      if ((task.study === undefined) !== (task.ask === undefined)) {
+        report('select-ask', 'things to remember and the question about them go together');
+      }
+    }
+    if (task.type === 'pairs' && task.par < ids.length) {
+      report('pairs-par', `no one can find ${ids.length} pairs in ${task.par} turns`);
+    }
+  } else if (task.pile <= task.want.count) {
+    report(
+      'give-pile',
+      `there are ${task.pile} to give and ${task.want.count} are wanted: giving them all would be right`,
+    );
+  }
+
+  const parts = solutionParts(task).length;
+  const showable = solutionOf(task) !== null;
+  let given = 0;
+  challenge.hints.forEach((hint, index) => {
+    const last = index === challenge.hints.length - 1;
+    if (hint.type === 'eliminate') {
+      report('hint-eliminate-task', `hint ${index + 1} removes choices from a task that has none`);
+    }
+    if (hint.type === 'step') {
+      given += hint.count;
+      if (!showable)
+        report(
+          'hint-step-task',
+          `hint ${index + 1} gives a part of an answer that cannot be shown`,
+        );
+      else if (given >= parts && !last) {
+        report('hint-step-all', `hint ${index + 1} gives the whole answer before the last rung`);
+      }
+    }
+    if (hint.type === 'reveal') {
+      if (!showable)
+        report('hint-reveal-task', `hint ${index + 1} reveals an answer that cannot be shown`);
+      else if (!last) {
+        report('hint-reveal-early', `hint ${index + 1} reveals the answer before the last rung`);
+      }
+    }
+    if (last && showable && hint.type !== 'reveal') {
+      report('hint-ladder-end', 'the last hint must reveal the answer so a child is never stuck');
+    }
+  });
+}
+
+function lintChallenge(
+  challenge: Challenge,
+  lesson: Lesson,
+  pack: ContentPack,
+  report: Report,
+  worldRules: WorldRules | null,
+): void {
+  if (!challenge.id.startsWith(`${lesson.id}.`)) {
+    report('challenge-id-prefix', `id must start with "${lesson.id}."`);
+  }
+  if (!lesson.skillIds.includes(challenge.skillId)) {
+    report('challenge-skill', `skill ${challenge.skillId} is not one of the lesson's skills`);
+  }
+
+  if (challenge.kind === 'choose-one') lintChoices(challenge, report);
+  else lintTask(challenge, report);
+
+  // What makes the answer right is the world's own business.
+  if (worldRules) worldRules(challenge, lesson, report);
+  else report('world-rules', `${pack.world} has no rules to check its answers with`);
+
+  const strings = pack.strings.en;
+  for (const key of stringsOf(challenge)) {
+    if (!(key in strings)) report('string-missing', `string "${key}" is not defined`);
+  }
+}
+
+/** Every line a challenge can show or say, by key. */
+export function stringsOf(challenge: Challenge): string[] {
   const keys = [
     challenge.prompt.instruction,
     challenge.feedback.correct,
     challenge.feedback.incorrect,
     ...challenge.hints.map((hint) => hint.caption),
   ];
-  for (const key of keys) {
-    if (!(key in strings)) report('string-missing', `string "${key}" is not defined`);
+  if (challenge.kind === 'make' && challenge.task.type === 'select' && challenge.task.ask) {
+    keys.push(challenge.task.ask);
   }
+  return keys;
 }
 
 function lintLesson(
@@ -178,6 +315,7 @@ function lintLesson(
   pack: ContentPack,
   issues: LintIssue[],
   usedStrings: Set<string>,
+  worldRules: WorldRules | null,
 ): void {
   const where = `lesson ${lesson.id}`;
   const report = (code: string, message: string, severity: LintIssue['severity'] = 'error') =>
@@ -229,20 +367,27 @@ function lintLesson(
   }
 
   for (const challenge of lesson.challenges) {
-    lintChallenge(challenge, lesson, pack.strings.en, (code, message, severity = 'error') =>
-      issues.push({ severity, code, where: `challenge ${challenge.id}`, message }),
+    lintChallenge(
+      challenge,
+      lesson,
+      pack,
+      (code, message, severity = 'error') =>
+        issues.push({ severity, code, where: `challenge ${challenge.id}`, message }),
+      worldRules,
     );
-    usedStrings.add(challenge.prompt.instruction);
-    usedStrings.add(challenge.feedback.correct);
-    usedStrings.add(challenge.feedback.incorrect);
-    for (const hint of challenge.hints) usedStrings.add(hint.caption);
+    for (const key of stringsOf(challenge)) usedStrings.add(key);
   }
 }
 
 /**
  * Lint one pack. `knownSkillIds` lists skills defined in other packs, so prerequisites may cross worlds.
+ * `worldRules` is the world's own check of its answers; left out, it is the one registered for the pack's world.
  */
-export function lintPack(pack: ContentPack, knownSkillIds: readonly string[] = []): LintIssue[] {
+export function lintPack(
+  pack: ContentPack,
+  knownSkillIds: readonly string[] = [],
+  worldRules: WorldRules | null = WORLD_RULES[pack.world] ?? null,
+): LintIssue[] {
   const issues: LintIssue[] = [];
   const report = (
     code: string,
@@ -287,7 +432,7 @@ export function lintPack(pack: ContentPack, knownSkillIds: readonly string[] = [
     report('skill-prerequisite-cycle', 'skills', `prerequisites loop: ${cycle.join(' → ')}`);
 
   const usedStrings = new Set<string>();
-  for (const lesson of pack.lessons) lintLesson(lesson, pack, issues, usedStrings);
+  for (const lesson of pack.lessons) lintLesson(lesson, pack, issues, usedStrings, worldRules);
   for (const key of Object.keys(pack.strings.en)) {
     if (!usedStrings.has(key)) report('string-unused', `string ${key}`, 'never used', 'warning');
   }

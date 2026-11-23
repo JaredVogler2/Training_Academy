@@ -106,6 +106,11 @@
   grid-template-rows: minmax(0, 0.6fr) minmax(0, 1.4fr);
 }
 
+/* A question that is only a sign ("which has more?") needs little room; the groups it asks about need the rest. */
+.board[data-prompt='sign'] {
+  grid-template-rows: minmax(0, 0.42fr) minmax(0, 1.58fr);
+}
+
 .prompt {
   display: grid;
   place-items: center;
@@ -129,6 +134,58 @@
 /* "This one. Which of those goes with it?": the group is offered first… */
 .prompt[data-asking='true'] {
   animation: offer 0.55s var(--ease-out);
+}
+
+/* One picture lifted while it is named or played. */
+.prompt[data-named='true'],
+.choice[data-named='true'] {
+  border-color: var(--yes);
+  transform: translateY(-5px) scale(1.03);
+}
+
+/*
+ * A group to be taken in at a glance lies under a cover: a big leaf of the world's own colour, which lifts away
+ * for a look and comes back. What is under it is not shown at all while it is covered.
+ */
+.prompt[data-glance='true'],
+.prompt[data-covered] {
+  position: relative;
+  overflow: hidden;
+}
+
+.cover {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 90% at 30% 20%, rgb(255 255 255 / 35%) 0 30%, transparent 31%),
+    repeating-linear-gradient(-32deg, transparent 0 22px, rgb(255 255 255 / 16%) 22px 26px),
+    var(--mid);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-102%);
+  transition:
+    transform 0.34s var(--ease-out),
+    opacity 0.12s linear;
+}
+
+.prompt[data-covered='true'] > .cover {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.prompt[data-covered='true'] > :not(.cover, :global(.sr-only)) {
+  visibility: hidden;
+}
+
+/* While the group is uncovered for a look, the choices are turned away. */
+.choice[data-turned-away='true'] > * {
+  visibility: hidden;
+}
+
+.choice[data-turned-away='true'] {
+  background: rgb(255 255 255 / 55%);
+  box-shadow: none;
 }
 
 .choices {
@@ -346,6 +403,18 @@
 .next {
   animation: arrive 0.4s var(--ease-spring) both;
   animation-delay: 0.6s;
+}
+
+/*
+ * "Done": how a child says a thing they are making is finished. It is there all the while, pale until there is
+ * something to hand in, so that it does not jump into the foot of the screen under a finger.
+ */
+.done[disabled] {
+  opacity: 0.45;
+}
+
+.done[data-ready='true'] {
+  animation: settle 0.5s var(--ease-spring);
 }
 
 .unsaved {

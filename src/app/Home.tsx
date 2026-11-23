@@ -1,7 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { playCue } from '@/audio';
 import { activeProfile, refreshProfiles, useProfiles } from '@/game/profiles';
-import { WORLDS, type WorldInfo } from '@/game/worlds';
+import { WORLDS, isOpen, type WorldInfo } from '@/game/worlds';
 import { HubStage } from '@/render/HubStage';
 import {
   COMPACT_LABELS_BELOW,
@@ -36,7 +36,7 @@ function WorldSpot({
   frame: Frame;
   onLift: (place: PlaceId | null) => void;
 }) {
-  const open = world.status === 'sample';
+  const open = isOpen(world);
   const { box } = hotspotFor(frame, world.id);
   return (
     <Link
@@ -86,7 +86,7 @@ function HubGuide({ frame, arriving }: { frame: Frame; arriving: boolean }) {
   }, [greeting]);
 
   const box = guideBox(frame);
-  const open = WORLDS.find((world) => world.status === 'sample');
+  const open = WORLDS.find(isOpen);
   // Point from the guide's shoulder to the island: screen y runs downwards, angles run upwards.
   const from = { x: box.left + box.width / 2, y: box.top + box.height * 0.45 };
   const to = open ? hotspotFor(frame, open.id).anchor : null;

@@ -19,6 +19,7 @@ import {
   DAY_MS,
   T0,
   answerCorrectly,
+  answerTo,
   answerWrongFirst,
   attempt as madeAttempt,
   dayOf,
@@ -63,7 +64,7 @@ async function playAndSave(
     if (!recorded) break;
     const submitted = submitAttempt(session, lesson, {
       key: view.key,
-      choiceId: recorded.response,
+      response: recorded.response,
       now: recorded.at,
       day: recorded.day,
       durationMs: recorded.durationMs,
@@ -224,7 +225,7 @@ describe.each(BACKEND_NAMES)('repository on %s', (name) => {
       const view = getNextChallenge(session, lesson)!;
       const submitted = submitAttempt(session, lesson, {
         key: view.key,
-        choiceId: view.challenge.answer,
+        response: answerTo(view),
         now: T0 + 2000,
         day: dayOf(T0),
         durationMs: 1500,
@@ -277,13 +278,13 @@ describe.each(BACKEND_NAMES)('repository on %s', (name) => {
         day: dayOf(T0),
         durationMs: 900,
       };
-      const first = submitAttempt(session, lesson, { ...input, choiceId: view.challenge.answer });
+      const first = submitAttempt(session, lesson, { ...input, response: answerTo(view) });
       if (!first.accepted) throw new Error(first.reason);
       await repo.saveProgress(first.session, first.attempt);
 
       // A second tab, still showing the old step, answers differently.
-      const wrong = view.choices.find((c) => c.choice.id !== view.challenge.answer)!.choice.id;
-      const second = submitAttempt(session, lesson, { ...input, choiceId: wrong });
+      const wrong = view.choices.find((c) => c.choice.id !== answerTo(view))!.choice.id;
+      const second = submitAttempt(session, lesson, { ...input, response: wrong });
       if (!second.accepted) throw new Error(second.reason);
       await expect(repo.saveProgress(second.session, second.attempt)).rejects.toMatchObject({
         code: 'conflict',

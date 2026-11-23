@@ -1,4 +1,4 @@
-import { WORLD_IDS, type WorldId } from '@/engine';
+import { WORLD_IDS, type WorldId } from '@/engine/schema';
 
 /**
  * The route table, as data. Pure functions only: the browser plumbing lives in navigation.tsx.

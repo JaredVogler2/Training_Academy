@@ -4,13 +4,19 @@ export const worldText = {
   playHeading: 'Play',
   notOpen: 'This world is not open yet.',
   forGrownUps: 'For grown-ups',
-  planned: 'Planned for this world',
-  firstReady: 'First activity ready',
+  activities: 'Everything to play here',
+  whatIsHere: 'What this world teaches',
+  ready: 'Ready',
   later: 'Later',
-  sampleNote: 'A first activity to try.',
+  done: 'done',
+  doneNote: (title: string) => `${title}: done. Tap to play it again.`,
+  getting: 'Getting the activities ready…',
   lessonNote: (title: string, minutes: number) => `${title} · about ${minutes} minutes`,
-  sampleExplain:
-    'One activity is ready as an early sample. It needs no reading: the guide shows what to do first. The rest of this world is still to be built.',
+  againNote: 'Every activity here has been finished. Play starts again from the first.',
+  openExplain:
+    'No activity here needs reading: the guide shows what to do first. Play goes to the first one that has not been finished, and any of them can be played again from the pictures below it.',
+  partExplain:
+    'The activities marked “Later” have not been built yet. Nothing on this page leads to them.',
   laterExplain:
     'Nothing here can be played yet, and nothing on this page can be tapped by mistake. This world will open in a later update.',
 } as const;

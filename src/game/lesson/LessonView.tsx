@@ -1,7 +1,8 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore, type CSSProperties } from 'react';
 import { loadChunk } from '@/app/chunks';
 import { recordError } from '@/app/diagnostics';
 import { navigate } from '@/app/navigation';
+import { useReducedMotion } from '@/app/settings';
 import { playCue } from '@/audio';
 import { findLesson, hasPack, loadPack, packText } from '@/content';
 import type { ContentPack, WorldId } from '@/engine';
@@ -10,27 +11,32 @@ import { ensureActiveProfile } from '@/game/profiles';
 import { getRepository, localDay, newId, newSeed, now } from '@/game/services';
 import { worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds/modules';
+import { IslandPicture } from '@/render/IslandPicture';
 import { Guide, type GuideState } from '@/ui/Guide';
-import { WorldEmblem } from '@/ui/art';
 import { ActionButton, ActionLink } from '@/ui/controls';
 import {
-  IconBack,
   IconCheck,
   IconHint,
   IconHome,
   IconNext,
+  IconPause,
   IconPointer,
   IconReplay,
+  IconSayAgain,
 } from '@/ui/icons';
+import { PauseSheet } from './PauseSheet';
+import { scriptFor, type Beat, type ScriptEvent } from './script';
 import { lessonText } from './text';
+import { useScript } from './useScript';
 import styles from './Lesson.module.css';
 
 /**
- * The lesson frame shared by every world: a way out, progress, help, the challenge, and what comes next.
+ * The lesson frame shared by every world: the way home, progress, help and pause along the top; the challenge in
+ * the middle; and at the foot Glim, who shows what to do and shows it again when tapped, and the way on.
  *
  * It draws what the engine says and reports what the child taps; it never decides whether an answer is right.
- * A child who cannot read can use all of it: the guide's hand shows where to tap, pictures carry the question, and the
- * captions are there for the grown-up alongside (and for screen readers).
+ * A child who cannot read can use all of it: Glim demonstrates first, pictures carry the question, sounds follow
+ * the pictures, and the captions are there for the grown-up alongside (and for screen readers).
  */
 
 interface Loaded {
@@ -128,12 +134,16 @@ type Playing = Extract<RunnerState, { phase: 'playing' }>;
 /** How long the guide wonders along with the child before settling down to wait. */
 const PONDER_MS = 3200;
 
+/** Where Glim, at the foot of the screen, points: up and a little left to the group, up and right to the choices. */
+const AIM_AT_GROUP = 112;
+const AIM_AT_CHOICES = 62;
+
 /**
  * What the guide is doing, from what the lesson is doing. The guide never knows more than the engine has said:
- * it points while something is being shown, wonders when a question is new, is glad of a right answer, and after a
+ * it points at whatever is being shown, wonders when a question is new, is glad of a right answer, and after a
  * wrong one tilts its head and waits — never anything that looks like disappointment.
  */
-function useGuideMood(state: Playing): GuideState {
+function useGuide(state: Playing, beat: Beat): { mood: GuideState; aim: number } {
   const { view, feedback, hint } = state;
   const question = `${view.key}-${String(view.hintsUsed)}`;
   const [pondered, setPondered] = useState<string | null>(null);
@@ -142,17 +152,51 @@ function useGuideMood(state: Playing): GuideState {
     return () => window.clearTimeout(timer);
   }, [question]);
 
-  if (feedback?.outcome === 'correct') return 'celebrate';
-  if (feedback?.outcome === 'incorrect') return 'retry';
-  if (hint !== null || view.stage === 'demo') return 'point';
-  return pondered === question ? 'idle' : 'think';
+  if (feedback?.outcome === 'correct') return { mood: 'celebrate', aim: 90 };
+  if (beat.show === 'count') {
+    return { mood: 'point', aim: beat.group === 'prompt' ? AIM_AT_GROUP : AIM_AT_CHOICES };
+  }
+  if (beat.show === 'ask') return { mood: 'point', aim: AIM_AT_CHOICES };
+  if (feedback?.outcome === 'incorrect') return { mood: 'retry', aim: 90 };
+  if (hint !== null || view.stage === 'demo') return { mood: 'point', aim: AIM_AT_CHOICES };
+  return { mood: pondered === question ? 'idle' : 'think', aim: 90 };
 }
 
-function Challenge({ state, runner, pack, module }: { state: Playing } & Loaded) {
+function Challenge({
+  state,
+  runner,
+  pack,
+  module,
+  paused,
+}: { state: Playing; paused: boolean } & Loaded) {
   const { view, feedback, hint, answered, picked } = state;
   const { Picture } = module;
   const demo = view.stage === 'demo';
+  const calm = useReducedMotion();
   const text = (key: string) => packText(pack, key);
+
+  // How many times the child has asked to be shown again. Asking is free: it is not help, and nothing records it.
+  const [asked, setAsked] = useState(0);
+
+  // The right choice, only where the engine is showing it: a demonstration, a reveal, or an answer already given.
+  const shown = view.shownAnswer ?? (answered ? picked : null);
+  const tried = feedback?.outcome === 'incorrect' ? picked : null;
+  const triedChoice = view.choices.find(({ choice }) => choice.id === tried)?.choice ?? null;
+
+  const amount = module.countable?.(view.challenge.prompt.stimulus) ?? 0;
+  const triedAmount = triedChoice ? (module.countable?.(triedChoice.stimulus) ?? 0) : null;
+  const revealed = !demo && view.shownAnswer !== null;
+  const event: ScriptEvent = feedback ? feedback.outcome : hint ? `hint-${hint.type}` : 'new';
+  const script = useMemo(
+    () => scriptFor({ stage: view.stage, event, amount, triedAmount, revealed }),
+    [view.stage, event, amount, triedAmount, revealed],
+  );
+  const run = `${view.key}/${String(view.hintsUsed)}/${event}/${String(asked)}`;
+  const { beat, turn } = useScript(script, run, !paused, calm);
+  const counting = (group: 'prompt' | 'answer' | 'tried') =>
+    beat.show === 'count' && beat.group === group;
+
+  const { mood, aim } = useGuide(state, beat);
 
   // What the grown-up reads (and a screen reader announces): the question, then whatever just happened.
   const caption = feedback
@@ -163,52 +207,56 @@ function Challenge({ state, runner, pack, module }: { state: Playing } & Loaded)
         ? `${lessonText.watch} ${text(view.challenge.prompt.instruction)}`
         : text(view.challenge.prompt.instruction);
 
-  const mood = useGuideMood(state);
-
-  // "Count with me" whenever the lesson is teaching rather than asking: the demonstration, a hint, any feedback.
-  const counting = demo || feedback !== null || hint !== null;
-  const showSame = answered || demo;
+  // The group and its match are lit together when the script says "the same" (at once, where nothing moves).
+  const same = beat.show === 'same';
 
   return (
     <>
-      <div className={styles.board} data-count={view.choices.length}>
-        <div className={styles.prompt} data-same={showSame}>
+      <div className={styles.board} data-count={view.choices.length} inert={paused}>
+        <div className={styles.prompt} data-same={same} data-asking={beat.show === 'ask'}>
           <span className="sr-only">
             {lessonText.thisGroup}
             {module.describe(view.challenge.prompt.stimulus)}
           </span>
-          {/* Re-keyed so the counting animation restarts each time there is something new to show. */}
+          {/* Re-keyed whenever it is this picture's turn, so its counting starts from the first thing. */}
           <Picture
-            key={`${view.key}-${view.hintsUsed}-${String(answered)}`}
+            key={counting('prompt') ? `count-${String(turn)}` : 'still'}
             stimulus={view.challenge.prompt.stimulus}
-            counting={counting}
+            counting={counting('prompt')}
           />
         </div>
 
         <ul className={styles.choices} data-count={view.choices.length}>
-          {view.choices.map(({ choice, available }) => {
-            const isAnswer = view.shownAnswer === choice.id || (answered && picked === choice.id);
-            const state = isAnswer ? 'same' : available ? 'open' : 'away';
+          {view.choices.map(({ choice, available }, index) => {
+            const isAnswer = shown === choice.id;
+            const isTried = tried === choice.id;
+            const look = isAnswer ? 'same' : available ? 'open' : 'away';
+            const hopping = (isAnswer && counting('answer')) || (isTried && counting('tried'));
+            const waiting = !available || answered || demo;
             return (
               // Keyed by step, so a new question gets new cards instead of morphing the old ones.
-              <li key={`${view.stepIndex}-${choice.id}`}>
+              <li key={`${String(view.stepIndex)}-${choice.id}`}>
                 <button
                   type="button"
                   className={styles.choice}
-                  data-state={state}
+                  style={{ '--order': index } as CSSProperties}
+                  data-state={look}
                   data-choice={choice.id}
-                  data-just-tried={!available && picked === choice.id}
+                  data-lit={isAnswer && same}
+                  data-asking={beat.show === 'ask' && available}
+                  data-comparing={isTried && counting('tried')}
+                  data-just-tried={isTried && !available}
                   aria-label={choice.label}
-                  aria-disabled={!available || answered || demo}
+                  aria-disabled={waiting}
                   onClick={() => {
-                    if (!available || answered || demo) return;
+                    if (waiting) return;
                     void runner.answer(choice.id);
                   }}
                 >
                   <Picture
-                    key={`${view.key}-${String(isAnswer)}`}
+                    key={hopping ? `count-${String(turn)}` : 'still'}
                     stimulus={choice.stimulus}
-                    counting={isAnswer && counting}
+                    counting={hopping}
                   />
                   {isAnswer && answered && (
                     <span className={styles.tick} aria-hidden="true">
@@ -227,8 +275,23 @@ function Challenge({ state, runner, pack, module }: { state: Playing } & Loaded)
         </ul>
       </div>
 
-      <div className={styles.foot}>
-        <Guide state={mood} aim={105} className={styles.guide} />
+      <div className={styles.foot} inert={paused}>
+        {/* Glim is the "show me again" button: tapping the one who showed it is how a child asks. */}
+        <button
+          type="button"
+          className={styles.again}
+          aria-label={lessonText.sayAgain}
+          data-tip={lessonText.sayAgain}
+          onClick={() => {
+            playCue('tap');
+            setAsked((times) => times + 1);
+          }}
+        >
+          <Guide state={mood} aim={aim} className={styles.guide} />
+          <span className={styles.againBadge} aria-hidden="true">
+            <IconSayAgain size={22} />
+          </span>
+        </button>
         <p
           className={styles.caption}
           role="status"
@@ -243,6 +306,8 @@ function Challenge({ state, runner, pack, module }: { state: Playing } & Loaded)
             tone="sun"
             big
             className={demo ? styles.myTurn : styles.next}
+            // The way on arrives when the showing is over; it is there, and works, from the start.
+            style={{ '--after': `${String(calm ? 0 : script.length)}ms` } as CSSProperties}
             icon={<IconNext size={32} />}
             onClick={() => {
               playCue('step');
@@ -270,17 +335,14 @@ function Finished({
   return (
     <section className={styles.finished} data-testid="lesson-finished">
       <div className={styles.finishedArt}>
-        <WorldEmblem world={world} className={styles.finishedEmblem} />
+        <IslandPicture place={world} />
         <Guide state="celebrate" className={styles.finishedGuide} />
       </div>
       <h1>{lessonText.allDone}</h1>
+      {/* One flower for each thing done: something has grown here, and nothing is being scored. */}
       <ol className={styles.grown} aria-hidden="true">
         {Array.from({ length: state.stepCount - 1 }, (_, index) => (
-          <li
-            key={index}
-            className={styles.sprout}
-            style={{ animationDelay: `${index * 0.12}s` }}
-          />
+          <li key={index} className={styles.flower} style={{ '--order': index } as CSSProperties} />
         ))}
       </ol>
       {/* For the grown-up: what this sitting showed, in plain words, with no score for the child to chase. */}
@@ -309,6 +371,7 @@ function Finished({
 
 function Player({ runner, pack, module, world }: Loaded & { world: WorldId }) {
   const state = useSyncExternalStore(runner.subscribe, runner.getState);
+  const [paused, setPaused] = useState(false);
   const outcome = state.phase === 'playing' ? state.feedback?.outcome : undefined;
   const key = state.phase === 'playing' ? state.view.key : 'finished';
 
@@ -318,8 +381,19 @@ function Player({ runner, pack, module, world }: Loaded & { world: WorldId }) {
     else if (outcome === 'incorrect') playCue('again');
   }, [outcome, key]);
   useEffect(() => {
-    if (state.phase === 'finished') playCue('success');
+    if (state.phase === 'finished') playCue('done');
   }, [state.phase]);
+
+  // A phone put down, or another app opened on top: the activity waits, and asks for a tap to carry on.
+  const inPlay = state.phase === 'playing';
+  useEffect(() => {
+    if (!inPlay) return;
+    const whenHidden = () => {
+      if (document.visibilityState === 'hidden') setPaused(true);
+    };
+    document.addEventListener('visibilitychange', whenHidden);
+    return () => document.removeEventListener('visibilitychange', whenHidden);
+  }, [inPlay]);
 
   const playing = state.phase === 'playing' ? state : null;
   const canHint =
@@ -329,12 +403,18 @@ function Player({ runner, pack, module, world }: Loaded & { world: WorldId }) {
     playing.view.hintsAvailable > 0;
 
   return (
-    <div className={styles.lesson} data-role={worldById(world).role} data-testid="lesson">
-      <div className={styles.bar}>
+    <div
+      className={styles.lesson}
+      data-role={worldById(world).role}
+      data-testid="lesson"
+      data-paused={paused}
+    >
+      <div className={styles.bar} inert={paused}>
         <ActionLink
-          to={{ name: 'world', world }}
+          to={{ name: 'home' }}
           round
-          icon={<IconBack />}
+          className={styles.barButton}
+          icon={<IconHome />}
           aria-label={lessonText.leave}
         />
         {playing ? (
@@ -342,23 +422,43 @@ function Player({ runner, pack, module, world }: Loaded & { world: WorldId }) {
         ) : (
           <span />
         )}
-        <ActionButton
-          round
-          icon={<IconHint />}
-          aria-label={lessonText.help}
-          disabled={!canHint}
-          onClick={() => {
-            playCue('tap');
-            void runner.hint();
-          }}
-        />
+        <div className={styles.barEnd}>
+          {playing && (
+            <>
+              <ActionButton
+                round
+                className={styles.barButton}
+                icon={<IconHint />}
+                aria-label={lessonText.help}
+                data-tip={lessonText.help}
+                disabled={!canHint}
+                onClick={() => {
+                  playCue('tap');
+                  void runner.hint();
+                }}
+              />
+              <ActionButton
+                round
+                className={styles.barButton}
+                icon={<IconPause />}
+                aria-label={lessonText.pause}
+                data-tip={lessonText.pause}
+                onClick={() => {
+                  playCue('tap');
+                  setPaused(true);
+                }}
+              />
+            </>
+          )}
+        </div>
       </div>
       {playing ? (
-        <Challenge state={playing} runner={runner} pack={pack} module={module} />
+        <Challenge state={playing} runner={runner} pack={pack} module={module} paused={paused} />
       ) : (
         state.phase === 'finished' && <Finished state={state} runner={runner} world={world} />
       )}
       {playing && !playing.saved && <p className={styles.unsaved}>{lessonText.notSaved}</p>}
+      <PauseSheet open={paused && playing !== null} onResume={() => setPaused(false)} />
     </div>
   );
 }

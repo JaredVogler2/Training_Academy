@@ -158,6 +158,32 @@
   min-width: 0;
 }
 
+/*
+ * A page arriving: a short fade and a small rise, so that going from one place to another is felt as going
+ * somewhere. Nothing waits for it, and calm motion removes it.
+ */
+.view {
+  min-width: 0;
+  height: 100%;
+  animation: view-in var(--gentle) var(--ease-out) both;
+}
+
+@keyframes view-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* An activity fills the screen: there is no top bar above it. */
+.app[data-route='play'] {
+  grid-template-rows: 1fr;
+}
+
 .app[data-route='home'] .main {
   height: 100%;
 }

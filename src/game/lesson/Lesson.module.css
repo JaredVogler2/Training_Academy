@@ -1,24 +1,48 @@
 /*
- * The lesson frame: a bar (leave, progress, help), the board (the group to match and the choices), and a foot (what
- * just happened, and the way on). One screen, no scrolling, every target large.
+ * The lesson frame: a bar (home, progress, help, pause), the board (the group to match and the choices), and a foot
+ * (Glim, what Glim is saying, and the way on). It has the whole screen to itself — the game's top bar is not here —
+ * with no scrolling and every target large.
  */
 .lesson {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: clamp(8px, 1.8vh, 16px);
   width: min(100%, 920px);
-  height: calc(100vh - var(--topbar) - var(--safe-top));
-  height: calc(100dvh - var(--topbar) - var(--safe-top));
+  height: 100vh;
+  height: 100dvh;
   margin: 0 auto;
-  padding: 4px calc(var(--gutter) + var(--safe-right)) calc(12px + var(--safe-bottom))
-    calc(var(--gutter) + var(--safe-left));
+  padding: calc(10px + var(--safe-top)) calc(var(--gutter) + var(--safe-right))
+    calc(12px + var(--safe-bottom)) calc(var(--gutter) + var(--safe-left));
 }
 
 .bar {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
   align-items: center;
+}
+
+.bar > :first-child {
+  justify-self: start;
+}
+
+.barEnd {
+  display: flex;
+  gap: 10px;
+  justify-self: end;
+}
+
+/* Controls a child presses are larger than the grown-ups' ones. */
+.barButton {
+  width: var(--tap);
+  min-width: var(--tap);
+  height: var(--tap);
+}
+
+/* While the activity is paused, what is behind the sheet steps back. */
+.lesson[data-paused='true'] > :not(dialog) {
+  opacity: 0.35;
+  transition: opacity var(--gentle) linear;
 }
 
 .steps {
@@ -78,6 +102,12 @@
   border-style: solid;
   border-color: var(--yes);
   background: #fff6d2;
+  animation: settle 0.5s var(--ease-spring);
+}
+
+/* "This one. Which of those goes with it?": the group is offered first… */
+.prompt[data-asking='true'] {
+  animation: offer 0.55s var(--ease-out);
 }
 
 .choices {
@@ -133,10 +163,21 @@
   cursor: default;
 }
 
+/* …and then each choice in turn. */
+.choice[data-asking='true'] {
+  animation: offer 0.5s var(--ease-out) both;
+  animation-delay: calc(var(--order, 0) * 0.16s + 0.42s);
+}
+
 /* The right group: a sun border and a tick — never colour alone. */
 .choice[data-state='same'] {
   border-color: var(--yes);
   background: #fff6d2;
+  animation: settle 0.5s var(--ease-spring);
+}
+
+/* Lit together with the group it matches, at the end of the counting. */
+.choice[data-lit='true'] {
   animation: settle 0.5s var(--ease-spring);
 }
 
@@ -152,6 +193,13 @@
 
 .choice[data-just-tried='true'] {
   animation: set-aside 0.7s var(--ease-out);
+}
+
+/* The choice that was tried comes forward once more while it is counted against the group: "see, not the same". */
+.choice[data-comparing='true'] {
+  opacity: 1;
+  transform: scale(1);
+  animation: none;
 }
 
 .tick {
@@ -189,10 +237,46 @@
   min-height: 84px;
 }
 
-.guide {
-  --size: 68px;
+/*
+ * Glim is a button: "show me again". A small paper badge says so to anyone who has not found out by tapping, and
+ * the whole of Glim is the target.
+ */
+.again {
+  --glim: 72px;
+  --badge: 32px;
 
+  position: relative;
+  display: block;
   align-self: end;
+  /* Glim, and room beside its feet for the badge, which must not cover it. */
+  width: calc(var(--glim) + var(--badge) * 0.62);
+  min-height: var(--glim);
+  border-radius: var(--radius-m);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--quick) var(--ease-out);
+}
+
+.again:active {
+  transform: translateY(3px);
+}
+
+.againBadge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: var(--badge);
+  height: var(--badge);
+  border: 3px solid var(--white);
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--white);
+  box-shadow: 0 3px 0 rgb(34 48 79 / 18%);
+}
+
+.guide {
+  --size: var(--glim);
 }
 
 /* The caption is the guide's speech: a bubble with a small tail towards the guide. */
@@ -226,10 +310,13 @@
   font-weight: 800;
 }
 
-/* The way on arrives after the demonstration has been seen; it is in the page (and usable) from the start. */
+/*
+ * The way on arrives when the showing is over (`--after` is how long that takes); it is in the page, and works,
+ * from the start, for anyone who does not want to wait.
+ */
 .myTurn {
   animation: arrive 0.4s var(--ease-spring) both;
-  animation-delay: 2.4s;
+  animation-delay: var(--after, 2.4s);
 }
 
 .next {
@@ -265,41 +352,44 @@
   font-size: var(--text-xxl);
 }
 
-/* The world's emblem, with the guide celebrating in front of it. */
+/* The world's own island, with the guide celebrating in front of it. */
 .finishedArt {
   position: relative;
-  width: clamp(96px, 22vh, 168px);
-  height: clamp(96px, 22vh, 168px);
-}
-
-.finishedEmblem {
-  width: 100%;
-  height: 100%;
+  width: clamp(104px, 24vh, 184px);
+  height: clamp(104px, 24vh, 184px);
 }
 
 .finishedGuide {
-  --size: 52%;
+  --size: 46%;
 
   position: absolute;
-  right: -22%;
-  bottom: -6%;
+  right: -20%;
+  bottom: -4%;
 }
 
 .grown {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
 }
 
-.sprout {
-  width: 22px;
-  height: 22px;
-  border: 3px solid var(--white);
+/* A flower: five sun petals round a darker middle, drawn with one box and its shadows. */
+.flower {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  margin: 9px;
   border-radius: 50%;
-  background: var(--mid);
-  box-shadow: 0 2px 0 rgb(34 48 79 / 14%);
+  background: var(--yes-deep);
+  box-shadow:
+    0 -9px 0 1px var(--sun),
+    8.6px -2.8px 0 1px var(--sun),
+    5.3px 7.3px 0 1px var(--sun),
+    -5.3px 7.3px 0 1px var(--sun),
+    -8.6px -2.8px 0 1px var(--sun);
   animation: pop 0.45s var(--ease-spring) both;
+  animation-delay: calc(var(--order, 0) * 0.12s + 0.3s);
 }
 
 .report {
@@ -341,8 +431,9 @@
     white-space: nowrap;
   }
 
-  .guide {
-    --size: 60px;
+  .again {
+    --glim: 66px;
+    --badge: 30px;
   }
 }
 
@@ -360,6 +451,16 @@
 
   .caption {
     font-size: 1.0625rem;
+  }
+
+  /* With room to spare, Glim is a proper size. */
+  .again {
+    --glim: 96px;
+    --badge: 38px;
+  }
+
+  .foot {
+    min-height: 100px;
   }
 }
 
@@ -388,8 +489,14 @@
     min-height: 60px;
   }
 
-  .guide {
-    --size: 52px;
+  .again {
+    --glim: 58px;
+    --badge: 28px;
+  }
+
+  .lesson {
+    padding-top: calc(4px + var(--safe-top));
+    padding-bottom: calc(6px + var(--safe-bottom));
   }
 
   .finished {
@@ -410,6 +517,99 @@
 
   .finished > * {
     justify-self: start;
+  }
+}
+
+/* The activity, paused: a sheet of paper in front of everything, with one thing to do. */
+.pause {
+  width: min(92vw, 23rem);
+  max-height: 92vh;
+  max-height: 92dvh;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-l);
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: var(--shadow-float);
+}
+
+.pause::backdrop {
+  background: rgb(34 48 79 / 45%);
+}
+
+.pauseBody {
+  display: grid;
+  gap: clamp(8px, 2vh, 14px);
+  justify-items: center;
+  padding: clamp(14px, 3.5vh, 26px) 22px clamp(14px, 3vh, 22px);
+  text-align: center;
+}
+
+.pauseGuide {
+  --size: clamp(56px, 13vh, 84px);
+}
+
+.pauseTitle {
+  font-size: var(--text-l);
+}
+
+.resume {
+  width: clamp(84px, 22vh, 112px);
+  min-width: clamp(84px, 22vh, 112px);
+  height: clamp(84px, 22vh, 112px);
+}
+
+.pauseNote {
+  color: var(--ink-soft);
+  font-size: var(--text-s);
+}
+
+.pauseRow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .pause {
+    width: min(92vw, 34rem);
+  }
+
+  .pauseBody {
+    grid-template-columns: auto auto 1fr;
+    column-gap: 18px;
+    align-items: center;
+    text-align: left;
+  }
+
+  .pauseGuide {
+    grid-row: 1 / 3;
+  }
+
+  .resume {
+    grid-row: 1 / 3;
+  }
+
+  .pauseNote {
+    grid-column: 3;
+  }
+
+  .pauseRow {
+    grid-column: 3;
+    justify-content: flex-start;
+  }
+}
+
+@keyframes offer {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  45% {
+    transform: translateY(-6px) scale(1.035);
+  }
+  100% {
+    transform: translateY(0) scale(1);
   }
 }
 

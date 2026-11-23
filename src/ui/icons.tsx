@@ -223,3 +223,23 @@ export function IconPointer(props: IconProps) {
     </Icon>
   );
 }
+
+export function IconPause(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M8.500 5.500v13" strokeWidth={3.6} />
+      <path d="M15.500 5.500v13" strokeWidth={3.6} />
+    </Icon>
+  );
+}
+
+/** "Say it again": the speaker, and an arrow coming back round to it. */
+export function IconSayAgain(props: IconProps) {
+  return (
+    <Icon {...props}>
+      {speaker}
+      <path d="M16.300 15.900a4.600 4.600 0 1 0-.400-7.100" />
+      <path d="M15.300 5.200v3.900h3.900" />
+    </Icon>
+  );
+}

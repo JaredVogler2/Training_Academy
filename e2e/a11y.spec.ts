@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import {
   LESSON_PATH,
+  arrived,
   choose,
   expect,
   myTurn,
@@ -17,6 +18,7 @@ import {
  */
 
 async function expectNoViolations(page: Page, context: string) {
+  await arrived(page);
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
     .analyze();

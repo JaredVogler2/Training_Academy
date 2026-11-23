@@ -250,7 +250,9 @@ test.describe('the sample activity', () => {
     await press(next(page));
     expect(await stepNumber(page)).toBe(3);
 
+    // The way out is the way home: to the islands, at any point, with nothing asked.
     await press(page.getByRole('link', { name: 'Leave the activity' }));
+    await press(page.getByRole('link', { name: /Number Garden/ }));
     await expect(page.getByRole('heading', { level: 1, name: 'Number Garden' })).toBeVisible();
     await press(page.getByRole('link', { name: 'Play' }));
     await expect(lesson(page).locator('[data-choice]').first()).toBeVisible();

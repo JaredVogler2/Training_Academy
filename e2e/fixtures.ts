@@ -161,6 +161,21 @@ export const test = base.extend<Fixtures>({
 export { expect };
 export type { Locator, Page };
 
+/**
+ * Wait until whatever is arriving on the page has arrived: every animation that has an end has reached it.
+ * (A page half-way through fading in is not what anyone reads, and measuring its colours then measures the fade.)
+ * Movement that never ends, such as a boat bobbing, is not waited for.
+ */
+export async function arrived(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const ending = document.getAnimations().filter((animation) => {
+      const end = animation.effect?.getComputedTiming().endTime;
+      return typeof end === 'number' && Number.isFinite(end);
+    });
+    await Promise.all(ending.map((animation) => animation.finished.catch(() => undefined)));
+  });
+}
+
 /** The six worlds, as the hub names them. */
 export const WORLD_NAMES = [
   'Reading Cove',

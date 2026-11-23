@@ -216,6 +216,13 @@ const ChooseOneChallengeSchema = v.strictObject({
      * timed against the child: the choices wait as long as they like, and it can be shown again for the asking.
      */
     glance: v.optional(v.boolean()),
+    /**
+     * What is put in its place once it has been covered: the part of it that the question is about ("what did the
+     * cat have?" shows the cat). Only for something that is glanced at.
+     */
+    cue: v.optional(StimulusSchema),
+    /** What is asked once it has been covered ("which of these was there?"). Only for something glanced at. */
+    ask: v.optional(StringKeySchema),
   }),
   choices: v.pipe(v.array(ChoiceSchema), v.minLength(2), v.maxLength(4)),
   answer: ChoiceIdSchema,
@@ -287,6 +294,8 @@ const PairsTaskSchema = v.strictObject({
   cards: v.pipe(v.array(CardSchema), v.minLength(2), v.maxLength(6)),
   /** Turns (two cards each) within which finding them all shows remembering, not luck. */
   par: positiveInt,
+  /** The cards lie face up: matching by looking, to learn how the game goes before anything is hidden. */
+  open: v.optional(v.boolean()),
 });
 
 /** A square of a robot's grid: [column, row], counted from the top left, from nought. */
@@ -435,6 +444,11 @@ export const LessonSchema = v.strictObject({
       count: positiveInt,
       maxReprobes: nonNegativeInt,
     }),
+    /**
+     * Asked last of all, in this order, after everything else: for a question about something from the start of
+     * the activity (what was shown first, remembered across the whole sitting). Answered alone, like the probes.
+     */
+    closing: v.optional(v.pipe(v.array(ChallengeIdSchema), v.minLength(1), v.maxLength(2))),
   }),
   successCriteria: v.strictObject({
     /** First-try, unhinted, unassisted correct answers in the independent stage. */

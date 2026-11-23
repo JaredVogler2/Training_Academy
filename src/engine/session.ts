@@ -223,6 +223,10 @@ export function createSession(lesson: Lesson, input: CreateSessionInput): Lesson
     ...lesson.plan.demo.map((challengeId): Step => ({ stage: 'demo', challengeId })),
     ...lesson.plan.guided.map((challengeId): Step => ({ stage: 'guided', challengeId })),
     ...shuffled.slice(0, count).map((challengeId): Step => ({ stage: 'independent', challengeId })),
+    ...(lesson.plan.closing ?? []).map((challengeId): Step => ({
+      stage: 'independent',
+      challengeId,
+    })),
   ];
   for (const step of steps) challengeOf(lesson, step.challengeId);
 
@@ -419,7 +423,15 @@ export function submitAttempt(
   if (step.stage === 'independent' && !cleanFirstTry) {
     const reprobe = takeReprobe(session, lesson, challenge);
     if (reprobe) {
-      steps = [...steps, reprobe.step];
+      // A re-probe comes after the probes and before whatever the lesson keeps for the very end.
+      const closing = new Set(lesson.plan.closing ?? []);
+      const last = steps.findIndex(
+        (each, index) => index > session.cursor && closing.has(each.challengeId),
+      );
+      steps =
+        last < 0
+          ? [...steps, reprobe.step]
+          : [...steps.slice(0, last), reprobe.step, ...steps.slice(last)];
       reserve = reprobe.reserve;
       reprobesUsed += 1;
     }

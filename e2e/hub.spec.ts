@@ -358,7 +358,7 @@ test.describe('the map', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Number Garden' })).toBeVisible();
   });
 
-  test('the guide points at the world that is open, and waves when tapped @layout', async ({
+  test('the guide points at the world to go to next, and waves when tapped @layout', async ({
     page,
     press,
   }) => {
@@ -386,9 +386,13 @@ test.describe('the map', () => {
       expect(apart, 'the guide overlaps an island').toBe(true);
     }
 
-    // The arm is on the side of the open island.
-    const garden = await page.getByRole('link', { name: /Number Garden/ }).boundingBox();
-    if (!garden) throw new Error('Number Garden is not on screen.');
+    // The arm is on the side of the island that has the next thing to do: for a new player, the first that is
+    // open, in the order the worlds are taught in.
+    const pointedAt = page.locator('a[data-world][data-next="true"]');
+    await expect(pointedAt).toHaveCount(1);
+    await expect(pointedAt).toHaveAttribute('data-open', 'true');
+    const garden = await pointedAt.boundingBox();
+    if (!garden) throw new Error('The island Glim points at is not on screen.');
     const toTheRight = garden.x + garden.width / 2 >= box.x + box.width / 2;
     await expect(figure).toHaveAttribute('data-side', toTheRight ? 'right' : 'left');
 
@@ -463,7 +467,7 @@ test.describe('code that loads only when it is needed', () => {
 
     await press(page.getByRole('link', { name: 'Islands' }));
     await press(page.getByRole('link', { name: /Number Garden/ }));
-    await expect(page.getByRole('link', { name: 'Play' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
     await expect
       .poll(
         () => guard.requested().filter((path) => /\/immutable\/number-garden/.test(path)).length,

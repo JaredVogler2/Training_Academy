@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
-import { playCount, playCue } from '@/audio';
+import { playCount, playCue, sayLine } from '@/audio';
 import { writeTokens } from '@/engine';
 import { IconPointer } from '@/ui/icons';
 import {
@@ -104,7 +104,7 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
   const shownAnswer = view.shownAnswer ? view.shownAnswer.split('-') : [];
   const [asked, again] = useAgain();
   const seconds = useSeconds();
-  usePreparedLines(state);
+  usePreparedLines(state, module);
 
   // What the child has put down so far: for an order, a card or nothing in each place; for an echo, the taps.
   const [work, setWork] = useStepState<{ placed: (string | null)[]; judged: string }>(
@@ -154,6 +154,8 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
   const { beat } = useScript(script, run, !paused, calm, echo);
 
   const showing = echo && beat.show === 'name';
+  // In an order that has been got right, the story is told back: the card whose turn it is, and its words.
+  const telling = !echo && beat.show === 'name' ? beat.which : null;
   const lit = showing ? beat.which : null;
   const doing = beat.show === 'do' ? beat.parts : demo && beat.show === 'same' ? length : 0;
   const same = beat.show === 'same';
@@ -176,7 +178,11 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
     const tap = (id: string) => {
       if (busy || tapped.length >= length) return;
       const next = [...tapped, id];
-      playCount(tapped.length);
+      // A thing that makes a sound of its own makes it; anything else gets the next note of the scale.
+      const card = cardOf(id);
+      const own = card ? module.soundOf?.(card.stimulus) : null;
+      if (own) sayLine(own);
+      else playCount(tapped.length);
       setFlash({ id, at: next.length });
       setWork({ placed: next, judged: view.key });
       if (next.length === length) {
@@ -278,6 +284,7 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
                   style={{ '--order': index } as CSSProperties}
                   data-slot={index}
                   data-filled={card !== null && card !== undefined}
+                  data-telling={id !== null && id === telling}
                   data-fixed={index < fixed.length && !demo}
                   aria-label={`${lessonText.place(index + 1)}: ${card ? card.label : lessonText.empty}`}
                   aria-disabled={busy || !card || index < fixed.length}
@@ -342,6 +349,7 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
         aim={aim}
         after={calm ? 0 : script.length}
         onAgain={again}
+        caption={telling === null ? undefined : cardOf(telling)?.label}
         done={{
           ready: placed.every((card) => card !== null),
           submit: () => {

@@ -83,6 +83,13 @@ function lintChoices(challenge: ChooseOneChallenge, report: Report): void {
     report('answer-missing', `answer "${challenge.answer}" is not one of the choices`);
   }
   const distractors = choiceIds.filter((id) => id !== challenge.answer);
+  const { cue, ask, glance } = challenge.prompt;
+  if ((cue !== undefined || ask !== undefined) && glance !== true) {
+    report(
+      'cue-without-glance',
+      'a cue, or a question put afterwards, is for something that is covered, and this never is',
+    );
+  }
   for (const id of Object.keys(challenge.misconceptions ?? {})) {
     if (!distractors.includes(id)) {
       report(
@@ -287,7 +294,7 @@ function lintChallenge(
   else lintTask(challenge, report);
 
   // What makes the answer right is the world's own business.
-  if (worldRules) worldRules(challenge, lesson, report);
+  if (worldRules) worldRules(challenge, lesson, report, pack);
   else report('world-rules', `${pack.world} has no rules to check its answers with`);
 
   const strings = pack.strings.en;
@@ -307,6 +314,7 @@ export function stringsOf(challenge: Challenge): string[] {
   if (challenge.kind === 'make' && challenge.task.type === 'select' && challenge.task.ask) {
     keys.push(challenge.task.ask);
   }
+  if (challenge.kind === 'choose-one' && challenge.prompt.ask) keys.push(challenge.prompt.ask);
   return keys;
 }
 
@@ -330,7 +338,8 @@ function lintLesson(
   }
 
   const { demo, guided, independent } = lesson.plan;
-  const planned = [...demo, ...guided, ...independent.pool];
+  const closing = lesson.plan.closing ?? [];
+  const planned = [...demo, ...guided, ...independent.pool, ...closing];
   const own = new Set(lesson.challenges.map((challenge) => challenge.id));
   for (const id of planned) {
     if (!own.has(id))
@@ -346,7 +355,7 @@ function lintLesson(
   if (independent.count > independent.pool.length) {
     report('plan-count', `draws ${independent.count} from a pool of ${independent.pool.length}`);
   }
-  if (lesson.successCriteria.independentFirstTryCorrect > independent.count) {
+  if (lesson.successCriteria.independentFirstTryCorrect > independent.count + closing.length) {
     report(
       'success-criteria',
       'asks for more independent successes than there are independent steps',

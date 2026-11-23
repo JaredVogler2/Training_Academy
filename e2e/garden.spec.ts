@@ -8,7 +8,9 @@ import {
   test,
   type Locator,
   type Page,
+  arrived,
 } from './fixtures';
+import { answer } from './play';
 
 /**
  * Number Garden's activities beyond the first: seeing a small amount at a glance, giving one to each, which has
@@ -131,6 +133,8 @@ test.describe('one for each', () => {
 
     // Two mice, each with a place. The whole board is on the screen and its two targets are large.
     expect(await friends(page)).toBe(2);
+    // Measured once the screen has arrived: a page sliding in is not yet the page.
+    await arrived(page);
     const fit = await screenFit(page);
     expect(fit.sideways).toEqual([]);
     expect(fit.taller).toBe(0);
@@ -241,7 +245,8 @@ test.describe('how many, at a glance', () => {
     expect(await stepNumber(page)).toBe(2);
     await expect(group).toHaveAttribute('data-covered', 'true');
     await expect(choices.first()).toHaveAttribute('data-turned-away', 'false');
-    await expect(group.locator('svg').first()).toBeHidden();
+    // What is covered is not on the page at all: there is nothing there to peek at.
+    await expect(group.locator('svg')).toHaveCount(0);
     // A screen reader is told it is covered, not what is under it.
     await expect(group).toContainText('Covered up, for now');
 
@@ -256,9 +261,7 @@ test.describe('how many, at a glance', () => {
     await expect(group).toHaveAttribute('data-covered', 'true');
 
     // The right answer uncovers it for good, and the two are counted together.
-    const amount = await amountIn(group);
-    const table = await amountsOnTheTable(page);
-    await press(table.find((entry) => entry.amount === amount)!.choice);
+    await answer(page, press);
     await expect(group).toHaveAttribute('data-covered', 'false');
     await expect(lesson(page).locator('[data-same="true"]')).toBeVisible();
     await expect(caption(page)).toHaveText('Yes. The same amount.');
@@ -329,6 +332,8 @@ test.describe('two that are equal', () => {
     const equal = amounts.flatMap((amount, index) => (amount === pair ? [index] : []));
     const odd = amounts.findIndex((amount) => amount !== pair);
 
+    // Measured once the screen has arrived: a page sliding in is not yet the page.
+    await arrived(page);
     const fit = await screenFit(page);
     expect(fit.sideways).toEqual([]);
     expect(fit.taller).toBe(0);

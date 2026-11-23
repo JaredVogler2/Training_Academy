@@ -80,11 +80,11 @@ test.describe('on a phone with a notch', () => {
     expect(await overlapping(worlds(page))).toEqual([]);
 
     await press(page.getByRole('link', { name: /Number Garden/ }));
-    await expect(page.getByRole('link', { name: 'Play' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
     await clear('a world’s page');
     expect((await screenFit(page)).sideways).toEqual([]);
 
-    await press(page.getByRole('link', { name: 'Play' }));
+    await press(page.getByRole('link', { name: 'Play', exact: true }));
     await expect(myTurn(page)).toBeVisible();
     await clear('the demonstration');
     await press(myTurn(page));
@@ -160,8 +160,10 @@ for (const [name, width, height, narrowest] of [
 
       // And the way in is on the first screen of what follows.
       await press(page.getByRole('link', { name: /Number Garden/ }));
-      await expect(page.getByRole('link', { name: 'Play' })).toBeInViewport({ ratio: 1 });
-      await press(page.getByRole('link', { name: 'Play' }));
+      await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeInViewport({
+        ratio: 1,
+      });
+      await press(page.getByRole('link', { name: 'Play', exact: true }));
       await expect(myTurn(page)).toBeInViewport({ ratio: 1 });
       await press(myTurn(page));
       await expect(page.getByTestId('lesson').locator('[data-choice]').first()).toBeVisible();

@@ -54,7 +54,7 @@ test.describe('offline', () => {
 
     // Open the world and start the activity while online: this is what gets kept.
     await press(page.getByRole('link', { name: /Number Garden/ }));
-    await press(page.getByRole('link', { name: 'Play' }));
+    await press(page.getByRole('link', { name: 'Play', exact: true }));
     await press(myTurn(page));
     await choose(page, press, true);
     await press(next(page));
@@ -74,7 +74,7 @@ test.describe('offline', () => {
     await page.goto('/');
     await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(6);
     await page.goto('/world/number-garden');
-    await expect(page.getByRole('link', { name: 'Play' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
   });
 
   test('a part that was never opened says it could not be loaded, instead of breaking', async ({

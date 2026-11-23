@@ -27,7 +27,9 @@ import {
   type AvatarId,
   type Profile,
   type Skill,
+  type WorldId,
 } from '@/engine';
+import { worldById } from '@/game/worlds';
 import {
   activeProfile,
   createProfile,
@@ -238,13 +240,14 @@ function Players({ onDialog }: { onDialog: (dialog: Dialog) => void }) {
 // What the player has shown
 // ---------------------------------------------------------------------------------------------------------------------
 
-function useSkills(): Skill[] {
-  const [skills, setSkills] = useState<Skill[]>([]);
+/** What each world with content teaches, world by world, in the order the worlds are met. */
+function useSkills(): { world: WorldId; skills: Skill[] }[] {
+  const [skills, setSkills] = useState<{ world: WorldId; skills: Skill[] }[]>([]);
   useEffect(() => {
     let current = true;
     void Promise.all(WORLD_IDS.filter(hasPack).map((world) => loadPack(world))).then(
       (packs) => {
-        if (current) setSkills(packs.flatMap((pack) => pack.skills));
+        if (current) setSkills(packs.map((pack) => ({ world: pack.world, skills: pack.skills })));
       },
       () => undefined,
     );
@@ -281,26 +284,32 @@ function Evidence({ profile }: { profile: Profile | null }) {
     <section className={styles.card} aria-labelledby="evidence-title">
       <h2 id="evidence-title">{text.shown(profile.name)}</h2>
       <p className={styles.small}>{text.shownHelp}</p>
-      <ul className={styles.skills}>
-        {skills.map((skill) => {
-          const evidence = getSkillEvidence(attempts, skill.id);
-          return (
-            <li
-              key={skill.id}
-              className={styles.skill}
-              data-testid="skill"
-              data-status={evidence.status}
-            >
-              <div>
-                <strong>{skill.title}</strong>
-                <p className={styles.small}>{skill.objective}</p>
-              </div>
-              <p className={styles.status}>{text.status[evidence.status]}</p>
-              <p className={styles.evidence}>{describeEvidence(evidence)}</p>
-            </li>
-          );
-        })}
-      </ul>
+      {skills.map((group) => (
+        <div key={group.world} className={styles.world} data-world={group.world}>
+          <h3>{worldById(group.world).name}</h3>
+          <ul className={styles.skills}>
+            {group.skills.map((skill) => {
+              const evidence = getSkillEvidence(attempts, skill.id);
+              return (
+                <li
+                  key={skill.id}
+                  className={styles.skill}
+                  data-testid="skill"
+                  data-skill={skill.id}
+                  data-status={evidence.status}
+                >
+                  <div>
+                    <strong>{skill.title}</strong>
+                    <p className={styles.small}>{skill.objective}</p>
+                  </div>
+                  <p className={styles.status}>{text.status[evidence.status]}</p>
+                  <p className={styles.evidence}>{describeEvidence(evidence)}</p>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
     </section>
   );
 }

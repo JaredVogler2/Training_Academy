@@ -236,7 +236,20 @@
   accent-color: var(--ink);
 }
 
-/* What the player has shown */
+/* What the player has shown: world by world */
+.world {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.world h3 {
+  margin: 6px 0 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
 .skills {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

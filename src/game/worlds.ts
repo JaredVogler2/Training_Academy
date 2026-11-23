@@ -39,10 +39,13 @@ export const WORLDS: readonly WorldInfo[] = [
     about:
       'Reading starts with listening. Children tune in to sounds, hear the first sound of a word, and only then meet the letter that stands for it — no alphabet needed to begin.',
     activities: [
-      { title: 'Listening for sounds all around', lessons: [] },
-      { title: 'Hearing the first sound in a word', lessons: [] },
-      { title: 'Linking a letter shape to its sound', lessons: [] },
-      { title: 'Blending sounds into words', lessons: [] },
+      { title: 'Listening for sounds all around', lessons: ['rc-listen-01', 'rc-listen-02'] },
+      { title: 'Hearing the first sound in a word', lessons: ['rc-first-01', 'rc-first-02'] },
+      {
+        title: 'Linking a letter shape to its sound',
+        lessons: ['rc-letters-01', 'rc-letters-02', 'rc-letters-03', 'rc-letters-04'],
+      },
+      { title: 'Blending sounds into words', lessons: ['rc-blend-01', 'rc-blend-02'] },
     ],
     role: 'reading',
   },
@@ -81,10 +84,13 @@ export const WORLDS: readonly WorldInfo[] = [
     about:
       'Short hide-and-find games in a forest, with the tricks that help: grouping things, making up a silly story, walking a familiar path. Practice at remembering, not a measure of anything.',
     activities: [
-      { title: 'Matching pairs', lessons: [] },
-      { title: 'What was hidden?', lessons: [] },
-      { title: 'Remembering an order', lessons: [] },
-      { title: 'Grouping and story tricks', lessons: [] },
+      { title: 'Matching pairs', lessons: ['mf-pairs-01'] },
+      { title: 'What was hidden?', lessons: ['mf-hidden-01'] },
+      { title: 'Remembering an order', lessons: ['mf-order-01'] },
+      {
+        title: 'Grouping and story tricks',
+        lessons: ['mf-groups-01', 'mf-story-01', 'mf-places-01'],
+      },
     ],
     role: 'memory',
   },
@@ -107,12 +113,41 @@ export const WORLDS: readonly WorldInfo[] = [
     name: 'Explorer Harbor',
     focus: 'Stories and the wide world',
     about:
-      'Stories told in pictures — beginning, middle and end, and why things happen — and first ideas about the world: land and water, near and far, places and the people who live there.',
+      'Stories told in pictures — beginning, middle and end, and why things happen — and first ideas about a map: land and water, near and far.',
     activities: [
-      { title: 'Beginning, middle, end', lessons: [] },
-      { title: 'Why did that happen?', lessons: [] },
-      { title: 'Land and water', lessons: [] },
-      { title: 'Near and far', lessons: [] },
+      {
+        title: 'Beginning, middle, end',
+        lessons: ['eh-story-01', 'eh-ending-01'],
+        together: {
+          what: 'Tell the story of something you did today in three parts: first, then, last. Draw the three parts on scraps of paper, mix them up, and put them back in order together. Then let your child tell one for you to draw.',
+          safety:
+            'Nothing to watch out for. Any order your child can give a reason for is worth listening to.',
+        },
+      },
+      {
+        title: 'Why did that happen?',
+        lessons: ['eh-why-01', 'eh-next-01'],
+        together: {
+          what: 'Put an ice cube on a saucer in a warm spot and another in the fridge. Guess together what each will be like after lunch, then look. Ask what made the difference.',
+          safety: 'Ice and water only: nothing hot, and nothing a small child could swallow whole.',
+        },
+      },
+      {
+        title: 'Land and water',
+        lessons: ['eh-water-01', 'eh-land-01'],
+        together: {
+          what: 'Look at a map or a globe together and find the blue. Find a place that is all land and a place that is all water, and trace a shore with a finger.',
+          safety: 'Nothing to watch out for.',
+        },
+      },
+      {
+        title: 'Near and far',
+        lessons: ['eh-near-01', 'eh-far-01'],
+        together: {
+          what: 'Stand still in a room and pick three things. Which is nearest? Which is farthest? Walk to each and count the steps to find out.',
+          safety: 'Clear the floor first, and choose things that are safe to walk up to.',
+        },
+      },
     ],
     role: 'explorer',
   },

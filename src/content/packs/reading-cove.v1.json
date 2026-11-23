@@ -1,0 +1,3620 @@
+{
+  "format": "training-academy.content-pack",
+  "schemaVersion": 1,
+  "id": "reading-cove",
+  "world": "reading-cove",
+  "contentVersion": 1,
+  "strings": {
+    "en": {
+      "rc.hint.not-this": "Not this one.",
+      "rc.listen.instruction": "Listen. What made that sound?",
+      "rc.listen.correct": "Yes. That was it.",
+      "rc.listen.incorrect": "That one sounds like this. Listen again.",
+      "rc.listen.hint.model": "Listen to each one.",
+      "rc.listen.hint.reveal": "It was this one.",
+      "rc.echo.instruction": "Listen. Then play it back.",
+      "rc.echo.correct": "Yes. You played it back.",
+      "rc.echo.incorrect": "Not quite. Listen again.",
+      "rc.echo.hint.model": "Here it is again.",
+      "rc.echo.hint.step": "It starts like this.",
+      "rc.echo.hint.reveal": "Tap them as I point.",
+      "rc.first.instruction": "Listen. Which one starts the same?",
+      "rc.first.correct": "Yes. They start the same.",
+      "rc.first.incorrect": "That one starts another way. Listen again.",
+      "rc.first.hint.model": "Listen to how each one starts.",
+      "rc.first.hint.reveal": "This one starts the same.",
+      "rc.letters.meet": "Look at this letter. This word starts with its sound.",
+      "rc.letters.picture.instruction": "Which one starts with this letter's sound?",
+      "rc.letters.letter.instruction": "Which letter does it start with?",
+      "rc.letters.picture.correct": "Yes. It starts with that sound.",
+      "rc.letters.letter.correct": "Yes. It starts with that letter.",
+      "rc.letters.incorrect": "Not that one. Listen again.",
+      "rc.letters.hint.model": "Listen to the letter's word.",
+      "rc.letters.hint.reveal": "It is this one.",
+      "rc.blend.instruction": "Listen to the slow word. Which one is it?",
+      "rc.read.instruction": "Read the word. Which one is it?",
+      "rc.blend.correct": "Yes. That is the word.",
+      "rc.blend.incorrect": "That is another word. Listen again.",
+      "rc.blend.hint.model": "Here it is, slowly.",
+      "rc.blend.hint.reveal": "It is this one."
+    }
+  },
+  "skills": [
+    {
+      "id": "phonics.listening.match-sound-to-source",
+      "world": "reading-cove",
+      "strand": "phonics",
+      "title": "Tell sounds apart",
+      "objective": "Hears a sound and finds what made it, out of two or three things that make different sounds.",
+      "prerequisites": []
+    },
+    {
+      "id": "phonics.listening.repeat-sound-pattern",
+      "world": "reading-cove",
+      "strand": "phonics",
+      "title": "Repeat a pattern of sounds",
+      "objective": "Hears two or three sounds one after another and plays them back in the same order.",
+      "prerequisites": ["phonics.listening.match-sound-to-source"]
+    },
+    {
+      "id": "phonics.awareness.first-sound-s-m-f",
+      "world": "reading-cove",
+      "strand": "phonics",
+      "title": "Hear the first sound of a word: s, m, f",
+      "objective": "Hears that two spoken words start with the same sound, for words that start with s, m or f. Done by ear, with pictures; no letters are shown.",
+      "prerequisites": ["phonics.listening.repeat-sound-pattern"]
+    },
+    {
+      "id": "phonics.awareness.first-sound-n-l-r",
+      "world": "reading-cove",
+      "strand": "phonics",
+      "title": "Hear the first sound of a word: n, l, r",
+      "objective": "Hears that two spoken words start with the same sound, for words that start with n, l or r.",
+      "prerequisites": ["phonics.awareness.first-sound-s-m-f"]
+    },
+    {
+      "id": "phonics.letters.s-m-a-t",
+      "world": "reading-cove",
+      "strand": "phonics",
+      "title": "Link letters to their sounds: s, m, a, t",
+      "objective": "Shown the letter s or m or a or t with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with.",
+      "prerequisites": ["phonics.awareness.first-sound-s-m-f"]
+    },
+    {
+      "id": "phonics.letters.p-i-n-o",
+      "world": "reading-cove",
+      "strand": "phonics",
+      "title": "Link letters to their sounds: p, i, n, o",
+      "objective": "Shown the letter p or i or n or o with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with.",
+      "prerequisites": ["phonics.letters.s-m-a-t"]
+    },
+    {
+      "id": "phonics.letters.f-l-c-h",
+      "world": "reading-cove",
+      "strand": "phonics",
+      "title": "Link letters to their sounds: f, l, c, h",
+      "objective": "Shown the letter f or l or c or h with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with.",
+      "prerequisites": ["phonics.letters.p-i-n-o"]
+    },
+    {
+      "id": "phonics.letters.u-e-r",
+      "world": "reading-cove",
+      "strand": "phonics",
+      "title": "Link letters to their sounds: u, e, r",
+      "objective": "Shown the letter u or e or r with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with.",
+      "prerequisites": ["phonics.letters.f-l-c-h"]
+    },
+    {
+      "id": "phonics.blending.hear-slow-word",
+      "world": "reading-cove",
+      "strand": "phonics",
+      "title": "Blend a slow word by ear",
+      "objective": "Hears a short word said slowly, sound running into sound, and knows which word it is, told apart from a word one sound different.",
+      "prerequisites": ["phonics.awareness.first-sound-n-l-r"]
+    },
+    {
+      "id": "phonics.decoding.read-short-word",
+      "world": "reading-cove",
+      "strand": "phonics",
+      "title": "Read a short word",
+      "objective": "Reads a three-letter word made of letters already taught, with nothing said aloud, and finds its picture among words that are nearly the same.",
+      "prerequisites": ["phonics.blending.hear-slow-word", "phonics.letters.u-e-r"]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "rc-listen-01",
+      "version": 1,
+      "world": "reading-cove",
+      "title": "What made that sound?",
+      "summary": "A sound is played and your child finds the thing that makes it: a drum, a bell, a shaker, a whistle, a bird, a clock. Listening closely to sounds comes before listening for the sounds inside words.",
+      "skillIds": ["phonics.listening.match-sound-to-source"],
+      "estimatedMinutes": 3,
+      "needsSound": true,
+      "plan": {
+        "demo": ["rc-listen-01.demo-drum"],
+        "guided": ["rc-listen-01.guided-bell", "rc-listen-01.guided-shaker"],
+        "independent": {
+          "pool": [
+            "rc-listen-01.whistle",
+            "rc-listen-01.bird",
+            "rc-listen-01.clock",
+            "rc-listen-01.drum",
+            "rc-listen-01.bell",
+            "rc-listen-01.shaker",
+            "rc-listen-01.whistle-again",
+            "rc-listen-01.bird-again"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "rc-listen-01.demo-drum",
+          "kind": "choose-one",
+          "skillId": "phonics.listening.match-sound-to-source",
+          "variant": "hear-drum",
+          "prompt": {
+            "instruction": "rc.listen.instruction",
+            "stimulus": { "type": "sound", "clip": "sound.drum" }
+          },
+          "choices": [
+            { "id": "a", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+            { "id": "b", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.listen.hint.model" },
+            { "type": "reveal", "caption": "rc.listen.hint.reveal" }
+          ],
+          "misconceptions": { "b": "other-sound" },
+          "feedback": { "correct": "rc.listen.correct", "incorrect": "rc.listen.incorrect" }
+        },
+        {
+          "id": "rc-listen-01.guided-bell",
+          "kind": "choose-one",
+          "skillId": "phonics.listening.match-sound-to-source",
+          "variant": "hear-bell",
+          "prompt": {
+            "instruction": "rc.listen.instruction",
+            "stimulus": { "type": "sound", "clip": "sound.bell" }
+          },
+          "choices": [
+            { "id": "a", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+            { "id": "b", "label": "shaker", "stimulus": { "type": "picture", "id": "shaker" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.listen.hint.model" },
+            { "type": "reveal", "caption": "rc.listen.hint.reveal" }
+          ],
+          "misconceptions": { "b": "other-sound" },
+          "feedback": { "correct": "rc.listen.correct", "incorrect": "rc.listen.incorrect" }
+        },
+        {
+          "id": "rc-listen-01.guided-shaker",
+          "kind": "choose-one",
+          "skillId": "phonics.listening.match-sound-to-source",
+          "variant": "hear-shaker",
+          "prompt": {
+            "instruction": "rc.listen.instruction",
+            "stimulus": { "type": "sound", "clip": "sound.shaker" }
+          },
+          "choices": [
+            { "id": "a", "label": "shaker", "stimulus": { "type": "picture", "id": "shaker" } },
+            { "id": "b", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.listen.hint.model" },
+            { "type": "reveal", "caption": "rc.listen.hint.reveal" }
+          ],
+          "misconceptions": { "b": "other-sound" },
+          "feedback": { "correct": "rc.listen.correct", "incorrect": "rc.listen.incorrect" }
+        },
+        {
+          "id": "rc-listen-01.whistle",
+          "kind": "choose-one",
+          "skillId": "phonics.listening.match-sound-to-source",
+          "variant": "hear-whistle",
+          "prompt": {
+            "instruction": "rc.listen.instruction",
+            "stimulus": { "type": "sound", "clip": "sound.whistle" }
+          },
+          "choices": [
+            { "id": "a", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+            { "id": "b", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } },
+            { "id": "c", "label": "whistle", "stimulus": { "type": "picture", "id": "whistle" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.listen.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.listen.hint.reveal" }
+          ],
+          "misconceptions": { "a": "similar-sound", "b": "similar-sound" },
+          "feedback": { "correct": "rc.listen.correct", "incorrect": "rc.listen.incorrect" }
+        },
+        {
+          "id": "rc-listen-01.bird",
+          "kind": "choose-one",
+          "skillId": "phonics.listening.match-sound-to-source",
+          "variant": "hear-bird",
+          "prompt": {
+            "instruction": "rc.listen.instruction",
+            "stimulus": { "type": "sound", "clip": "sound.bird" }
+          },
+          "choices": [
+            { "id": "a", "label": "whistle", "stimulus": { "type": "picture", "id": "whistle" } },
+            { "id": "b", "label": "clock", "stimulus": { "type": "picture", "id": "clock" } },
+            { "id": "c", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.listen.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.listen.hint.reveal" }
+          ],
+          "misconceptions": { "a": "similar-sound", "b": "other-sound" },
+          "feedback": { "correct": "rc.listen.correct", "incorrect": "rc.listen.incorrect" }
+        },
+        {
+          "id": "rc-listen-01.clock",
+          "kind": "choose-one",
+          "skillId": "phonics.listening.match-sound-to-source",
+          "variant": "hear-clock",
+          "prompt": {
+            "instruction": "rc.listen.instruction",
+            "stimulus": { "type": "sound", "clip": "sound.clock" }
+          },
+          "choices": [
+            { "id": "a", "label": "shaker", "stimulus": { "type": "picture", "id": "shaker" } },
+            { "id": "b", "label": "clock", "stimulus": { "type": "picture", "id": "clock" } },
+            { "id": "c", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.listen.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.listen.hint.reveal" }
+          ],
+          "misconceptions": { "a": "other-sound", "c": "similar-sound" },
+          "feedback": { "correct": "rc.listen.correct", "incorrect": "rc.listen.incorrect" }
+        },
+        {
+          "id": "rc-listen-01.drum",
+          "kind": "choose-one",
+          "skillId": "phonics.listening.match-sound-to-source",
+          "variant": "hear-drum",
+          "prompt": {
+            "instruction": "rc.listen.instruction",
+            "stimulus": { "type": "sound", "clip": "sound.drum" }
+          },
+          "choices": [
+            { "id": "a", "label": "clock", "stimulus": { "type": "picture", "id": "clock" } },
+            { "id": "b", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+            { "id": "c", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.listen.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.listen.hint.reveal" }
+          ],
+          "misconceptions": { "a": "similar-sound", "b": "other-sound" },
+          "feedback": { "correct": "rc.listen.correct", "incorrect": "rc.listen.incorrect" }
+        },
+        {
+          "id": "rc-listen-01.bell",
+          "kind": "choose-one",
+          "skillId": "phonics.listening.match-sound-to-source",
+          "variant": "hear-bell",
+          "prompt": {
+            "instruction": "rc.listen.instruction",
+            "stimulus": { "type": "sound", "clip": "sound.bell" }
+          },
+          "choices": [
+            { "id": "a", "label": "whistle", "stimulus": { "type": "picture", "id": "whistle" } },
+            { "id": "b", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+            { "id": "c", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.listen.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.listen.hint.reveal" }
+          ],
+          "misconceptions": { "a": "similar-sound", "b": "other-sound" },
+          "feedback": { "correct": "rc.listen.correct", "incorrect": "rc.listen.incorrect" }
+        },
+        {
+          "id": "rc-listen-01.shaker",
+          "kind": "choose-one",
+          "skillId": "phonics.listening.match-sound-to-source",
+          "variant": "hear-shaker",
+          "prompt": {
+            "instruction": "rc.listen.instruction",
+            "stimulus": { "type": "sound", "clip": "sound.shaker" }
+          },
+          "choices": [
+            { "id": "a", "label": "shaker", "stimulus": { "type": "picture", "id": "shaker" } },
+            { "id": "b", "label": "clock", "stimulus": { "type": "picture", "id": "clock" } },
+            { "id": "c", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.listen.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.listen.hint.reveal" }
+          ],
+          "misconceptions": { "b": "other-sound", "c": "other-sound" },
+          "feedback": { "correct": "rc.listen.correct", "incorrect": "rc.listen.incorrect" }
+        },
+        {
+          "id": "rc-listen-01.whistle-again",
+          "kind": "choose-one",
+          "skillId": "phonics.listening.match-sound-to-source",
+          "variant": "hear-whistle",
+          "prompt": {
+            "instruction": "rc.listen.instruction",
+            "stimulus": { "type": "sound", "clip": "sound.whistle" }
+          },
+          "choices": [
+            { "id": "a", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } },
+            { "id": "b", "label": "shaker", "stimulus": { "type": "picture", "id": "shaker" } },
+            { "id": "c", "label": "whistle", "stimulus": { "type": "picture", "id": "whistle" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.listen.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.listen.hint.reveal" }
+          ],
+          "misconceptions": { "a": "similar-sound", "b": "other-sound" },
+          "feedback": { "correct": "rc.listen.correct", "incorrect": "rc.listen.incorrect" }
+        },
+        {
+          "id": "rc-listen-01.bird-again",
+          "kind": "choose-one",
+          "skillId": "phonics.listening.match-sound-to-source",
+          "variant": "hear-bird",
+          "prompt": {
+            "instruction": "rc.listen.instruction",
+            "stimulus": { "type": "sound", "clip": "sound.bird" }
+          },
+          "choices": [
+            { "id": "a", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+            { "id": "b", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+            { "id": "c", "label": "bird", "stimulus": { "type": "picture", "id": "bird" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.listen.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.listen.hint.reveal" }
+          ],
+          "misconceptions": { "a": "other-sound", "b": "other-sound" },
+          "feedback": { "correct": "rc.listen.correct", "incorrect": "rc.listen.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "rc-listen-02",
+      "version": 1,
+      "world": "reading-cove",
+      "title": "Play it back",
+      "summary": "Two or three sounds are played, one after another, and your child plays them back in the same order. Holding a short string of sounds in mind is what blending sounds into words will ask for later.",
+      "skillIds": ["phonics.listening.repeat-sound-pattern"],
+      "estimatedMinutes": 3,
+      "needsSound": true,
+      "plan": {
+        "demo": ["rc-listen-02.demo"],
+        "guided": ["rc-listen-02.guided-same", "rc-listen-02.guided-two"],
+        "independent": {
+          "pool": [
+            "rc-listen-02.shaker-drum",
+            "rc-listen-02.bell-bell",
+            "rc-listen-02.drum-bell-drum",
+            "rc-listen-02.shaker-shaker-bell",
+            "rc-listen-02.bell-drum-shaker",
+            "rc-listen-02.drum-drum-bell",
+            "rc-listen-02.shaker-bell-bell",
+            "rc-listen-02.bell-shaker-drum"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "rc-listen-02.demo",
+          "kind": "make",
+          "skillId": "phonics.listening.repeat-sound-pattern",
+          "variant": "two-sounds",
+          "prompt": { "instruction": "rc.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              }
+            ],
+            "solution": ["drum", "bell"]
+          },
+          "hints": [
+            { "type": "model", "caption": "rc.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "rc.echo.hint.step" },
+            { "type": "reveal", "caption": "rc.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "rc.echo.correct", "incorrect": "rc.echo.incorrect" }
+        },
+        {
+          "id": "rc-listen-02.guided-same",
+          "kind": "make",
+          "skillId": "phonics.listening.repeat-sound-pattern",
+          "variant": "two-sounds",
+          "prompt": { "instruction": "rc.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              }
+            ],
+            "solution": ["drum", "drum"]
+          },
+          "hints": [
+            { "type": "model", "caption": "rc.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "rc.echo.hint.step" },
+            { "type": "reveal", "caption": "rc.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "rc.echo.correct", "incorrect": "rc.echo.incorrect" }
+        },
+        {
+          "id": "rc-listen-02.guided-two",
+          "kind": "make",
+          "skillId": "phonics.listening.repeat-sound-pattern",
+          "variant": "two-sounds",
+          "prompt": { "instruction": "rc.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              }
+            ],
+            "solution": ["bell", "shaker"]
+          },
+          "hints": [
+            { "type": "model", "caption": "rc.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "rc.echo.hint.step" },
+            { "type": "reveal", "caption": "rc.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "rc.echo.correct", "incorrect": "rc.echo.incorrect" }
+        },
+        {
+          "id": "rc-listen-02.shaker-drum",
+          "kind": "make",
+          "skillId": "phonics.listening.repeat-sound-pattern",
+          "variant": "two-sounds",
+          "prompt": { "instruction": "rc.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              }
+            ],
+            "solution": ["shaker", "drum"]
+          },
+          "hints": [
+            { "type": "model", "caption": "rc.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "rc.echo.hint.step" },
+            { "type": "reveal", "caption": "rc.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "rc.echo.correct", "incorrect": "rc.echo.incorrect" }
+        },
+        {
+          "id": "rc-listen-02.bell-bell",
+          "kind": "make",
+          "skillId": "phonics.listening.repeat-sound-pattern",
+          "variant": "two-sounds",
+          "prompt": { "instruction": "rc.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              }
+            ],
+            "solution": ["bell", "bell"]
+          },
+          "hints": [
+            { "type": "model", "caption": "rc.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "rc.echo.hint.step" },
+            { "type": "reveal", "caption": "rc.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "rc.echo.correct", "incorrect": "rc.echo.incorrect" }
+        },
+        {
+          "id": "rc-listen-02.drum-bell-drum",
+          "kind": "make",
+          "skillId": "phonics.listening.repeat-sound-pattern",
+          "variant": "three-sounds",
+          "prompt": { "instruction": "rc.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              }
+            ],
+            "solution": ["drum", "bell", "drum"]
+          },
+          "hints": [
+            { "type": "model", "caption": "rc.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "rc.echo.hint.step" },
+            { "type": "reveal", "caption": "rc.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "rc.echo.correct", "incorrect": "rc.echo.incorrect" }
+        },
+        {
+          "id": "rc-listen-02.shaker-shaker-bell",
+          "kind": "make",
+          "skillId": "phonics.listening.repeat-sound-pattern",
+          "variant": "three-sounds",
+          "prompt": { "instruction": "rc.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              }
+            ],
+            "solution": ["shaker", "shaker", "bell"]
+          },
+          "hints": [
+            { "type": "model", "caption": "rc.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "rc.echo.hint.step" },
+            { "type": "reveal", "caption": "rc.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "rc.echo.correct", "incorrect": "rc.echo.incorrect" }
+        },
+        {
+          "id": "rc-listen-02.bell-drum-shaker",
+          "kind": "make",
+          "skillId": "phonics.listening.repeat-sound-pattern",
+          "variant": "three-sounds",
+          "prompt": { "instruction": "rc.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              }
+            ],
+            "solution": ["bell", "drum", "shaker"]
+          },
+          "hints": [
+            { "type": "model", "caption": "rc.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "rc.echo.hint.step" },
+            { "type": "reveal", "caption": "rc.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "rc.echo.correct", "incorrect": "rc.echo.incorrect" }
+        },
+        {
+          "id": "rc-listen-02.drum-drum-bell",
+          "kind": "make",
+          "skillId": "phonics.listening.repeat-sound-pattern",
+          "variant": "three-sounds",
+          "prompt": { "instruction": "rc.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              }
+            ],
+            "solution": ["drum", "drum", "bell"]
+          },
+          "hints": [
+            { "type": "model", "caption": "rc.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "rc.echo.hint.step" },
+            { "type": "reveal", "caption": "rc.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "rc.echo.correct", "incorrect": "rc.echo.incorrect" }
+        },
+        {
+          "id": "rc-listen-02.shaker-bell-bell",
+          "kind": "make",
+          "skillId": "phonics.listening.repeat-sound-pattern",
+          "variant": "three-sounds",
+          "prompt": { "instruction": "rc.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              }
+            ],
+            "solution": ["shaker", "bell", "bell"]
+          },
+          "hints": [
+            { "type": "model", "caption": "rc.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "rc.echo.hint.step" },
+            { "type": "reveal", "caption": "rc.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "rc.echo.correct", "incorrect": "rc.echo.incorrect" }
+        },
+        {
+          "id": "rc-listen-02.bell-shaker-drum",
+          "kind": "make",
+          "skillId": "phonics.listening.repeat-sound-pattern",
+          "variant": "three-sounds",
+          "prompt": { "instruction": "rc.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              { "id": "drum", "label": "drum", "stimulus": { "type": "picture", "id": "drum" } },
+              { "id": "bell", "label": "bell", "stimulus": { "type": "picture", "id": "bell" } },
+              {
+                "id": "shaker",
+                "label": "shaker",
+                "stimulus": { "type": "picture", "id": "shaker" }
+              }
+            ],
+            "solution": ["bell", "shaker", "drum"]
+          },
+          "hints": [
+            { "type": "model", "caption": "rc.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "rc.echo.hint.step" },
+            { "type": "reveal", "caption": "rc.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "rc.echo.correct", "incorrect": "rc.echo.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "rc-first-01",
+      "version": 1,
+      "world": "reading-cove",
+      "title": "Which one starts the same? (s, m, f)",
+      "summary": "Your child hears a word and finds the picture whose word starts with the same sound. The first sound is drawn out so that it can be heard: sss, mmm and fff. No letters yet: this is all by ear.",
+      "skillIds": ["phonics.awareness.first-sound-s-m-f"],
+      "estimatedMinutes": 3,
+      "needsSound": true,
+      "plan": {
+        "demo": ["rc-first-01.demo"],
+        "guided": ["rc-first-01.guided-moon", "rc-first-01.guided-fan"],
+        "independent": {
+          "pool": [
+            "rc-first-01.sock",
+            "rc-first-01.mat",
+            "rc-first-01.fish",
+            "rc-first-01.seed",
+            "rc-first-01.mug",
+            "rc-first-01.fox",
+            "rc-first-01.soap",
+            "rc-first-01.map"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "rc-first-01.demo",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-s-m-f",
+          "variant": "starts-s",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "sun" }
+          },
+          "choices": [
+            { "id": "a", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } },
+            { "id": "b", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-m" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-01.guided-moon",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-s-m-f",
+          "variant": "starts-m",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "moon" }
+          },
+          "choices": [
+            { "id": "a", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } },
+            { "id": "b", "label": "map", "stimulus": { "type": "picture", "id": "map" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-f" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-01.guided-fan",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-s-m-f",
+          "variant": "starts-f",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "fan" }
+          },
+          "choices": [
+            { "id": "a", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+            { "id": "b", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-s" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-01.sock",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-s-m-f",
+          "variant": "starts-s",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "sock" }
+          },
+          "choices": [
+            { "id": "a", "label": "seed", "stimulus": { "type": "picture", "id": "seed" } },
+            { "id": "b", "label": "mug", "stimulus": { "type": "picture", "id": "mug" } },
+            { "id": "c", "label": "fin", "stimulus": { "type": "picture", "id": "fin" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-m", "c": "starts-with-f" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-01.mat",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-s-m-f",
+          "variant": "starts-m",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "mat" }
+          },
+          "choices": [
+            { "id": "a", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+            { "id": "b", "label": "mop", "stimulus": { "type": "picture", "id": "mop" } },
+            { "id": "c", "label": "soap", "stimulus": { "type": "picture", "id": "soap" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-f", "c": "starts-with-s" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-01.fish",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-s-m-f",
+          "variant": "starts-f",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "fish" }
+          },
+          "choices": [
+            { "id": "a", "label": "man", "stimulus": { "type": "picture", "id": "man" } },
+            { "id": "b", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } },
+            { "id": "c", "label": "fan", "stimulus": { "type": "picture", "id": "fan" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-m", "b": "starts-with-s" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-01.seed",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-s-m-f",
+          "variant": "starts-s",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "seed" }
+          },
+          "choices": [
+            { "id": "a", "label": "map", "stimulus": { "type": "picture", "id": "map" } },
+            { "id": "b", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } },
+            { "id": "c", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-m", "b": "starts-with-f" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-01.mug",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-s-m-f",
+          "variant": "starts-m",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "mug" }
+          },
+          "choices": [
+            { "id": "a", "label": "fan", "stimulus": { "type": "picture", "id": "fan" } },
+            { "id": "b", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } },
+            { "id": "c", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-f", "c": "starts-with-s" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-01.fox",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-s-m-f",
+          "variant": "starts-f",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "fox" }
+          },
+          "choices": [
+            { "id": "a", "label": "soap", "stimulus": { "type": "picture", "id": "soap" } },
+            { "id": "b", "label": "fin", "stimulus": { "type": "picture", "id": "fin" } },
+            { "id": "c", "label": "mat", "stimulus": { "type": "picture", "id": "mat" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-s", "c": "starts-with-m" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-01.soap",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-s-m-f",
+          "variant": "starts-s",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "soap" }
+          },
+          "choices": [
+            { "id": "a", "label": "mop", "stimulus": { "type": "picture", "id": "mop" } },
+            { "id": "b", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } },
+            { "id": "c", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-m", "b": "starts-with-f" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-01.map",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-s-m-f",
+          "variant": "starts-m",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "map" }
+          },
+          "choices": [
+            { "id": "a", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } },
+            { "id": "b", "label": "fan", "stimulus": { "type": "picture", "id": "fan" } },
+            { "id": "c", "label": "man", "stimulus": { "type": "picture", "id": "man" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-s", "b": "starts-with-f" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "rc-first-02",
+      "version": 1,
+      "world": "reading-cove",
+      "title": "Which one starts the same? (n, l, r)",
+      "summary": "Your child hears a word and finds the picture whose word starts with the same sound. The first sound is drawn out so that it can be heard: nnn, lll and rrr. No letters yet: this is all by ear.",
+      "skillIds": ["phonics.awareness.first-sound-n-l-r"],
+      "estimatedMinutes": 3,
+      "needsSound": true,
+      "plan": {
+        "demo": ["rc-first-02.demo"],
+        "guided": ["rc-first-02.guided-leaf", "rc-first-02.guided-rat"],
+        "independent": {
+          "pool": [
+            "rc-first-02.nose",
+            "rc-first-02.lip",
+            "rc-first-02.rain",
+            "rc-first-02.nest",
+            "rc-first-02.log",
+            "rc-first-02.ring",
+            "rc-first-02.net",
+            "rc-first-02.lamp"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "rc-first-02.demo",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-n-l-r",
+          "variant": "starts-n",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "net" }
+          },
+          "choices": [
+            { "id": "a", "label": "nose", "stimulus": { "type": "picture", "id": "nose" } },
+            { "id": "b", "label": "leaf", "stimulus": { "type": "picture", "id": "leaf" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-l" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-02.guided-leaf",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-n-l-r",
+          "variant": "starts-l",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "leaf" }
+          },
+          "choices": [
+            { "id": "a", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } },
+            { "id": "b", "label": "lamp", "stimulus": { "type": "picture", "id": "lamp" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-r" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-02.guided-rat",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-n-l-r",
+          "variant": "starts-r",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "rat" }
+          },
+          "choices": [
+            { "id": "a", "label": "ring", "stimulus": { "type": "picture", "id": "ring" } },
+            { "id": "b", "label": "net", "stimulus": { "type": "picture", "id": "net" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-n" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-02.nose",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-n-l-r",
+          "variant": "starts-n",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "nose" }
+          },
+          "choices": [
+            { "id": "a", "label": "nest", "stimulus": { "type": "picture", "id": "nest" } },
+            { "id": "b", "label": "log", "stimulus": { "type": "picture", "id": "log" } },
+            { "id": "c", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-l", "c": "starts-with-r" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-02.lip",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-n-l-r",
+          "variant": "starts-l",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "lip" }
+          },
+          "choices": [
+            { "id": "a", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } },
+            { "id": "b", "label": "lamp", "stimulus": { "type": "picture", "id": "lamp" } },
+            { "id": "c", "label": "net", "stimulus": { "type": "picture", "id": "net" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-r", "c": "starts-with-n" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-02.rain",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-n-l-r",
+          "variant": "starts-r",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "rain" }
+          },
+          "choices": [
+            { "id": "a", "label": "leaf", "stimulus": { "type": "picture", "id": "leaf" } },
+            { "id": "b", "label": "nest", "stimulus": { "type": "picture", "id": "nest" } },
+            { "id": "c", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-l", "b": "starts-with-n" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-02.nest",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-n-l-r",
+          "variant": "starts-n",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "nest" }
+          },
+          "choices": [
+            { "id": "a", "label": "lip", "stimulus": { "type": "picture", "id": "lip" } },
+            { "id": "b", "label": "ring", "stimulus": { "type": "picture", "id": "ring" } },
+            { "id": "c", "label": "nose", "stimulus": { "type": "picture", "id": "nose" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-l", "b": "starts-with-r" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-02.log",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-n-l-r",
+          "variant": "starts-l",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "log" }
+          },
+          "choices": [
+            { "id": "a", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } },
+            { "id": "b", "label": "leaf", "stimulus": { "type": "picture", "id": "leaf" } },
+            { "id": "c", "label": "nose", "stimulus": { "type": "picture", "id": "nose" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-r", "c": "starts-with-n" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-02.ring",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-n-l-r",
+          "variant": "starts-r",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "ring" }
+          },
+          "choices": [
+            { "id": "a", "label": "net", "stimulus": { "type": "picture", "id": "net" } },
+            { "id": "b", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } },
+            { "id": "c", "label": "lamp", "stimulus": { "type": "picture", "id": "lamp" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-n", "c": "starts-with-l" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-02.net",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-n-l-r",
+          "variant": "starts-n",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "net" }
+          },
+          "choices": [
+            { "id": "a", "label": "log", "stimulus": { "type": "picture", "id": "log" } },
+            { "id": "b", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } },
+            { "id": "c", "label": "nest", "stimulus": { "type": "picture", "id": "nest" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-l", "b": "starts-with-r" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        },
+        {
+          "id": "rc-first-02.lamp",
+          "kind": "choose-one",
+          "skillId": "phonics.awareness.first-sound-n-l-r",
+          "variant": "starts-l",
+          "prompt": {
+            "instruction": "rc.first.instruction",
+            "stimulus": { "type": "picture", "id": "lamp" }
+          },
+          "choices": [
+            { "id": "a", "label": "nose", "stimulus": { "type": "picture", "id": "nose" } },
+            { "id": "b", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } },
+            { "id": "c", "label": "lip", "stimulus": { "type": "picture", "id": "lip" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.first.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.first.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-n", "b": "starts-with-r" },
+          "feedback": { "correct": "rc.first.correct", "incorrect": "rc.first.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "rc-letters-01",
+      "version": 1,
+      "world": "reading-cove",
+      "title": "Letters and their sounds: s, m, a, t",
+      "summary": "Your child meets the letters s, m, a, t, each with a word that begins with its sound, then finds the picture that starts with a letter's sound, and the letter a picture starts with. On their own, the letter is shown without a word to help.",
+      "skillIds": ["phonics.letters.s-m-a-t"],
+      "estimatedMinutes": 4,
+      "needsSound": true,
+      "plan": {
+        "demo": [
+          "rc-letters-01.meet-s",
+          "rc-letters-01.meet-m",
+          "rc-letters-01.meet-a",
+          "rc-letters-01.meet-t"
+        ],
+        "guided": ["rc-letters-01.guided-s", "rc-letters-01.guided-mug"],
+        "independent": {
+          "pool": [
+            "rc-letters-01.s-picture",
+            "rc-letters-01.m-picture",
+            "rc-letters-01.a-picture",
+            "rc-letters-01.t-picture",
+            "rc-letters-01.seed-letter",
+            "rc-letters-01.man-letter",
+            "rc-letters-01.axe-letter",
+            "rc-letters-01.top-letter"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "rc-letters-01.meet-s",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "s" }
+          },
+          "choices": [
+            { "id": "a", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } },
+            { "id": "b", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-m" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.meet-m",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "m" }
+          },
+          "choices": [
+            { "id": "a", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } },
+            { "id": "b", "label": "tap", "stimulus": { "type": "picture", "id": "tap" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-t" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.meet-a",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "a" }
+          },
+          "choices": [
+            { "id": "a", "label": "ant", "stimulus": { "type": "picture", "id": "ant" } },
+            { "id": "b", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-s" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.meet-t",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "t" }
+          },
+          "choices": [
+            { "id": "a", "label": "tap", "stimulus": { "type": "picture", "id": "tap" } },
+            { "id": "b", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-a" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.guided-s",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "s" }
+          },
+          "choices": [
+            { "id": "a", "label": "map", "stimulus": { "type": "picture", "id": "map" } },
+            { "id": "b", "label": "sock", "stimulus": { "type": "picture", "id": "sock" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-m" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.guided-mug",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "mug" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter m",
+              "stimulus": { "type": "letter", "letters": "m" }
+            },
+            { "id": "b", "label": "the letter t", "stimulus": { "type": "letter", "letters": "t" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "letter-t" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.s-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "s" }
+          },
+          "choices": [
+            { "id": "a", "label": "soap", "stimulus": { "type": "picture", "id": "soap" } },
+            { "id": "b", "label": "axe", "stimulus": { "type": "picture", "id": "axe" } },
+            { "id": "c", "label": "mat", "stimulus": { "type": "picture", "id": "mat" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-a", "c": "starts-with-m" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.m-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "m" }
+          },
+          "choices": [
+            { "id": "a", "label": "tin", "stimulus": { "type": "picture", "id": "tin" } },
+            { "id": "b", "label": "seed", "stimulus": { "type": "picture", "id": "seed" } },
+            { "id": "c", "label": "mop", "stimulus": { "type": "picture", "id": "mop" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-t", "b": "starts-with-s" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.a-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "a" }
+          },
+          "choices": [
+            { "id": "a", "label": "top", "stimulus": { "type": "picture", "id": "top" } },
+            { "id": "b", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } },
+            { "id": "c", "label": "moon", "stimulus": { "type": "picture", "id": "moon" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-t", "c": "starts-with-m" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.t-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "t" }
+          },
+          "choices": [
+            { "id": "a", "label": "ant", "stimulus": { "type": "picture", "id": "ant" } },
+            { "id": "b", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } },
+            { "id": "c", "label": "tin", "stimulus": { "type": "picture", "id": "tin" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-a", "b": "starts-with-s" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.seed-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "seed" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter m",
+              "stimulus": { "type": "letter", "letters": "m" }
+            },
+            {
+              "id": "b",
+              "label": "the letter s",
+              "stimulus": { "type": "letter", "letters": "s" }
+            },
+            { "id": "c", "label": "the letter t", "stimulus": { "type": "letter", "letters": "t" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "letter-m", "c": "letter-t" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.man-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "man" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter s",
+              "stimulus": { "type": "letter", "letters": "s" }
+            },
+            {
+              "id": "b",
+              "label": "the letter a",
+              "stimulus": { "type": "letter", "letters": "a" }
+            },
+            { "id": "c", "label": "the letter m", "stimulus": { "type": "letter", "letters": "m" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "letter-s", "b": "letter-a" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.axe-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "axe" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter a",
+              "stimulus": { "type": "letter", "letters": "a" }
+            },
+            {
+              "id": "b",
+              "label": "the letter t",
+              "stimulus": { "type": "letter", "letters": "t" }
+            },
+            { "id": "c", "label": "the letter s", "stimulus": { "type": "letter", "letters": "s" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "letter-t", "c": "letter-s" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-01.top-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.s-m-a-t",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "top" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter t",
+              "stimulus": { "type": "letter", "letters": "t" }
+            },
+            {
+              "id": "b",
+              "label": "the letter m",
+              "stimulus": { "type": "letter", "letters": "m" }
+            },
+            { "id": "c", "label": "the letter a", "stimulus": { "type": "letter", "letters": "a" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "letter-m", "c": "letter-a" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rc-letters-02",
+      "version": 1,
+      "world": "reading-cove",
+      "title": "Letters and their sounds: p, i, n, o",
+      "summary": "Your child meets the letters p, i, n, o, each with a word that begins with its sound, then finds the picture that starts with a letter's sound, and the letter a picture starts with. On their own, the letter is shown without a word to help.",
+      "skillIds": ["phonics.letters.p-i-n-o"],
+      "estimatedMinutes": 4,
+      "needsSound": true,
+      "plan": {
+        "demo": [
+          "rc-letters-02.meet-p",
+          "rc-letters-02.meet-i",
+          "rc-letters-02.meet-n",
+          "rc-letters-02.meet-o"
+        ],
+        "guided": ["rc-letters-02.guided-p", "rc-letters-02.guided-nest"],
+        "independent": {
+          "pool": [
+            "rc-letters-02.p-picture",
+            "rc-letters-02.i-picture",
+            "rc-letters-02.n-picture",
+            "rc-letters-02.o-picture",
+            "rc-letters-02.pen-letter",
+            "rc-letters-02.igloo-letter",
+            "rc-letters-02.nose-letter",
+            "rc-letters-02.octopus-letter"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "rc-letters-02.meet-p",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "p" }
+          },
+          "choices": [
+            { "id": "a", "label": "pan", "stimulus": { "type": "picture", "id": "pan" } },
+            { "id": "b", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-s" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.meet-i",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "i" }
+          },
+          "choices": [
+            { "id": "a", "label": "igloo", "stimulus": { "type": "picture", "id": "igloo" } },
+            { "id": "b", "label": "pot", "stimulus": { "type": "picture", "id": "pot" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-p" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.meet-n",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "n" }
+          },
+          "choices": [
+            { "id": "a", "label": "net", "stimulus": { "type": "picture", "id": "net" } },
+            { "id": "b", "label": "ink", "stimulus": { "type": "picture", "id": "ink" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-i" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.meet-o",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "o" }
+          },
+          "choices": [
+            { "id": "a", "label": "octopus", "stimulus": { "type": "picture", "id": "octopus" } },
+            { "id": "b", "label": "nose", "stimulus": { "type": "picture", "id": "nose" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-n" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.guided-p",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "p" }
+          },
+          "choices": [
+            { "id": "a", "label": "net", "stimulus": { "type": "picture", "id": "net" } },
+            { "id": "b", "label": "pin", "stimulus": { "type": "picture", "id": "pin" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-n" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.guided-nest",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "nest" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter n",
+              "stimulus": { "type": "letter", "letters": "n" }
+            },
+            { "id": "b", "label": "the letter p", "stimulus": { "type": "letter", "letters": "p" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "letter-p" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.p-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "p" }
+          },
+          "choices": [
+            { "id": "a", "label": "pot", "stimulus": { "type": "picture", "id": "pot" } },
+            { "id": "b", "label": "olive", "stimulus": { "type": "picture", "id": "olive" } },
+            { "id": "c", "label": "nose", "stimulus": { "type": "picture", "id": "nose" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-o", "c": "starts-with-n" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.i-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "i" }
+          },
+          "choices": [
+            { "id": "a", "label": "net", "stimulus": { "type": "picture", "id": "net" } },
+            { "id": "b", "label": "ink", "stimulus": { "type": "picture", "id": "ink" } },
+            { "id": "c", "label": "pen", "stimulus": { "type": "picture", "id": "pen" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-n", "c": "starts-with-p" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.n-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "n" }
+          },
+          "choices": [
+            { "id": "a", "label": "igloo", "stimulus": { "type": "picture", "id": "igloo" } },
+            { "id": "b", "label": "pan", "stimulus": { "type": "picture", "id": "pan" } },
+            { "id": "c", "label": "nest", "stimulus": { "type": "picture", "id": "nest" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-i", "b": "starts-with-p" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.o-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "o" }
+          },
+          "choices": [
+            { "id": "a", "label": "pin", "stimulus": { "type": "picture", "id": "pin" } },
+            { "id": "b", "label": "nest", "stimulus": { "type": "picture", "id": "nest" } },
+            { "id": "c", "label": "olive", "stimulus": { "type": "picture", "id": "olive" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-p", "b": "starts-with-n" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.pen-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "pen" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter n",
+              "stimulus": { "type": "letter", "letters": "n" }
+            },
+            {
+              "id": "b",
+              "label": "the letter p",
+              "stimulus": { "type": "letter", "letters": "p" }
+            },
+            { "id": "c", "label": "the letter o", "stimulus": { "type": "letter", "letters": "o" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "letter-n", "c": "letter-o" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.igloo-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "igloo" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter i",
+              "stimulus": { "type": "letter", "letters": "i" }
+            },
+            {
+              "id": "b",
+              "label": "the letter o",
+              "stimulus": { "type": "letter", "letters": "o" }
+            },
+            { "id": "c", "label": "the letter p", "stimulus": { "type": "letter", "letters": "p" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "letter-o", "c": "letter-p" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.nose-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "nose" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter m",
+              "stimulus": { "type": "letter", "letters": "m" }
+            },
+            {
+              "id": "b",
+              "label": "the letter n",
+              "stimulus": { "type": "letter", "letters": "n" }
+            },
+            { "id": "c", "label": "the letter i", "stimulus": { "type": "letter", "letters": "i" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "letter-m", "c": "letter-i" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-02.octopus-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.p-i-n-o",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "octopus" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter a",
+              "stimulus": { "type": "letter", "letters": "a" }
+            },
+            {
+              "id": "b",
+              "label": "the letter i",
+              "stimulus": { "type": "letter", "letters": "i" }
+            },
+            { "id": "c", "label": "the letter o", "stimulus": { "type": "letter", "letters": "o" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "letter-a", "b": "letter-i" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rc-letters-03",
+      "version": 1,
+      "world": "reading-cove",
+      "title": "Letters and their sounds: f, l, c, h",
+      "summary": "Your child meets the letters f, l, c, h, each with a word that begins with its sound, then finds the picture that starts with a letter's sound, and the letter a picture starts with. On their own, the letter is shown without a word to help.",
+      "skillIds": ["phonics.letters.f-l-c-h"],
+      "estimatedMinutes": 4,
+      "needsSound": true,
+      "plan": {
+        "demo": [
+          "rc-letters-03.meet-f",
+          "rc-letters-03.meet-l",
+          "rc-letters-03.meet-c",
+          "rc-letters-03.meet-h"
+        ],
+        "guided": ["rc-letters-03.guided-f", "rc-letters-03.guided-cup"],
+        "independent": {
+          "pool": [
+            "rc-letters-03.f-picture",
+            "rc-letters-03.l-picture",
+            "rc-letters-03.c-picture",
+            "rc-letters-03.h-picture",
+            "rc-letters-03.fox-letter",
+            "rc-letters-03.log-letter",
+            "rc-letters-03.cap-letter",
+            "rc-letters-03.hut-letter"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "rc-letters-03.meet-f",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "f" }
+          },
+          "choices": [
+            { "id": "a", "label": "fish", "stimulus": { "type": "picture", "id": "fish" } },
+            { "id": "b", "label": "lamp", "stimulus": { "type": "picture", "id": "lamp" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-l" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.meet-l",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "l" }
+          },
+          "choices": [
+            { "id": "a", "label": "leaf", "stimulus": { "type": "picture", "id": "leaf" } },
+            { "id": "b", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-c" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.meet-c",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "c" }
+          },
+          "choices": [
+            { "id": "a", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+            { "id": "b", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-h" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.meet-h",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "h" }
+          },
+          "choices": [
+            { "id": "a", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+            { "id": "b", "label": "fan", "stimulus": { "type": "picture", "id": "fan" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-f" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.guided-f",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "f" }
+          },
+          "choices": [
+            { "id": "a", "label": "log", "stimulus": { "type": "picture", "id": "log" } },
+            { "id": "b", "label": "fox", "stimulus": { "type": "picture", "id": "fox" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-l" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.guided-cup",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "cup" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter c",
+              "stimulus": { "type": "letter", "letters": "c" }
+            },
+            { "id": "b", "label": "the letter h", "stimulus": { "type": "letter", "letters": "h" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "letter-h" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.f-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "f" }
+          },
+          "choices": [
+            { "id": "a", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } },
+            { "id": "b", "label": "fan", "stimulus": { "type": "picture", "id": "fan" } },
+            { "id": "c", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-c", "c": "starts-with-h" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.l-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "l" }
+          },
+          "choices": [
+            { "id": "a", "label": "lamp", "stimulus": { "type": "picture", "id": "lamp" } },
+            { "id": "b", "label": "fin", "stimulus": { "type": "picture", "id": "fin" } },
+            { "id": "c", "label": "hut", "stimulus": { "type": "picture", "id": "hut" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-f", "c": "starts-with-h" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.c-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "c" }
+          },
+          "choices": [
+            { "id": "a", "label": "leaf", "stimulus": { "type": "picture", "id": "leaf" } },
+            { "id": "b", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+            { "id": "c", "label": "can", "stimulus": { "type": "picture", "id": "can" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-l", "b": "starts-with-h" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.h-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "h" }
+          },
+          "choices": [
+            { "id": "a", "label": "cot", "stimulus": { "type": "picture", "id": "cot" } },
+            { "id": "b", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+            { "id": "c", "label": "lip", "stimulus": { "type": "picture", "id": "lip" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-c", "c": "starts-with-l" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.fox-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "fox" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter h",
+              "stimulus": { "type": "letter", "letters": "h" }
+            },
+            {
+              "id": "b",
+              "label": "the letter l",
+              "stimulus": { "type": "letter", "letters": "l" }
+            },
+            { "id": "c", "label": "the letter f", "stimulus": { "type": "letter", "letters": "f" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "letter-h", "b": "letter-l" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.log-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "log" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter l",
+              "stimulus": { "type": "letter", "letters": "l" }
+            },
+            {
+              "id": "b",
+              "label": "the letter c",
+              "stimulus": { "type": "letter", "letters": "c" }
+            },
+            { "id": "c", "label": "the letter t", "stimulus": { "type": "letter", "letters": "t" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "letter-c", "c": "letter-t" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.cap-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "cap" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter p",
+              "stimulus": { "type": "letter", "letters": "p" }
+            },
+            {
+              "id": "b",
+              "label": "the letter c",
+              "stimulus": { "type": "letter", "letters": "c" }
+            },
+            { "id": "c", "label": "the letter f", "stimulus": { "type": "letter", "letters": "f" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "letter-p", "c": "letter-f" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-03.hut-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.f-l-c-h",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "hut" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter n",
+              "stimulus": { "type": "letter", "letters": "n" }
+            },
+            {
+              "id": "b",
+              "label": "the letter h",
+              "stimulus": { "type": "letter", "letters": "h" }
+            },
+            { "id": "c", "label": "the letter l", "stimulus": { "type": "letter", "letters": "l" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "letter-n", "c": "letter-l" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rc-letters-04",
+      "version": 1,
+      "world": "reading-cove",
+      "title": "Letters and their sounds: u, e, r",
+      "summary": "Your child meets the letters u, e, r, each with a word that begins with its sound, then finds the picture that starts with a letter's sound, and the letter a picture starts with. On their own, the letter is shown without a word to help.",
+      "skillIds": ["phonics.letters.u-e-r"],
+      "estimatedMinutes": 4,
+      "needsSound": true,
+      "plan": {
+        "demo": ["rc-letters-04.meet-u", "rc-letters-04.meet-e", "rc-letters-04.meet-r"],
+        "guided": ["rc-letters-04.guided-r", "rc-letters-04.guided-egg"],
+        "independent": {
+          "pool": [
+            "rc-letters-04.u-picture",
+            "rc-letters-04.e-picture",
+            "rc-letters-04.r-picture",
+            "rc-letters-04.e-picture-again",
+            "rc-letters-04.umbrella-letter",
+            "rc-letters-04.elephant-letter",
+            "rc-letters-04.ring-letter",
+            "rc-letters-04.rain-letter"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "rc-letters-04.meet-u",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "u" }
+          },
+          "choices": [
+            { "id": "a", "label": "umbrella", "stimulus": { "type": "picture", "id": "umbrella" } },
+            { "id": "b", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-r" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.meet-e",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "e" }
+          },
+          "choices": [
+            { "id": "a", "label": "egg", "stimulus": { "type": "picture", "id": "egg" } },
+            { "id": "b", "label": "umbrella", "stimulus": { "type": "picture", "id": "umbrella" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-u" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.meet-r",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.meet",
+            "stimulus": { "type": "letter", "letters": "r" }
+          },
+          "choices": [
+            { "id": "a", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } },
+            { "id": "b", "label": "egg", "stimulus": { "type": "picture", "id": "egg" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-e" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.guided-r",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "r" }
+          },
+          "choices": [
+            { "id": "a", "label": "elephant", "stimulus": { "type": "picture", "id": "elephant" } },
+            { "id": "b", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-e" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.guided-egg",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "egg" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter e",
+              "stimulus": { "type": "letter", "letters": "e" }
+            },
+            { "id": "b", "label": "the letter u", "stimulus": { "type": "letter", "letters": "u" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "letter-u" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.u-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "u" }
+          },
+          "choices": [
+            { "id": "a", "label": "ring", "stimulus": { "type": "picture", "id": "ring" } },
+            { "id": "b", "label": "umbrella", "stimulus": { "type": "picture", "id": "umbrella" } },
+            { "id": "c", "label": "ant", "stimulus": { "type": "picture", "id": "ant" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-r", "c": "starts-with-a" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.e-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "e" }
+          },
+          "choices": [
+            { "id": "a", "label": "elephant", "stimulus": { "type": "picture", "id": "elephant" } },
+            { "id": "b", "label": "igloo", "stimulus": { "type": "picture", "id": "igloo" } },
+            { "id": "c", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "starts-with-i", "c": "starts-with-r" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.r-picture",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "r" }
+          },
+          "choices": [
+            { "id": "a", "label": "egg", "stimulus": { "type": "picture", "id": "egg" } },
+            { "id": "b", "label": "olive", "stimulus": { "type": "picture", "id": "olive" } },
+            { "id": "c", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-e", "b": "starts-with-o" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.e-picture-again",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "letter-to-picture",
+          "prompt": {
+            "instruction": "rc.letters.picture.instruction",
+            "stimulus": { "type": "letter", "letters": "e" }
+          },
+          "choices": [
+            { "id": "a", "label": "apple", "stimulus": { "type": "picture", "id": "apple" } },
+            { "id": "b", "label": "rain", "stimulus": { "type": "picture", "id": "rain" } },
+            { "id": "c", "label": "egg", "stimulus": { "type": "picture", "id": "egg" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "starts-with-a", "b": "starts-with-r" },
+          "feedback": {
+            "correct": "rc.letters.picture.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.umbrella-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "umbrella" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter a",
+              "stimulus": { "type": "letter", "letters": "a" }
+            },
+            {
+              "id": "b",
+              "label": "the letter u",
+              "stimulus": { "type": "letter", "letters": "u" }
+            },
+            { "id": "c", "label": "the letter o", "stimulus": { "type": "letter", "letters": "o" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "letter-a", "c": "letter-o" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.elephant-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "elephant" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter i",
+              "stimulus": { "type": "letter", "letters": "i" }
+            },
+            {
+              "id": "b",
+              "label": "the letter a",
+              "stimulus": { "type": "letter", "letters": "a" }
+            },
+            { "id": "c", "label": "the letter e", "stimulus": { "type": "letter", "letters": "e" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "letter-i", "b": "letter-a" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.ring-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "ring" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter r",
+              "stimulus": { "type": "letter", "letters": "r" }
+            },
+            {
+              "id": "b",
+              "label": "the letter n",
+              "stimulus": { "type": "letter", "letters": "n" }
+            },
+            { "id": "c", "label": "the letter l", "stimulus": { "type": "letter", "letters": "l" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "b": "letter-n", "c": "letter-l" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        },
+        {
+          "id": "rc-letters-04.rain-letter",
+          "kind": "choose-one",
+          "skillId": "phonics.letters.u-e-r",
+          "variant": "picture-to-letter",
+          "prompt": {
+            "instruction": "rc.letters.letter.instruction",
+            "stimulus": { "type": "picture", "id": "rain" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "the letter l",
+              "stimulus": { "type": "letter", "letters": "l" }
+            },
+            {
+              "id": "b",
+              "label": "the letter r",
+              "stimulus": { "type": "letter", "letters": "r" }
+            },
+            { "id": "c", "label": "the letter u", "stimulus": { "type": "letter", "letters": "u" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.letters.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.letters.hint.reveal" }
+          ],
+          "misconceptions": { "a": "letter-l", "c": "letter-u" },
+          "feedback": {
+            "correct": "rc.letters.letter.correct",
+            "incorrect": "rc.letters.incorrect"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rc-blend-01",
+      "version": 1,
+      "world": "reading-cove",
+      "title": "The slow word",
+      "summary": "A word is said slowly, its sounds running into one another, and your child finds its picture. Next to it is a picture whose word is one sound different. This is blending by ear: no letters are shown.",
+      "skillIds": ["phonics.blending.hear-slow-word"],
+      "estimatedMinutes": 4,
+      "needsSound": true,
+      "plan": {
+        "demo": ["rc-blend-01.demo"],
+        "guided": ["rc-blend-01.guided-map", "rc-blend-01.guided-cat"],
+        "independent": {
+          "pool": [
+            "rc-blend-01.mat",
+            "rc-blend-01.pin",
+            "rc-blend-01.top",
+            "rc-blend-01.hen",
+            "rc-blend-01.cup",
+            "rc-blend-01.fan",
+            "rc-blend-01.net",
+            "rc-blend-01.pot",
+            "rc-blend-01.tap",
+            "rc-blend-01.rat"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "rc-blend-01.demo",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-u",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.sun" }
+          },
+          "choices": [
+            { "id": "a", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } },
+            { "id": "b", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "b": "other-word" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.guided-map",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.map" }
+          },
+          "choices": [
+            { "id": "a", "label": "pin", "stimulus": { "type": "picture", "id": "pin" } },
+            { "id": "b", "label": "map", "stimulus": { "type": "picture", "id": "map" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "other-word" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.guided-cat",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.cat" }
+          },
+          "choices": [
+            { "id": "a", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+            { "id": "b", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.mat",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.mat" }
+          },
+          "choices": [
+            { "id": "a", "label": "map", "stimulus": { "type": "picture", "id": "map" } },
+            { "id": "b", "label": "mat", "stimulus": { "type": "picture", "id": "mat" } },
+            { "id": "c", "label": "pot", "stimulus": { "type": "picture", "id": "pot" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-first-sound", "c": "same-last-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.pin",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-i",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.pin" }
+          },
+          "choices": [
+            { "id": "a", "label": "pin", "stimulus": { "type": "picture", "id": "pin" } },
+            { "id": "b", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+            { "id": "c", "label": "pan", "stimulus": { "type": "picture", "id": "pan" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-last-sound", "c": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.top",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-o",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.top" }
+          },
+          "choices": [
+            { "id": "a", "label": "fin", "stimulus": { "type": "picture", "id": "fin" } },
+            { "id": "b", "label": "tap", "stimulus": { "type": "picture", "id": "tap" } },
+            { "id": "c", "label": "top", "stimulus": { "type": "picture", "id": "top" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "other-word", "b": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.hen",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-e",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.hen" }
+          },
+          "choices": [
+            { "id": "a", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+            { "id": "b", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+            { "id": "c", "label": "mop", "stimulus": { "type": "picture", "id": "mop" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-first-sound", "c": "other-word" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.cup",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-u",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.cup" }
+          },
+          "choices": [
+            { "id": "a", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } },
+            { "id": "b", "label": "net", "stimulus": { "type": "picture", "id": "net" } },
+            { "id": "c", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "b": "other-word", "c": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.fan",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.fan" }
+          },
+          "choices": [
+            { "id": "a", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } },
+            { "id": "b", "label": "fin", "stimulus": { "type": "picture", "id": "fin" } },
+            { "id": "c", "label": "fan", "stimulus": { "type": "picture", "id": "fan" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "other-word", "b": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.net",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-e",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.net" }
+          },
+          "choices": [
+            { "id": "a", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } },
+            { "id": "b", "label": "net", "stimulus": { "type": "picture", "id": "net" } },
+            { "id": "c", "label": "lip", "stimulus": { "type": "picture", "id": "lip" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "other-word", "c": "other-word" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.pot",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-o",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.pot" }
+          },
+          "choices": [
+            { "id": "a", "label": "pot", "stimulus": { "type": "picture", "id": "pot" } },
+            { "id": "b", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+            { "id": "c", "label": "pen", "stimulus": { "type": "picture", "id": "pen" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-last-sound", "c": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.tap",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.tap" }
+          },
+          "choices": [
+            { "id": "a", "label": "tin", "stimulus": { "type": "picture", "id": "tin" } },
+            { "id": "b", "label": "tap", "stimulus": { "type": "picture", "id": "tap" } },
+            { "id": "c", "label": "top", "stimulus": { "type": "picture", "id": "top" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-first-sound", "c": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-01.rat",
+          "kind": "choose-one",
+          "skillId": "phonics.blending.hear-slow-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.blend.instruction",
+            "stimulus": { "type": "sound", "clip": "slow.rat" }
+          },
+          "choices": [
+            { "id": "a", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } },
+            { "id": "b", "label": "hut", "stimulus": { "type": "picture", "id": "hut" } },
+            { "id": "c", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-first-sound", "b": "same-last-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "rc-blend-02",
+      "version": 1,
+      "world": "reading-cove",
+      "title": "Read the word",
+      "summary": "A short word is shown in letters your child has met. With help it is said slowly as a finger runs under it. On their own nothing is said: your child reads the word and finds its picture among words that are nearly the same, so the picture cannot be chosen without reading.",
+      "skillIds": ["phonics.decoding.read-short-word"],
+      "estimatedMinutes": 4,
+      "needsSound": true,
+      "plan": {
+        "demo": ["rc-blend-02.demo"],
+        "guided": ["rc-blend-02.guided-pin", "rc-blend-02.guided-hat"],
+        "independent": {
+          "pool": [
+            "rc-blend-02.man",
+            "rc-blend-02.pen",
+            "rc-blend-02.cot",
+            "rc-blend-02.ram",
+            "rc-blend-02.lip",
+            "rc-blend-02.can",
+            "rc-blend-02.tin",
+            "rc-blend-02.fin",
+            "rc-blend-02.mop",
+            "rc-blend-02.cap",
+            "rc-blend-02.pan"
+          ],
+          "count": 4,
+          "maxReprobes": 2
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "rc-blend-02.demo",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "mat" }
+          },
+          "choices": [
+            { "id": "a", "label": "mat", "stimulus": { "type": "picture", "id": "mat" } },
+            { "id": "b", "label": "sun", "stimulus": { "type": "picture", "id": "sun" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "b": "other-word" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.guided-pin",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-i",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "pin" }
+          },
+          "choices": [
+            { "id": "a", "label": "pan", "stimulus": { "type": "picture", "id": "pan" } },
+            { "id": "b", "label": "pin", "stimulus": { "type": "picture", "id": "pin" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.guided-hat",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "hat" }
+          },
+          "choices": [
+            { "id": "a", "label": "hat", "stimulus": { "type": "picture", "id": "hat" } },
+            { "id": "b", "label": "hen", "stimulus": { "type": "picture", "id": "hen" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.man",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "man" }
+          },
+          "choices": [
+            { "id": "a", "label": "map", "stimulus": { "type": "picture", "id": "map" } },
+            { "id": "b", "label": "man", "stimulus": { "type": "picture", "id": "man" } },
+            { "id": "c", "label": "mop", "stimulus": { "type": "picture", "id": "mop" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-first-sound", "c": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.pen",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-e",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "pen" }
+          },
+          "choices": [
+            { "id": "a", "label": "pen", "stimulus": { "type": "picture", "id": "pen" } },
+            { "id": "b", "label": "pin", "stimulus": { "type": "picture", "id": "pin" } },
+            { "id": "c", "label": "pan", "stimulus": { "type": "picture", "id": "pan" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-first-sound", "c": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.cot",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-o",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "cot" }
+          },
+          "choices": [
+            { "id": "a", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+            { "id": "b", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } },
+            { "id": "c", "label": "cot", "stimulus": { "type": "picture", "id": "cot" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-first-sound", "b": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.ram",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "ram" }
+          },
+          "choices": [
+            { "id": "a", "label": "ram", "stimulus": { "type": "picture", "id": "ram" } },
+            { "id": "b", "label": "hut", "stimulus": { "type": "picture", "id": "hut" } },
+            { "id": "c", "label": "rat", "stimulus": { "type": "picture", "id": "rat" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "b": "other-word", "c": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.lip",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-i",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "lip" }
+          },
+          "choices": [
+            { "id": "a", "label": "tap", "stimulus": { "type": "picture", "id": "tap" } },
+            { "id": "b", "label": "top", "stimulus": { "type": "picture", "id": "top" } },
+            { "id": "c", "label": "lip", "stimulus": { "type": "picture", "id": "lip" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-last-sound", "b": "same-last-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.can",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "can" }
+          },
+          "choices": [
+            { "id": "a", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } },
+            { "id": "b", "label": "can", "stimulus": { "type": "picture", "id": "can" } },
+            { "id": "c", "label": "cot", "stimulus": { "type": "picture", "id": "cot" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-first-sound", "c": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.tin",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-i",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "tin" }
+          },
+          "choices": [
+            { "id": "a", "label": "tin", "stimulus": { "type": "picture", "id": "tin" } },
+            { "id": "b", "label": "fin", "stimulus": { "type": "picture", "id": "fin" } },
+            { "id": "c", "label": "tap", "stimulus": { "type": "picture", "id": "tap" } }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-last-sound", "c": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.fin",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-i",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "fin" }
+          },
+          "choices": [
+            { "id": "a", "label": "pin", "stimulus": { "type": "picture", "id": "pin" } },
+            { "id": "b", "label": "fan", "stimulus": { "type": "picture", "id": "fan" } },
+            { "id": "c", "label": "fin", "stimulus": { "type": "picture", "id": "fin" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-last-sound", "b": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.mop",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-o",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "mop" }
+          },
+          "choices": [
+            { "id": "a", "label": "map", "stimulus": { "type": "picture", "id": "map" } },
+            { "id": "b", "label": "mop", "stimulus": { "type": "picture", "id": "mop" } },
+            { "id": "c", "label": "top", "stimulus": { "type": "picture", "id": "top" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-first-sound", "c": "same-last-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.cap",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "cap" }
+          },
+          "choices": [
+            { "id": "a", "label": "cup", "stimulus": { "type": "picture", "id": "cup" } },
+            { "id": "b", "label": "cat", "stimulus": { "type": "picture", "id": "cat" } },
+            { "id": "c", "label": "cap", "stimulus": { "type": "picture", "id": "cap" } }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-first-sound", "b": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        },
+        {
+          "id": "rc-blend-02.pan",
+          "kind": "choose-one",
+          "skillId": "phonics.decoding.read-short-word",
+          "variant": "short-a",
+          "prompt": {
+            "instruction": "rc.read.instruction",
+            "stimulus": { "type": "word", "id": "pan" }
+          },
+          "choices": [
+            { "id": "a", "label": "pin", "stimulus": { "type": "picture", "id": "pin" } },
+            { "id": "b", "label": "pan", "stimulus": { "type": "picture", "id": "pan" } },
+            { "id": "c", "label": "pen", "stimulus": { "type": "picture", "id": "pen" } }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "rc.blend.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "rc.hint.not-this" },
+            { "type": "reveal", "caption": "rc.blend.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-first-sound", "c": "same-first-sound" },
+          "feedback": { "correct": "rc.blend.correct", "incorrect": "rc.blend.incorrect" }
+        }
+      ]
+    }
+  ]
+}

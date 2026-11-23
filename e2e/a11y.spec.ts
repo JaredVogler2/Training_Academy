@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import {
+  CLOSED_WORLD,
   LESSON_PATH,
   arrived,
   choose,
@@ -39,11 +40,14 @@ test.describe('accessibility', () => {
 
   test('a world that is open and one that is not', async ({ page }) => {
     await page.goto('/world/number-garden');
-    await expect(page.getByRole('link', { name: 'Play' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
     await expectNoViolations(page, 'Number Garden');
-    await page.goto('/world/inventor-island');
-    await expect(page.getByText('This world is not open yet.')).toBeVisible();
-    await expectNoViolations(page, 'Inventor Island');
+    // A world with nothing to play yet, while there still is one.
+    if (CLOSED_WORLD) {
+      await page.goto(`/world/${CLOSED_WORLD.id}`);
+      await expect(page.getByText('This world is not open yet.')).toBeVisible();
+      await expectNoViolations(page, CLOSED_WORLD.name);
+    }
   });
 
   test('the activity: demonstration, question, after a wrong answer, after a right one, the end', async ({

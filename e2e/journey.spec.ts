@@ -10,6 +10,7 @@ import {
   test,
   type Page,
 } from './fixtures';
+import { answer } from './play';
 
 /**
  * The two journeys Phase 03 exists for, played the way a child plays them — by tapping pictures — on a desktop, on
@@ -58,11 +59,12 @@ test.describe('a brand-new child', () => {
     await press(frontDoor(page).locator('button[data-avatar="shell"]'));
     await expect(frontDoor(page)).toHaveCount(0);
 
-    // The map: one island has something to play, and Glim, having said hello, points at it.
+    // The map: Glim, having said hello, points at the island to go to, and it has something to play.
     const worlds = page.getByRole('navigation', { name: 'Worlds' });
     await expect(worlds.getByRole('link')).toHaveCount(6);
-    const open = worlds.locator('a[data-open="true"]');
+    const open = worlds.locator('a[data-next="true"]');
     await expect(open).toHaveCount(1);
+    await expect(open).toHaveAttribute('data-open', 'true');
     const hubGuide = page.getByRole('button', { name: /Glim/ }).getByTestId('guide');
     await expect(hubGuide).toHaveAttribute('data-state', 'point', { timeout: 10_000 });
     // The player is the picture that was chosen, named after it until a grown-up says otherwise.
@@ -71,23 +73,24 @@ test.describe('a brand-new child', () => {
     // Its page: the island, a picture of what is done there, and one sun-coloured way in.
     await press(open);
     await expect(page.getByTestId('world-example')).toBeVisible();
-    const play = page.getByRole('link', { name: 'Play' });
+    const play = page.getByRole('link', { name: 'Play', exact: true });
     await expect(play).toBeVisible();
     await press(play);
 
-    // 1. Glim shows how. The answer is pointed at; nothing can be answered yet.
+    // 1. Glim shows how. Nothing can be answered yet: every choice waits.
     await expect(lesson(page).locator('[data-choice]').first()).toBeVisible();
     expect(await stepNumber(page)).toBe(1);
-    await expect(lesson(page).locator('[data-choice][data-state="same"]')).toHaveCount(1);
     await expect(lesson(page).locator('[data-choice][aria-disabled="false"]')).toHaveCount(0);
-    // At the end of the showing the group and its match are lit together.
-    await expect(lesson(page).locator('[data-same="true"]')).toBeVisible({ timeout: 15_000 });
+    // At the end of the showing the answer is pointed at.
+    await expect(lesson(page).locator('[data-choice][data-state="same"]')).toHaveCount(1, {
+      timeout: 15_000,
+    });
     await press(myTurn(page));
 
-    // 2–3. Two guided steps, then three on their own: each answered by looking at how many there are.
-    for (let step = 2; step <= 6; step++) {
+    // 2 onwards. Two steps with support, then some alone: each answered rightly, as its content says.
+    for (let step = 2; step <= 12 && !(await finished(page).isVisible()); step++) {
       expect(await stepNumber(page)).toBe(step);
-      await choose(page, press, true);
+      await answer(page, press);
       await expect(guide(page)).toHaveAttribute('data-state', 'celebrate');
       await expect(lesson(page).locator('[data-choice][data-state="same"]')).toHaveCount(1);
       await press(next(page));
@@ -97,7 +100,7 @@ test.describe('a brand-new child', () => {
     await expect(finished(page)).toBeVisible();
     await expect(finished(page).getByTestId('guide')).toHaveAttribute('data-state', 'celebrate');
     // For the grown-up: every independent step was right at the first try, with no help.
-    await expect(finished(page)).toContainText('3 of 3');
+    await expect(finished(page)).toContainText(/(\d) of \1 right at the first try/);
     await press(finished(page).getByRole('link', { name: 'Islands' }));
 
     // Home: the map again, with no front door (this visit has begun) and the same player.
@@ -250,8 +253,8 @@ test.describe('when it does not go right first time', () => {
     await expect(worlds.getByRole('link')).toHaveCount(6);
 
     // And back in: the step that was left.
-    await press(worlds.locator('a[data-open="true"]'));
-    await press(page.getByRole('link', { name: 'Play' }));
+    await press(worlds.getByRole('link', { name: /Number Garden/ }));
+    await press(page.getByRole('link', { name: 'Play', exact: true }));
     await expect(lesson(page).locator('[data-choice]').first()).toBeVisible();
     expect(await stepNumber(page)).toBe(3);
     await expect(paused(page)).toBeHidden();

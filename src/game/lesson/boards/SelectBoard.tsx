@@ -1,6 +1,5 @@
 import { useMemo, type CSSProperties } from 'react';
 import { playCue, sayLine } from '@/audio';
-import { packText } from '@/content';
 import { writeTokens } from '@/engine';
 import { ActionButton } from '@/ui/controls';
 import { IconCheck, IconNext, IconPointer } from '@/ui/icons';
@@ -164,16 +163,19 @@ export function SelectBoard({ state, runner, pack, module, paused, calm }: Board
                 ? study.map((id) => cardOf(id)?.label ?? id).join(', ')
                 : lessonText.covered}
             </span>
-            <ul className={styles.studied} aria-hidden="true">
-              {study.map((id, index) => {
-                const card = cardOf(id);
-                return (
-                  <li key={id} style={{ '--order': index } as CSSProperties}>
-                    {card && <Picture stimulus={card.stimulus} place="card" />}
-                  </li>
-                );
-              })}
-            </ul>
+            {/* Once they are put away they are not on the page at all, for any eye or any tool. */}
+            {showingStudy && (
+              <ul className={styles.studied} aria-hidden="true">
+                {study.map((id, index) => {
+                  const card = cardOf(id);
+                  return (
+                    <li key={id} style={{ '--order': index } as CSSProperties}>
+                      {card && <Picture stimulus={card.stimulus} place="card" />}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
             <span className={lesson.cover} aria-hidden="true" />
           </div>
         )}
@@ -194,12 +196,16 @@ export function SelectBoard({ state, runner, pack, module, paused, calm }: Board
                   data-picked={isPicked}
                   data-fixed={fixed.includes(id)}
                   data-lit={isPicked && (same || answered)}
-                  aria-label={card.label}
+                  aria-label={showingStudy ? lessonText.turnedOver : card.label}
                   aria-pressed={isPicked}
                   aria-disabled={busy || fixed.includes(id)}
                   onClick={() => toggle(id)}
                 >
-                  <Picture stimulus={card.stimulus} place="card" />
+                  {/*
+                    While the things to remember are on show, the cards are blank: seeing what will be offered
+                    would let them be compared, and that is not remembering.
+                  */}
+                  {!showingStudy && <Picture stimulus={card.stimulus} place="card" />}
                   {isPicked && (
                     <span className={lesson.tick} aria-hidden="true">
                       <IconCheck size={22} />
@@ -254,12 +260,6 @@ export function SelectBoard({ state, runner, pack, module, paused, calm }: Board
           </ActionButton>
         )}
       </Foot>
-      {/* What is asked once the things are put away, for the grown-up and for screen readers. */}
-      {study !== null && task.ask && !studying && !demo && (
-        <p className="sr-only" role="status">
-          {packText(pack, task.ask)}
-        </p>
-      )}
     </>
   );
 }

@@ -1,4 +1,12 @@
-import { WORLD_NAMES, expect, hubPicturesLoaded, screenFit, test } from './fixtures';
+import {
+  CLOSED_WORLD,
+  OPEN_WORLDS,
+  WORLD_NAMES,
+  expect,
+  hubPicturesLoaded,
+  screenFit,
+  test,
+} from './fixtures';
 
 test.describe('the home shell', () => {
   test('shows the brand, the two toggles and all six worlds, laid out for this screen @layout @smoke', async ({
@@ -84,11 +92,10 @@ test.describe('the home shell', () => {
     page,
   }) => {
     await page.goto('/');
-    await expect(
-      page.getByRole('link', { name: 'Number Garden . Something to try.' }),
-    ).toBeVisible();
-    for (const name of WORLD_NAMES.filter((world) => world !== 'Number Garden')) {
-      await expect(page.getByRole('link', { name: `${name} . Not open yet.` })).toBeVisible();
+    expect(OPEN_WORLDS).toContain('Number Garden');
+    for (const name of WORLD_NAMES) {
+      const words = OPEN_WORLDS.includes(name) ? 'Something to try' : 'Not open yet';
+      await expect(page.getByRole('link', { name: `${name} . ${words}.` })).toBeVisible();
     }
   });
 });
@@ -186,9 +193,10 @@ test.describe('navigation', () => {
   });
 
   test('a world that is not built says so and offers nothing to play', async ({ page }) => {
-    await page.goto('/world/reading-cove');
+    test.skip(CLOSED_WORLD === null, 'every world has something to play now');
+    await page.goto(`/world/${CLOSED_WORLD?.id ?? ''}`);
     await expect(page.getByText('This world is not open yet.')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Play' })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'Play', exact: true })).toHaveCount(0);
     // The only things to press are the way back and the top bar.
     const controls = await page
       .locator('main')
@@ -196,7 +204,8 @@ test.describe('navigation', () => {
       .or(page.locator('main').getByRole('button'))
       .allTextContents();
     expect(controls).toEqual(['Islands']);
-    await expect(page.getByText('Listening for sounds all around')).toBeVisible();
+    // What is planned for it is said, in words for a grown-up.
+    await expect(page.getByText(CLOSED_WORLD?.activities[0]?.title ?? '')).toBeVisible();
   });
 });
 

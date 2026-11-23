@@ -167,8 +167,9 @@ export function PairsBoard({ state, runner, pack, module, paused, calm }: BoardP
             const found = demo
               ? beat.show === 'same' && demoPair.includes(place)
               : table.found.includes(id);
-            const faceUp =
-              found || peeking || (demo ? demoUp.includes(place) : table.up.includes(place));
+            const picked = demo ? demoUp.includes(place) : table.up.includes(place);
+            // Where the cards lie face up from the start, the two that are picked are lifted instead of turned.
+            const faceUp = found || peeking || picked || task.open === true;
             return (
               <li key={`${String(view.stepIndex)}-${String(place)}`}>
                 <button
@@ -177,6 +178,7 @@ export function PairsBoard({ state, runner, pack, module, paused, calm }: BoardP
                   style={{ '--order': place } as CSSProperties}
                   data-place={place}
                   data-up={faceUp}
+                  data-picked={picked && !found}
                   data-found={found}
                   aria-label={faceUp ? card.label : lessonText.turnedOver}
                   aria-disabled={demo || answered || found}

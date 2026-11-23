@@ -244,6 +244,9 @@ describe('every lint rule fires', () => {
     'misconception-target': (pack) => {
       three(pack).misconceptions = { a: 'one-more', b: 'one-fewer', c: 'one-more' };
     },
+    'cue-without-glance': (pack) => {
+      three(pack).prompt.cue = { type: 'picture', id: 'sun' };
+    },
     'hint-step-choices': (pack) => {
       three(pack).hints[0] = { type: 'step', count: 1, caption: 'ng.same-amount.hint.model' };
     },

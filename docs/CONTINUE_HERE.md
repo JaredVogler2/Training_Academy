@@ -45,12 +45,15 @@ the device.
 
 ## Verified
 
-- `npm run verify:release` on this tree: format, lint, types, **1375 unit tests**, the production build and
-  **1066 build checks** pass. The **654 browser tests** (headless Chromium on seven screen shapes, two of them
-  a Pixel 7 upright and sideways) were run in full: **599 passed, 47 were skipped by design, and 8 failed** —
-  all eight a new accessibility test's own mistake, which expected one demonstration where the four activities
-  about letters have three or four. The test was corrected, and it and the spec that plays every activity were
-  run again on a desktop and a phone: 121 passed. `docs/TEST_RESULTS.md` has the run in full.
+- `npm run verify:release` passes locally: format, lint, typecheck, **1375 unit tests**, production build,
+  **1066 build checks**, and **654 browser tests: 607 passed, 47 skipped by design, none failed**, in headless
+  Chromium on seven screen shapes, two of them a Pixel 7 upright and sideways. One change was made after that
+  run (nothing can be answered before a look: below), and the eight specs it touches were run again on three
+  screens: 218 passed.
+- **CI passed on the pull request in Chromium and in WebKit**, every job, on the commit before that change;
+  one WebKit test passed at its second attempt, and the reason was found and is that change. The run on the
+  commit with it, and on these documents, is on the pull request. `docs/TEST_RESULTS.md` → _Continuous
+  integration_.
 - **Every activity is played to its end by a browser test**, with the answers its content says are right
   (`e2e/everything.spec.ts`; Robot Ridge and Inventor Island in their own specs, which work out what to do from
   what is on the screen).
@@ -62,7 +65,6 @@ the device.
 - Against the live site, as `main` has it (Number Garden complete, with its voice): the sixteen smoke tests
   passed on 2026-11-23, in Chromium as a desktop and as a phone, and Number Garden's first activity fetched its
   recordings from the site itself. `docs/TEST_RESULTS.md` → _The live site_.
-- CI on the pull request: see `docs/TEST_RESULTS.md` → _Continuous integration_.
 
 Details, including every command and count: `docs/TEST_RESULTS.md`. How it looks, rated honestly, and what the
 review found: `docs/QUALITY_REPORT.md`.
@@ -78,7 +80,8 @@ review found: `docs/QUALITY_REPORT.md`.
   ratio, touch and user agent on desktop engines.
 - **Sound on a phone.** That the first tap is heard, that an iPhone on silent still plays, that a recording
   starts on time over a slow connection: reasoned and unit-tested, none heard.
-- **Five of the six worlds on Vercel's production.** Not deployed, so not tested there. Vercel builds a preview of the pull request, behind its sign-in; it was not opened.
+- **Five of the six worlds on Vercel's production.** Not deployed, so not tested there. Vercel built a
+  preview of the pull request, which is behind its sign-in; it was not opened.
 - **WebKit, here.** Safari's engine runs only in CI.
 - **No real graphics hardware.** The 3D hub has only ever been drawn by a software renderer.
 - No Firefox. No screenshot-comparison tests.

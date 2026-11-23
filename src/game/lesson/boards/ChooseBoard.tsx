@@ -30,6 +30,7 @@ export function ChooseBoard(props: BoardProps) {
     same,
     covered,
     turnedAway,
+    unseen,
     standingOf,
   } = useChoosing(props);
   const { Picture } = module;
@@ -54,7 +55,7 @@ export function ChooseBoard(props: BoardProps) {
         >
           <span className="sr-only">
             {covered
-              ? `${lessonText.covered}${challenge.prompt.cue ? `. ${module.describe(challenge.prompt.cue, 'prompt')}` : ''}`
+              ? `${lessonText.covered}${challenge.prompt.cue && !unseen ? `. ${module.describe(challenge.prompt.cue, 'prompt')}` : ''}`
               : module.describe(stimulus, 'prompt')}
           </span>
           {/*
@@ -74,8 +75,8 @@ export function ChooseBoard(props: BoardProps) {
             />
           )}
           {glance && <span className={styles.cover} aria-hidden="true" />}
-          {/* What the question is about, in front of the cover: "what went with this?" */}
-          {covered && challenge.prompt.cue && (
+          {/* What the question is about, in front of the cover: "what went with this?" Not before the look. */}
+          {covered && !unseen && challenge.prompt.cue && (
             <span className={styles.cue} data-testid="cue">
               <Picture stimulus={challenge.prompt.cue} place="prompt" sounding={named('prompt')} />
             </span>

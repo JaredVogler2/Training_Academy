@@ -20,24 +20,28 @@ One command runs all of it, stopping at the first failure:
 npm run verify:release
 ```
 
-Result of the last local run that went from start to finish: **every step passed but the last, where 8 of 654
-browser tests failed, all in one new test and all that test's own mistake.** It was corrected and re-run.
+Result of the last local run: **passed.**
 
-| Step                   | Result                                                                                                                                  |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run format:check` | clean                                                                                                                                   |
-| `npm run lint`         | no errors, no warnings                                                                                                                  |
-| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                          |
-| `npm test`             | **1375 tests in 46 files, all passed**                                                                                                  |
-| `npm run build`        | built; 476 files in `dist/` without the voice's 395                                                                                     |
-| `npm run verify:dist`  | **1066 checks, all passed** (sizes below)                                                                                               |
-| `npm run test:e2e`     | **654 browser tests: 599 passed, 47 skipped by design, 8 failed (Chromium, seven screen shapes, 28.5 minutes)**                         |
-| and then               | the failing test corrected; its spec and the spec that plays every activity run again on the desktop and phone projects: **121 passed** |
+| Step                   | Result                                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `npm run format:check` | clean                                                                                                           |
+| `npm run lint`         | no errors, no warnings                                                                                          |
+| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                  |
+| `npm test`             | **1375 tests in 46 files, all passed**                                                                          |
+| `npm run build`        | built; 476 files in `dist/` without the voice's 395                                                             |
+| `npm run verify:dist`  | **1066 checks, all passed** (sizes below)                                                                       |
+| `npm run test:e2e`     | **654 browser tests: 607 passed, 47 skipped by design, 0 failed (Chromium, seven screen shapes, 24.3 minutes)** |
 
-The eight failures were one test on two screens for each of the four activities about letters. The new
-accessibility test pressed "My turn" once and expected the demonstrations to be over; an activity that teaches
-four letters demonstrates each of them. Nothing was wrong in the game. The test now presses on until the
-demonstrations are over.
+That run was of commit `52d85b5`. The run before it, of the same code with one test written wrongly, had 8
+failures: a new accessibility test pressed "My turn" once and expected the demonstrations to be over, and an
+activity that teaches four letters demonstrates each of them. Nothing was wrong in the game; the test now presses
+on until the demonstrations are over.
+
+One change was made to the game after that run, because of something CI found (below): in a question where
+things are looked at and then hidden, nothing can now be answered before the look. With it, the unit tests, and
+the eight specs it touches (`memory`, `garden`, `reading`, `everything`, `a11y-worlds`, `voice`, `journey`,
+`lesson`) on the desktop, phone and Pixel-7-sideways projects, were run again: 1375 and 218 passed. The whole
+browser suite on that last commit is CI's.
 
 The skipped tests are keyboard journeys, which run on the desktop project and are skipped on the touch ones; the
 activities played to their ends, which are played once, on the desktop project; and three about a world that is not
@@ -81,8 +85,30 @@ desktop and tablets and a job for phones.)
 **For the six worlds.** Pull request #5, which carried the engine for every kind of game, the voice and Number
 Garden's seven activities, passed on its head commit `9cb3dda` (run 26; the run on the commit before it was
 cancelled by that push), and again on `main` after the owner merged it as `334e0e8` (run 27): lint, types, unit
-tests and build in one minute; Chromium in twenty-one; WebKit in eleven. Pull request #6, with the other five worlds, is run by the same workflow; its
-result is on the pull request.
+tests and build in one minute; Chromium in twenty-one; WebKit in eleven.
+
+Pull request #6, with the other five worlds, passed on its first commit, `52d85b5` (run 28), in all five jobs:
+
+| Job                            | Result                                                             | Time for the tests |
+| ------------------------------ | ------------------------------------------------------------------ | ------------------ |
+| Lint, types, unit tests, build | passed                                                             | 1.5 minutes in all |
+| Chromium, desktop and tablets  | 330 passed, 9 skipped                                              | 24.6 minutes       |
+| Chromium, phones               | passed                                                             | about 20 minutes   |
+| WebKit, desktop and tablet     | passed                                                             | about 14 minutes   |
+| WebKit, phones                 | 262 passed, 52 skipped, **1 of them passed at its second attempt** | 17.2 minutes       |
+
+This was the first time any of the new boards had run in Safari's engine, and all of them passed there.
+
+**The test that needed a second attempt had a cause, and the cause was in the game.** As an iPhone held
+sideways, Memory Forest's "who had what?" test tapped a wrong choice and then waited ten seconds for "That was
+not this one's", which never came. The tap had been ignored: it fell in the moment before the pairs were
+uncovered for their look, just as the choices were being turned away. But that moment should not have had
+choices in it at all. Before the look, the board showed the cover, the choices, and even the picture the
+question would be about, and a tap there a little earlier would have been taken as an answer to something not yet
+shown. With the voice on, that moment is the three seconds in which "Look who has what" is being said. The
+board now turns the choices away from the moment the question arrives until the look has happened, and holds
+back what will be asked; `e2e/memory.spec.ts` has a test for it that fails on the code as it was, and the test
+that tripped now waits for the look before it goes on. The run on that commit is on the pull request.
 
 **Phase 03** is pull request [#4](https://github.com/JaredVogler2/Training_Academy/pull/4). The first run with
 the whole phase in it to pass was [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45093042202)

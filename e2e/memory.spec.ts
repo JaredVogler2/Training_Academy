@@ -137,6 +137,39 @@ test.describe('which one was there?', () => {
   });
 });
 
+test.describe('before the look', () => {
+  test('nothing can be answered, and nothing is asked about yet', async ({ page, press }) => {
+    // In by a tap, so that the voice is awake: "Look who has what…" is then said before anything is uncovered,
+    // and for those few seconds there used to be choices to tap and the question already standing there.
+    await page.goto('/world/memory-forest');
+    await press(page.locator('[data-lesson="mf-story-01"]'));
+    const shown = await lesson(page).getAttribute('data-challenge');
+    await press(myTurn(page));
+    await expect(lesson(page)).not.toHaveAttribute('data-challenge', shown ?? '');
+
+    // Read at once, not waited for: this is the first thing the new question shows.
+    const choices = lesson(page).locator('[data-choice]');
+    const turnedAway = await choices.evaluateAll((list) =>
+      list.map((choice) => choice.getAttribute('data-turned-away')),
+    );
+    expect(turnedAway.length).toBeGreaterThanOrEqual(2);
+    expect(new Set(turnedAway)).toEqual(new Set(['true']));
+    expect(await page.getByTestId('cue').count()).toBe(0);
+    // A tap now is not an answer: the question is the same, and nothing has been set aside.
+    await choices.first().click({ force: true });
+    await expect(caption(page)).toContainText('Look who has what.');
+    await expect(lesson(page).locator('[data-choice][data-state="away"]')).toHaveCount(0);
+
+    // Then the look, the cover, and only then what is asked and something to answer with.
+    await expect(prompt(page)).toHaveAttribute('data-covered', 'false');
+    await expect(prompt(page)).toHaveAttribute('data-covered', 'true');
+    await expect(page.getByTestId('cue').locator('svg[data-picture]')).toHaveCount(1);
+    await expect(choices.first()).toHaveAttribute('data-turned-away', 'false');
+    await answer(page, press);
+    await expect(caption(page)).toHaveText('Yes. That is what it had.');
+  });
+});
+
 test.describe('who had what?', () => {
   test('shows one of them again, alone, and asks what went with it @layout', async ({
     page,
@@ -151,6 +184,8 @@ test.describe('who had what?', () => {
     expect(fit.taller).toBe(0);
     await press(myTurn(page));
 
+    // The pairs are looked at, and then covered.
+    await expect(prompt(page)).toHaveAttribute('data-covered', 'false');
     await expect(prompt(page)).toHaveAttribute('data-covered', 'true');
     // The one that is asked about stands in front of the cover; what it had is nowhere on the page.
     const cue = page.getByTestId('cue');

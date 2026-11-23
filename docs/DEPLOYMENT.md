@@ -14,8 +14,9 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   [#6](https://github.com/JaredVogler2/Training_Academy/pull/6). Merging it publishes them, and that is
   the owner's decision: nothing was promoted, merged or changed in the Vercel project from a session like this
   one.
-- **A preview of the pull request is built by Vercel**, at an address of its own behind Vercel's sign-in. It was
-  not opened from a session like this one: reaching a protected preview from outside means putting a share link
+- **A preview of the pull request is built by Vercel**, at an address of its own behind Vercel's sign-in. The
+  build of the pull request's first commit there reached "Ready" in about half a minute. It was not opened from
+  a session like this one: reaching a protected preview from outside means putting a share link
   on the deployment, and that is the owner's to ask for. _If the preview is protected_, below, says how to run
   the smoke tests against it with a bypass secret.
 

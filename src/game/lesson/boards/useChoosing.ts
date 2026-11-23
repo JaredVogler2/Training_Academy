@@ -76,7 +76,7 @@ export function useChoosing({ state, module, paused, calm }: BoardProps) {
     [module, situation],
   );
   const run = `${view.key}/${String(view.hintsUsed)}/${event}/${String(asked)}`;
-  const { beat, turn } = useScript(script, run, !paused, calm, glance);
+  const { beat, turn, glanced } = useScript(script, run, !paused, calm, glance);
 
   /** Whether the script is, at this moment, counting the picture in this place. */
   const counting = (role: 'prompt' | 'answer' | 'tried', id?: string) =>
@@ -118,7 +118,16 @@ export function useChoosing({ state, module, paused, calm }: BoardProps) {
   // uncovered for a look, the choices are turned away: seeing how many is not the same as matching by eye.
   const covered =
     glance && !answered && (beat.show === 'rest' || beat.show === 'ask' || beat.show === 'name');
-  const turnedAway = glance && beat.show === 'glance';
+  // And they are turned away before the look as well, from the moment the question arrives: while what is to be
+  // looked at is still being announced, nothing can be answered, and what will be asked about it is not yet
+  // said. (Without this a tap in the first moments of a step was taken as an answer to something not yet shown.)
+  const looking = beat.show === 'glance';
+  const willLook = useMemo(
+    () => script.moments.some((moment) => moment.beat?.show === 'glance'),
+    [script],
+  );
+  const unseen = glance && !answered && willLook && !glanced;
+  const turnedAway = glance && (looking || unseen);
 
   const standingOf = (choice: Choice, available: boolean): ChoiceStanding => {
     const isAnswer = shown === choice.id && reached;
@@ -151,6 +160,7 @@ export function useChoosing({ state, module, paused, calm }: BoardProps) {
     same,
     covered,
     turnedAway,
+    unseen,
     standingOf,
   };
 }

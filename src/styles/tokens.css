@@ -78,6 +78,11 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
+  /*
+   * The room a centred page leaves at each side: the gutter, and whatever a notch or a camera cut-out takes on the
+   * worse side — the same on both, so that the page stays in the middle. (A phone held sideways has one.)
+   */
+  --side: calc(var(--gutter) + max(var(--safe-left), var(--safe-right)));
 
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

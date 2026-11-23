@@ -1,7 +1,7 @@
 /* The grown-ups area: ordinary, readable forms. Text reflows at 200% zoom and nothing depends on colour alone. */
 .gate,
 .area {
-  width: min(100% - 2 * var(--gutter), 44rem);
+  width: min(100% - 2 * var(--side), 44rem);
   margin: 0 auto;
   padding: 8px 0 calc(32px + var(--safe-bottom));
 }

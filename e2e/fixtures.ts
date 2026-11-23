@@ -241,6 +241,102 @@ export async function screenFit(page: Page): Promise<ScreenFit> {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+// A phone with a notch
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** What a notch, a camera cut-out and a home bar take from each edge of the screen, in CSS pixels. */
+export interface Insets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+/** A recent iPhone held sideways: its sensor housing at one end, the home bar along the bottom. */
+export const NOTCH_SIDEWAYS: Insets = { top: 0, right: 59, bottom: 21, left: 59 };
+/** The same phone upright, opened from the home screen: the housing at the top, the home bar at the bottom. */
+export const NOTCH_UPRIGHT: Insets = { top: 59, right: 0, bottom: 34, left: 0 };
+
+/**
+ * Tell the page its screen has a notch, before it loads.
+ *
+ * A browser on a desk reports no safe-area insets and cannot be made to. But every rule in the game reads them
+ * through four custom properties (`--safe-top` and the rest, src/styles/tokens.css) and nowhere else, so setting
+ * those on the root element puts every layout exactly where a phone's own insets would. (They are set through the
+ * style object, which the Content-Security-Policy allows; a <style> element would be refused.)
+ */
+export async function giveNotch(page: Page, insets: Insets): Promise<void> {
+  await page.addInitScript((taken) => {
+    const set = () => {
+      const style = document.documentElement.style;
+      style.setProperty('--safe-top', `${String(taken.top)}px`);
+      style.setProperty('--safe-right', `${String(taken.right)}px`);
+      style.setProperty('--safe-bottom', `${String(taken.bottom)}px`);
+      style.setProperty('--safe-left', `${String(taken.left)}px`);
+    };
+    // The root element may not exist yet when this runs.
+    if (document.documentElement instanceof HTMLElement) set();
+    else {
+      new MutationObserver((_records, observer) => {
+        if (!(document.documentElement instanceof HTMLElement)) return;
+        set();
+        observer.disconnect();
+      }).observe(document, { childList: true });
+    }
+  }, insets);
+}
+
+/**
+ * Everything a child sees or presses that lies in the part of the screen a notch or a home bar takes, in words.
+ * Empty when the screen keeps clear of them.
+ *
+ * The picture of the sea runs to every edge, as it should, and is not counted; the islands' tap areas are. On a
+ * page that scrolls, what is lower down is on its way up and is not counted against the bottom edge.
+ */
+export async function underTheNotch(page: Page, insets: Insets): Promise<string[]> {
+  const screen = page.viewportSize();
+  if (!screen) throw new Error('This test has no fixed screen size.');
+  return page.evaluate(
+    ({ width, height, taken }) => {
+      const safe = {
+        left: taken.left,
+        right: width - taken.right,
+        top: taken.top,
+        bottom: height - taken.bottom,
+      };
+      const scrolls = document.documentElement.scrollHeight > height + 1;
+      const found: string[] = [];
+      const seen = document.querySelectorAll(
+        'a[href], button, input, select, textarea, summary, [role="button"], main h1, main h2, main p, main img, main svg',
+      );
+      for (const element of seen) {
+        if (!element.checkVisibility({ visibilityProperty: true })) continue;
+        if (element.closest('[data-testid="hub-stage"]')) continue;
+        const box = element.getBoundingClientRect();
+        if (box.width < 2 || box.height < 2 || box.bottom <= 0 || box.top >= height) continue;
+        const over: string[] = [];
+        if (box.left < safe.left - 0.5)
+          over.push(`${(safe.left - box.left).toFixed(0)} px at the left`);
+        if (box.right > safe.right + 0.5)
+          over.push(`${(box.right - safe.right).toFixed(0)} px at the right`);
+        if (box.top < safe.top - 0.5 && window.scrollY === 0) {
+          over.push(`${(safe.top - box.top).toFixed(0)} px at the top`);
+        }
+        if (!scrolls && box.bottom > safe.bottom + 0.5) {
+          over.push(`${(box.bottom - safe.bottom).toFixed(0)} px at the bottom`);
+        }
+        if (over.length === 0) continue;
+        const words = (element.getAttribute('aria-label') ?? element.textContent).trim();
+        const name = (words === '' ? element.tagName.toLowerCase() : words).slice(0, 40);
+        found.push(`"${name}" is under it by ${over.join(' and ')}`);
+      }
+      return found;
+    },
+    { ...screen, taken: insets },
+  );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Playing the sample activity the way a child would: by looking at the pictures
 // ---------------------------------------------------------------------------------------------------------------------
 

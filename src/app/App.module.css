@@ -195,7 +195,7 @@
   grid-template-columns: minmax(0, 1fr);
   gap: 14px;
   justify-items: center;
-  width: min(100% - 2 * var(--gutter), 30rem);
+  width: min(100% - 2 * var(--side), 30rem);
   margin: clamp(24px, 10vh, 96px) auto;
   padding: clamp(22px, 5vw, 36px);
   border-radius: var(--radius-l);

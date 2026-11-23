@@ -1,6 +1,12 @@
 // @vitest-environment happy-dom
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { installTouchGuards } from '@/app/touch';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  ONE_ANSWER_FOR,
+  TAP_AT_MOST,
+  TAP_SLOP,
+  WAIT_FOR_CLICK,
+  installTouchGuards,
+} from '@/app/touch';
 
 /** Ask for the context menu on `target`, as a long press (or a right click) does; true if it was allowed to open. */
 function menuOpens(target: Element, pointerType?: string): boolean {
@@ -61,5 +67,224 @@ describe('a finger resting on the screen', () => {
   it('stops when it is taken away', () => {
     remove();
     expect(menuOpens(island, 'touch')).toBe(true);
+  });
+});
+
+/** One finger doing one thing, as the browser reports it. */
+function finger(
+  type: 'pointerdown' | 'pointerup' | 'pointercancel',
+  target: Element,
+  id: number,
+  at: number,
+  where: { x?: number; y?: number; pointerType?: string } = {},
+): void {
+  const event = new Event(type, { bubbles: true });
+  const { x = 20, y = 20, pointerType = 'touch' } = where;
+  for (const [key, value] of Object.entries({
+    pointerId: id,
+    pointerType,
+    clientX: x,
+    clientY: y,
+    timeStamp: at,
+  })) {
+    Object.defineProperty(event, key, { value });
+  }
+  target.dispatchEvent(event);
+}
+
+/** A click the browser makes by itself; true if it was allowed through. */
+function browserClicks(target: Element, at: number): boolean {
+  const event = new Event('click', { bubbles: true, cancelable: true });
+  Object.defineProperty(event, 'timeStamp', { value: at });
+  target.dispatchEvent(event);
+  return !event.defaultPrevented;
+}
+
+describe('more than one finger on the screen', () => {
+  let remove: () => void;
+  let sea: HTMLElement;
+  let button: HTMLButtonElement;
+  let field: HTMLInputElement;
+  let clicks: number;
+  /** What lies on top where the finger lifted; null stands for "the thing itself". */
+  let onTop: Element | null;
+
+  /** A thumb comes to rest on the sea, and another finger taps `target` quickly; the thumb stays. */
+  const tapBesideThumb = (target: Element, at = 900) => {
+    finger('pointerdown', sea, 1, 0, { x: 300, y: 300 });
+    finger('pointerdown', target, 2, at);
+    finger('pointerup', target, 2, at + 60);
+  };
+  const later = (ms: number) => vi.advanceTimersByTime(ms);
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    document.body.innerHTML =
+      '<main id="sea"><button id="button" type="button"><span id="inside">Sound</span></button>' +
+      '<input id="field" /></main>';
+    sea = document.querySelector<HTMLElement>('#sea') as HTMLElement;
+    button = document.querySelector<HTMLButtonElement>('#button') as HTMLButtonElement;
+    field = document.querySelector<HTMLInputElement>('#field') as HTMLInputElement;
+    clicks = 0;
+    button.addEventListener('click', () => {
+      clicks += 1;
+    });
+    onTop = null;
+    document.elementFromPoint = () => onTop;
+    remove = installTouchGuards(window);
+  });
+
+  afterEach(() => {
+    remove();
+    vi.useRealTimers();
+  });
+
+  it('leaves one finger alone entirely to the browser', () => {
+    finger('pointerdown', button, 1, 0);
+    finger('pointerup', button, 1, 80);
+    later(1000);
+    expect(clicks).toBe(0);
+    // And the browser's own click goes through as ever.
+    expect(browserClicks(button, 82)).toBe(true);
+    expect(clicks).toBe(1);
+  });
+
+  it('answers a tap made while a thumb rests on the screen, once', () => {
+    tapBesideThumb(button);
+    expect(clicks).toBe(0);
+    later(WAIT_FOR_CLICK - 1);
+    expect(clicks).toBe(0);
+    later(1);
+    expect(clicks).toBe(1);
+    later(2000);
+    finger('pointerup', sea, 1, 5000, { x: 300, y: 300 });
+    later(2000);
+    expect(clicks).toBe(1);
+  });
+
+  it('answers a tap that lands on something inside the button', () => {
+    tapBesideThumb(document.querySelector('#inside') as Element);
+    later(WAIT_FOR_CLICK);
+    expect(clicks).toBe(1);
+  });
+
+  it('answers a tap during which another finger lands somewhere else', () => {
+    finger('pointerdown', button, 1, 0);
+    finger('pointerdown', sea, 2, 40, { x: 300, y: 300 });
+    finger('pointerup', button, 1, 90);
+    later(WAIT_FOR_CLICK);
+    expect(clicks).toBe(1);
+  });
+
+  it('adds nothing when the browser answers the tap itself', () => {
+    tapBesideThumb(button);
+    expect(browserClicks(button, 965)).toBe(true);
+    expect(clicks).toBe(1);
+    later(1000);
+    expect(clicks).toBe(1);
+  });
+
+  it('drops a click the browser sends late for a tap that has been answered', () => {
+    tapBesideThumb(button);
+    later(WAIT_FOR_CLICK);
+    expect(clicks).toBe(1);
+    expect(browserClicks(button, 960 + ONE_ANSWER_FOR - 1)).toBe(false);
+    expect(clicks).toBe(1);
+    // A click after that is a new tap.
+    expect(browserClicks(button, 960 + ONE_ANSWER_FOR + 1)).toBe(true);
+    expect(clicks).toBe(2);
+  });
+
+  it('does not press what the resting thumb was resting on', () => {
+    finger('pointerdown', button, 1, 0);
+    finger('pointerdown', sea, 2, 400, { x: 300, y: 300 });
+    finger('pointerup', sea, 2, 460, { x: 300, y: 300 });
+    finger('pointerup', button, 1, TAP_AT_MOST + 1);
+    later(1000);
+    expect(clicks).toBe(0);
+  });
+
+  it('does not count a finger that slid away, or one the browser took for scrolling', () => {
+    finger('pointerdown', sea, 1, 0, { x: 300, y: 300 });
+    finger('pointerdown', button, 2, 900, { x: 20, y: 20 });
+    finger('pointerup', button, 2, 960, { x: 20 + TAP_SLOP + 1, y: 20 });
+    later(1000);
+    expect(clicks).toBe(0);
+
+    finger('pointerdown', button, 3, 2000);
+    finger('pointercancel', button, 3, 2030);
+    finger('pointerup', button, 3, 2060);
+    later(1000);
+    expect(clicks).toBe(0);
+  });
+
+  it('does not press what can no longer be pressed', () => {
+    button.disabled = true;
+    tapBesideThumb(button);
+    later(1000);
+    button.disabled = false;
+
+    button.setAttribute('aria-disabled', 'true');
+    tapBesideThumb(button, 3000);
+    later(1000);
+    button.removeAttribute('aria-disabled');
+
+    sea.setAttribute('inert', '');
+    tapBesideThumb(button, 6000);
+    later(1000);
+    sea.removeAttribute('inert');
+
+    // Something came to lie over it in the moment between the finger lifting and the answer.
+    tapBesideThumb(button, 9000);
+    onTop = field;
+    later(1000);
+    onTop = null;
+
+    // It was taken off the page in that moment.
+    tapBesideThumb(button, 12_000);
+    button.remove();
+    later(1000);
+    expect(clicks).toBe(0);
+  });
+
+  it('leaves fields to the browser', () => {
+    let pressed = 0;
+    field.addEventListener('click', () => {
+      pressed += 1;
+    });
+    tapBesideThumb(field);
+    later(1000);
+    expect(pressed).toBe(0);
+  });
+
+  it('is about fingers: a mouse and a pen are left alone', () => {
+    finger('pointerdown', sea, 1, 0, { x: 300, y: 300 });
+    finger('pointerdown', button, 2, 900, { pointerType: 'mouse' });
+    finger('pointerup', button, 2, 960, { pointerType: 'mouse' });
+    finger('pointerdown', button, 3, 1900, { pointerType: 'pen' });
+    finger('pointerup', button, 3, 1960, { pointerType: 'pen' });
+    later(1000);
+    expect(clicks).toBe(0);
+  });
+
+  it('starts afresh once every finger is off the screen, even if it was never told one had lifted', () => {
+    finger('pointerdown', sea, 1, 0, { x: 300, y: 300 });
+    const lifted = new Event('touchend', { bubbles: true });
+    Object.defineProperty(lifted, 'touches', { value: [] });
+    sea.dispatchEvent(lifted);
+    // One finger alone again: the browser's business.
+    finger('pointerdown', button, 2, 900);
+    finger('pointerup', button, 2, 960);
+    later(1000);
+    expect(clicks).toBe(0);
+  });
+
+  it('stops when it is taken away', () => {
+    tapBesideThumb(button);
+    remove();
+    later(1000);
+    tapBesideThumb(button, 3000);
+    later(1000);
+    expect(clicks).toBe(0);
   });
 });

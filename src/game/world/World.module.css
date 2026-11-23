@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: clamp(14px, 2.6vh, 24px);
-  width: min(100% - 2 * var(--gutter), 46rem);
+  width: min(100% - 2 * var(--side), 46rem);
   margin: 0 auto;
   padding: 6px 0 calc(28px + var(--safe-bottom));
 }
@@ -262,7 +262,7 @@
     grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
     column-gap: 16px;
     row-gap: 10px;
-    width: min(100% - 2 * var(--gutter), 60rem);
+    width: min(100% - 2 * var(--side), 60rem);
   }
 
   .back {

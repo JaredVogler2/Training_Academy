@@ -3,8 +3,13 @@
 //   npm run build && npm run screens                          everything, into docs/review/phase-03/
 //   npm run screens -- phase-03/round-1 door,lesson           some groups, into another folder
 //
-// Groups: door, hub, islands, guide, world, lesson, tips, clickmaps, grownups. The folder is relative to
+// Groups: door, hub, islands, guide, world, lesson, tips, clickmaps, grownups, phones. The folder is relative to
 // docs/review/, so a second set can be kept beside the first for before-and-after comparisons.
+//
+// The `phones` group is what a phone does that the other screens do not show: the little height a browser leaves
+// with the phone on its side, and a notch. A notch is given to the page through the four --safe-* tokens every
+// rule reads it from (a desktop browser reports none), and the part of the screen it takes is shaded in the
+// picture.
 //
 // A click map is a screenshot with every control outlined and measured: teal where it is at least the 56 pixels a
 // child's control must be, amber from 48 (a grown-up's), red below that.
@@ -34,6 +39,7 @@ const GROUPS = [
   'tips',
   'clickmaps',
   'grownups',
+  'phones',
 ];
 const wanted = new Set(process.argv[3] ? process.argv[3].split(',') : GROUPS);
 for (const group of wanted) {
@@ -52,6 +58,19 @@ const SCREENS = {
   desktop: { width: 1366, height: 768, touch: false },
   // What Safari leaves a page on an iPhone 13 held sideways, with its bars showing: the tightest real screen.
   'iphone-landscape': { width: 750, height: 342, touch: true },
+  // What Chrome leaves a page on an Android phone 360 pixels wide — the commonest size — held sideways: its 360
+  // of height less the status bar, Chrome's own bar and a gesture bar.
+  'android-flat': { width: 800, height: 264, touch: true },
+  // The narrowest of those phones.
+  'android-narrow-flat': { width: 640, height: 256, touch: true },
+  // An iPhone 13 held sideways in Safari, as the page really gets it: the whole screen, of which the notch takes
+  // 47 pixels at each end and the home bar 21 at the bottom.
+  'iphone-notch': {
+    width: 844,
+    height: 342,
+    touch: true,
+    notch: { top: 0, right: 47, bottom: 21, left: 47 },
+  },
 };
 /** The five screen shapes every phase reviews, and the tight one. */
 const REVIEW_SCREENS = ['phone', 'phone-landscape', 'small-phone', 'tablet', 'desktop'];
@@ -91,7 +110,7 @@ const problems = [];
  * `begun: false` arrives as a new visit does, at the front door.
  */
 async function session(screen, steps, { graphics = 'pictures', begun = true } = {}) {
-  const { width, height, touch } = SCREENS[screen];
+  const { width, height, touch, notch } = SCREENS[screen];
   const context = await browser.newContext({
     viewport: { width, height },
     deviceScaleFactor: 2,
@@ -108,6 +127,23 @@ async function session(screen, steps, { graphics = 'pictures', begun = true } = 
     },
     { value: JSON.stringify({ version: 1, sound: true, motion: 'system', graphics }), begun },
   );
+  if (notch) {
+    await context.addInitScript((taken) => {
+      const set = () => {
+        for (const edge of ['top', 'right', 'bottom', 'left']) {
+          document.documentElement.style.setProperty(`--safe-${edge}`, `${taken[edge]}px`);
+        }
+      };
+      if (document.documentElement) set();
+      else {
+        new MutationObserver((_records, observer) => {
+          if (!document.documentElement) return;
+          set();
+          observer.disconnect();
+        }).observe(document, { childList: true });
+      }
+    }, notch);
+  }
   const page = await context.newPage();
   page.on('console', (message) => {
     const text = message.text();
@@ -124,7 +160,35 @@ async function session(screen, steps, { graphics = 'pictures', begun = true } = 
     // A phone browser zooms out to hold a page that is too wide, and the picture would hide the fault.
     const pageWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     if (pageWidth > width) problems.push(`${file}: the page is ${pageWidth} px wide`);
+    // On a screen with a notch, shade what the notch and the home bar take, so the picture shows what keeps clear.
+    if (notch) {
+      await page.evaluate((taken) => {
+        const host = document.querySelector('dialog[open]') ?? document.body;
+        const bands = [
+          { left: '0', top: '0', width: `${taken.left}px`, height: '100%' },
+          { right: '0', top: '0', width: `${taken.right}px`, height: '100%' },
+          { left: '0', top: '0', width: '100%', height: `${taken.top}px` },
+          { left: '0', bottom: '0', width: '100%', height: `${taken.bottom}px` },
+        ];
+        for (const band of bands) {
+          const shade = document.createElement('div');
+          shade.dataset.notchBand = '';
+          Object.assign(shade.style, band, {
+            position: 'fixed',
+            zIndex: '2147483646',
+            background: 'rgb(201 48 44 / 30%)',
+            pointerEvents: 'none',
+          });
+          host.append(shade);
+        }
+      }, notch);
+    }
     await page.screenshot({ path: join(out, file), type: 'jpeg', quality: 82 });
+    if (notch) {
+      await page.evaluate(() => {
+        for (const shade of document.querySelectorAll('[data-notch-band]')) shade.remove();
+      });
+    }
     console.log(`  ${file}`);
   };
   /** A screenshot with every control outlined and measured. The outlines are removed again afterwards. */
@@ -611,6 +675,76 @@ try {
       await page.waitForTimeout(200);
       await shot('grown-ups-5-long-names-saved-data');
     });
+  }
+
+  // Phones: the map in the little height a browser leaves with the phone on its side, and a notch.
+  if (wanted.has('phones')) {
+    for (const screen of ['android-flat', 'android-narrow-flat']) {
+      await session(screen, async ({ page, press, shot, clickMap, arrived }) => {
+        await page.goto(`${BASE}/`);
+        await hubPictures(page);
+        await page
+          .locator('[data-testid="guide"][data-state="point"]')
+          .waitFor({ timeout: 15_000 });
+        await shot('phones-1-map-on-a-flat-screen');
+        await clickMap('8-map-on-a-flat-screen');
+        await press(page.locator('a[data-open="true"]'));
+        await page.getByTestId('world-example').waitFor();
+        await arrived();
+        await shot('phones-2-world-on-a-flat-screen');
+        await press(page.getByRole('link', { name: 'Play' }));
+        await page.getByRole('button', { name: 'My turn' }).waitFor();
+        await press(page.getByRole('button', { name: 'My turn' }));
+        await page.getByTestId('lesson').locator('[data-choice]').first().waitFor();
+        await page.waitForTimeout(2000);
+        await shot('phones-3-question-on-a-flat-screen');
+      });
+    }
+    // The same map as the 3D scene draws it.
+    await session(
+      'android-flat',
+      async ({ page, shot }) => {
+        await page.goto(`${BASE}/`);
+        await page
+          .locator('[data-testid="hub-stage"][data-hub-mode="3d"]')
+          .waitFor({ timeout: 120_000 });
+        await page.waitForTimeout(3000);
+        await shot('phones-4-map-on-a-flat-screen-3d');
+      },
+      { graphics: 'high' },
+    );
+    // A notch at each end and a home bar below: shaded, with everything else clear of them.
+    await session(
+      'iphone-notch',
+      async ({ page, press, shot, arrived }) => {
+        await page.goto(`${BASE}/`);
+        await page.getByTestId('front-door').getByRole('button').first().waitFor();
+        await hubPictures(page);
+        await arrived();
+        await shot('phones-5-notch-front-door');
+        await press(page.getByTestId('front-door').locator('button[data-avatar="star"]'));
+        await page.getByTestId('front-door').waitFor({ state: 'detached' });
+        await page
+          .locator('[data-testid="guide"][data-state="point"]')
+          .waitFor({ timeout: 15_000 });
+        await shot('phones-6-notch-map');
+        await press(page.locator('a[data-open="true"]'));
+        await page.getByTestId('world-example').waitFor();
+        await arrived();
+        await shot('phones-7-notch-world');
+        await press(page.getByRole('link', { name: 'Play' }));
+        await page.getByRole('button', { name: 'My turn' }).waitFor();
+        await press(page.getByRole('button', { name: 'My turn' }));
+        await page.getByTestId('lesson').locator('[data-choice]').first().waitFor();
+        await page.waitForTimeout(2000);
+        await shot('phones-8-notch-question');
+        await press(page.getByRole('button', { name: 'Pause' }));
+        await page.getByTestId('lesson-paused').waitFor();
+        await page.waitForTimeout(500);
+        await shot('phones-9-notch-paused');
+      },
+      { begun: false },
+    );
   }
 
   const files = readdirSync(out).filter((file) => file.endsWith('.jpg'));

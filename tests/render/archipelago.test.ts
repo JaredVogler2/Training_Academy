@@ -13,13 +13,25 @@ import {
   hotspotFor,
   labelRoom,
   labelSize,
+  labelWidth,
   project,
   visibleDepth,
   type Box,
 } from '@/render/archipelago';
 
-/** Screens the game must fit, as [width, height, height of the top bar]. */
-const SCREENS: readonly (readonly [string, number, number, number])[] = [
+/** What a notch (at each side, on a phone held sideways) and a home bar take from the screen, in CSS pixels. */
+interface Taken {
+  sides?: number;
+  bottom?: number;
+}
+
+/**
+ * Screens the game must fit, as [name, width, height, height of the top bar], then — for the few that have them —
+ * what the phone itself takes from the edges, and the narrowest an island's tap area may be there if not 96 pixels.
+ */
+type Screen = readonly [string, number, number, number, Taken?, number?];
+
+const SCREENS: readonly Screen[] = [
   ['phone 390×844', 390, 844, 64],
   ['small phone 360×740', 360, 740, 64],
   ['tiny phone 320×568', 320, 568, 64],
@@ -39,13 +51,45 @@ const SCREENS: readonly (readonly [string, number, number, number])[] = [
   ['Pixel 7 on its side in Chrome 863×360', 863, 360, 52],
   ['small Android in Chrome 360×592', 360, 592, 64],
   ['iPad in Safari 810×1010', 810, 1010, 64],
+  // A phone on its side as it really is. An iPhone gives the page its whole screen, and says how much of each side
+  // the notch needs and how much of the bottom the home bar does; the game keeps out of both.
+  [
+    'iPhone 13 on its side, inside its notch and home bar 844×342',
+    844,
+    342,
+    52,
+    { sides: 47, bottom: 21 },
+  ],
+  [
+    'iPhone 15 on its side, inside its notch and home bar 852×345',
+    852,
+    345,
+    52,
+    { sides: 59, bottom: 21 },
+  ],
+  // The smallest iPhone with a notch: 254 pixels of height are left, and an island is 90 wide by 112 high.
+  [
+    'iPhone 13 mini on its side, inside its notch and home bar 812×327',
+    812,
+    327,
+    52,
+    { sides: 50, bottom: 21 },
+    90,
+  ],
+  // An Android phone 360 pixels wide, the commonest size there is, has 360 of height on its side; the status bar
+  // and Chrome's own bar leave a page 280 of them, or about 264 where a gesture bar is kept clear as well.
+  ['Galaxy A on its side in Chrome 800×280', 800, 280, 52],
+  ['Galaxy A on its side in Chrome, above a gesture bar 800×264', 800, 264, 52],
+  ['Pixel 7 on its side in Chrome 915×332', 915, 332, 52],
+  // The narrowest of them: seven places side by side in 640 pixels are 81 wide each, by 103 high.
+  ['small Android on its side in Chrome 640×256', 640, 256, 52, {}, 80],
 ];
 
-const freeOf = (width: number, height: number, bar: number): Box => ({
-  left: 0,
+const freeOf = (width: number, height: number, bar: number, taken: Taken = {}): Box => ({
+  left: taken.sides ?? 0,
   top: bar,
-  width,
-  height: height - bar,
+  width: width - 2 * (taken.sides ?? 0),
+  height: height - bar - (taken.bottom ?? 0),
 });
 
 const overlap = (a: Box, b: Box): number => {
@@ -64,6 +108,44 @@ describe('choosing an arrangement', () => {
     expect(arrange(844 / 338).arrangement).toBe('wide');
   });
 
+  it('stands the places side by side on a very flat screen, where that draws them larger', () => {
+    // A common Android phone on its side: 212 pixels are left under the top bar.
+    const flat = frameFor({ width: 800, height: 264 }, freeOf(800, 264, 52));
+    expect(flat.layout.arrangement).toBe('strip');
+    // One row, in teaching order from left to right, the lighthouse in the middle of it.
+    const across = WORLD_IDS.map((world) => hotspotFor(flat, world).anchor.x);
+    expect([...across].sort((a, b) => a - b)).toEqual(across);
+    const level = hotspotFor(flat, 'academy').anchor.y;
+    for (const world of WORLD_IDS) expect(hotspotFor(flat, world).anchor.y).toBeCloseTo(level, 6);
+    expect(hotspotFor(flat, 'academy').anchor.x).toBeCloseTo(400, 6);
+    expect(across.filter((x) => x < 400)).toHaveLength(3);
+
+    // Where the low ring is as good or better, it stays: a taller phone on its side, a laptop.
+    for (const [width, height, bar] of [
+      [844, 390, 52],
+      [750, 342, 52],
+      [1366, 768, 64],
+    ] as const) {
+      const frame = frameFor({ width, height }, freeOf(width, height, bar));
+      expect(frame.layout.arrangement, `${String(width)}×${String(height)}`).toBe('wide');
+    }
+  });
+
+  it('moors the guide in front of the lighthouse in a row, just clear of its island', () => {
+    for (const [width, height] of [
+      [640, 256],
+      [800, 264],
+      [1400, 420],
+    ] as const) {
+      const frame = frameFor({ width, height }, freeOf(width, height, 52));
+      expect(frame.layout.arrangement).toBe('strip');
+      const guide = guideBox(frame);
+      const [island] = drawnBoxes(frame, 'academy');
+      expect(guide.left + guide.width / 2).toBeCloseTo(island.left + island.width / 2, 6);
+      expect(guide.top - (island.top + island.height)).toBeCloseTo(4, 6);
+    }
+  });
+
   it('places all seven places, each in its own spot', () => {
     for (const aspect of [0.4, 0.5, 0.7, 0.9, 1.1, 1.3, 1.6, 2, 2.6]) {
       const { spots } = arrange(aspect);
@@ -76,9 +158,15 @@ describe('choosing an arrangement', () => {
   });
 });
 
-describe.each(SCREENS)('fitting %s', (_name, width, height, bar) => {
+/** The same list with nothing left out, so that each row has one shape. */
+const FITTED = SCREENS.map(
+  ([name, width, height, bar, taken = {}, narrowest = 96]) =>
+    [name, width, height, bar, taken, narrowest] as const,
+);
+
+describe.each(FITTED)('fitting %s', (_name, width, height, bar, taken, narrowest) => {
   const stage = { width, height };
-  const free = freeOf(width, height, bar);
+  const free = freeOf(width, height, bar, taken);
   const frame = frameFor(stage, free);
   const spots = PLACES.map((place) => hotspotFor(frame, place));
   const worlds = spots.filter((spot) => spot.place !== 'academy');
@@ -94,7 +182,7 @@ describe.each(SCREENS)('fitting %s', (_name, width, height, bar) => {
 
   it('gives every world a tap area a small child can hit', () => {
     for (const { place, box } of worlds) {
-      expect(box.width, place).toBeGreaterThanOrEqual(96);
+      expect(box.width, place).toBeGreaterThanOrEqual(narrowest);
       expect(box.height, place).toBeGreaterThanOrEqual(96);
     }
   });
@@ -116,7 +204,9 @@ describe.each(SCREENS)('fitting %s', (_name, width, height, bar) => {
   });
 
   it('uses the screen: the islands are as large as the space allows', () => {
-    const boxes = spots.map((spot) => spot.box);
+    // Everything that is drawn for the child to see: the places, and the guide (who, where the places stand in
+    // one row, is moored below it).
+    const boxes = [...spots.map((spot) => spot.box), guideBox(frame)];
     const across =
       Math.max(...boxes.map((box) => box.left + box.width)) -
       Math.min(...boxes.map((box) => box.left));
@@ -236,6 +326,31 @@ describe('names under the islands', () => {
     expect(labelSize(30)).toBeCloseTo(13.5, 1);
     expect(labelSize(92)).toBe(17);
     expect(labelRoom(20)).toBeLessThan(labelRoom(60));
+  });
+
+  it('may overhang their island a little where there is room, but never as far as a neighbour’s name', () => {
+    // On a laptop the islands stand well apart: a name may be a sixth wider than its island on each side.
+    const roomy = frameFor({ width: 1366, height: 768 }, freeOf(1366, 768, 64));
+    for (const world of ['inventor-island', 'reading-cove'] as const) {
+      const { box } = hotspotFor(roomy, world);
+      expect(labelWidth(roomy, world)).toBeCloseTo(box.width * 1.32, 6);
+    }
+    // Side by side in a row there is little water between them, and each name keeps to its own half of it.
+    for (const [width, height] of [
+      [640, 256],
+      [800, 264],
+    ] as const) {
+      const row = frameFor({ width, height }, freeOf(width, height, 52));
+      const names = WORLD_IDS.map((world) => {
+        const { anchor } = hotspotFor(row, world);
+        const wide = labelWidth(row, world);
+        return { left: anchor.x - wide / 2, right: anchor.x + wide / 2 };
+      });
+      for (const [index, name] of names.entries()) {
+        const next = names[index + 1];
+        if (next) expect(next.left - name.right).toBeGreaterThanOrEqual(2 - 1e-6);
+      }
+    }
   });
 
   it('sit directly under their island, as wide as the island', () => {

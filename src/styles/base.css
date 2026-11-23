@@ -9,6 +9,16 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  /*
+   * The page does not bounce, and pulling it down does not reload it in the middle of an activity. This is set here
+   * as well as on the body because browsers differ in which of the two they take the page's own behaviour from.
+   */
+  overscroll-behavior: none;
+  /*
+   * Two quick taps are two taps, anywhere: never a zoom. Two fingers still zoom, so that anyone who needs the
+   * page larger can have it.
+   */
+  touch-action: manipulation;
 }
 
 body {
@@ -24,7 +34,7 @@ body {
   overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* No rubber band, and no pull-to-refresh in the middle of an activity. */
+  /* No rubber band, and no pull-to-refresh in the middle of an activity (see html, above). */
   overscroll-behavior: none;
   /*
    * A small finger rests on things. Nothing in the game is selected by it, and iOS shows no call-out ("Open",

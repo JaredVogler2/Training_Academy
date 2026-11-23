@@ -110,8 +110,9 @@ export default defineConfig({
   ...(remote ? { grep: /@smoke/ } : {}),
   use: {
     baseURL,
-    // Tracing every test costs about a third of the run; switch it on to debug a failure (`--trace on`).
-    trace: 'off',
+    // Tracing every test costs about a third of the run; switch it on to debug a failure (`--trace on`). In CI a
+    // test that has to be run a second time is traced on that second run, so that something is left to read.
+    trace: ci ? 'on-first-retry' : 'off',
     screenshot: 'only-on-failure',
     // Most specs intercept or count network requests, which a service worker would hide. e2e/offline.spec.ts opts in.
     serviceWorkers: 'block',

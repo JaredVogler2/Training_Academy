@@ -49,8 +49,9 @@ test.describe('a brand-new child', () => {
     await arrived(page);
     for (const picture of await pictures.all()) {
       const box = await picture.boundingBox();
-      expect(box?.width ?? 0, 'a picture is a large target').toBeGreaterThanOrEqual(64);
-      expect(box?.height ?? 0).toBeGreaterThanOrEqual(64);
+      // (To half a pixel: sizes read back from a browser are floats.)
+      expect(box?.width ?? 0, 'a picture is a large target').toBeGreaterThanOrEqual(63.5);
+      expect(box?.height ?? 0).toBeGreaterThanOrEqual(63.5);
     }
 
     // One tap on a picture is the whole of signing in.
@@ -177,9 +178,22 @@ test.describe('when it does not go right first time', () => {
     await press(lesson(page).getByRole('button', { name: 'Pause' }));
     await expect(paused(page)).toBeVisible();
     await expect(paused(page).getByRole('button', { name: 'Carry on' })).toBeFocused();
-    const behind = lesson(page).locator('[data-choice][data-state="open"]').first();
-    await behind.click({ force: true, timeout: 2_000 }).catch(() => undefined);
-    await expect(lesson(page).locator('[data-choice][data-state="same"]')).toHaveCount(0);
+    // (Asked of the browser, for every choice: what is at this choice's middle now? Never the choice. A click
+    // aimed there by force proves nothing — on one screen it landed on "carry on", which is in front of it.)
+    const reachable = await lesson(page)
+      .locator('[data-choice]')
+      .evaluateAll(
+        (choices) =>
+          choices.filter((choice) => {
+            const box = choice.getBoundingClientRect();
+            const hit = document.elementFromPoint(
+              box.left + box.width / 2,
+              box.top + box.height / 2,
+            );
+            return choice.closest('[inert]') === null || (hit !== null && choice.contains(hit));
+          }).length,
+      );
+    expect(reachable, 'choices that can still be tapped behind the pause sheet').toBe(0);
     // The two switches a family may want are here, since the top bar is not.
     await expect(paused(page).getByRole('button', { name: 'Sound' })).toBeVisible();
     await expect(paused(page).getByRole('button', { name: 'Calm motion' })).toBeVisible();

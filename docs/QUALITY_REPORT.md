@@ -1,12 +1,107 @@
 # Quality report
 
-This file has two parts. The first is Phase 03's review of what Phase 03 built. The second is Phase 02's report on
-the home screen, kept as it was written, because it is still the assessment of the hub.
+This file has three parts. The first is the review of the six worlds and the voice (phases 04 to 10). The second is
+Phase 03's review of what Phase 03 built. The third is Phase 02's report on the home screen, kept as it was
+written, because it is still the assessment of the hub.
 
-Both are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
+All are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
 reading of screenshots and of the running game in headless Chromium. Nobody else has reviewed it, no child has
-played it, and it has never run on a phone, a tablet or a real graphics card. The standard it is rated against is
-`docs/ART_DIRECTION.md`.
+played it, **no person has listened to the voice**, and it has never run on a real graphics card. The owner has
+opened the live site (Phase 03) on an iPhone; nothing in this file comes from a device. The standard it is rated
+against is `docs/ART_DIRECTION.md`.
+
+## Phases 04 to 10 (2026-11-23): six worlds and a voice
+
+### Summary
+
+Every island now has something to do, and the game talks. There are 39 activities, of eleven kinds: choosing a
+picture, giving an amount, picking things out, repeating an order, finding pairs, putting a story in order,
+steering a robot, mending a row of steps, guessing what will happen, mending a thing on a bench, and answering on
+a map. Each is shown first, then tried with help at hand, then tried alone.
+
+It is a first pass through each world, not a finished one. Two things matter more than everything below them.
+**The voice is a synthesiser's, and nobody has heard it**; in a world that teaches sounds that is not a detail.
+And **the activities have been played only by tests and by me**: every one can be finished, every answer is
+checked to be the one right answer, and whether any of them teaches a four-year-old anything is not known.
+
+### How it was made, which bears on how far to trust it
+
+Number Garden's new activities, Reading Cove, Memory Forest and Explorer Harbor were written in one working
+tree, looked at in a browser at several sizes as they were built, and changed where they looked or behaved
+wrong. Robot Ridge and Inventor Island were written at the same time by two agents working in copies of the
+repository, to a brief and to the same frame. Their reports were read, their commits merged, their tests run
+with everything else, and a few of their screens looked at. **Their code was not read line by line**, and their
+worlds have had less of a second pair of eyes than the other four.
+
+### The review
+
+Looked at in the running production build at 390×844, 640×256 and 1366×768, as each board was built; and
+captured again at the end at 390×844 and 844×390: `docs/review/worlds/`, 57 pictures. 1 = poor,
+3 = acceptable, 5 = excellent.
+
+| Category             | Reading Cove | Number Garden | Robot Ridge | Memory Forest | Inventor Island | Explorer Harbor | Why                                                                                                                                                                                        |
+| -------------------- | :----------: | :-----------: | :---------: | :-----------: | :-------------: | :-------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Composition          |      4       |       4       |      4      |       4       |        4        |       3.5       | One board, one thing to do. A map is a fixed shape and leaves a tall phone half empty; so, less so, does the robot's ground.                                                               |
+| Craft and materials  |     3.5      |       4       |      4      |      3.5      |        4        |       3.5       | The same paper, lips and radii as Phase 03. The pictures are plain flat drawings, clear and consistent, and no more than that: 57 in the kit, 37 for stories, each world's own besides.    |
+| Cohesive palette     |      4       |      4.5      |      4      |       4       |        4        |        4        | Sun is still "this way". The story pictures bring their own skies and grounds, which is more colour on one screen than anywhere else.                                                      |
+| Liveliness           |     3.5      |       4       |      4      |      3.5      |        4        |       3.5       | Things hop when counted, a robot drives, a bridge sags, a boat sails. A picture that is named lifts; a story told back lifts each picture in turn. There are no page turns and no scenery. |
+| Interface legibility |      4       |      4.5      |      4      |       4       |        4        |        4        | Every control a child presses is 56 points or more on every screen tested, down to 640×256, where a map is only 170 points wide and its three places are a third of it each.               |
+| Motion quality       |      4       |       4       |      4      |       4       |        4        |        4        | One thing moves at a time, and everything works with motion reduced. Seen in a browser at speed; not on a device.                                                                          |
+| The voice            |      —       |       —       |      —      |       —       |        —        |        —        | **Not rated.** Nobody has listened.                                                                                                                                                        |
+| Child comprehension  |      —       |       —       |      —      |       —       |        —        |        —        | **Not rated.** No child has seen it.                                                                                                                                                       |
+
+Nothing here is rated 5, and the ratings for Robot Ridge and Inventor Island rest on fewer screens than the others.
+
+### Seen — cause — fix
+
+| Seen                                                                                                                           | Cause                                                                                               | Fix                                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| After one recording failed to download, that line was never said again in the visit                                            | A failed download was remembered the same way as a file that could not be decoded                   | Only a file that will not decode is remembered; a failed download is tried again                      |
+| The cards to answer with could be seen while the things to remember were still on show                                         | The board drew both at once                                                                         | Cards are blank until what was shown is put away                                                      |
+| What was "covered" could be read from the page by any tool                                                                     | It was hidden by a style, and still in the page                                                     | What is covered is not rendered at all; tests look for it and must not find it                        |
+| Asking to be told again uncovered a group that was to be taken in at a glance                                                  | "Again" replayed the whole showing                                                                  | It says the words again and uncovers nothing; another look is help                                    |
+| The button that turns the sound on could not be pressed by a test, and jumped under a finger                                   | It pulsed, and so was never still                                                                   | A still button with a pulsing ring behind it                                                          |
+| On the flattest phone the things to repeat ran off the screen                                                                  | A rule that centred a list also let it grow                                                         | Only the marks are centred                                                                            |
+| A picture made its card taller than the screen                                                                                 | A square picture set the height of the card it was in                                               | Every card is one cell that the picture is fitted into                                                |
+| On the flattest phone a place on a map was 41 points across                                                                    | A place was a fixed share of the map, and the map there is 170 points wide                          | A place is never under 56 points, and every map was made again with places a third of a map apart     |
+| On the flattest phone the three pictures of a story were 34 points each                                                        | A question got a third of the width whatever it held                                                | A strip of three pictures gets as much room as its three answers                                      |
+| "That is the whole story" was written under a story before it had been told                                                    | What is said of a right answer is shown at once, and the telling came after                         | The line is "Yes. Here is the whole story.", said first; then the story, each picture with its line   |
+| On a tall phone a story's pictures were small in tall empty cards                                                              | Two rows each took half the screen                                                                  | A card is no taller than a picture needs; the two rows keep together                                  |
+| At 640×256 the parts on a workbench were 50 points high (found by the agent's own test)                                        | Two rows of parts                                                                                   | Under 300 points of height the parts stand in one row                                                 |
+| On a world's page held sideways, the line under its name failed the contrast check                                             | It shrinks there to a size at which the world's colour is too pale                                  | In ink at that size. Found by an agent's check; no test ran that page sideways, and one does now      |
+| The grown-ups' list of skills was 44 lines with no order to them                                                               | One list for every world                                                                            | Grouped under each world's name                                                                       |
+| Lines were heard by the recogniser as other words: eight in the last three worlds made ("chick" as "check", "sagged" as "sad") | A synthesiser's pronunciation, or the recogniser's ear: there is no telling which without listening | Each was reworded until it was heard as written. "Nut" could not be, and is no longer a word to learn |
+
+### What is still wrong or weak
+
+1. **Nobody has listened to the voice.** 395 recordings by one synthesised American voice. A recogniser heard
+   each as its words (13 single words only inside a sentence). Whether it sounds kind, clear and right to a child
+   is unknown, and for Reading Cove it is the whole lesson.
+2. **Reading Cove teaches no sound on its own.** A letter is met through two key words with their first sound
+   drawn out. That was chosen because a synthesiser cannot be trusted to say /s/ or /t/ alone, and a wrong model
+   is worse than none. It is not how most phonics teaching goes, and a reading teacher may well want it changed.
+3. **Reading Cove cannot be played without sound.** It says so and offers to turn it on. A child who cannot hear
+   has five worlds, not six.
+4. **No child and no teacher has seen any of it.**
+5. **The pictures are plain.** They are consistent and nothing in them can be miscounted or misread that I could
+   see, but they are simple flat drawings made quickly, and a few are thin (a dry path is mostly sky). The
+   briefs ask for illustration of a higher order than this.
+6. **A story is told back by lifting its pictures.** The brief asked for a storybook with page turns.
+7. **A tall phone is half empty on a map**, and on the robot's ground: both keep their shape and are as wide as
+   the screen. Nothing was drawn to fill the rest.
+8. **On the flattest phone a map is very small** (170 by 110 points). Its places can be pressed; whether they can
+   be read is another matter.
+9. **An activity soon repeats.** A sitting draws three or four challenges from a pool of five to eight.
+10. **Robot Ridge and Inventor Island have been looked at less** (above).
+11. **The toy models are toys.** A bridge holds or sags by a table. Nothing says so to the grown-up except the
+    activity's note; the limits are comments in `src/engine/models.ts`.
+12. **A world's page is long on a phone**: Reading Cove has ten activities, each a card.
+13. **There is no way to turn the voice off and keep the other sounds**, no volume, and no choice of voice.
+14. **The recordings are fetched when first wanted.** The first sitting of an activity needs a connection for
+    its lines; after that the service worker has them. A line that arrives too late is not said.
+15. **Glim points at the next thing not yet finished, and nothing is locked.** A child can open blending before
+    hearing a first sound. Whether that matters is for someone who has watched a child.
+16. Everything in Phase 03's list below that is not about the voice or the number of worlds still stands.
 
 ## Phase 03 (2026-11-23): the journey in, and the activity
 

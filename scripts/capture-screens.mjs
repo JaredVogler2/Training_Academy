@@ -2,9 +2,15 @@
 //
 //   npm run build && npm run screens                          everything, into docs/review/phase-03/
 //   npm run screens -- phase-03/round-1 door,lesson           some groups, into another folder
+//   npm run screens -- worlds worlds                          every world's page and every activity, into worlds/
 //
-// Groups: door, hub, islands, guide, world, lesson, tips, clickmaps, grownups, phones. The folder is relative to
-// docs/review/, so a second set can be kept beside the first for before-and-after comparisons.
+// Groups: door, hub, islands, guide, world, lesson, tips, clickmaps, grownups, phones; and worlds, which is run
+// only when asked for by name. The folder is relative to docs/review/, so a second set can be kept beside the
+// first for before-and-after comparisons.
+//
+// The `worlds` group is one picture of each world's page and one of each activity at the first thing a child does
+// in it, on a phone, read from the content packs so that none can be missed; and the first activity of each world
+// while it is being shown, and on a phone held sideways.
 //
 // The `phones` group is what a phone does that the other screens do not show: the little height a browser leaves
 // with the phone on its side, and a notch. A notch is given to the page through the four --safe-* tokens every
@@ -22,7 +28,7 @@
 // says nothing about motion.
 
 import { spawn } from 'node:child_process';
-import { mkdirSync, readdirSync, statSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
@@ -40,8 +46,11 @@ const GROUPS = [
   'clickmaps',
   'grownups',
   'phones',
+  'worlds',
 ];
-const wanted = new Set(process.argv[3] ? process.argv[3].split(',') : GROUPS);
+const wanted = new Set(
+  process.argv[3] ? process.argv[3].split(',') : GROUPS.filter((group) => group !== 'worlds'),
+);
 for (const group of wanted) {
   if (!GROUPS.includes(group))
     throw new Error(`No such group: ${group}. Groups: ${GROUPS.join(', ')}`);
@@ -578,12 +587,12 @@ try {
           .waitFor({ timeout: 15_000 });
         await clickMap('2-map');
 
-        await press(page.locator('a[data-open="true"]'));
+        await press(page.locator('a[data-world="number-garden"]'));
         await page.getByTestId('world-example').waitFor();
         await arrived();
         await clickMap('3-world');
 
-        await press(page.getByRole('link', { name: 'Play' }));
+        await press(page.getByRole('link', { name: 'Play', exact: true }));
         await page.getByRole('button', { name: 'My turn' }).waitFor();
         await page.getByTestId('lesson').locator('[data-same="true"]').waitFor({ timeout: 15_000 });
         await arrived();
@@ -688,11 +697,11 @@ try {
           .waitFor({ timeout: 15_000 });
         await shot('phones-1-map-on-a-flat-screen');
         await clickMap('8-map-on-a-flat-screen');
-        await press(page.locator('a[data-open="true"]'));
+        await press(page.locator('a[data-world="number-garden"]'));
         await page.getByTestId('world-example').waitFor();
         await arrived();
         await shot('phones-2-world-on-a-flat-screen');
-        await press(page.getByRole('link', { name: 'Play' }));
+        await press(page.getByRole('link', { name: 'Play', exact: true }));
         await page.getByRole('button', { name: 'My turn' }).waitFor();
         await press(page.getByRole('button', { name: 'My turn' }));
         await page.getByTestId('lesson').locator('[data-choice]').first().waitFor();
@@ -740,11 +749,11 @@ try {
           .locator('[data-testid="guide"][data-state="point"]')
           .waitFor({ timeout: 15_000 });
         await shot('phones-6-notch-map');
-        await press(page.locator('a[data-open="true"]'));
+        await press(page.locator('a[data-world="number-garden"]'));
         await page.getByTestId('world-example').waitFor();
         await arrived();
         await shot('phones-7-notch-world');
-        await press(page.getByRole('link', { name: 'Play' }));
+        await press(page.getByRole('link', { name: 'Play', exact: true }));
         await page.getByRole('button', { name: 'My turn' }).waitFor();
         await press(page.getByRole('button', { name: 'My turn' }));
         await page.getByTestId('lesson').locator('[data-choice]').first().waitFor();
@@ -757,6 +766,62 @@ try {
       },
       { begun: false },
     );
+  }
+
+  if (wanted.has('worlds')) {
+    const order = [
+      'reading-cove',
+      'number-garden',
+      'robot-ridge',
+      'memory-forest',
+      'inventor-island',
+      'explorer-harbor',
+    ];
+    const folder = join(root, 'src/content/packs');
+    const packs = readdirSync(folder)
+      .map((file) => JSON.parse(readFileSync(join(folder, file), 'utf8')))
+      .sort((a, b) => order.indexOf(a.world) - order.indexOf(b.world));
+    /** Into an activity the way a child comes in: by a tap on its card, which also wakes the sound. */
+    const open = async (page, press, world, lessonId) => {
+      await page.goto(`${BASE}/world/${world}`);
+      await press(page.locator(`[data-lesson="${lessonId}"]`));
+      await page.getByRole('button', { name: 'My turn' }).waitFor();
+    };
+    /** Past every demonstration, to the first thing the child does. */
+    const toTheirTurn = async (page, press) => {
+      const myTurn = page.getByRole('button', { name: 'My turn' });
+      for (let guard = 0; guard < 6 && (await myTurn.isVisible()); guard++) {
+        await press(myTurn);
+        await page.waitForTimeout(500);
+      }
+      await page.waitForTimeout(2600);
+    };
+    for (const pack of packs) {
+      const place = `${String(order.indexOf(pack.world) + 1)}-${pack.world}`;
+      await session('phone', async ({ page, press, shot, arrived }) => {
+        await page.goto(`${BASE}/world/${pack.world}`);
+        await page.getByTestId('world-example').waitFor();
+        await arrived();
+        await shot(`${place}-0-page`);
+        for (const [index, lesson] of pack.lessons.entries()) {
+          const name = `${place}-${String(index + 1)}-${lesson.id}`;
+          await open(page, press, pack.world, lesson.id);
+          if (index === 0) {
+            // The first activity, while Glim is showing it.
+            await page.waitForTimeout(6000);
+            await shot(`${name}-shown`);
+          }
+          await toTheirTurn(page, press);
+          await shot(name);
+        }
+      });
+      await session('phone-landscape', async ({ page, press, shot }) => {
+        const last = pack.lessons.at(-1);
+        await open(page, press, pack.world, last.id);
+        await toTheirTurn(page, press);
+        await shot(`${place}-${String(pack.lessons.length)}-${last.id}`);
+      });
+    }
   }
 
   const files = readdirSync(out).filter((file) => file.endsWith('.jpg'));

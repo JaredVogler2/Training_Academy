@@ -299,7 +299,9 @@ test.describe('a guess', () => {
     const picture = thing(guessBoard(page));
     const help = page.getByRole('button', { name: 'Help me' });
     await press(help);
-    await expect(caption(page)).toHaveText('Look at the plank and the posts. Who is crossing?');
+    await expect(caption(page)).toHaveText(
+      'Look at the plank. Look at the posts. Who is crossing?',
+    );
     await expect(picture).toHaveAttribute('data-phase', 'before');
     await press(help);
     await expect(caption(page)).toHaveText('Let us test it. Watch.');
@@ -443,7 +445,9 @@ test.describe('a mend', () => {
     for (const at of ['far', 'near', 'far']) {
       await build(page, press, { at });
       await press(testButton(page));
-      await expect(caption(page)).toHaveText('It still tips. Change one thing and test again.');
+      await expect(caption(page)).toHaveText(
+        'It is still tipping. Change one thing and test again.',
+      );
       await expect(thing(bench(page))).toHaveAttribute('data-phase', 'after');
     }
     const pointed = bench(page)

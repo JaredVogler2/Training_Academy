@@ -40,21 +40,31 @@ jobs:
       - run: npm run verify:dist
 
   browsers:
-    name: Browser tests (${{ matrix.engine }})
+    name: Browser tests (${{ matrix.name }})
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
       fail-fast: false
       matrix:
+        # Each engine's screens are shared between two jobs. With six worlds the suite is twice what it was, and
+        # one job for an engine would run close to the time limit on a machine that runs two tests at a time.
         include:
-          - engine: chromium
+          - name: chromium, desktop and tablets
+            engine: chromium
             projects: >-
-              --project=desktop --project=phone --project=phone-landscape --project=tablet --project=small-phone
-              --project=android --project=android-landscape
-          - engine: webkit
+              --project=desktop --project=tablet --project=small-phone --project=phone-landscape
+          - name: chromium, phones
+            engine: chromium
             projects: >-
-              --project=webkit-desktop --project=webkit-phone
-              --project=iphone --project=iphone-landscape --project=ipad
+              --project=phone --project=android --project=android-landscape
+          - name: webkit, desktop and tablet
+            engine: webkit
+            projects: >-
+              --project=webkit-desktop --project=ipad
+          - name: webkit, phones
+            engine: webkit
+            projects: >-
+              --project=webkit-phone --project=iphone --project=iphone-landscape
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -74,7 +84,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
-          name: playwright-${{ matrix.engine }}
+          name: playwright-${{ strategy.job-index }}-${{ matrix.engine }}
           path: |
             playwright-report/
             test-results/

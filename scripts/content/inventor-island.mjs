@@ -513,11 +513,11 @@ const STRINGS = {
   'ii.build.hint.reveal': 'Make it like this. Then test it.',
 
   'ii.bridge.predict.instruction': 'Will the bridge hold? What do you think?',
-  'ii.bridge.predict.hint.model': 'Look at the plank and the posts. Who is crossing?',
+  'ii.bridge.predict.hint.model': 'Look at the plank. Look at the posts. Who is crossing?',
   'ii.bridge.is.held': 'Yes. It held.',
-  'ii.bridge.is.sagged': 'Yes. It sagged.',
+  'ii.bridge.is.sagged': 'Yes. It sags.',
   'ii.bridge.look.held': 'Look. It held. Tap what happened.',
-  'ii.bridge.look.sagged': 'Look. It sagged. Tap what happened.',
+  'ii.bridge.look.sagged': 'Look. It sags. Tap what happened.',
   'ii.bridge.build.instruction': 'This bridge sags. Change it so it holds.',
   'ii.bridge.build.correct': 'It holds! You mended it.',
   'ii.bridge.build.incorrect': 'It still sags. Change one thing and test again.',
@@ -546,7 +546,7 @@ const STRINGS = {
   'ii.balance.look.tipped-right': 'Look. The orange side went down. Tap what happened.',
   'ii.balance.build.instruction': 'Make it balance.',
   'ii.balance.build.correct': 'It balances!',
-  'ii.balance.build.incorrect': 'It still tips. Change one thing and test again.',
+  'ii.balance.build.incorrect': 'It is still tipping. Change one thing and test again.',
   'ii.balance.build.hint.model': 'Further out pushes down more. More blocks push down more.',
 
   'ii.float.predict.instruction': 'Will it float or sink? What do you think?',

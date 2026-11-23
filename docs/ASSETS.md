@@ -22,26 +22,47 @@ The list itself is `docs/assets.manifest.json`, and it is checked by the unit te
 The licence texts are in each package (`node_modules/@fontsource-variable/*/LICENSE`). The fonts are bundled by Vite
 from `src/styles/fonts.css`; the font files are unmodified.
 
-Those two fonts are the only third-party assets. There are no stock images, no downloaded 3D models, no texture
-packs, no icon sets and no audio libraries.
+Those two fonts are the only third-party files that are shipped. There are no stock images, no downloaded 3D
+models, no texture packs, no icon sets and no audio libraries.
+
+## Made here, with tools and a voice model from elsewhere
+
+The voice is 395 recordings that this project made and owns. They were made with other people's tools and with a
+voice model that this project did not train. None of the tools or the model is shipped; the recordings are.
+
+| What was used                          | Where it comes from                                                                                                | Licence, as far as it was read                                                                              | Used for                           |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| piper-tts 1.8.0                        | PyPI                                                                                                               | GPL-3.0. A tool run on a desk; no part of it is in the game                                                 | saying each line                   |
+| the voice model `en_US-kristin-medium` | `rhasspy/piper-voices` on Hugging Face; SHA-256 `5849957f929cbf720c258f8458692d6103fff2f0e3d3b19c8259474bb06a18d4` | The repository is MIT. The model's card says it was trained on LibriVox recordings, which are public domain | the voice itself                   |
+| faster-whisper, model `small.en`       | PyPI; `Systran/faster-whisper-small.en`                                                                            | MIT                                                                                                         | listening to each clip, as a check |
+| ffmpeg, with `libmp3lame`              | the operating system's package                                                                                     | LGPL / GPL. A tool                                                                                          | encoding each clip as MP3          |
+
+**What has not been checked.** I read the repository's licence file and the model's card, and no further. Nobody
+with legal training has confirmed that a voice synthesised from this model may be shipped in a product for
+children, or that the model's own training left it free of any other claim. That should be settled before a public
+release (Phase 14). If the answer is no, or if a person is to record the voice instead, every line that needs
+replacing is in one list: `src/voice/manifest.json`.
 
 ## Original work
 
-| What                                                       | Where                                                          | How it was made                                                                                 |
-| ---------------------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Brand mark, favicon, app icons                             | `src/ui/art.tsx`, `public/favicon.svg`, `public/assets/icons/` | Hand-written SVG; the PNG icons are rendered from it by `npm run icons`                         |
-| Six world emblems, six player pictures                     | `src/ui/art.tsx`                                               | Hand-written SVG                                                                                |
-| Interface icons                                            | `src/ui/icons.tsx`                                             | Hand-written SVG                                                                                |
-| Glim, the guide                                            | `src/ui/Guide.tsx`, `Guide.module.css`                         | One hand-written SVG, rigged in parts; poses and motion in CSS                                  |
-| The modelling kit, and what floats                         | `src/render/hub3d/kit.ts`, `floating.ts`, `islands/parts.ts`   | Written in code on three.js geometry                                                            |
-| Academy Rock and the six islands                           | `src/render/hub3d/islands/*.ts`                                | Sculpted in code with the kit. No model files.                                                  |
-| The painted material and its brush texture                 | `src/render/hub3d/paint.ts`                                    | A shader patch on three.js's matte material; the texture is generated on the device from a seed |
-| The water                                                  | `src/render/hub3d/Sea.tsx`                                     | An original shader                                                                              |
-| The hub's pictures (seven islands, boats, a rock, a cloud) | `src/assets/hub/*.webp`, `sprites.json`                        | Rendered from the island models by `npm run art:sprites`                                        |
-| The picture's sea                                          | `src/render/HubPicture.module.css`                             | A CSS gradient matched to the 3D water, and a small inline SVG of wave marks                    |
-| Counting pictures (apple, leaf, snail, acorn)              | `src/game/worlds/number-garden/`                               | Hand-written SVG                                                                                |
-| Interface sounds                                           | `src/audio/audioEngine.ts`                                     | Synthesised at run time with the Web Audio API. There are no audio files.                       |
-| Curriculum content                                         | `src/content/packs/`                                           | Written for this project                                                                        |
+| What                                                             | Where                                                          | How it was made                                                                                                                    |
+| ---------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Brand mark, favicon, app icons                                   | `src/ui/art.tsx`, `public/favicon.svg`, `public/assets/icons/` | Hand-written SVG; the PNG icons are rendered from it by `npm run icons`                                                            |
+| Six world emblems, six player pictures                           | `src/ui/art.tsx`                                               | Hand-written SVG                                                                                                                   |
+| Interface icons                                                  | `src/ui/icons.tsx`                                             | Hand-written SVG                                                                                                                   |
+| Glim, the guide                                                  | `src/ui/Guide.tsx`, `Guide.module.css`                         | One hand-written SVG, rigged in parts; poses and motion in CSS                                                                     |
+| The modelling kit, and what floats                               | `src/render/hub3d/kit.ts`, `floating.ts`, `islands/parts.ts`   | Written in code on three.js geometry                                                                                               |
+| Academy Rock and the six islands                                 | `src/render/hub3d/islands/*.ts`                                | Sculpted in code with the kit. No model files.                                                                                     |
+| The painted material and its brush texture                       | `src/render/hub3d/paint.ts`                                    | A shader patch on three.js's matte material; the texture is generated on the device from a seed                                    |
+| The water                                                        | `src/render/hub3d/Sea.tsx`                                     | An original shader                                                                                                                 |
+| The hub's pictures (seven islands, boats, a rock, a cloud)       | `src/assets/hub/*.webp`, `sprites.json`                        | Rendered from the island models by `npm run art:sprites`                                                                           |
+| The picture's sea                                                | `src/render/HubPicture.module.css`                             | A CSS gradient matched to the 3D water, and a small inline SVG of wave marks                                                       |
+| Counting pictures (apple, leaf, snail, acorn, bird, mouse, frog) | `src/game/worlds/number-garden/`                               | Hand-written SVG                                                                                                                   |
+| The picture kit: 57 things, and 15 drawn letters                 | `src/art/pictures.tsx`, `src/art/letters.tsx`                  | Hand-written SVG. What each is called, and how it is spelt, is `src/art/lexicon.json`                                              |
+| Each world's own drawings                                        | `src/game/worlds/<world>/`                                     | Hand-written SVG: sound cards; a robot and its ground; a bridge, a ramp, a beam, a tub; 37 story pictures; maps drawn from numbers |
+| Interface sounds                                                 | `src/audio/audioEngine.ts`                                     | Synthesised at run time with the Web Audio API                                                                                     |
+| The voice, and six sounds that are not speech                    | `src/assets/voice/en/`                                         | Made ahead of time by `scripts/voice/make_voice.py`: see above, and _Audio_ below                                                  |
+| Curriculum content                                               | `src/content/packs/`, `src/content/explorer-harbor/`           | Written for this project, from tables, by the generators in `scripts/content/`                                                     |
 
 No images, 3D models, textures, shaders, audio recordings, icon sets, illustrations or code were copied from Epoch60
 or from any other source. Epoch60's documents were read for its working practices (a written visual standard,
@@ -152,13 +173,32 @@ rendered from.
 ### Audio
 
 Interface sounds are synthesised on the device: each is two or three notes from one scale, as oscillators with a
-soft envelope (`src/audio/audioEngine.ts`). There are no audio files, so there is nothing to compress, license or
-download. The motifs are listed in `docs/ART_DIRECTION.md`.
+soft envelope (`src/audio/audioEngine.ts`). The motifs are listed in `docs/ART_DIRECTION.md`.
 
-Recorded audio arrives with the voices in Phase 04. The rules it will be held to, none of them exercised yet:
-files served from this origin only; a recording of a real person needs their written consent on file before it is
-committed; each file listed in the manifest with who recorded it; one loudness for all; a size budget in
-`scripts/verify-dist.mjs` like every other kind of asset.
+**The voice is recorded ahead of time**, by `scripts/voice/make_voice.py` (`scripts/voice/README.md` says how to
+run it; it needs tools the game does not ship and CI does not install).
+
+- **What is said** is every line of every content pack, the lines every activity shares (`src/voice/lines.json`),
+  and what a world needs besides (`src/voice/lines/<world>.json`): single words, words with their first sound
+  drawn out, words said slowly, and the lines a story is told with. Nothing else is ever said.
+- **How each is made.** A sentence is said and trimmed. A single word is said at the end of a carrier sentence
+  and cut out, because a synthesiser says a word alone badly. A drawn-out first sound and a slow word are made
+  from the same word. Six sounds for Reading Cove's listening games (a drum, a bell, a shaker, a whistle, a
+  bird, a clock) are a few lines of arithmetic each. Every clip is brought to one loudness and encoded as mono
+  MP3.
+- **How each is checked.** A speech recogniser listens to every spoken clip, and what it heard is written into
+  `src/voice/manifest.json` beside what was meant: `matches`; `in-sentence` for a single word that was
+  recognised in its carrier sentence and not when cut out (13 of them); `made` for the six sounds. A line heard
+  as other words is reworded and made again; none is shipped. `npm test` fails if a clip is missing, stale, left
+  over, changed since it was made, or heard differently.
+- **What that is worth.** It catches a wrong word, a cut-off ending, noise. It says nothing about whether a clip
+  sounds clear, natural or kind. **No person has listened to any of the 395.** Each has `reviewed: null` in the
+  manifest, and the grown-ups' area lists them all to be played and marked.
+- **Size.** 395 clips, 4.3 MB in all, the largest under 60 kB; budgets in `scripts/verify-dist.mjs`. A clip is
+  fetched the first time its line is wanted, never with the first screen.
+
+No recording of a real person is in the game. If one is ever added, it needs that person's written consent on
+file before it is committed.
 
 ## Adding an asset
 
@@ -169,4 +209,5 @@ committed; each file listed in the manifest with who recorded it; one loudness f
 3. Put it where it will be served from this origin: imported from `src/` (hashed, cached forever) or under
    `public/assets/` (kept under its own name, revalidated).
 4. No hot-links, no CDNs, no fonts or scripts fetched from other sites.
-5. Recorded voices of real people need their written consent on file before they are committed (Phase 04).
+5. A recording of a real person needs their written consent on file before it is committed.
+6. A new line needs a recording: `scripts/voice/README.md`.

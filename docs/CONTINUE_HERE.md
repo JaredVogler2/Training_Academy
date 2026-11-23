@@ -1,115 +1,116 @@
 # Continue here
 
-**Phases 01 (foundation), 02 (the look) and 03 (the journey in and the first whole activity) are complete.
-Phase 04 has not been started.**
+**All six worlds are open: every activity their pages promised is built. Phases 01 to 03 are complete; phases 04 to
+10 are each partly done, and `docs/PROGRESS.md` says item by item what is missing. Phase 11 has not been
+started.**
 
 - **Date:** 2026-11-23
-- **Where it is:** Phases 01 and 02 are on `main`. Phase 03 is pull request
-  [#4](https://github.com/JaredVogler2/Training_Academy/pull/4) from `claude/zealous-carson-qyiipa`.
-- **Tested code:** the game as at commit `595e718`, which is the phase as first tested (`d6297eb`) and a second
-  look at phones made after it. Later commits change documents only.
-- **Deployed:** nowhere. No Vercel project is connected to this repository.
+- **Where it is:** on `main`: phases 01 to 03, the engine for every kind of game, the voice, and Number Garden's
+  seven activities (pull request #5, which the owner merged on 2026-11-23 while the rest was being built). On
+  pull request [#6](https://github.com/JaredVogler2/Training_Academy/pull/6), from
+  `claude/zealous-carson-qyiipa`: the other five worlds, and these documents.
+- **Deployed:** the owner connected the repository to Vercel. Production is `main`, at
+  `https://training-academy-dun.vercel.app`: Number Garden with all seven activities and its voice is live
+  there, and the other five worlds say they are not open (checked on 2026-11-23). **The other five worlds are
+  not deployed.** They go live when their pull request is merged, which is the owner's decision.
 
 ## The one thing that matters most now
 
-**The owner's requirement for this phase is that the game work on Android and iOS devices on a Vercel deployment.
-It has been written and tested for that as far as emulators go, and it has never run on a phone, nor been
-deployed.** Until it has, that requirement is not shown to be met.
+**Nobody has listened to the voice, and nobody has played.** The game now talks: 395 recordings, made by a speech
+synthesiser ahead of time and shipped with it. Each was checked by a speech recogniser, which is a machine's
+opinion of the words and says nothing about whether a line sounds right to a child. The briefs call the accuracy
+of the audio a release gate, and that gate has not been passed.
 
-`docs/DEPLOYMENT.md` → _Trying it on a real phone and tablet_ has the two ways to get it onto a phone (your own
-network in ten minutes; Vercel, which is the real thing) and sixteen things to try there, in order, each with
-what it should do. Setting up the Vercel project is a decision about the owner's account and about what is public,
-and was not taken for them.
+What to do about it is small and is already in the game: **Grown-ups → _The voice: listen to every recording_**
+plays each clip beside what it should say and lets it be marked as sounding right or wrong; the wrong ones are
+listed to send on. Reading Cove matters most (100 clips): its lessons are about sounds. Thirteen single words there
+were recognised only when said inside a sentence, and are marked so.
 
-How much a phone can differ from an emulated one was shown inside this phase. After it was first written up, a
-second look asked what a phone does that the emulated devices do not, and found three faults they had passed: a
-tap was ignored whenever another finger rested on the screen; the map was cramped and overlapping in the little
-height an Android phone leaves when held sideways; a world's page lay under an iPhone's notch. They are fixed
-(`docs/QUALITY_REPORT.md` → _A second look, with a phone in mind_). There will be others that only a phone shows.
+The same is true of the pictures and the activities themselves. Each was looked at on a desk at several sizes,
+and no child has seen one.
 
 ## The state, in one paragraph
 
 A static React and TypeScript app builds to `dist/` and runs under the same headers and routing that `vercel.json`
-gives it. A visit opens on a front door: Glim waves and the child says who is playing by tapping a picture. Behind
-it is the map — a lighthouse and six modelled islands in a moving sea, in real-time 3D where the device can and as
-a picture rendered from the same models where it cannot. One island is open. Its page shows what is done there;
-its activity is demonstrated by Glim, played in six steps, helped where help is asked for, and ended calmly, and
-the way out is the way home at any point. Everything is saved on the device and comes back after a refresh.
-Behind that are the things Phase 01 built: a headless learning engine, storage with fallbacks, a grown-ups' area, a
-service worker, and tests at every level.
+gives it. A visit opens on a front door; behind it is the map, six islands round a lighthouse, and all six are
+open. An island's page offers the next thing to play as one large button and every activity as a picture. There
+are **39 activities and 429 challenges**: sounds, letters and blending in Reading Cove; amounts, counting and
+comparing in Number Garden; a robot to steer and a row of steps to mend in Robot Ridge; pairs, hidden things,
+orders and three ways to remember in Memory Forest; guesses that are tested and things to mend in Inventor
+Island; stories to put in order, why things happen and a map to answer on in Explorer Harbor. Each activity is
+shown first by Glim, then tried with help at hand, then tried alone, and what a child did alone and at the first
+try is kept apart from everything else. Every challenge is written out in a file, made from tables by a
+generator and refused by its world's rules unless its answer is the one right answer. Everything is saved on
+the device.
 
 ## Verified
 
-- `npm run verify:release` passes locally on `595e718`: format, lint, typecheck, **774 unit tests**, production
-  build, **158 build checks**, and **235 browser tests passed, 4 skipped by design** in headless Chromium on
-  seven screen shapes, two of them a Pixel 7 upright and sideways.
-- CI passed on `d2e644c` (the phase as first written) with no failed test and no retry, and on `66b4378` (the
-  second look at phones): Chromium 235 passed, 4 skipped by design, on seven screens, two of them a Pixel 7; WebKit
-  185 passed, one more at its second attempt, 31 skipped (what needs the 3D scene, the service worker or
-  Chromium's touch handling, and the keyboard journeys on touch), on five screens, three of them an iPhone 13
-  upright and sideways and an iPad. The run on the commit after that, and on these documents, is on the pull
-  request. `docs/TEST_RESULTS.md` → _Continuous integration_.
+- `npm run verify:release` on this tree: format, lint, types, **1375 unit tests**, the production build and
+  **1066 build checks** pass. The **654 browser tests** (headless Chromium on seven screen shapes, two of them
+  a Pixel 7 upright and sideways) were run in full: **599 passed, 47 were skipped by design, and 8 failed** —
+  all eight a new accessibility test's own mistake, which expected one demonstration where the four activities
+  about letters have three or four. The test was corrected, and it and the spec that plays every activity were
+  run again on a desktop and a phone: 121 passed. `docs/TEST_RESULTS.md` has the run in full.
+- **Every activity is played to its end by a browser test**, with the answers its content says are right
+  (`e2e/everything.spec.ts`; Robot Ridge and Inventor Island in their own specs, which work out what to do from
+  what is on the screen).
+- **Every world's page and every activity passes the automated accessibility checks**, while it is shown and
+  while it is asked (`e2e/a11y-worlds.spec.ts`, and the two worlds' own specs).
+- Every content pack is exactly what its generator writes, and every rule that can refuse a challenge has been
+  shown to fire (`tests/content/`).
 - Every browser test also fails on any console error or warning, failed request, or request to another origin.
-- The two journeys Phase 03 is for are browser tests (`e2e/journey.spec.ts`): a brand-new child from the front door
-  to the end of an activity and home, acting only on what is drawn; and the path where it does not go right.
-- The hub's layout is proved by arithmetic for twenty-five screens, seven of them phones held sideways as they
-  really are: with a notch and a home bar taken off, or with a browser's bars taken off, down to a page 256
-  pixels high.
-- A notch, a flat screen and a second finger each have a browser test (`e2e/phones.spec.ts`), and each of those
-  fails on the code as it was before the second look.
-- 101 screenshots of the running build, 23 of them click maps, were captured and looked at: `docs/review/phase-03/`.
+- Against the live site, as `main` has it (Number Garden complete, with its voice): the sixteen smoke tests
+  passed on 2026-11-23, in Chromium as a desktop and as a phone, and Number Garden's first activity fetched its
+  recordings from the site itself. `docs/TEST_RESULTS.md` → _The live site_.
+- CI on the pull request: see `docs/TEST_RESULTS.md` → _Continuous integration_.
 
 Details, including every command and count: `docs/TEST_RESULTS.md`. How it looks, rated honestly, and what the
 review found: `docs/QUALITY_REPORT.md`.
 
 ## Not verified — read this before relying on anything
 
-- **No real device.** Not an iPhone, not an iPad, not an Android phone, not a real Safari or Chrome on a phone. The
-  named devices in the tests are the right screen, pixel ratio, touch and user agent on desktop engines.
-- **Sound on a phone.** That the first tap is heard, that an iPhone on silent still plays, that sound comes back
-  after another app: all reasoned and unit-tested, none heard.
-- **A finger.** That a long press opens no menu and selects nothing, on either system. That a tap made beside a
-  resting finger is answered on a real phone — it is shown in Chromium on a desk, and on iOS neither the fault
-  nor the fix has been seen. That a slow press, which a phone takes for a long press, is answered: that could
-  only be unit-tested.
-- **The notch and the bars for real.** The margins and heights the tests use are the usual ones for those phones
-  as I know them (47 or 59 pixels for a notch, 21 or 34 for a home bar, 24 and 56 for Android's and Chrome's
-  bars). None was measured on a phone.
+- **The voice.** No person has listened to any recording (above).
+- **No child, no teacher, no speech specialist** has seen any of it. Whether a four-year-old understands a
+  demonstration, enjoys an activity or learns from it is not known.
+- **No real device, by this project's own testing.** The owner has opened the live site on an iPhone and sent
+  screenshots of two world pages, which is the first time it has been seen on one; nothing has been played there
+  to my knowledge, and nothing has been heard. The named devices in the tests are the right screen, pixel
+  ratio, touch and user agent on desktop engines.
+- **Sound on a phone.** That the first tap is heard, that an iPhone on silent still plays, that a recording
+  starts on time over a slow connection: reasoned and unit-tested, none heard.
+- **Five of the six worlds on Vercel's production.** Not deployed, so not tested there. Vercel builds a preview of the pull request, behind its sign-in; it was not opened.
+- **WebKit, here.** Safari's engine runs only in CI.
 - **No real graphics hardware.** The 3D hub has only ever been drawn by a software renderer.
-- **No deployment.** `vercel.json` was tested through a local server that applies the same rules.
-- **No child and no teacher** has seen it.
-- **One thing in CI is not explained**: twice, in WebKit, a test has waited 60 seconds for a page to load and
-  passed at its second attempt (`docs/TEST_RESULTS.md` → _Continuous integration_). A test that runs out of time
-  now reports what it was still waiting for, so the next time will say more. If it says the page itself never
-  arrived, look at the preview server before the game.
 - No Firefox. No screenshot-comparison tests.
 
 ## What the owner can do now
 
-1. **Put it on a phone** (above). This is worth more than anything else on this list.
-2. **Decide about Vercel**: connecting the repository, and whether previews stay behind Vercel's login. Say the
-   word and it can be set up from a session like this one; it was not done unasked.
-3. **Decide the guide's name.** "Glim" is provisional and unchecked; it is one string in `src/app/strings.ts`.
-4. **Decide who records the voice** (Phase 04), or whether a synthesised voice is acceptable to start with.
-5. **Review the pull request.**
+1. **Listen to the voice** (above), on the phone the game is for. Mark what sounds wrong.
+2. **Play one activity in each world with a child**, and say what happened.
+3. **Review and merge pull request #6**, if the other five worlds should go live. Merging publishes them.
+4. **Decide what comes next.** Each world's brief asks for more than its page did (`docs/PROGRESS.md`); the
+   largest gaps are sentences to read, numerals, and a real map. Or Phase 11, music.
+5. **Decide the guide's name.** "Glim" is provisional and unchecked; it is one string in `src/app/strings.ts`.
 
-## The next action: Phase 04
+## The next action
 
 Start a new session with:
 
 > Read prompt-series/README.md, prompt-series/00_MASTER_BRIEF.md and
-> prompt-series/04_AUDIO_AND_PRE_READER_ONBOARDING.md, then docs/CONTINUE_HERE.md, docs/ART_DIRECTION.md,
-> docs/CURRICULUM.md and docs/ARCHITECTURE.md. Implement phase 04. It must work on Android and iOS devices on a
+> prompt-series/11_MUSIC_AND_ADDITIONAL_SKILLS.md, then docs/CONTINUE_HERE.md, docs/PROGRESS.md,
+> docs/CURRICULUM.md and docs/ARCHITECTURE.md. Implement phase 11. It must work on Android and iOS devices on a
 > Vercel deployment.
+
+Or, to close gaps first, name the world and the rows of its table in `docs/PROGRESS.md`.
 
 First steps, in order:
 
 1. `npm ci`, then `npm run verify:release`, to confirm the starting point is green.
-2. If anything has been learned from a real phone since this was written, fix that first.
-3. Read `docs/ARCHITECTURE.md` → _The shell_ (audio) and _The lesson frame_. The places a voice goes are already
-   there: `script.ts` has the moments, "show me again" replays them, the pause sheet's tap wakes the audio, and
-   the first tap of a visit is on the front door.
-4. Read `docs/QUALITY_REPORT.md` → _Phase 03_ → _What is still wrong or weak_.
+2. If anything has been learned from a real phone, a child or a listener since this was written, fix that first.
+   A recording that sounds wrong is put right by changing its words in the world's generator
+   (`scripts/content/`) or `src/voice/lines.json` and making it again (`scripts/voice/README.md`).
+3. Read `docs/ARCHITECTURE.md` → _The learning engine_, _The lesson frame_ and _The voice_.
+4. Read `docs/QUALITY_REPORT.md` → _Phases 04 to 10_ → _What is still wrong or weak_.
 
 ## Things the next session should know
 
@@ -145,6 +146,28 @@ npm run build
 
 A unit test fails until this is done, whenever anything under `src/render/hub3d/` that affects how an island looks
 (the kit, the paint, the water, the light, a model) or `src/render/extents.ts` has changed. Commit the new pictures.
+
+**New in Phases 04 to 10**
+
+- **A challenge is a choice or a thing to make.** A thing to make is judged by a rule in `src/engine/tasks.ts`,
+  and its answer is written as tokens joined by hyphens, so that the record of an attempt did not have to change.
+- **A new kind of game is a new board**, registered by its world under the kind of task or the scene it is for
+  (`boards` in the world's module). A board draws what the engine shows and plays the script its world writes;
+  `useChoosing` (`src/game/lesson/boards/`) is everything a question with choices needs worked out.
+- **Content is never edited by hand.** Change the tables in `scripts/content/<world>.mjs` and run
+  `npm run content`; a test fails if a pack differs from what its generator writes. A new rule in
+  `src/content/rules/` needs a case that breaks it in `tests/content/`, or the test that reads the rules fails.
+- **A line that is spoken has a recording, or a test fails** (`tests/config/voice.test.ts`). Make recordings
+  with `scripts/voice/make_voice.py` (its README says how; the tools are not part of the game's dependencies),
+  then `npx prettier --write src/voice`. A line the recogniser hears differently is reworded, not shipped.
+- **The content layer may not import from the game** (ESLint). What a world's rules and its drawing both need —
+  a storybook, the maths of a map — lives under `src/content/<world>/`.
+- **What is covered is not in the page.** A thing to remember, a missing picture, the answer to anything: none
+  is rendered until the engine shows it. Tests look for it in the page and must not find it.
+- **A place to press on a map is 56 points or more however small the map**, so places are a third of a map
+  apart (`APART` in `src/content/explorer-harbor/maps.ts`).
+- **A copy of the repository inside it slows the linter.** Agents work in `.claude/worktrees/`; remove a
+  worktree when its work has been merged.
 
 **New in Phase 03**
 
@@ -214,27 +237,29 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
 - **The cloud container this was built in has Chromium only and no GPU.** WebKit runs in CI. Frame rates measured
   there mean nothing.
 
-**Open questions for the owner** (the first three bear on Phase 04)
+**Open questions for the owner**
 
-- Has it been opened on a phone, and what happened?
-- Who records the voice, or is a synthesised one acceptable to start with?
+- What did the voice sound like, and which recordings are wrong?
+- Is a synthesised voice acceptable to ship, or should a person record it? (The lines are all in one manifest.)
+- What happened when a child played?
+- Who reviews the phonics content? Reading Cove teaches letters through key words and records no sound on its
+  own; a reading teacher may want it otherwise.
 - Is "Glim" the guide's name?
-- Is there a child for short play tests?
-- Who reviews the phonics content (Phase 05)?
 - Should the project carry a licence file? It has none.
 
 ## Where things are
 
-| For                                    | Look in                                          |
-| -------------------------------------- | ------------------------------------------------ |
-| How it should look, move and sound     | `docs/ART_DIRECTION.md`                          |
-| How it is built, and why               | `docs/ARCHITECTURE.md`                           |
-| What was run and what was found        | `docs/TEST_RESULTS.md`                           |
-| How it looks now, and what is weak     | `docs/QUALITY_REPORT.md`                         |
-| Phase status and gaps carried forward  | `docs/PROGRESS.md`                               |
-| Assets, licences, how assets are made  | `docs/ASSETS.md`, `docs/assets.manifest.json`    |
-| Authoring content                      | `docs/CURRICULUM.md`                             |
-| Deploying                              | `docs/DEPLOYMENT.md`                             |
-| Screenshots of the running build       | `docs/review/phase-03/` (hub: `phase-02/`)       |
-| Getting it onto a phone; what to check | `docs/DEPLOYMENT.md`                             |
-| One island close up; the guide's sheet | `/studio/<island>`, `/studio/guide` in the build |
+| For                                    | Look in                                                                           |
+| -------------------------------------- | --------------------------------------------------------------------------------- |
+| How it should look, move and sound     | `docs/ART_DIRECTION.md`                                                           |
+| How it is built, and why               | `docs/ARCHITECTURE.md`                                                            |
+| What was run and what was found        | `docs/TEST_RESULTS.md`                                                            |
+| How it looks now, and what is weak     | `docs/QUALITY_REPORT.md`                                                          |
+| Phase status and gaps carried forward  | `docs/PROGRESS.md`                                                                |
+| Assets, licences, how assets are made  | `docs/ASSETS.md`, `docs/assets.manifest.json`                                     |
+| Authoring content                      | `docs/CURRICULUM.md`                                                              |
+| Making and checking the voice          | `scripts/voice/README.md`                                                         |
+| Deploying                              | `docs/DEPLOYMENT.md`                                                              |
+| Screenshots of the running build       | `docs/review/phase-03/` (hub: `phase-02/`); the six worlds: `docs/review/worlds/` |
+| Getting it onto a phone; what to check | `docs/DEPLOYMENT.md`                                                              |
+| One island close up; the guide's sheet | `/studio/<island>`, `/studio/guide` in the build                                  |

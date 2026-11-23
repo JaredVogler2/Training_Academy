@@ -1,0 +1,2431 @@
+{
+  "format": "training-academy.content-pack",
+  "schemaVersion": 1,
+  "id": "inventor-island",
+  "world": "inventor-island",
+  "contentVersion": 1,
+  "strings": {
+    "en": {
+      "ii.predict.hint.eliminate": "Not this one.",
+      "ii.predict.hint.reveal": "Let us test it. Watch.",
+      "ii.build.hint.step": "Here is one part. You choose the rest.",
+      "ii.build.hint.reveal": "Make it like this. Then test it.",
+      "ii.bridge.predict.instruction": "Will the bridge hold? What do you think?",
+      "ii.bridge.predict.hint.model": "Look at the plank and the posts. Who is crossing?",
+      "ii.bridge.is.held": "Yes. It held.",
+      "ii.bridge.is.sagged": "Yes. It sagged.",
+      "ii.bridge.look.held": "Look. It held. Tap what happened.",
+      "ii.bridge.look.sagged": "Look. It sagged. Tap what happened.",
+      "ii.bridge.build.instruction": "This bridge sags. Change it so it holds.",
+      "ii.bridge.build.correct": "It holds! You mended it.",
+      "ii.bridge.build.incorrect": "It still sags. Change one thing and test again.",
+      "ii.bridge.build.hint.model": "A thick plank holds more. Posts hold it up.",
+      "ii.ramp.predict.instruction": "Where will the ball stop? What do you think?",
+      "ii.ramp.predict.hint.model": "How high is the ramp? Is the ground rough or smooth?",
+      "ii.ramp.is.landed": "Yes. It stopped on the star.",
+      "ii.ramp.is.rolled-short": "Yes. It stopped too soon.",
+      "ii.ramp.is.rolled-past": "Yes. It rolled too far.",
+      "ii.ramp.look.landed": "Look. It stopped on the star. Tap what happened.",
+      "ii.ramp.look.rolled-short": "Look. It stopped too soon. Tap what happened.",
+      "ii.ramp.look.rolled-past": "Look. It rolled too far. Tap what happened.",
+      "ii.ramp.build.instruction": "Make the ball stop on the star.",
+      "ii.ramp.build.correct": "It stopped on the star!",
+      "ii.ramp.build.incorrect": "Not on the star yet. Change one thing and test again.",
+      "ii.ramp.build.hint.model": "A higher ramp rolls it further. Rough ground slows it down.",
+      "ii.balance.predict.instruction": "Which way will it tip? What do you think?",
+      "ii.balance.predict.hint.model": "Count the blocks. Look how far out they are.",
+      "ii.balance.is.balanced": "Yes. It balanced.",
+      "ii.balance.is.tipped-left": "Yes. The blue side went down.",
+      "ii.balance.is.tipped-right": "Yes. The orange side went down.",
+      "ii.balance.look.balanced": "Look. It balanced. Tap what happened.",
+      "ii.balance.look.tipped-left": "Look. The blue side went down. Tap what happened.",
+      "ii.balance.look.tipped-right": "Look. The orange side went down. Tap what happened.",
+      "ii.balance.build.instruction": "Make it balance.",
+      "ii.balance.build.correct": "It balances!",
+      "ii.balance.build.incorrect": "It still tips. Change one thing and test again.",
+      "ii.balance.build.hint.model": "Further out pushes down more. More blocks push down more.",
+      "ii.float.predict.instruction": "Will it float or sink? What do you think?",
+      "ii.float.predict.hint.model": "What is it made of? Big things can float. Small things can sink.",
+      "ii.float.is.floated": "Yes. It floats.",
+      "ii.float.is.sank": "Yes. It sank.",
+      "ii.float.look.floated": "Look. It floats. Tap what happened.",
+      "ii.float.look.sank": "Look. It sank. Tap what happened.",
+      "ii.boat.build.instruction": "Take all the stones across. Do not let the boat sink.",
+      "ii.boat.build.correct": "They all got across!",
+      "ii.boat.build.incorrect": "Not yet. Change one thing and test again.",
+      "ii.boat.build.hint.model": "A bigger boat can carry more. Too many stones and it sinks."
+    }
+  },
+  "skills": [
+    {
+      "id": "engineering.bridge.predict",
+      "world": "inventor-island",
+      "strand": "engineering",
+      "title": "Guess whether a bridge will hold",
+      "objective": "Looks at a plank bridge — how wide the gap, how thick the plank, how many posts, who is crossing — and says whether it will hold before it is tested.",
+      "prerequisites": []
+    },
+    {
+      "id": "engineering.bridge.build",
+      "world": "inventor-island",
+      "strand": "engineering",
+      "title": "Mend a bridge that sags",
+      "objective": "Changes a bridge that sags, by a thicker plank or by posts, until it holds, testing after each change.",
+      "prerequisites": ["engineering.bridge.predict"]
+    },
+    {
+      "id": "engineering.ramp.predict",
+      "world": "inventor-island",
+      "strand": "engineering",
+      "title": "Guess where a rolling ball will stop",
+      "objective": "Looks at how high a ramp is and whether the ground is rough or smooth, and says whether the ball will stop short of the star, on it or past it.",
+      "prerequisites": []
+    },
+    {
+      "id": "engineering.ramp.build",
+      "world": "inventor-island",
+      "strand": "engineering",
+      "title": "Set a ramp so the ball stops on the star",
+      "objective": "Changes the height of a ramp and the ground it rolls onto until the ball stops where it is wanted, testing after each change.",
+      "prerequisites": ["engineering.ramp.predict"]
+    },
+    {
+      "id": "engineering.balance.predict",
+      "world": "inventor-island",
+      "strand": "engineering",
+      "title": "Guess which way a beam will tip",
+      "objective": "Looks at how many blocks are on each side of a beam and how far out they are, and says which side will go down or that it will balance.",
+      "prerequisites": []
+    },
+    {
+      "id": "engineering.balance.build",
+      "world": "inventor-island",
+      "strand": "engineering",
+      "title": "Make a beam balance",
+      "objective": "Places blocks on one side of a beam to balance the other, using both how many and how far out.",
+      "prerequisites": ["engineering.balance.predict"]
+    },
+    {
+      "id": "engineering.float.predict",
+      "world": "inventor-island",
+      "strand": "engineering",
+      "title": "Guess what floats and what sinks",
+      "objective": "Says whether a thing will float or sink before it is dropped in water, going by what it is made of and not by how big it is; and whether a loaded boat will float.",
+      "prerequisites": []
+    },
+    {
+      "id": "engineering.float.build",
+      "world": "inventor-island",
+      "strand": "engineering",
+      "title": "Choose a boat that carries the load",
+      "objective": "Carries stones across a pond by choosing a boat big enough and loading it with all of them and no more than it can bear.",
+      "prerequisites": ["engineering.float.predict"]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "ii-bridge-01",
+      "version": 1,
+      "world": "inventor-island",
+      "title": "Bridges that hold",
+      "summary": "A plank across a gap, and someone who wants to cross. Your child guesses whether it will hold and watches it tested, then mends a bridge that sags by changing the plank or standing posts under it.",
+      "skillIds": ["engineering.bridge.predict", "engineering.bridge.build"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["ii-bridge-01.demo-guess", "ii-bridge-01.demo-mend"],
+        "guided": ["ii-bridge-01.guided-guess", "ii-bridge-01.guided-mend"],
+        "independent": {
+          "pool": [
+            "ii-bridge-01.goat-thick-post",
+            "ii-bridge-01.goat-thick-alone",
+            "ii-bridge-01.bear-one-post",
+            "ii-bridge-01.rabbit-long-gap",
+            "ii-bridge-01.rabbit-wide",
+            "ii-bridge-01.bear-narrow",
+            "ii-bridge-01.goat-wide",
+            "ii-bridge-01.bear-middling"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "ii-bridge-01.demo-guess",
+          "kind": "choose-one",
+          "skillId": "engineering.bridge.predict",
+          "variant": "thin-sags",
+          "prompt": {
+            "instruction": "ii.bridge.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 2, "traveller": "goat", "plank": "thin", "posts": "none" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It holds",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 2,
+                  "traveller": "goat",
+                  "plank": "thin",
+                  "posts": "none",
+                  "shown": "held"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sags",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 2,
+                  "traveller": "goat",
+                  "plank": "thin",
+                  "posts": "none",
+                  "shown": "sagged"
+                }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-held" },
+          "feedback": { "correct": "ii.bridge.is.sagged", "incorrect": "ii.bridge.look.sagged" }
+        },
+        {
+          "id": "ii-bridge-01.demo-mend",
+          "kind": "make",
+          "skillId": "engineering.bridge.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.bridge.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 2, "traveller": "goat", "plank": "thin", "posts": "none" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "bridge",
+            "given": { "gap": 2, "traveller": "goat", "plank": "thin", "posts": "none" },
+            "controls": [
+              { "id": "plank", "options": ["thin", "thick"] },
+              { "id": "posts", "options": ["none", "one", "two"] }
+            ],
+            "solution": ["thick", "none"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.bridge.build.correct",
+            "incorrect": "ii.bridge.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-bridge-01.guided-guess",
+          "kind": "choose-one",
+          "skillId": "engineering.bridge.predict",
+          "variant": "light-holds",
+          "prompt": {
+            "instruction": "ii.bridge.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 2, "traveller": "rabbit", "plank": "thin", "posts": "none" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It holds",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 2,
+                  "traveller": "rabbit",
+                  "plank": "thin",
+                  "posts": "none",
+                  "shown": "held"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sags",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 2,
+                  "traveller": "rabbit",
+                  "plank": "thin",
+                  "posts": "none",
+                  "shown": "sagged"
+                }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-sagged" },
+          "feedback": { "correct": "ii.bridge.is.held", "incorrect": "ii.bridge.look.held" }
+        },
+        {
+          "id": "ii-bridge-01.guided-mend",
+          "kind": "make",
+          "skillId": "engineering.bridge.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.bridge.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 3, "traveller": "rabbit", "plank": "thin", "posts": "none" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "bridge",
+            "given": { "gap": 3, "traveller": "rabbit", "plank": "thin", "posts": "none" },
+            "controls": [
+              { "id": "plank", "options": ["thin", "thick"] },
+              { "id": "posts", "options": ["none", "one", "two"] }
+            ],
+            "solution": ["thin", "one"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.bridge.build.correct",
+            "incorrect": "ii.bridge.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-bridge-01.goat-thick-post",
+          "kind": "choose-one",
+          "skillId": "engineering.bridge.predict",
+          "variant": "thick-and-post-holds",
+          "prompt": {
+            "instruction": "ii.bridge.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 3, "traveller": "goat", "plank": "thick", "posts": "one" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It holds",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 3,
+                  "traveller": "goat",
+                  "plank": "thick",
+                  "posts": "one",
+                  "shown": "held"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sags",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 3,
+                  "traveller": "goat",
+                  "plank": "thick",
+                  "posts": "one",
+                  "shown": "sagged"
+                }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-sagged" },
+          "feedback": { "correct": "ii.bridge.is.held", "incorrect": "ii.bridge.look.held" }
+        },
+        {
+          "id": "ii-bridge-01.goat-thick-alone",
+          "kind": "choose-one",
+          "skillId": "engineering.bridge.predict",
+          "variant": "thick-alone-sags",
+          "prompt": {
+            "instruction": "ii.bridge.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 3, "traveller": "goat", "plank": "thick", "posts": "none" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It holds",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 3,
+                  "traveller": "goat",
+                  "plank": "thick",
+                  "posts": "none",
+                  "shown": "held"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sags",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 3,
+                  "traveller": "goat",
+                  "plank": "thick",
+                  "posts": "none",
+                  "shown": "sagged"
+                }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-held" },
+          "feedback": { "correct": "ii.bridge.is.sagged", "incorrect": "ii.bridge.look.sagged" }
+        },
+        {
+          "id": "ii-bridge-01.bear-one-post",
+          "kind": "choose-one",
+          "skillId": "engineering.bridge.predict",
+          "variant": "heavy-sags",
+          "prompt": {
+            "instruction": "ii.bridge.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 2, "traveller": "bear", "plank": "thin", "posts": "one" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It holds",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 2,
+                  "traveller": "bear",
+                  "plank": "thin",
+                  "posts": "one",
+                  "shown": "held"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sags",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 2,
+                  "traveller": "bear",
+                  "plank": "thin",
+                  "posts": "one",
+                  "shown": "sagged"
+                }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-held" },
+          "feedback": { "correct": "ii.bridge.is.sagged", "incorrect": "ii.bridge.look.sagged" }
+        },
+        {
+          "id": "ii-bridge-01.rabbit-long-gap",
+          "kind": "choose-one",
+          "skillId": "engineering.bridge.predict",
+          "variant": "post-holds-long",
+          "prompt": {
+            "instruction": "ii.bridge.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 4, "traveller": "rabbit", "plank": "thin", "posts": "one" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It holds",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 4,
+                  "traveller": "rabbit",
+                  "plank": "thin",
+                  "posts": "one",
+                  "shown": "held"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sags",
+              "stimulus": {
+                "type": "scene",
+                "scene": "bridge",
+                "of": {
+                  "gap": 4,
+                  "traveller": "rabbit",
+                  "plank": "thin",
+                  "posts": "one",
+                  "shown": "sagged"
+                }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-sagged" },
+          "feedback": { "correct": "ii.bridge.is.held", "incorrect": "ii.bridge.look.held" }
+        },
+        {
+          "id": "ii-bridge-01.rabbit-wide",
+          "kind": "make",
+          "skillId": "engineering.bridge.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.bridge.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 4, "traveller": "rabbit", "plank": "thin", "posts": "none" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "bridge",
+            "given": { "gap": 4, "traveller": "rabbit", "plank": "thin", "posts": "none" },
+            "controls": [
+              { "id": "plank", "options": ["thin", "thick"] },
+              { "id": "posts", "options": ["none", "one", "two"] }
+            ],
+            "solution": ["thin", "one"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.bridge.build.correct",
+            "incorrect": "ii.bridge.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-bridge-01.bear-narrow",
+          "kind": "make",
+          "skillId": "engineering.bridge.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.bridge.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 2, "traveller": "bear", "plank": "thin", "posts": "none" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "bridge",
+            "given": { "gap": 2, "traveller": "bear", "plank": "thin", "posts": "none" },
+            "controls": [
+              { "id": "plank", "options": ["thin", "thick"] },
+              { "id": "posts", "options": ["none", "one", "two"] }
+            ],
+            "solution": ["thin", "two"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.bridge.build.correct",
+            "incorrect": "ii.bridge.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-bridge-01.goat-wide",
+          "kind": "make",
+          "skillId": "engineering.bridge.build",
+          "variant": "both-parts",
+          "prompt": {
+            "instruction": "ii.bridge.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 4, "traveller": "goat", "plank": "thin", "posts": "none" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "bridge",
+            "given": { "gap": 4, "traveller": "goat", "plank": "thin", "posts": "none" },
+            "controls": [
+              { "id": "plank", "options": ["thin", "thick"] },
+              { "id": "posts", "options": ["none", "one", "two"] }
+            ],
+            "solution": ["thick", "one"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.bridge.build.correct",
+            "incorrect": "ii.bridge.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-bridge-01.bear-middling",
+          "kind": "make",
+          "skillId": "engineering.bridge.build",
+          "variant": "both-parts",
+          "prompt": {
+            "instruction": "ii.bridge.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "bridge",
+              "of": { "gap": 3, "traveller": "bear", "plank": "thin", "posts": "none" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "bridge",
+            "given": { "gap": 3, "traveller": "bear", "plank": "thin", "posts": "none" },
+            "controls": [
+              { "id": "plank", "options": ["thin", "thick"] },
+              { "id": "posts", "options": ["none", "one", "two"] }
+            ],
+            "solution": ["thick", "two"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.bridge.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.bridge.build.correct",
+            "incorrect": "ii.bridge.build.incorrect"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ii-ramp-01",
+      "version": 1,
+      "world": "inventor-island",
+      "title": "Ramps and rolling",
+      "summary": "A ball rolls down a ramp and on along the ground. Your child guesses where it will stop, then makes it stop on the star by changing how high the ramp is and whether the ground is rough or smooth.",
+      "skillIds": ["engineering.ramp.predict", "engineering.ramp.build"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["ii-ramp-01.demo-guess", "ii-ramp-01.demo-mend"],
+        "guided": ["ii-ramp-01.guided-guess", "ii-ramp-01.guided-mend"],
+        "independent": {
+          "pool": [
+            "ii-ramp-01.high-on-smooth",
+            "ii-ramp-01.middle-on-rough",
+            "ii-ramp-01.high-on-rough",
+            "ii-ramp-01.low-on-smooth",
+            "ii-ramp-01.star-on-three",
+            "ii-ramp-01.star-on-two",
+            "ii-ramp-01.star-on-four",
+            "ii-ramp-01.star-on-six"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "ii-ramp-01.demo-guess",
+          "kind": "choose-one",
+          "skillId": "engineering.ramp.predict",
+          "variant": "lands",
+          "prompt": {
+            "instruction": "ii.ramp.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 4, "height": "mid", "surface": "smooth" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It stops too soon",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 4, "height": "mid", "surface": "smooth", "shown": "rolled-short" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It stops on the star",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 4, "height": "mid", "surface": "smooth", "shown": "landed" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "It rolls too far",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 4, "height": "mid", "surface": "smooth", "shown": "rolled-past" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.predict.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-rolled-short", "c": "predicted-rolled-past" },
+          "feedback": { "correct": "ii.ramp.is.landed", "incorrect": "ii.ramp.look.landed" }
+        },
+        {
+          "id": "ii-ramp-01.demo-mend",
+          "kind": "make",
+          "skillId": "engineering.ramp.build",
+          "variant": "height-only",
+          "prompt": {
+            "instruction": "ii.ramp.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 6, "surface": "smooth", "height": "low" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "ramp",
+            "given": { "target": 6, "surface": "smooth", "height": "low" },
+            "controls": [{ "id": "height", "options": ["low", "mid", "high"] }],
+            "solution": ["high"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.build.hint.model" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.ramp.build.correct", "incorrect": "ii.ramp.build.incorrect" }
+        },
+        {
+          "id": "ii-ramp-01.guided-guess",
+          "kind": "choose-one",
+          "skillId": "engineering.ramp.predict",
+          "variant": "too-low",
+          "prompt": {
+            "instruction": "ii.ramp.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 4, "height": "low", "surface": "smooth" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It stops too soon",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 4, "height": "low", "surface": "smooth", "shown": "rolled-short" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It stops on the star",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 4, "height": "low", "surface": "smooth", "shown": "landed" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "It rolls too far",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 4, "height": "low", "surface": "smooth", "shown": "rolled-past" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.predict.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-landed", "c": "predicted-rolled-past" },
+          "feedback": {
+            "correct": "ii.ramp.is.rolled-short",
+            "incorrect": "ii.ramp.look.rolled-short"
+          }
+        },
+        {
+          "id": "ii-ramp-01.guided-mend",
+          "kind": "make",
+          "skillId": "engineering.ramp.build",
+          "variant": "height-only",
+          "prompt": {
+            "instruction": "ii.ramp.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 2, "surface": "rough", "height": "low" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "ramp",
+            "given": { "target": 2, "surface": "rough", "height": "low" },
+            "controls": [{ "id": "height", "options": ["low", "mid", "high"] }],
+            "solution": ["mid"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.build.hint.model" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.ramp.build.correct", "incorrect": "ii.ramp.build.incorrect" }
+        },
+        {
+          "id": "ii-ramp-01.high-on-smooth",
+          "kind": "choose-one",
+          "skillId": "engineering.ramp.predict",
+          "variant": "too-high",
+          "prompt": {
+            "instruction": "ii.ramp.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 4, "height": "high", "surface": "smooth" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It stops too soon",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": {
+                  "target": 4,
+                  "height": "high",
+                  "surface": "smooth",
+                  "shown": "rolled-short"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It stops on the star",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 4, "height": "high", "surface": "smooth", "shown": "landed" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "It rolls too far",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 4, "height": "high", "surface": "smooth", "shown": "rolled-past" }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.predict.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-rolled-short", "b": "predicted-landed" },
+          "feedback": {
+            "correct": "ii.ramp.is.rolled-past",
+            "incorrect": "ii.ramp.look.rolled-past"
+          }
+        },
+        {
+          "id": "ii-ramp-01.middle-on-rough",
+          "kind": "choose-one",
+          "skillId": "engineering.ramp.predict",
+          "variant": "rough-slows",
+          "prompt": {
+            "instruction": "ii.ramp.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 4, "height": "mid", "surface": "rough" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It stops too soon",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 4, "height": "mid", "surface": "rough", "shown": "rolled-short" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It stops on the star",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 4, "height": "mid", "surface": "rough", "shown": "landed" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "It rolls too far",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 4, "height": "mid", "surface": "rough", "shown": "rolled-past" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.predict.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-landed", "c": "predicted-rolled-past" },
+          "feedback": {
+            "correct": "ii.ramp.is.rolled-short",
+            "incorrect": "ii.ramp.look.rolled-short"
+          }
+        },
+        {
+          "id": "ii-ramp-01.high-on-rough",
+          "kind": "choose-one",
+          "skillId": "engineering.ramp.predict",
+          "variant": "rough-lands",
+          "prompt": {
+            "instruction": "ii.ramp.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 3, "height": "high", "surface": "rough" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It stops too soon",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 3, "height": "high", "surface": "rough", "shown": "rolled-short" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It stops on the star",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 3, "height": "high", "surface": "rough", "shown": "landed" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "It rolls too far",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 3, "height": "high", "surface": "rough", "shown": "rolled-past" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.predict.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-rolled-short", "c": "predicted-rolled-past" },
+          "feedback": { "correct": "ii.ramp.is.landed", "incorrect": "ii.ramp.look.landed" }
+        },
+        {
+          "id": "ii-ramp-01.low-on-smooth",
+          "kind": "choose-one",
+          "skillId": "engineering.ramp.predict",
+          "variant": "low-lands",
+          "prompt": {
+            "instruction": "ii.ramp.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 2, "height": "low", "surface": "smooth" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It stops too soon",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 2, "height": "low", "surface": "smooth", "shown": "rolled-short" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It stops on the star",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 2, "height": "low", "surface": "smooth", "shown": "landed" }
+              }
+            },
+            {
+              "id": "c",
+              "label": "It rolls too far",
+              "stimulus": {
+                "type": "scene",
+                "scene": "ramp",
+                "of": { "target": 2, "height": "low", "surface": "smooth", "shown": "rolled-past" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.predict.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-rolled-short", "c": "predicted-rolled-past" },
+          "feedback": { "correct": "ii.ramp.is.landed", "incorrect": "ii.ramp.look.landed" }
+        },
+        {
+          "id": "ii-ramp-01.star-on-three",
+          "kind": "make",
+          "skillId": "engineering.ramp.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.ramp.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 3, "height": "low", "surface": "rough" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "ramp",
+            "given": { "target": 3, "height": "low", "surface": "rough" },
+            "controls": [
+              { "id": "height", "options": ["low", "mid", "high"] },
+              { "id": "surface", "options": ["rough", "smooth"] }
+            ],
+            "solution": ["high", "rough"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.ramp.build.correct", "incorrect": "ii.ramp.build.incorrect" }
+        },
+        {
+          "id": "ii-ramp-01.star-on-two",
+          "kind": "make",
+          "skillId": "engineering.ramp.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.ramp.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 2, "height": "high", "surface": "smooth" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "ramp",
+            "given": { "target": 2, "height": "high", "surface": "smooth" },
+            "controls": [
+              { "id": "height", "options": ["low", "mid", "high"] },
+              { "id": "surface", "options": ["rough", "smooth"] }
+            ],
+            "solution": ["low", "smooth"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.ramp.build.correct", "incorrect": "ii.ramp.build.incorrect" }
+        },
+        {
+          "id": "ii-ramp-01.star-on-four",
+          "kind": "make",
+          "skillId": "engineering.ramp.build",
+          "variant": "both-parts",
+          "prompt": {
+            "instruction": "ii.ramp.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 4, "height": "low", "surface": "rough" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "ramp",
+            "given": { "target": 4, "height": "low", "surface": "rough" },
+            "controls": [
+              { "id": "height", "options": ["low", "mid", "high"] },
+              { "id": "surface", "options": ["rough", "smooth"] }
+            ],
+            "solution": ["mid", "smooth"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.ramp.build.correct", "incorrect": "ii.ramp.build.incorrect" }
+        },
+        {
+          "id": "ii-ramp-01.star-on-six",
+          "kind": "make",
+          "skillId": "engineering.ramp.build",
+          "variant": "both-parts",
+          "prompt": {
+            "instruction": "ii.ramp.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "ramp",
+              "of": { "target": 6, "height": "low", "surface": "rough" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "ramp",
+            "given": { "target": 6, "height": "low", "surface": "rough" },
+            "controls": [
+              { "id": "height", "options": ["low", "mid", "high"] },
+              { "id": "surface", "options": ["rough", "smooth"] }
+            ],
+            "solution": ["high", "smooth"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.ramp.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.ramp.build.correct", "incorrect": "ii.ramp.build.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "ii-balance-01",
+      "version": 1,
+      "world": "inventor-island",
+      "title": "Balancing",
+      "summary": "Blocks on a beam that rests on its middle. Your child guesses which way it will tip, then puts blocks on the other side to make it balance, and finds that one block far out can balance three close in.",
+      "skillIds": ["engineering.balance.predict", "engineering.balance.build"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["ii-balance-01.demo-guess", "ii-balance-01.demo-mend"],
+        "guided": ["ii-balance-01.guided-guess", "ii-balance-01.guided-mend"],
+        "independent": {
+          "pool": [
+            "ii-balance-01.same-blocks-further-out",
+            "ii-balance-01.one-far-against-two-near",
+            "ii-balance-01.one-far-against-three-near",
+            "ii-balance-01.two-far-against-three-middle",
+            "ii-balance-01.two-close-in",
+            "ii-balance-01.one-far-out",
+            "ii-balance-01.two-far-out",
+            "ii-balance-01.three-in-the-middle"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "ii-balance-01.demo-guess",
+          "kind": "choose-one",
+          "skillId": "engineering.balance.predict",
+          "variant": "mirror",
+          "prompt": {
+            "instruction": "ii.balance.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 1, "leftAt": 2, "weight": "one", "at": "mid" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The blue side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 1,
+                  "leftAt": 2,
+                  "weight": "one",
+                  "at": "mid",
+                  "shown": "tipped-left"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It balances",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 1,
+                  "leftAt": 2,
+                  "weight": "one",
+                  "at": "mid",
+                  "shown": "balanced"
+                }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The orange side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 1,
+                  "leftAt": 2,
+                  "weight": "one",
+                  "at": "mid",
+                  "shown": "tipped-right"
+                }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.balance.predict.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-tipped-left", "c": "predicted-tipped-right" },
+          "feedback": {
+            "correct": "ii.balance.is.balanced",
+            "incorrect": "ii.balance.look.balanced"
+          }
+        },
+        {
+          "id": "ii-balance-01.demo-mend",
+          "kind": "make",
+          "skillId": "engineering.balance.build",
+          "variant": "place-only",
+          "prompt": {
+            "instruction": "ii.balance.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 1, "leftAt": 3, "weight": "one", "at": "near" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "balance",
+            "given": { "leftWeight": 1, "leftAt": 3, "weight": "one", "at": "near" },
+            "controls": [{ "id": "at", "options": ["near", "mid", "far"] }],
+            "solution": ["far"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.balance.build.hint.model" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.balance.build.correct",
+            "incorrect": "ii.balance.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-balance-01.guided-guess",
+          "kind": "choose-one",
+          "skillId": "engineering.balance.predict",
+          "variant": "more-blocks",
+          "prompt": {
+            "instruction": "ii.balance.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 2, "leftAt": 2, "weight": "one", "at": "mid" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The blue side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 2,
+                  "leftAt": 2,
+                  "weight": "one",
+                  "at": "mid",
+                  "shown": "tipped-left"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It balances",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 2,
+                  "leftAt": 2,
+                  "weight": "one",
+                  "at": "mid",
+                  "shown": "balanced"
+                }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The orange side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 2,
+                  "leftAt": 2,
+                  "weight": "one",
+                  "at": "mid",
+                  "shown": "tipped-right"
+                }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.balance.predict.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-balanced", "c": "predicted-tipped-right" },
+          "feedback": {
+            "correct": "ii.balance.is.tipped-left",
+            "incorrect": "ii.balance.look.tipped-left"
+          }
+        },
+        {
+          "id": "ii-balance-01.guided-mend",
+          "kind": "make",
+          "skillId": "engineering.balance.build",
+          "variant": "place-only",
+          "prompt": {
+            "instruction": "ii.balance.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 1, "leftAt": 2, "weight": "one", "at": "near" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "balance",
+            "given": { "leftWeight": 1, "leftAt": 2, "weight": "one", "at": "near" },
+            "controls": [{ "id": "at", "options": ["near", "mid", "far"] }],
+            "solution": ["mid"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.balance.build.hint.model" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.balance.build.correct",
+            "incorrect": "ii.balance.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-balance-01.same-blocks-further-out",
+          "kind": "choose-one",
+          "skillId": "engineering.balance.predict",
+          "variant": "further-out",
+          "prompt": {
+            "instruction": "ii.balance.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 1, "leftAt": 3, "weight": "one", "at": "near" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The blue side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 1,
+                  "leftAt": 3,
+                  "weight": "one",
+                  "at": "near",
+                  "shown": "tipped-left"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It balances",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 1,
+                  "leftAt": 3,
+                  "weight": "one",
+                  "at": "near",
+                  "shown": "balanced"
+                }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The orange side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 1,
+                  "leftAt": 3,
+                  "weight": "one",
+                  "at": "near",
+                  "shown": "tipped-right"
+                }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.balance.predict.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-balanced", "c": "predicted-tipped-right" },
+          "feedback": {
+            "correct": "ii.balance.is.tipped-left",
+            "incorrect": "ii.balance.look.tipped-left"
+          }
+        },
+        {
+          "id": "ii-balance-01.one-far-against-two-near",
+          "kind": "choose-one",
+          "skillId": "engineering.balance.predict",
+          "variant": "far-beats-more",
+          "prompt": {
+            "instruction": "ii.balance.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 2, "leftAt": 1, "weight": "one", "at": "far" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The blue side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 2,
+                  "leftAt": 1,
+                  "weight": "one",
+                  "at": "far",
+                  "shown": "tipped-left"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It balances",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 2,
+                  "leftAt": 1,
+                  "weight": "one",
+                  "at": "far",
+                  "shown": "balanced"
+                }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The orange side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 2,
+                  "leftAt": 1,
+                  "weight": "one",
+                  "at": "far",
+                  "shown": "tipped-right"
+                }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "ii.balance.predict.hint.model" },
+            { "type": "eliminate", "remove": ["a"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-tipped-left", "b": "predicted-balanced" },
+          "feedback": {
+            "correct": "ii.balance.is.tipped-right",
+            "incorrect": "ii.balance.look.tipped-right"
+          }
+        },
+        {
+          "id": "ii-balance-01.one-far-against-three-near",
+          "kind": "choose-one",
+          "skillId": "engineering.balance.predict",
+          "variant": "far-balances-more",
+          "prompt": {
+            "instruction": "ii.balance.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 1, "leftAt": 3, "weight": "three", "at": "near" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The blue side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 1,
+                  "leftAt": 3,
+                  "weight": "three",
+                  "at": "near",
+                  "shown": "tipped-left"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It balances",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 1,
+                  "leftAt": 3,
+                  "weight": "three",
+                  "at": "near",
+                  "shown": "balanced"
+                }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The orange side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 1,
+                  "leftAt": 3,
+                  "weight": "three",
+                  "at": "near",
+                  "shown": "tipped-right"
+                }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.balance.predict.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-tipped-left", "c": "predicted-tipped-right" },
+          "feedback": {
+            "correct": "ii.balance.is.balanced",
+            "incorrect": "ii.balance.look.balanced"
+          }
+        },
+        {
+          "id": "ii-balance-01.two-far-against-three-middle",
+          "kind": "choose-one",
+          "skillId": "engineering.balance.predict",
+          "variant": "far-balances-more",
+          "prompt": {
+            "instruction": "ii.balance.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 3, "leftAt": 2, "weight": "two", "at": "far" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The blue side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 3,
+                  "leftAt": 2,
+                  "weight": "two",
+                  "at": "far",
+                  "shown": "tipped-left"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It balances",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 3,
+                  "leftAt": 2,
+                  "weight": "two",
+                  "at": "far",
+                  "shown": "balanced"
+                }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The orange side goes down",
+              "stimulus": {
+                "type": "scene",
+                "scene": "balance",
+                "of": {
+                  "leftWeight": 3,
+                  "leftAt": 2,
+                  "weight": "two",
+                  "at": "far",
+                  "shown": "tipped-right"
+                }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.balance.predict.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ii.predict.hint.eliminate" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-tipped-left", "c": "predicted-tipped-right" },
+          "feedback": {
+            "correct": "ii.balance.is.balanced",
+            "incorrect": "ii.balance.look.balanced"
+          }
+        },
+        {
+          "id": "ii-balance-01.two-close-in",
+          "kind": "make",
+          "skillId": "engineering.balance.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.balance.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 2, "leftAt": 1, "weight": "one", "at": "near" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "balance",
+            "given": { "leftWeight": 2, "leftAt": 1, "weight": "one", "at": "near" },
+            "controls": [
+              { "id": "weight", "options": ["one", "two", "three"] },
+              { "id": "at", "options": ["near", "mid", "far"] }
+            ],
+            "solution": ["two", "near"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.balance.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.balance.build.correct",
+            "incorrect": "ii.balance.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-balance-01.one-far-out",
+          "kind": "make",
+          "skillId": "engineering.balance.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.balance.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 1, "leftAt": 3, "weight": "one", "at": "near" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "balance",
+            "given": { "leftWeight": 1, "leftAt": 3, "weight": "one", "at": "near" },
+            "controls": [
+              { "id": "weight", "options": ["one", "two", "three"] },
+              { "id": "at", "options": ["near", "mid", "far"] }
+            ],
+            "solution": ["one", "far"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.balance.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.balance.build.correct",
+            "incorrect": "ii.balance.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-balance-01.two-far-out",
+          "kind": "make",
+          "skillId": "engineering.balance.build",
+          "variant": "both-parts",
+          "prompt": {
+            "instruction": "ii.balance.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 2, "leftAt": 3, "weight": "one", "at": "near" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "balance",
+            "given": { "leftWeight": 2, "leftAt": 3, "weight": "one", "at": "near" },
+            "controls": [
+              { "id": "weight", "options": ["one", "two", "three"] },
+              { "id": "at", "options": ["near", "mid", "far"] }
+            ],
+            "solution": ["two", "far"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.balance.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.balance.build.correct",
+            "incorrect": "ii.balance.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-balance-01.three-in-the-middle",
+          "kind": "make",
+          "skillId": "engineering.balance.build",
+          "variant": "both-parts",
+          "prompt": {
+            "instruction": "ii.balance.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "balance",
+              "of": { "leftWeight": 3, "leftAt": 2, "weight": "one", "at": "near" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "balance",
+            "given": { "leftWeight": 3, "leftAt": 2, "weight": "one", "at": "near" },
+            "controls": [
+              { "id": "weight", "options": ["one", "two", "three"] },
+              { "id": "at", "options": ["near", "mid", "far"] }
+            ],
+            "solution": ["three", "mid"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.balance.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.balance.build.correct",
+            "incorrect": "ii.balance.build.incorrect"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ii-float-01",
+      "version": 1,
+      "world": "inventor-island",
+      "title": "Float or sink",
+      "summary": "Things are dropped in a tub of water: your child guesses float or sink, and then sees. Big things can float and small things can sink; it is what a thing is made of that counts. Then stones, which sink, are carried across a pond in a boat that must not go under.",
+      "skillIds": ["engineering.float.predict", "engineering.float.build"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["ii-float-01.demo-guess", "ii-float-01.demo-mend"],
+        "guided": ["ii-float-01.guided-guess", "ii-float-01.guided-mend"],
+        "independent": {
+          "pool": [
+            "ii-float-01.cork",
+            "ii-float-01.brick",
+            "ii-float-01.wooden-spoon",
+            "ii-float-01.metal-spoon",
+            "ii-float-01.ball",
+            "ii-float-01.key",
+            "ii-float-01.bark-with-three",
+            "ii-float-01.raft-with-three",
+            "ii-float-01.two-stones",
+            "ii-float-01.three-stones",
+            "ii-float-01.bark-too-small",
+            "ii-float-01.one-left-behind"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "ii-float-01.demo-guess",
+          "kind": "choose-one",
+          "skillId": "engineering.float.predict",
+          "variant": "big-floats",
+          "prompt": {
+            "instruction": "ii.float.predict.instruction",
+            "stimulus": { "type": "scene", "scene": "tub", "of": { "thing": "log" } }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It floats",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "log", "shown": "floated" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sinks",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "log", "shown": "sank" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.float.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-sank" },
+          "feedback": { "correct": "ii.float.is.floated", "incorrect": "ii.float.look.floated" }
+        },
+        {
+          "id": "ii-float-01.demo-mend",
+          "kind": "make",
+          "skillId": "engineering.float.build",
+          "variant": "boat-only",
+          "prompt": {
+            "instruction": "ii.boat.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "boat",
+              "of": { "need": 2, "cargo": "two", "boat": "shell" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "boat",
+            "given": { "need": 2, "cargo": "two", "boat": "shell" },
+            "controls": [{ "id": "boat", "options": ["shell", "bark", "raft"] }],
+            "solution": ["bark"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.boat.build.hint.model" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.boat.build.correct", "incorrect": "ii.boat.build.incorrect" }
+        },
+        {
+          "id": "ii-float-01.guided-guess",
+          "kind": "choose-one",
+          "skillId": "engineering.float.predict",
+          "variant": "small-sinks",
+          "prompt": {
+            "instruction": "ii.float.predict.instruction",
+            "stimulus": { "type": "scene", "scene": "tub", "of": { "thing": "pebble" } }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It floats",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "pebble", "shown": "floated" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sinks",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "pebble", "shown": "sank" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.float.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-floated" },
+          "feedback": { "correct": "ii.float.is.sank", "incorrect": "ii.float.look.sank" }
+        },
+        {
+          "id": "ii-float-01.guided-mend",
+          "kind": "make",
+          "skillId": "engineering.float.build",
+          "variant": "boat-only",
+          "prompt": {
+            "instruction": "ii.boat.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "boat",
+              "of": { "need": 3, "cargo": "three", "boat": "shell" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "boat",
+            "given": { "need": 3, "cargo": "three", "boat": "shell" },
+            "controls": [{ "id": "boat", "options": ["shell", "bark", "raft"] }],
+            "solution": ["raft"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.boat.build.hint.model" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.boat.build.correct", "incorrect": "ii.boat.build.incorrect" }
+        },
+        {
+          "id": "ii-float-01.cork",
+          "kind": "choose-one",
+          "skillId": "engineering.float.predict",
+          "variant": "small-floats",
+          "prompt": {
+            "instruction": "ii.float.predict.instruction",
+            "stimulus": { "type": "scene", "scene": "tub", "of": { "thing": "cork" } }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It floats",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "cork", "shown": "floated" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sinks",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "cork", "shown": "sank" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.float.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-sank" },
+          "feedback": { "correct": "ii.float.is.floated", "incorrect": "ii.float.look.floated" }
+        },
+        {
+          "id": "ii-float-01.brick",
+          "kind": "choose-one",
+          "skillId": "engineering.float.predict",
+          "variant": "big-sinks",
+          "prompt": {
+            "instruction": "ii.float.predict.instruction",
+            "stimulus": { "type": "scene", "scene": "tub", "of": { "thing": "brick" } }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It floats",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "brick", "shown": "floated" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sinks",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "brick", "shown": "sank" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.float.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-floated" },
+          "feedback": { "correct": "ii.float.is.sank", "incorrect": "ii.float.look.sank" }
+        },
+        {
+          "id": "ii-float-01.wooden-spoon",
+          "kind": "choose-one",
+          "skillId": "engineering.float.predict",
+          "variant": "wood-floats",
+          "prompt": {
+            "instruction": "ii.float.predict.instruction",
+            "stimulus": { "type": "scene", "scene": "tub", "of": { "thing": "wooden-spoon" } }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It floats",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "wooden-spoon", "shown": "floated" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sinks",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "wooden-spoon", "shown": "sank" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.float.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-sank" },
+          "feedback": { "correct": "ii.float.is.floated", "incorrect": "ii.float.look.floated" }
+        },
+        {
+          "id": "ii-float-01.metal-spoon",
+          "kind": "choose-one",
+          "skillId": "engineering.float.predict",
+          "variant": "metal-sinks",
+          "prompt": {
+            "instruction": "ii.float.predict.instruction",
+            "stimulus": { "type": "scene", "scene": "tub", "of": { "thing": "metal-spoon" } }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It floats",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "metal-spoon", "shown": "floated" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sinks",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "metal-spoon", "shown": "sank" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.float.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-floated" },
+          "feedback": { "correct": "ii.float.is.sank", "incorrect": "ii.float.look.sank" }
+        },
+        {
+          "id": "ii-float-01.ball",
+          "kind": "choose-one",
+          "skillId": "engineering.float.predict",
+          "variant": "big-floats",
+          "prompt": {
+            "instruction": "ii.float.predict.instruction",
+            "stimulus": { "type": "scene", "scene": "tub", "of": { "thing": "ball" } }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It floats",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "ball", "shown": "floated" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sinks",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "ball", "shown": "sank" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.float.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-sank" },
+          "feedback": { "correct": "ii.float.is.floated", "incorrect": "ii.float.look.floated" }
+        },
+        {
+          "id": "ii-float-01.key",
+          "kind": "choose-one",
+          "skillId": "engineering.float.predict",
+          "variant": "small-sinks",
+          "prompt": {
+            "instruction": "ii.float.predict.instruction",
+            "stimulus": { "type": "scene", "scene": "tub", "of": { "thing": "key" } }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It floats",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "key", "shown": "floated" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sinks",
+              "stimulus": {
+                "type": "scene",
+                "scene": "tub",
+                "of": { "thing": "key", "shown": "sank" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.float.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-floated" },
+          "feedback": { "correct": "ii.float.is.sank", "incorrect": "ii.float.look.sank" }
+        },
+        {
+          "id": "ii-float-01.bark-with-three",
+          "kind": "choose-one",
+          "skillId": "engineering.float.predict",
+          "variant": "too-many-aboard",
+          "prompt": {
+            "instruction": "ii.float.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "boat",
+              "of": { "need": 3, "boat": "bark", "cargo": "three" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It floats",
+              "stimulus": {
+                "type": "scene",
+                "scene": "boat",
+                "of": { "need": 3, "boat": "bark", "cargo": "three", "shown": "floated" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sinks",
+              "stimulus": {
+                "type": "scene",
+                "scene": "boat",
+                "of": { "need": 3, "boat": "bark", "cargo": "three", "shown": "sank" }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.float.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-floated" },
+          "feedback": { "correct": "ii.float.is.sank", "incorrect": "ii.float.look.sank" }
+        },
+        {
+          "id": "ii-float-01.raft-with-three",
+          "kind": "choose-one",
+          "skillId": "engineering.float.predict",
+          "variant": "big-boat-carries",
+          "prompt": {
+            "instruction": "ii.float.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "boat",
+              "of": { "need": 3, "boat": "raft", "cargo": "three" }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "It floats",
+              "stimulus": {
+                "type": "scene",
+                "scene": "boat",
+                "of": { "need": 3, "boat": "raft", "cargo": "three", "shown": "floated" }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It sinks",
+              "stimulus": {
+                "type": "scene",
+                "scene": "boat",
+                "of": { "need": 3, "boat": "raft", "cargo": "three", "shown": "sank" }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.float.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-sank" },
+          "feedback": { "correct": "ii.float.is.floated", "incorrect": "ii.float.look.floated" }
+        },
+        {
+          "id": "ii-float-01.two-stones",
+          "kind": "make",
+          "skillId": "engineering.float.build",
+          "variant": "both-parts",
+          "prompt": {
+            "instruction": "ii.boat.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "boat",
+              "of": { "need": 2, "boat": "shell", "cargo": "one" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "boat",
+            "given": { "need": 2, "boat": "shell", "cargo": "one" },
+            "controls": [
+              { "id": "boat", "options": ["shell", "bark", "raft"] },
+              { "id": "cargo", "options": ["one", "two"] }
+            ],
+            "solution": ["bark", "two"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.boat.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.boat.build.correct", "incorrect": "ii.boat.build.incorrect" }
+        },
+        {
+          "id": "ii-float-01.three-stones",
+          "kind": "make",
+          "skillId": "engineering.float.build",
+          "variant": "both-parts",
+          "prompt": {
+            "instruction": "ii.boat.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "boat",
+              "of": { "need": 3, "boat": "shell", "cargo": "one" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "boat",
+            "given": { "need": 3, "boat": "shell", "cargo": "one" },
+            "controls": [
+              { "id": "boat", "options": ["shell", "bark", "raft"] },
+              { "id": "cargo", "options": ["one", "two", "three"] }
+            ],
+            "solution": ["raft", "three"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.boat.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.boat.build.correct", "incorrect": "ii.boat.build.incorrect" }
+        },
+        {
+          "id": "ii-float-01.bark-too-small",
+          "kind": "make",
+          "skillId": "engineering.float.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.boat.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "boat",
+              "of": { "need": 3, "boat": "bark", "cargo": "three" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "boat",
+            "given": { "need": 3, "boat": "bark", "cargo": "three" },
+            "controls": [
+              { "id": "boat", "options": ["shell", "bark", "raft"] },
+              { "id": "cargo", "options": ["one", "two", "three"] }
+            ],
+            "solution": ["raft", "three"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.boat.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.boat.build.correct", "incorrect": "ii.boat.build.incorrect" }
+        },
+        {
+          "id": "ii-float-01.one-left-behind",
+          "kind": "make",
+          "skillId": "engineering.float.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.boat.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "boat",
+              "of": { "need": 3, "boat": "raft", "cargo": "two" }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "boat",
+            "given": { "need": 3, "boat": "raft", "cargo": "two" },
+            "controls": [
+              { "id": "boat", "options": ["shell", "bark", "raft"] },
+              { "id": "cargo", "options": ["one", "two", "three"] }
+            ],
+            "solution": ["raft", "three"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.boat.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": { "correct": "ii.boat.build.correct", "incorrect": "ii.boat.build.incorrect" }
+        }
+      ]
+    }
+  ]
+}

@@ -101,10 +101,42 @@ export const WORLDS: readonly WorldInfo[] = [
     about:
       'A workshop for small engineers: guess what will happen, build it, watch, change one thing and try again. Each activity ends with something safe to try together away from the screen.',
     activities: [
-      { title: 'Bridges that hold', lessons: [] },
-      { title: 'Ramps and rolling', lessons: [] },
-      { title: 'Balancing', lessons: [] },
-      { title: 'Float or sink', lessons: [] },
+      {
+        title: 'Bridges that hold',
+        lessons: ['ii-bridge-01'],
+        together: {
+          what: 'Lay a ruler or a strip of card across two low stacks of books and stand a soft toy on it. Then try thicker card, or put a block under the middle. You need: books, card or a ruler, a soft toy, a few big blocks. Mess: only books and blocks to put back. Ask: what happened to the bridge? What changed when you put the block under it?',
+          safety:
+            'Stay with your child. Keep the stacks low and the toys light, and keep small blocks away from a child who still puts things in their mouth.',
+        },
+      },
+      {
+        title: 'Ramps and rolling',
+        lessons: ['ii-ramp-01'],
+        together: {
+          what: 'Prop a big book or a tray on a cushion and let a soft ball roll down onto the floor; mark where it stops with a sock. Then make the ramp higher, and then roll it onto a towel. You need: a tray or big book, a cushion, a soft ball, a towel. Mess: very little, if the floor is clear first. Ask: where did it stop? What made it go further?',
+          safety:
+            'Stay with your child. Roll, never throw; keep it on the floor and away from stairs. A marble or any ball small enough to fit in a mouth can choke a small child: use a big one.',
+        },
+      },
+      {
+        title: 'Balancing',
+        lessons: ['ii-balance-01'],
+        together: {
+          what: 'Rest a ruler across a pencil on the table and put the same big bricks on each end; then move one brick nearer the middle. You need: a ruler, a pencil, four or five big bricks that are all the same. Mess: very little. Ask: which side went down? How did you make it level again?',
+          safety:
+            'Stay with your child. Use bricks too big to swallow and count them back in afterwards; coins and other small things are a choking risk.',
+        },
+      },
+      {
+        title: 'Float or sink',
+        lessons: ['ii-float-01'],
+        together: {
+          what: 'Fill a washing-up bowl a hand deep and gather a few big, safe things: a wooden spoon, a metal spoon, an apple, an empty plastic tub, a big smooth stone. Guess each one first, then try it. You need: the bowl, the things, a towel. Mess: splashes, so put the towel down first. Ask: what did you think would happen? What did happen?',
+          safety:
+            'Never leave a child alone with water, even a little, even for a moment. Stay within reach the whole time and empty the bowl as soon as you finish. Nothing small enough to swallow.',
+        },
+      },
     ],
     role: 'inventor',
   },

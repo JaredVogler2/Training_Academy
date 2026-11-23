@@ -1,5 +1,6 @@
 import type { WorldId } from '@/engine';
 import { explorerHarborRules } from './explorerHarbor';
+import { inventorIslandRules } from './inventorIsland';
 import { memoryForestRules } from './memoryForest';
 import { numberGardenRules } from './numberGarden';
 import { readingCoveRules } from './readingCove';
@@ -10,9 +11,10 @@ export type { Report, WorldRules } from './types';
 
 /** A world with content has rules here; the lint refuses a pack whose world has none. */
 export const WORLD_RULES: Partial<Record<WorldId, WorldRules>> = {
-  'number-garden': numberGardenRules,
-  'memory-forest': memoryForestRules,
   'reading-cove': readingCoveRules,
-  'explorer-harbor': explorerHarborRules,
+  'number-garden': numberGardenRules,
   'robot-ridge': robotRidgeRules,
+  'memory-forest': memoryForestRules,
+  'inventor-island': inventorIslandRules,
+  'explorer-harbor': explorerHarborRules,
 };

@@ -4,6 +4,7 @@ import {
   buildExplorerHarborPack,
   buildExplorerHarborVoice,
 } from '../../scripts/content/explorer-harbor.mjs';
+import { buildInventorIslandPack } from '../../scripts/content/inventor-island.mjs';
 import { packPath, packText, voiceLinesPath, voiceLinesText } from '../../scripts/content/lib.mjs';
 import {
   buildMemoryForestPack,
@@ -21,11 +22,12 @@ import { buildRobotRidgePack } from '../../scripts/content/robot-ridge.mjs';
  * tables and forgets `npm run content`, or edits the pack file by hand, finds out here.
  */
 describe.each([
-  ['number-garden', buildNumberGardenPack],
   ['reading-cove', buildReadingCovePack],
-  ['memory-forest', buildMemoryForestPack],
-  ['explorer-harbor', buildExplorerHarborPack],
+  ['number-garden', buildNumberGardenPack],
   ['robot-ridge', buildRobotRidgePack],
+  ['memory-forest', buildMemoryForestPack],
+  ['inventor-island', buildInventorIslandPack],
+  ['explorer-harbor', buildExplorerHarborPack],
 ])('%s', (_world, build) => {
   it('is the pack its generator writes, to the letter', async () => {
     const pack = build();

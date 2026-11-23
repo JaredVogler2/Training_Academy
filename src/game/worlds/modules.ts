@@ -64,11 +64,12 @@ export interface WorldModule {
 }
 
 const MODULES: Partial<Record<WorldId, () => Promise<{ default: WorldModule }>>> = {
-  'number-garden': () => import('./number-garden'),
   'reading-cove': () => import('./reading-cove'),
-  'memory-forest': () => import('./memory-forest'),
-  'explorer-harbor': () => import('./explorer-harbor'),
+  'number-garden': () => import('./number-garden'),
   'robot-ridge': () => import('./robot-ridge'),
+  'memory-forest': () => import('./memory-forest'),
+  'inventor-island': () => import('./inventor-island'),
+  'explorer-harbor': () => import('./explorer-harbor'),
 };
 
 export function hasWorldModule(world: WorldId): boolean {

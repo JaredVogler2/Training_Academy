@@ -48,7 +48,31 @@ export {
   type Run,
   type RunOutcome,
 } from './robot';
-export { MODELS, readDesign, testDesign, type Model, type TestResult } from './models';
+export {
+  BOATS,
+  CONTROLS,
+  COUNTS,
+  DROPPED,
+  GAPS,
+  HEIGHTS,
+  MODELS,
+  OUTCOMES,
+  PLACES,
+  PLANKS,
+  POSTS,
+  RAMP_LENGTHS,
+  SURFACES,
+  TRAVELLERS,
+  rampReach,
+  readDesign,
+  setupProblem,
+  startingDesign,
+  testDesign,
+  testSetup,
+  type Model,
+  type Setup,
+  type TestResult,
+} from './models';
 export {
   DEFAULT_EVIDENCE_POLICY,
   getSkillEvidence,

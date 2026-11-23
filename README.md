@@ -6,27 +6,33 @@ hosted on Vercel. There is no account, no server, no advertising and no tracking
 
 ## Where it stands
 
-**Phases 01 and 02 of 17 are done: the technical foundation, and the look.** It is built from the plan in
-[`prompt-series/`](prompt-series/README.md), one phase at a time.
+**Phases 01 to 03 of 17 are done: the technical foundation, the look, and the journey into a first whole
+activity.** It is built from the plan in [`prompt-series/`](prompt-series/README.md), one phase at a time.
+
+**It has not yet run on a real phone or tablet, and it is not deployed anywhere.** It is written and tested for
+iOS and Android as far as emulators go; [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) says how to put it on a phone and
+what to check there.
 
 ![The home screen: a lighthouse and six small islands in a turquoise sea, each with its name under it, and a small glowing guide in a rowing boat pointing at the one that is open](docs/review/phase-02/hub-3d-1366x768.jpg)
 
 What works today:
 
+- a visit opens on a front door: Glim waves, and the child says who is playing by tapping a picture;
 - the home screen is the map: a lighthouse and six modelled islands, each island a button. It is drawn in real-time
   3D where the device can, and as a picture rendered from the same models where it cannot;
-- Glim, the guide, who points, wonders, celebrates and waits patiently, on the map and inside an activity;
-- one short sample activity in Number Garden ("which group has the same amount?"), with a demonstration, guided
-  practice, questions the child answers alone, hints, and a record of what was done unaided;
+- Glim, the guide, who demonstrates, points, wonders, celebrates and waits patiently, and shows it again when
+  tapped;
+- one whole activity in Number Garden ("which group has the same amount?"): Glim counts and matches first, two
+  steps are done together, three alone; a wrong answer is counted and set aside, never marked wrong; help, pause
+  and the way home are always there; and what was done unaided is recorded;
 - players (a nickname and a picture), saving on the device, and resuming where a child left off;
 - a grown-ups area: players, what each has shown, save/load a copy, erase, device settings, diagnostics;
 - sound and calm-motion switches, keyboard use, names and announcements for screen readers (not yet tried with
   one), and offline use after the first visit.
 
-What does not exist yet: anything to do on five of the six islands, any spoken instructions, an opening, a way to
-choose a picture for yourself, and most of the curriculum. **Nothing has been deployed**, tried on a physical phone
-or tablet or on real graphics hardware, or played by a child. `docs/CONTINUE_HERE.md` says exactly what was and was
-not verified.
+What does not exist yet: anything to do on five of the six islands, any spoken instructions, and most of the
+curriculum. **Nothing has been deployed**, tried on a physical phone or tablet or on real graphics hardware, or
+played by a child. `docs/CONTINUE_HERE.md` says exactly what was and was not verified.
 
 ## Run it
 

@@ -1,9 +1,64 @@
 # Deployment
 
 **Status: not deployed.** Nothing in this repository has been published to Vercel, and no Vercel project is
-connected to it (checked against the owner's Vercel team on 2026-11-22: no project links to
+connected to it (checked against the owner's Vercel team on 2026-11-23: no project is named for it or links to
 `JaredVogler2/Training_Academy`). Everything below is prepared and tested locally; the parts that only a real
 deployment can confirm are listed under _What a first preview must confirm_.
+
+**The requirement, since Phase 03: it must work on Android and iOS devices when deployed on Vercel.** The code is
+written and tested for that as far as can be done without a device or a deployment. What is left needs both, and
+is the first thing below.
+
+## Trying it on a real phone and tablet
+
+Nothing in this project has yet run on a real phone. Until it has, "works on iOS and Android" is a claim about
+emulators and reasoning. There are two ways to change that; the second is the one that tests the real thing.
+
+**On your own network, without deploying** (ten minutes; everything works except offline use, which browsers
+switch off for a plain-HTTP address):
+
+```bash
+npm ci
+```
+
+```bash
+npm run build
+```
+
+```bash
+npx vite preview --host
+```
+
+Open the address it prints on a phone on the same Wi-Fi.
+
+**On Vercel** (what the requirement is about). Connect the repository as described in the next section. Then note:
+
+- A **preview** deployment is behind Vercel's login by default. A phone that is not signed in to Vercel sees a login
+  page, not the game. Either sign in on the phone, or use a shareable link (Project → Settings → Deployment
+  Protection), or switch protection off for previews of this project while testing.
+- The **production** deployment (from `main`) has no such wall. It is also public. Pages carry `noindex`, and there
+  is nothing on the site but the game, but it is a release in Vercel's sense and is the owner's call (Phase 16).
+
+**What to do on the device, in order.** An iPhone, an iPad if there is one, and an Android phone; in Safari and
+Chrome as they come. Each line is something this phase did that only a device can confirm.
+
+| #   | Do                                                                                            | It should                                                                                                                  | If not                                                                                    |
+| --- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1   | Open the address                                                                              | Show the front door within a few seconds: Glim, and six pictures                                                           | A notice about an old browser after 8 s means the device is too old                       |
+| 2   | Tap a picture, with the sound switch in the top bar on                                        | Play three rising notes on that very tap, and open the map                                                                 | No sound at all: go to 3. Sound from the second tap only: note it                         |
+| 3   | iPhone only: put the ring/silent switch to silent, reload, tap a picture                      | Still play                                                                                                                 | Silent on silent is how it behaved before this phase; note the iOS version                |
+| 4   | Look at the map                                                                               | Become 3D after a moment and move smoothly. Then hold "Grown-ups", open Diagnostics, and note Frames, Graphics tier, Scene | A still picture means the device was judged too weak, or 3D failed: note the reason shown |
+| 5   | Rest a finger on an island for two seconds, then on a picture inside an activity              | Do nothing but lift the island: no menu, no "Open in new tab", no text selected, no "Save image"                           | Note what appeared, and on which system                                                   |
+| 6   | Tap Number Garden, then Play                                                                  | Show Glim counting two snails and two leaves with a note for each; "My turn" arrives at the end                            |                                                                                           |
+| 7   | Play to the end, tapping one wrong choice on the way                                          | Never show red or a cross; the wrong choice is counted and set aside; the end shows flowers and a way home                 |                                                                                           |
+| 8   | In the middle of an activity, switch to another app for a few seconds and come back           | Show "Paused"; "carry on" resumes, with sound                                                                              | No sound after coming back: note it                                                       |
+| 9   | Turn the phone sideways on the front door, the map, the world page and inside an activity     | Fit, with the one thing to do on the first screen and nothing under the notch or the home bar                              | Note the screen and what was cut off                                                      |
+| 10  | Refresh in the middle of an activity                                                          | Come back to the same step, with the same choices set aside                                                                |                                                                                           |
+| 11  | Add it to the home screen (Share → Add to Home Screen; Chrome's "Install app"), open it there | Open without the browser's bars, and work the same                                                                         |                                                                                           |
+| 12  | On Vercel only: open it once, switch to aeroplane mode, open it again                         | Open, with progress kept                                                                                                   | Offline needs HTTPS, so this cannot be tried from the local address                       |
+
+Anything that does not do what the middle column says is a fault to fix, and the notes above are what makes it
+quick to find.
 
 The app is a static site: `npm run build` writes `dist/`, and that folder is the whole product. No server code, no
 environment variables, no secrets.

@@ -53,13 +53,13 @@ Added by the owner for this phase: **it must work on Android and iOS devices whe
 
 ### Interaction contract
 
-| Asked for                                               | How it is met                                                                                                              |
-| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Low motor precision; targets that do not overlap        | Choices are 148 pixels or more on the tightest screen; every child's control is 56 or more (21 click maps)                 |
-| No timed questions, no speed-based accuracy             | Nothing is timed. Response time is recorded and used for nothing                                                           |
-| A wrong answer brings a scaffold, not a red X or a loss | The choice is counted against the group and set aside (one choice fewer); with one left it is shown. Nothing is taken away |
-| The child can leave at any point                        | Home is in the bar and on the pause sheet; the place is kept                                                               |
-| No double-submit races                                  | Three guards (runner, engine, store), tested with two taps in one tick                                                     |
+| Asked for                                               | How it is met                                                                                                                                                                                                                                         |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Low motor precision; targets that do not overlap        | Choices are 148 pixels or more on the tightest profile and 107 on the flattest phone; every child's control is 56 or more (23 click maps); a tap counts while another finger rests on the screen; islands never touch, down to a page 256 pixels high |
+| No timed questions, no speed-based accuracy             | Nothing is timed. Response time is recorded and used for nothing                                                                                                                                                                                      |
+| A wrong answer brings a scaffold, not a red X or a loss | The choice is counted against the group and set aside (one choice fewer); with one left it is shown. Nothing is taken away                                                                                                                            |
+| The child can leave at any point                        | Home is in the bar and on the pause sheet; the place is kept                                                                                                                                                                                          |
+| No double-submit races                                  | Three guards (runner, engine, store), tested with two taps in one tick                                                                                                                                                                                |
 
 ### Acceptance
 
@@ -67,7 +67,7 @@ Added by the owner for this phase: **it must work on Android and iOS devices whe
 | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | E2E (a): a brand-new pre-reader completes a concept without text, desktop and touch | `e2e/journey.spec.ts`, first test: from the front door to the end and home, acting on what is drawn. Desktop, phone, Pixel 7, iPhone 13, iPad |
 | E2E (b): the hint and wrong-answer path, and pause and resume                       | `e2e/journey.spec.ts`, third and fourth tests: a wrong answer, "show me again", help in steps, pause, a refresh, leaving and coming back      |
-| Capture real interactions, click maps, tooltips and responsive screens              | `docs/review/phase-03/`: 85 pictures from the running build, 21 of them click maps, 3 tooltips, at six screen sizes                           |
+| Capture real interactions, click maps, tooltips and responsive screens              | `docs/review/phase-03/`: 101 pictures from the running build, 23 of them click maps, 3 tooltips, at nine screen sizes                         |
 | Document actual content ids and replay-safe progression                             | `docs/CURRICULUM.md` → _The first activity as it is played_                                                                                   |
 | Commit                                                                              | Branch `claude/zealous-carson-qyiipa`, pull request #4                                                                                        |
 
@@ -75,8 +75,15 @@ Added by the owner for this phase: **it must work on Android and iOS devices whe
 
 Met as far as code, emulation and reasoning go; **not verified on any device, and nothing is deployed.** What was
 done, how each part was checked, and what only a device can tell are in `docs/QUALITY_REPORT.md` → _Phones_. How to
-get it onto a phone, and the twelve things to try there, are in `docs/DEPLOYMENT.md` → _Trying it on a real phone
+get it onto a phone, and the sixteen things to try there, are in `docs/DEPLOYMENT.md` → _Trying it on a real phone
 and tablet_.
+
+A second look, after the phase was first written up, asked what a phone does that the emulated devices do not,
+and found three faults they had passed: a tap was ignored whenever another finger rested on the screen; on a
+common Android phone held sideways the map's islands were 70 pixels wide and touching; and a world's page lay
+under an iPhone's notch. All three are fixed and tested (`e2e/phones.spec.ts`, `docs/QUALITY_REPORT.md` → _A
+second look, with a phone in mind_). That the emulated devices could pass all three is the best reason there is
+to put it on a phone.
 
 ### Beyond the brief (and why)
 
@@ -84,6 +91,10 @@ and tablet_.
   story.
 - **Click maps as part of `npm run screens`.** They found two controls under size in their first run.
 - **Named device profiles in the browser tests.** Asked for by the requirement, in effect.
+- **An answer to taps made beside a resting finger** (`src/app/touch.ts`). Nobody asked for it; a child holding a
+  phone needs it, and without it Chrome answers nothing while a thumb is on the screen.
+- **A fifth arrangement of the map, one row**, for the little height a phone's browser leaves when held sideways.
+- **A way to give a page a notch in a test** (`giveNotch` in `e2e/fixtures.ts`), since no desktop browser has one.
 
 ## Phase 02 — what was asked, and where the evidence is
 
@@ -173,25 +184,30 @@ and tablet_.
 
 ### Known gaps carried forward (updated at the end of Phase 03)
 
-| Gap                                                                                                                               | Owner phase |
-| --------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| **Frame rate has still only been measured on a software renderer, never on a real GPU or a phone** (and there it is poor)         | owner, 14   |
-| The guide's name, "Glim", has not been checked for prior use                                                                      | owner       |
-| **Nothing has run on a real phone or tablet, and nothing is deployed.** Sound on iOS, long presses, the notch, real GPUs          | owner, 16   |
-| Going to an island is a fade, not a journey; nothing on an island answers a tap except by rising                                  | 17          |
-| The hub's picture has still islands                                                                                               | 17          |
-| No spoken instructions: "show me again" replays what was shown and its notes. Eleven synthesised motifs and a counting note       | 04          |
-| The first-sound slice the brief suggested was not built: it needs a voice. The slice is number sense                              | 04, 05      |
-| One skill, one lesson, eight challenges; no review by an early-years teacher; no child has played it                              | 05–11       |
-| Evidence thresholds are product heuristics; no spaced review, no difficulty adjustment                                            | 12          |
-| Grown-ups area: no session limits, no per-skill history view, no printable summary                                                | 13          |
-| `navigator.storage.persist()` is not requested; Safari may evict unused sites' data                                               | 13, 14      |
-| No update prompt when a new version is waiting (it applies when the tabs are closed)                                              | 14          |
-| The first screen's own files are still preloaded from `index.html`; whether a failed one recovers on reload in Safari is untested | 14          |
-| No privacy/legal review; no dependency licence audit                                                                              | 14          |
-| No image-comparison tests; no Firefox; no physical devices                                                                        | 15          |
-| In CI, a browser test that follows a 3D test has taken up to 44.5 of its 60 seconds (see `docs/TEST_RESULTS.md`)                  | 15          |
-| Not deployed; GitHub Actions are pinned to major versions, not commit SHAs                                                        | 16          |
+| Gap                                                                                                                                                                     | Owner phase |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| **Frame rate has still only been measured on a software renderer, never on a real GPU or a phone** (and there it is poor)                                               | owner, 14   |
+| The guide's name, "Glim", has not been checked for prior use                                                                                                            | owner       |
+| **Nothing has run on a real phone or tablet, and nothing is deployed.** Sound on iOS, long presses, the notch, real GPUs                                                | owner, 16   |
+| The answer to a tap made beside a resting finger is shown in Chromium only; on iOS neither the fault nor the fix has been seen                                          | owner, 15   |
+| The answer to a slow press is unit-tested only: a browser on a desk clicks after one, and a phone's is known not to                                                     | owner, 15   |
+| On the two narrowest phones held sideways an island is 81 or 90 pixels wide, not 96                                                                                     | 17          |
+| Two fingers can zoom the page everywhere, on purpose; whether to forbid it on the map and in an activity is undecided                                                   | owner       |
+| Going to an island is a fade, not a journey; nothing on an island answers a tap except by rising                                                                        | 17          |
+| The hub's picture has still islands                                                                                                                                     | 17          |
+| No spoken instructions: "show me again" replays what was shown and its notes. Eleven synthesised motifs and a counting note                                             | 04          |
+| The first-sound slice the brief suggested was not built: it needs a voice. The slice is number sense                                                                    | 04, 05      |
+| One skill, one lesson, eight challenges; no review by an early-years teacher; no child has played it                                                                    | 05–11       |
+| Evidence thresholds are product heuristics; no spaced review, no difficulty adjustment                                                                                  | 12          |
+| Grown-ups area: no session limits, no per-skill history view, no printable summary                                                                                      | 13          |
+| `navigator.storage.persist()` is not requested; Safari may evict unused sites' data                                                                                     | 13, 14      |
+| No update prompt when a new version is waiting (it applies when the tabs are closed)                                                                                    | 14          |
+| The first screen's own files are still preloaded from `index.html`; whether a failed one recovers on reload in Safari is untested                                       | 14          |
+| No privacy/legal review; no dependency licence audit                                                                                                                    | 14          |
+| No image-comparison tests; no Firefox; no physical devices                                                                                                              | 15          |
+| In CI, a browser test that follows a 3D test has taken up to 44.5 of its 60 seconds (see `docs/TEST_RESULTS.md`)                                                        | 15          |
+| Twice in CI a page load in WebKit has waited a minute and passed at the second attempt. Not explained; a test that runs out of time now reports what it was waiting for | 15          |
+| Not deployed; GitHub Actions are pinned to major versions, not commit SHAs                                                                                              | 16          |
 
 ## Log
 
@@ -199,7 +215,10 @@ and tablet_.
   on Android and iOS devices on a Vercel deployment. A visit now opens on a front door and runs through to the end
   of an activity and home; the lesson frame is the one every world will use. Sound, touch and layout were reworked
   for phones, and the tests run as a Pixel 7, an iPhone 13 and an iPad. None of it has been on a device, and
-  nothing is deployed: `docs/DEPLOYMENT.md` says how to change that and what to check.
+  nothing is deployed: `docs/DEPLOYMENT.md` says how to change that and what to check. A second look the same
+  day, asking what a phone does that an emulated one does not, found and fixed three faults the emulated devices
+  had passed: taps ignored while another finger rests on the screen, a cramped and overlapping map in the little
+  height an Android phone leaves when held sideways, and a world's page under an iPhone's notch.
 
 - **2026-11-22** — Phase 02 implemented and verified. The hub became the map: layout arithmetic shared by 3D, picture
   and links; a modelling kit, one painted material and a water shader; seven island models; the picture rendered

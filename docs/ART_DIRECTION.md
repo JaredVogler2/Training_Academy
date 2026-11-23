@@ -25,14 +25,14 @@ dashboard. Nothing in it is dark, sharp, tiny or in a hurry.
 
 ## The view
 
-| Rule                                                                                                     | Why                                                                                                                                                                            |
-| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| One camera angle, always: 36° below the horizontal, no perspective, never turning.                       | A map stays a map. A child learns where things are once. With no perspective, a place on screen is plain arithmetic, so the 3D scene, its picture and the tap areas all agree. |
-| The camera does not sway or drift. Things in the world move; the view does not.                          | Small children track moving things, not a moving frame; and a still view can be drawn once and kept when motion is switched off.                                               |
-| Four arrangements — tall phone, upright tablet, squarish window, wide screen — chosen by the shape left. | Islands should be as large as the screen allows. One arrangement scaled to fit would leave a phone with islands the size of a thumbnail.                                       |
-| Every island is its own button, and the whole island is the button: land, landmark and name.             | The picture is the instruction. A child taps the thing they want; they never have to find a separate tile that stands for it.                                                  |
-| Nothing overlaps: tap areas, names, the guide, boats, rocks and clouds each have their own room.         | A tap must never land on the wrong island, and a name must never be covered. Unit tests hold this for ten screen shapes (`tests/render/archipelago.test.ts`).                  |
-| Depth is shown five ways: overlap, haze, paler water far away, shadows falling one way, clouds' shadows. | Without perspective, depth has to be painted in. Far is up the screen, paler and hazier; near is down the screen, deeper and clearer.                                          |
+| Rule                                                                                                                                      | Why                                                                                                                                                                                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| One camera angle, always: 36° below the horizontal, no perspective, never turning.                                                        | A map stays a map. A child learns where things are once. With no perspective, a place on screen is plain arithmetic, so the 3D scene, its picture and the tap areas all agree.                                                                                        |
+| The camera does not sway or drift. Things in the world move; the view does not.                                                           | Small children track moving things, not a moving frame; and a still view can be drawn once and kept when motion is switched off.                                                                                                                                      |
+| Five arrangements — tall phone, upright tablet, squarish window, wide screen, and one row for a very flat one — chosen by the shape left. | Islands should be as large as the screen allows. One arrangement scaled to fit would leave a phone with islands the size of a thumbnail; and a phone held sideways, once its browser has taken its bars, is so flat that side by side is larger than three rows deep. |
+| Every island is its own button, and the whole island is the button: land, landmark and name.                                              | The picture is the instruction. A child taps the thing they want; they never have to find a separate tile that stands for it.                                                                                                                                         |
+| Nothing overlaps: tap areas, names, the guide, boats, rocks and clouds each have their own room.                                          | A tap must never land on the wrong island, and a name must never be covered. Unit tests hold this for twenty-five screen shapes (`tests/render/archipelago.test.ts`).                                                                                                 |
+| Depth is shown five ways: overlap, haze, paler water far away, shadows falling one way, clouds' shadows.                                  | Without perspective, depth has to be painted in. Far is up the screen, paler and hazier; near is down the screen, deeper and clearer.                                                                                                                                 |
 
 **Layers.** Far: the back row of islands, haze, clouds, the lightest water. Middle: the lighthouse and the islands
 beside it. Near: the front row, the guide's boat, the deepest water. On a tall phone the islands become stepping
@@ -261,13 +261,17 @@ painted world without imitating it.
 
 Fredoka (rounded, variable) for names, headings and buttons; Nunito (variable) for sentences. Both bundled, Latin
 subset. Island names are sized from the islands themselves — 12 to 17 pixels — so they fit under an island a hundred
-pixels wide on a small phone held sideways, and are never cut short (a browser test checks). A child is never
+pixels wide on a small phone held sideways, and are never cut short (a browser test checks): in a row of islands,
+where there is least room, a name that does not fit on one line takes two. A child is never
 required to read: names are for the grown-up alongside and for a screen reader.
 
 ## Touch
 
-- An island's tap area is its whole box on screen: at least 96 × 96 pixels on the smallest phone, usually twice
-  that.
+- An island's tap area is its whole box on screen: at least 96 × 96 pixels, usually twice that. The two exceptions
+  are the narrowest phones held sideways, where seven places side by side cannot be that wide: 90 × 112 on an
+  iPhone 13 mini, 81 × 103 on an Android phone 640 pixels wide.
+- A tap counts however many fingers are on the screen, and however slowly it is made, up to a second; a finger
+  that stays longer was resting (`docs/ARCHITECTURE.md` → _More than one finger, or a slow one_).
 - Controls a child presses are 56 pixels or more; grown-ups' controls 48. A click map (`npm run screens`) outlines
   and measures every control on a screen in those terms: teal from 56, amber from 48, red below.
 - A picture at the front door is 64 pixels or more on the smallest screen; a choice in an activity is far larger.

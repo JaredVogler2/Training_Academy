@@ -173,6 +173,26 @@ Two tabs are safe but not live-synchronised.
   call-out over a link or a picture, and the menu Android opens on a long press is suppressed for touch and pen.
   Anything marked `data-selectable` — what is written for grown-ups — keeps all of it, and a mouse keeps its right
   click.
+- **More than one finger, or a slow one** (`app/touch.ts`): a browser answers a tap only while it is the one finger on
+  the screen. A tap made while a thumb rests over the edge of a phone, or a hand leans on a tablet, produces no click
+  at all — measured in Chromium's touch handling, which Chrome on Android shares. So a press by one finger that begins
+  and ends on the same link or button, within a second and 24 pixels, while another finger is down, is answered with
+  the click the browser did not make. So is a slow press by one finger, of between about a third of a second and a
+  second: a phone's browser takes that for a long press, which it answers with a menu of its own or with nothing. The
+  browser is given 100 ms to answer first, and if it answers late instead its click is dropped, so nothing is ever
+  answered twice. One quick finger, fields, scrolling and zooming are left to the browser, and a finger that stays
+  longer than a second was resting. The first is tested by sending real touch sequences through Chromium; the second
+  could only be unit-tested, because a browser on a desk does click after a slow press. Neither has been tried on a
+  phone.
+- **The page itself** (`styles/base.css`): it does not bounce and a pull does not reload it
+  (`overscroll-behavior: none`, on the root element and on the body, since browsers differ in which they read), and
+  two quick taps never zoom (`touch-action: manipulation` on the root). Two fingers still zoom, everywhere: the
+  page is never made impossible to enlarge.
+- **A notch and a home bar** (`styles/tokens.css`): the four safe-area insets are read in one place, into
+  `--safe-top` and the rest, and every rule uses those. The bar, the map, the front door and the activity pad
+  themselves by them; a centred reading page takes `--side`, the gutter and the worse of the two side insets.
+  Because nothing reads the insets directly, a test can give a page a notch by setting four properties
+  (`giveNotch` in `e2e/fixtures.ts`), which no desktop browser will do for it.
 - **Tooltips** (`styles/base.css`): a control that is only a picture carries its words in `data-tip`; they show on
   hover and on keyboard focus for a fine pointer, and never on a touch screen.
 - **Arriving** (`app/App.module.css`): the routed view is keyed by address and fades in over 320 ms. Nothing waits
@@ -202,8 +222,12 @@ in real-time 3D — and navigated once, through ordinary links laid over whichev
 ### One layout, three users
 
 `render/archipelago.ts` is plain arithmetic with no graphics library in it. Given the size of the screen and the part
-of it the top bar leaves free, it returns a **frame**: which of four arrangements to use (tall phone, upright
-tablet, squarish window, wide screen), how many pixels a world unit takes, and where each island's middle lands.
+of it the top bar leaves free, it returns a **frame**: which of five arrangements to use (tall phone, upright
+tablet, squarish window, wide screen, and one row for a very flat one), how many pixels a world unit takes, and
+where each island's middle lands. On a flat screen it fits both the low ring and the single row and keeps
+whichever draws the islands larger: a phone held sideways leaves a page as little as 250 pixels of height once
+its browser's bars are counted, and the ring is three rows deep. In the row the guide is moored in front of the
+lighthouse, at a distance worked out from the size things are drawn at.
 
 The camera never turns and has no perspective, so a point in the world is at
 
@@ -220,9 +244,10 @@ times the scale, plus an offset. Three things use that one sum, and so agree to 
 | The links (`app/Home.tsx`)       | Each island's box on screen — the tap area — and the size of its name |
 
 `render/extents.ts` holds the two things both the layout and the pictures depend on: the camera's angle and the room
-each island is given. `tests/render/archipelago.test.ts` checks, for ten screen shapes, that every tap area is at
-least 96 pixels square, that no two overlap, that the lighthouse (which is scenery) never lies inside one, that every
-name fits under its island, and that the guide, the boats, the rocks and the clouds are clear of all of them.
+each island is given. `tests/render/archipelago.test.ts` checks, for twenty-five screen shapes, that every tap area
+is at least 96 pixels square (90 and 81 wide on the two narrowest phones held sideways), that no two overlap, that
+the lighthouse (which is scenery) never lies inside one, that every name fits under its island, and that the guide,
+the boats, the rocks and the clouds are clear of all of them.
 
 ### What is drawn
 

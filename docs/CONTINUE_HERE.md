@@ -6,8 +6,8 @@ Phase 04 has not been started.**
 - **Date:** 2026-11-23
 - **Where it is:** Phases 01 and 02 are on `main`. Phase 03 is pull request
   [#4](https://github.com/JaredVogler2/Training_Academy/pull/4) from `claude/zealous-carson-qyiipa`.
-- **Tested code:** the game as at commit `d6297eb`; `d2e644c` after it changes two browser tests and CI settings,
-  and later commits change documents only.
+- **Tested code:** the game as at commit `595e718`, which is the phase as first tested (`d6297eb`) and a second
+  look at phones made after it. Later commits change documents only.
 - **Deployed:** nowhere. No Vercel project is connected to this repository.
 
 ## The one thing that matters most now
@@ -17,9 +17,15 @@ It has been written and tested for that as far as emulators go, and it has never
 deployed.** Until it has, that requirement is not shown to be met.
 
 `docs/DEPLOYMENT.md` → _Trying it on a real phone and tablet_ has the two ways to get it onto a phone (your own
-network in ten minutes; Vercel, which is the real thing) and twelve things to try there, in order, each with what
-it should do. Setting up the Vercel project is a decision about the owner's account and about what is public, and
-was not taken for them.
+network in ten minutes; Vercel, which is the real thing) and sixteen things to try there, in order, each with
+what it should do. Setting up the Vercel project is a decision about the owner's account and about what is public,
+and was not taken for them.
+
+How much a phone can differ from an emulated one was shown inside this phase. After it was first written up, a
+second look asked what a phone does that the emulated devices do not, and found three faults they had passed: a
+tap was ignored whenever another finger rested on the screen; the map was cramped and overlapping in the little
+height an Android phone leaves when held sideways; a world's page lay under an iPhone's notch. They are fixed
+(`docs/QUALITY_REPORT.md` → _A second look, with a phone in mind_). There will be others that only a phone shows.
 
 ## The state, in one paragraph
 
@@ -34,20 +40,24 @@ service worker, and tests at every level.
 
 ## Verified
 
-- `npm run verify:release` passes locally on `d6297eb`: format, lint, typecheck, **690 unit tests**, production
-  build, **158 build checks**, and **215 browser tests passed, 4 skipped by design** in headless Chromium on seven
-  screen shapes, two of them a Pixel 7 upright and sideways.
-- CI passed on `d2e644c` with no failed test and no retry: the same checks; the browser tests in Chromium (215
-  passed, 4 skipped by design) on seven screens, two of them a Pixel 7; and in WebKit (172 passed, 29 skipped: what
-  needs the 3D scene or the service worker, and the keyboard journeys on touch) on five, three of them an iPhone 13
-  upright and sideways and an iPad. `docs/TEST_RESULTS.md` → _Continuous integration_.
+- `npm run verify:release` passes locally on `595e718`: format, lint, typecheck, **774 unit tests**, production
+  build, **158 build checks**, and **235 browser tests passed, 4 skipped by design** in headless Chromium on
+  seven screen shapes, two of them a Pixel 7 upright and sideways.
+- CI passed on `d2e644c` (the phase as first written) with no failed test and no retry, and on `66b4378` (the
+  second look at phones): Chromium 235 passed, 4 skipped by design, on seven screens, two of them a Pixel 7; WebKit
+  185 passed, one more at its second attempt, 31 skipped (what needs the 3D scene, the service worker or
+  Chromium's touch handling, and the keyboard journeys on touch), on five screens, three of them an iPhone 13
+  upright and sideways and an iPad. The run on the commit after that, and on these documents, is on the pull
+  request. `docs/TEST_RESULTS.md` → _Continuous integration_.
 - Every browser test also fails on any console error or warning, failed request, or request to another origin.
 - The two journeys Phase 03 is for are browser tests (`e2e/journey.spec.ts`): a brand-new child from the front door
   to the end of an activity and home, acting only on what is drawn; and the path where it does not go right.
-- The hub's layout is proved by arithmetic for eighteen screens, eight of them what a phone's or tablet's browser
-  actually leaves a page.
-- 85 screenshots of the running build, 21 of them click maps, were captured and looked at in two rounds:
-  `docs/review/phase-03/`.
+- The hub's layout is proved by arithmetic for twenty-five screens, seven of them phones held sideways as they
+  really are: with a notch and a home bar taken off, or with a browser's bars taken off, down to a page 256
+  pixels high.
+- A notch, a flat screen and a second finger each have a browser test (`e2e/phones.spec.ts`), and each of those
+  fails on the code as it was before the second look.
+- 101 screenshots of the running build, 23 of them click maps, were captured and looked at: `docs/review/phase-03/`.
 
 Details, including every command and count: `docs/TEST_RESULTS.md`. How it looks, rated honestly, and what the
 review found: `docs/QUALITY_REPORT.md`.
@@ -58,13 +68,20 @@ review found: `docs/QUALITY_REPORT.md`.
   named devices in the tests are the right screen, pixel ratio, touch and user agent on desktop engines.
 - **Sound on a phone.** That the first tap is heard, that an iPhone on silent still plays, that sound comes back
   after another app: all reasoned and unit-tested, none heard.
-- **A finger.** That a long press opens no menu and selects nothing, on either system.
+- **A finger.** That a long press opens no menu and selects nothing, on either system. That a tap made beside a
+  resting finger is answered on a real phone — it is shown in Chromium on a desk, and on iOS neither the fault
+  nor the fix has been seen. That a slow press, which a phone takes for a long press, is answered: that could
+  only be unit-tested.
+- **The notch and the bars for real.** The margins and heights the tests use are the usual ones for those phones
+  as I know them (47 or 59 pixels for a notch, 21 or 34 for a home bar, 24 and 56 for Android's and Chrome's
+  bars). None was measured on a phone.
 - **No real graphics hardware.** The 3D hub has only ever been drawn by a software renderer.
 - **No deployment.** `vercel.json` was tested through a local server that applies the same rules.
 - **No child and no teacher** has seen it.
-- **One thing in CI is not explained**: once, as an iPhone held sideways, a test waited 60 seconds for the home
-  page and passed at its second attempt (`docs/TEST_RESULTS.md` → _Continuous integration_). Retried tests are now
-  traced.
+- **One thing in CI is not explained**: twice, in WebKit, a test has waited 60 seconds for a page to load and
+  passed at its second attempt (`docs/TEST_RESULTS.md` → _Continuous integration_). A test that runs out of time
+  now reports what it was still waiting for, so the next time will say more. If it says the page itself never
+  arrived, look at the preview server before the game.
 - No Firefox. No screenshot-comparison tests.
 
 ## What the owner can do now
@@ -148,6 +165,15 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
   control measured; look at the red and amber ones.
 - **Nothing may be selectable or long-pressable in the game**; mark anything written for grown-ups
   `data-selectable`.
+- **Read a notch's margins only through `--safe-top` and the rest** (`src/styles/tokens.css`), never `env()`
+  directly: that is what lets a test give a page a notch (`giveNotch`), and a new screen should be added to the
+  notch test in `e2e/phones.spec.ts`.
+- **A device profile is kinder than the device.** A phone held sideways leaves a page 250 to 280 pixels of height,
+  not the 342 to 360 of the profiles, and an iPhone gives a page its whole width with margins to keep clear of.
+  Try a new screen at 800×264 and 640×256, and with a notch, before calling it done.
+- **Whatever a child presses must be a link or a button** (or `role="button"`): that is what a tap made beside a
+  resting finger is answered on (`src/app/touch.ts`). Something that listens for `click` on a plain element will
+  not answer while another finger is on the screen.
 
 **Traps already stepped in**
 

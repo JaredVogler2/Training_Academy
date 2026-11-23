@@ -61,20 +61,20 @@ Then open <http://127.0.0.1:4173>.
 
 ## Check it
 
-| Command                  | What it does                                                                                       |
-| ------------------------ | -------------------------------------------------------------------------------------------------- |
-| `npm run typecheck`      | TypeScript, strict                                                                                 |
-| `npm run lint`           | ESLint, including the rules that keep the layers apart                                             |
-| `npm run format:check`   | Prettier (`npm run format` to fix)                                                                 |
-| `npm test`               | Unit tests (Vitest): engine, content, storage, shell, layout, models, assets, Vercel routing       |
-| `npm run build`          | Type-check, then the production build into `dist/`                                                 |
-| `npm run verify:dist`    | Inspects `dist/`: size budgets, that 3D code is not in the first load, CSP-safe HTML, the manifest |
-| `npm run test:e2e`       | Browser tests (Playwright) against the production build, on five screen shapes                     |
-| `npm run verify:release` | All of the above, in order                                                                         |
-| `npm run screens`        | Captures the review screenshots in `docs/review/` from the running build                           |
-| `npm run art:sprites`    | Renders the hub's pictures from the island models (after a build; then build again)                |
-| `npm run measure:hub`    | Draw calls, triangles and frame times of the 3D hub at each quality tier                           |
-| `npm run measure:idle`   | What each screen costs in CPU while nobody is touching it (Linux only)                             |
+| Command                  | What it does                                                                                                                             |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run typecheck`      | TypeScript, strict                                                                                                                       |
+| `npm run lint`           | ESLint, including the rules that keep the layers apart                                                                                   |
+| `npm run format:check`   | Prettier (`npm run format` to fix)                                                                                                       |
+| `npm test`               | Unit tests (Vitest): engine, content, storage, shell, layout, models, assets, Vercel routing                                             |
+| `npm run build`          | Type-check, then the production build into `dist/`                                                                                       |
+| `npm run verify:dist`    | Inspects `dist/`: size budgets, that 3D code is not in the first load, CSP-safe HTML, the manifest                                       |
+| `npm run test:e2e`       | Browser tests (Playwright) against the production build, on seven screen shapes in Chromium (five more in WebKit, where it is installed) |
+| `npm run verify:release` | All of the above, in order                                                                                                               |
+| `npm run screens`        | Captures the review screenshots in `docs/review/` from the running build                                                                 |
+| `npm run art:sprites`    | Renders the hub's pictures from the island models (after a build; then build again)                                                      |
+| `npm run measure:hub`    | Draw calls, triangles and frame times of the 3D hub at each quality tier                                                                 |
+| `npm run measure:idle`   | What each screen costs in CPU while nobody is touching it (Linux only)                                                                   |
 
 The browser tests need Playwright's browsers once:
 
@@ -82,8 +82,8 @@ The browser tests need Playwright's browsers once:
 npx playwright install chromium webkit
 ```
 
-With WebKit installed, `npm run test:e2e` also runs the desktop and phone projects in WebKit. To run the smoke tests
-against a deployment instead of a local build:
+With WebKit installed, `npm run test:e2e` also runs the desktop and phone projects in WebKit, and the layout tests
+and journeys as an iPhone and an iPad. To run the smoke tests against a deployment instead of a local build:
 
 ```bash
 BASE_URL=https://your-preview.vercel.app npm run test:e2e

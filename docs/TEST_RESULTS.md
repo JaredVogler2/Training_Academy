@@ -227,8 +227,21 @@ as the start of an answer, and what address the page stood at when time ran out.
 **The time.** The Chromium job for the desktop and tablets took 31.7 of the 40 minutes it is allowed, five more
 than on `main`: on every screen, an activity that shows something first can no longer be answered early. The
 desktop screen is two thirds of that job by itself, so the two small phones were moved to the other Chromium
-job (`.github/workflows/ci.yml`). By the times of run 30 that should leave the two at about 25 and 27 minutes;
-the run on the commit that moved them is the first to show whether it does.
+job (`.github/workflows/ci.yml`).
+
+**On the commit that moved them** (run 32, `4dd5ba9`): all five jobs passed, and no test needed a second attempt
+in any of them.
+
+| Job                             | Result                 | Time for the tests |
+| ------------------------------- | ---------------------- | ------------------ |
+| Lint, types, unit tests, build  | passed                 | 1.3 minutes in all |
+| Chromium, desktop and tablet    | 273 passed, 9 skipped  | 19.9 minutes       |
+| Chromium, phones (five screens) | 348 passed, 38 skipped | 25.0 minutes       |
+| WebKit, desktop and tablet      | 233 passed, 53 skipped | 14.8 minutes       |
+| WebKit, phones                  | 270 passed, 52 skipped | 19.7 minutes       |
+
+That is 621 passed and 47 skipped in Chromium, as in the local run, and 503 passed and 105 skipped in WebKit.
+The page that never comes did not happen in this run, which says nothing about the next one.
 
 **Phase 03** is pull request [#4](https://github.com/JaredVogler2/Training_Academy/pull/4). The first run with
 the whole phase in it to pass was [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45093042202)
@@ -698,8 +711,8 @@ an update is not shown.
 - The whole suite has not been run against the live site, only what _The live site_ lists; and WebKit has never
   been pointed at it.
 - The update rehearsal is run by hand before a release, in Chromium only. CI does not run it.
-- The tests' new rule for WebKit's second report of a cancelled download (run 30, above) has run in WebKit once,
-  in run 31, with no failure. Whether the case it is for arose in that run is not known.
+- The tests' new rule for WebKit's second report of a cancelled download (run 30, above) has run in WebKit
+  twice, in runs 31 and 32, with no failure. Whether the case it is for arose in either is not known.
 - Why WebKit, as CI drives it, now and then does not read a page the server has sent (run 31, above).
 - No performance measurement on real hardware (`docs/QUALITY_REPORT.md`).
 - No screenshot-comparison tests; screenshots were reviewed by eye.

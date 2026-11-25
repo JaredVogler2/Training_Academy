@@ -32,6 +32,12 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   away, and an order being shown could be tapped in its pauses; and a world's page opened by its own address
   showed nothing as finished. `docs/CONTINUE_HERE.md` has them in full. To see that a fix has arrived: in
   Number Garden, finish the first activity, then load the world's page again — the tick should still be on it.
+- **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
+  `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
+  recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The
+  project never built, and it put a failed check on every commit, `main`'s included, without touching the
+  game. The owner deleted it on 2026-11-25. Its failed check stays on the commits it was put on. If
+  that folder is ever offered as a project again, it is one to decline.
 - **A preview of each pull request is built by Vercel**, at an address of its own behind Vercel's sign-in. None
   has been opened from a session like this one: reaching a protected preview from outside means putting a share
   link on the deployment, and that is the owner's to ask for. _If the preview is protected_, below, says how to

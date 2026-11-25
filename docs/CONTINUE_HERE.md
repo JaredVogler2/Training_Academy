@@ -62,9 +62,10 @@ the device.
 - `npm run verify:release` passes locally: format, lint, typecheck, **1393 unit tests**, production build,
   **1066 build checks**, and **668 browser tests: 621 passed, 47 skipped by design, none failed**, in
   headless Chromium on seven screen shapes, two of them a Pixel 7 upright and sideways.
-- **CI passed in Chromium and in WebKit**, every job, three times running: on the last commit of pull request
+- **CI passed in Chromium and in WebKit**, every job, four times running: on the last commit of pull request
   #6 with no test needing a second attempt; on `main` after the merge, where four tests in one WebKit job
-  passed only at their second attempt; and on the pull request this came with, where that job retried none.
+  passed only at their second attempt; and twice on the pull request this came with, where that job retried
+  none either time and the second run retried nothing anywhere.
   Each of the four was looked into. One led to the first two faults above; one to a button that was being
   replaced under the finger; one was the tests misreading WebKit.
 - **One thing in CI is not explained, and has now happened four times**: in WebKit, a test's first page waits a

@@ -13,10 +13,10 @@ that. [`docs/PROGRESS.md`](docs/PROGRESS.md) sets each brief against what exists
 [`prompt-series/`](prompt-series/README.md).
 
 **Three things to know before relying on it.** No person has listened to the voice: its 395 recordings were made
-by a speech synthesiser and checked by a speech recogniser. No child and no teacher has seen any of it. And what
-is live may be older than this: the owner's Vercel deployment serves `main`, and a world is live only once the
-pull request that carries it has been merged. [`docs/CONTINUE_HERE.md`](docs/CONTINUE_HERE.md) says exactly what was and
-was not verified.
+by a speech synthesiser and checked by a speech recogniser. No child and no teacher has seen any of it. And it
+is live: the owner's Vercel deployment serves `main`, all six worlds have been on it since 2026-11-23, and a
+change reaches it only when the pull request that carries it is merged.
+[`docs/CONTINUE_HERE.md`](docs/CONTINUE_HERE.md) says exactly what was and was not verified.
 
 ![The home screen: a lighthouse and six small islands in a turquoise sea, each with its name under it, and a small glowing guide in a rowing boat pointing at the one that is open](docs/review/phase-02/hub-3d-1366x768.jpg)
 
@@ -76,20 +76,21 @@ Then open <http://127.0.0.1:4173>.
 
 ## Check it
 
-| Command                  | What it does                                                                                                                             |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run typecheck`      | TypeScript, strict                                                                                                                       |
-| `npm run lint`           | ESLint, including the rules that keep the layers apart                                                                                   |
-| `npm run format:check`   | Prettier (`npm run format` to fix)                                                                                                       |
-| `npm test`               | Unit tests (Vitest): engine, content, storage, shell, layout, models, assets, Vercel routing                                             |
-| `npm run build`          | Type-check, then the production build into `dist/`                                                                                       |
-| `npm run verify:dist`    | Inspects `dist/`: size budgets, that 3D code is not in the first load, CSP-safe HTML, the manifest                                       |
-| `npm run test:e2e`       | Browser tests (Playwright) against the production build, on seven screen shapes in Chromium (five more in WebKit, where it is installed) |
-| `npm run verify:release` | All of the above, in order                                                                                                               |
-| `npm run screens`        | Captures the review screenshots in `docs/review/` from the running build                                                                 |
-| `npm run art:sprites`    | Renders the hub's pictures from the island models (after a build; then build again)                                                      |
-| `npm run measure:hub`    | Draw calls, triangles and frame times of the 3D hub at each quality tier                                                                 |
-| `npm run measure:idle`   | What each screen costs in CPU while nobody is touching it (Linux only)                                                                   |
+| Command                   | What it does                                                                                                                             |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run typecheck`       | TypeScript, strict                                                                                                                       |
+| `npm run lint`            | ESLint, including the rules that keep the layers apart                                                                                   |
+| `npm run format:check`    | Prettier (`npm run format` to fix)                                                                                                       |
+| `npm test`                | Unit tests (Vitest): engine, content, storage, shell, layout, models, assets, Vercel routing                                             |
+| `npm run build`           | Type-check, then the production build into `dist/`                                                                                       |
+| `npm run verify:dist`     | Inspects `dist/`: size budgets, that 3D code is not in the first load, CSP-safe HTML, the manifest                                       |
+| `npm run test:e2e`        | Browser tests (Playwright) against the production build, on seven screen shapes in Chromium (five more in WebKit, where it is installed) |
+| `npm run verify:release`  | All of the above, in order                                                                                                               |
+| `npm run screens`         | Captures the review screenshots in `docs/review/` from the running build                                                                 |
+| `npm run rehearse:update` | Rehearses an update: a browser that has the build of the commit named (`-- origin/main`) meets this tree's build at the same address     |
+| `npm run art:sprites`     | Renders the hub's pictures from the island models (after a build; then build again)                                                      |
+| `npm run measure:hub`     | Draw calls, triangles and frame times of the 3D hub at each quality tier                                                                 |
+| `npm run measure:idle`    | What each screen costs in CPU while nobody is touching it (Linux only)                                                                   |
 
 The browser tests need Playwright's browsers once:
 

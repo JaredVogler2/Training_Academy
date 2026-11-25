@@ -73,6 +73,28 @@ Nothing here is rated 5, and the ratings for Robot Ridge and Inventor Island res
 | In a question where things are looked at and then hidden, the choices could be tapped before anything had been shown, and what would be asked was already standing in front of the cover | The board had one state for "not yet looked at" and "looked at and covered", and while the voice said "Look who has what" it was in it | Until the look has happened the choices are turned away and what will be asked is held back. Found because a WebKit test in CI passed only at its second attempt: its tap had fallen in that gap |
 | Lines were heard by the recogniser as other words: eight in the last three worlds made ("chick" as "check", "sagged" as "sad")                                                           | A synthesiser's pronunciation, or the recogniser's ear: there is no telling which without listening                                    | Each was reworded until it was heard as written. "Nut" could not be, and is no longer a word to learn                                                                                            |
 
+### After they went live (2026-11-25)
+
+The six worlds were merged and deployed on 2026-11-23. Two things done afterwards found faults that the review
+above and 656 browser tests had not: rehearsing an update in a browser that already had the game, and reading a
+CI run that had passed with four of its tests needing a second attempt. All five are fixed in the pull request
+after #6, each with a test that fails on the code as it was. Until that is merged they are on the live site.
+
+| Seen                                                                                                                                                                                                                    | Cause                                                                                                                                                                      | Fix                                                                                           |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| After one tap on Glim, nothing was shown first for the rest of the activity: a group to glance at stayed covered, an order was never lit, a pattern of sounds was never played, and the question was asked all the same | Asking again was remembered by the board, and a board stays on the screen from step to step. Every later step was taken for a second telling, which leaves the showing out | It is kept by step, like everything else a board remembers                                    |
+| A tap on Glim while the words before a look were being said, or in the middle of a look or of an order, took the look or the order away for that step                                                                   | "Again" meant "leave out the showing", whether or not there had been one                                                                                                   | An asking that comes before the showing is over starts the step again, with the showing in it |
+| While an order was being shown, a card could be tapped in the pause after each light, and before the first                                                                                                              | The cards were closed only while one of them was lit                                                                                                                       | They are closed from the moment the question arrives until the last light has gone out        |
+| A world's page that was loaded again, or that a phone had brought back, showed nothing as finished, and Play went back to the first activity                                                                            | The page shows what the player has finished and never asked who the player was; the map had always asked before it                                                         | Whatever shows what is finished asks who is playing, if nobody has                            |
+| The place to take one back was a different button each time the board counted                                                                                                                                           | The button was made afresh so that the counting would start from the first thing                                                                                           | What hops is made afresh, inside a button that stays where it is                              |
+
+**What this says about the review above.** The first of these is the kind of fault a child finds in a minute:
+children tap the character. No test had tapped Glim and then gone on to the next step, and I had not either.
+Nearly every test plays one step as if it were the first, in a browser that has never seen the game, on one
+build. Everything in this table needed two of something: a tap in one step and a look in the next, a page opened
+a second time, one build and then another. There are probably more faults of that shape, and only some were
+looked for.
+
 ### What is still wrong or weak
 
 1. **Nobody has listened to the voice.** 395 recordings by one synthesised American voice. A recogniser heard
@@ -102,7 +124,9 @@ Nothing here is rated 5, and the ratings for Robot Ridge and Inventor Island res
     its lines; after that the service worker has them. A line that arrives too late is not said.
 15. **Glim points at the next thing not yet finished, and nothing is locked.** A child can open blending before
     hearing a first sound. Whether that matters is for someone who has watched a child.
-16. Everything in Phase 03's list below that is not about the voice or the number of worlds still stands.
+16. **The tests mostly try one step, one visit and one build at a time** (above). An update is now rehearsed
+    before a release, and a few tests carry something from one step into the next; most still do not.
+17. Everything in Phase 03's list below that is not about the voice or the number of worlds still stands.
 
 ## Phase 03 (2026-11-23): the journey in, and the activity
 

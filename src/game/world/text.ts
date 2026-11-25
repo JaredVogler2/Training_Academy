@@ -18,6 +18,11 @@ export const worldText = {
     'No activity here needs reading: the guide shows what to do first. Play goes to the first one that has not been finished, and any of them can be played again from the pictures below it.',
   partExplain:
     'The activities marked “Later” have not been built yet. Nothing on this page leads to them.',
+  roomHeading: 'A room to play in',
+  laterHeading: 'Rooms that have not been built',
+  notBuilt: 'Not built',
+  laterRooms:
+    'These are ideas for this place, and no more than that yet. None of them can be played, and nothing on this page leads to them.',
   laterExplain:
     'Nothing here can be played yet, and nothing on this page can be tapped by mistake. This world will open in a later update.',
 } as const;

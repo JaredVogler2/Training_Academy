@@ -17,6 +17,7 @@ import type { Report, WorldRules } from './types';
  *   the same tune again     one of the little ones plays exactly what the big one played, and it is the one marked
  *   play it back            chime bars in order, lowest first, each called by its own note
  *   a beat, a tune          the picture that goes with the task is a picture of that task
+ *   bars to tap             never more than five at once: a sixth would make each too narrow on a small phone
  *
  * And everywhere: a note is one a small speaker can play, and an activity whose questions can only be heard says
  * that it needs sound.
@@ -27,6 +28,8 @@ const LOWEST = pitchOf('c4') ?? 60;
 const HIGHEST = pitchOf('e6') ?? 88;
 /** The least two notes may differ and still be asked about as high and low: a tone. */
 const LEAST_GAP = 2;
+/** The most bars there may be to tap in an activity: a sixth, on a screen 320 points wide, leaves each under 56. */
+const MOST_BARS = 5;
 
 const VOICES = ['pipe', 'bar', 'drum'];
 
@@ -262,6 +265,9 @@ function lintMake(challenge: MakeChallenge, report: Report): void {
       if (task.solution.length < 2 || task.solution.length > 4) {
         report('music-echo-length', 'two to four notes are played back');
       }
+      if (task.cards.length > MOST_BARS) {
+        report('music-bars-many', `more than ${MOST_BARS} bars: each would be too narrow to tap`);
+      }
       return;
     }
     case 'beat': {
@@ -287,6 +293,9 @@ function lintMake(challenge: MakeChallenge, report: Report): void {
       }
       if (task.shape === 'twice' && task.length % 2 !== 0) {
         report('music-tune-twice', 'a tune said twice has an even number of notes');
+      }
+      if (task.notes.length > MOST_BARS) {
+        report('music-bars-many', `more than ${MOST_BARS} bars: each would be too narrow to tap`);
       }
       return;
     }

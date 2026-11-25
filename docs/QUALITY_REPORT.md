@@ -1,14 +1,215 @@
 # Quality report
 
-This file has three parts. The first is the review of the six worlds and the voice (phases 04 to 10). The second is
-Phase 03's review of what Phase 03 built. The third is Phase 02's report on the home screen, kept as it was
-written, because it is still the assessment of the hub.
+This file has five parts. The first is the review of Number Garden's later activities, the ones that bring
+numerals in (the second half of phase 06). The second is the review of the Music Lab (phase 11). The third is
+the review of the six worlds and the voice (phases 04 to 10). The fourth is Phase 03's review of what Phase 03
+built. The fifth is Phase 02's report on the home screen, kept as it was written, because it is still the
+assessment of the hub.
 
 All are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
 reading of screenshots and of the running game in headless Chromium. Nobody else has reviewed it, no child has
 played it, **no person has listened to the voice**, and it has never run on a real graphics card. The owner has
 opened the live site (Phase 03) on an iPhone; nothing in this file comes from a device. The standard it is rated
 against is `docs/ART_DIRECTION.md`.
+
+## Phase 06, second half (2026-11-25): numerals, order, and adding in Number Garden
+
+### Summary
+
+Number Garden had seven activities and no numeral anywhere. It has eighteen. The eleven new ones go on from
+where the seven stopped: amounts in order (a staircase of towers with one missing), the pairs that make five
+and ten (a frame with some places full), then numerals — a group and its numeral both ways about, zero as an
+empty frame, a number that is said, the numbers in order on a path of stones — and last adding and taking away,
+as stories in which some come or some go.
+
+All eleven are questions with choices, played on the board the first activity is played on. What is new is
+what they are asked with: six kinds of picture, drawn here, and the numerals themselves, which are drawn stroke
+by stroke like the letters and are not a font. And one rule that runs through all of them: **a wrong answer is
+answered by counting it.** A wrong numeral shows its own amount as dots, the dots are counted, and its name is
+said. That is the part most worth a teacher's eye, and the part I can least judge.
+
+### How it was made, which bears on how far to trust it
+
+In one working tree, by one hand, straight after the Music Lab. The content is 142 challenges written as rows
+of tables; rules that work each answer out from its picture, not from what the table says, refuse a row that is
+wrong, and every rule is shown to fire. The pictures were looked at in the running build at five screen sizes
+on contact sheets, changed, and looked at again. The browser tests that passed first time were made to fail by
+putting each fault back; **two of them passed with the fault in**, and were rewritten until they did not.
+
+### The review
+
+Looked at in the running production build at 390×844, 844×390, 640×256 and 320×568:
+`docs/review/number-garden/`, 21 pictures. 1 = poor, 3 = acceptable, 5 = excellent.
+
+| Category             | The eleven | Why                                                                                                                                                                                                                              |
+| -------------------- | :--------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composition          |     4      | One picture asked about, two or three to answer with. A story reads from left to right: those who stay, a gap, those who come or go. Towers to choose from stand side by side on one ground. A tall phone leaves air above them. |
+| Craft and materials  |    3.5     | The numerals are drawn in the same hand as the letters, and are good. Blocks, frames and stones are plain shapes with a line of shading. The lines in the air beside someone on the move are three dashes: clear, and crude.     |
+| Cohesive palette     |     4      | The garden's green and its things. Sun yellow is kept for one meaning: what the answer put there — the tower in the gap, the number on the bare stone, the apples that filled the frame.                                         |
+| Liveliness           |    3.5     | Things hop as they are counted; those who come slide in from the edge of the picture; those who go step away and fade; a step of the stairs lifts as its note plays. Between questions nothing moves.                            |
+| Interface legibility |     4      | Everything pressed is 56 points or more on the three tightest screens, measured. What is counted is 30 pixels or more across on phones held upright; on the flattest phone held sideways it is 20 to 28, which is small (below). |
+| Motion quality       |     4      | Every movement is the story or the counting, never decoration. With motion reduced a story stands as it ends and its question is still said. Seen in a browser, not on a device.                                                 |
+| The sound            |     —      | **Not rated.** Nobody has heard a number said.                                                                                                                                                                                   |
+| Child comprehension  |     —      | **Not rated.** No child has seen it.                                                                                                                                                                                             |
+
+Measured, in pixels, in headless Chromium:
+
+| What is counted or read                  | 320×568 | 390×844 | 844×390 | 640×256 |
+| ---------------------------------------- | :-----: | :-----: | :-----: | :-----: |
+| One of six in a story                    |   34    |   41    |   38    |   28    |
+| An apple in a frame of ten (asked about) |   30    |   38    |   35    |   21    |
+| An apple in a frame of ten (to choose)   |   28    |   37    |   32    |   20    |
+| A block of the staircase (across, high)  | 41, 20  | 72, 36  | 72, 36  | 28, 14  |
+| A block of a tower to choose from        | 47, 24  | 83, 42  | 51, 25  | 20, 10  |
+| A stone of the path                      |   58    |   71    |   77    |   56    |
+| A numeral to choose from (how high)      |   49    |   91    |   112   |   48    |
+
+### Seen — cause — fix
+
+| Seen                                                                                                                    | Cause                                                                                                  | Fix                                                                                                                                        |
+| ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| An empty frame, answered rightly with 0, filled itself with ten apples                                                  | A frame is filled in when its answer is found, and that was done whatever it had been asked            | Only a frame that asked "how many more?" is filled in. Zero stays empty                                                                    |
+| The test written for that passed with the fault put back                                                                | It looked at the frame the moment the answer was taken, before the board had got as far as lighting it | It waits until the frame and its numeral are lit together, and then looks                                                                  |
+| A numeral's dots jumped up into the numeral as they were counted                                                        | The hop is sized for a picture of a group; in a numeral's drawing the same hop is three times as far   | A dot hops a little way, and swells                                                                                                        |
+| Two frogs in a story were 35 pixels across in a box that had room for 80; on a phone held sideways, 18                  | Every story was drawn in one picture sized for ten of them                                             | Everyone is drawn one size, and the picture is cut to who is in it. Sideways, a story has about half the width                             |
+| Towers to choose from lay in wide, short cards on a phone, with blocks 15 pixels high                                   | Choices are stacked on a narrow screen, which suits wide pictures                                      | Towers stand side by side on every screen: 42 pixels a block on that phone                                                                 |
+| A story was drawn, for one frame, already over, before it was told                                                      | A board is at rest until its script's first moment, and a story at rest is its ending                  | A script that shows something at its very start is shown that way from the first frame                                                     |
+| Before that: the finished story stood for the two and a half seconds its question took to say, and was then taken apart | The telling came after the words                                                                       | The story opens as it stood before anyone moved, and they come as the words are said: "Here come some more."                               |
+| The recogniser heard "some more calm"                                                                                   | "Some more come." ends on a word the synthesiser swallows                                              | "Here come some more."                                                                                                                     |
+| The apples in a frame of ten to choose from were 20 pixels on the narrowest phone                                       | The numeral asked about had a third of the screen                                                      | A numeral that is asked about has the room a sign has: 28 pixels                                                                           |
+| With seven staying and three coming, everyone would have been drawn under half size                                     | Three in a line beside four across is seven places                                                     | Beside a wide group, three stand two over one. A test holds every story from 1 and 1 to 9 and 1 to a width a narrow phone can show         |
+| Adding up to five asked, on its own, only about three, four and five                                                    | The table had no one-and-one in it                                                                     | It has. A test asks every activity for four different answers and more than one way of asking                                              |
+| The test for less movement passed with the story still being told                                                       | It waited for the story to be as it ends, which it also is at the end of its telling                   | It holds the clock from the first moment and sees that nobody is ever taken away                                                           |
+| The whole build went over its size budget, 2942 kB of 2900                                                              | 142 challenges written out are 134 kB before compression (8 kB after)                                  | Content has a budget of its own; what is left, the game itself, has a tighter one than before. A world's content is still fetched on entry |
+
+### What is still wrong or weak
+
+**Unverified, and the most important**
+
+- **Nobody has heard a number said.** Eleven number words, each cut from the end of a sentence because the
+  synthesiser clips a word said alone, and 37 new lines. A path of stones is walked by saying four of those
+  words one after another — "two, three, four, five" — and whether that sounds like counting or like four
+  recordings is not known.
+- **The numerals are one school's hand.** An open 4, a 7 with no bar through it, a 1 with a small flag, a 9
+  with a straight stick. Schools and countries differ, and a child who is taught another 4 will meet two. It is
+  one file of strokes (`src/art/numerals.tsx`).
+- **Whether the pictures say what they are meant to say.** That a staircase of blocks is "one more each time";
+  that someone faded is someone gone; that three dashes are movement; that an empty frame is none. Each seems
+  plain to an adult who already knows.
+- **Whether counting a wrong answer helps.** It is the idea the whole of this rests on. It also takes time: a
+  wrong 8 for a 9 is seventeen things counted. The child can answer again without waiting, and whether they
+  wait is not known.
+- **No teacher has read the order, the questions or the wrong answers.** The wrong answers are chosen to be the
+  ones a child would give for a reason — the ones who were there first, the places already full, a 6 for a 9 —
+  and each is written down with its reason. That is my reading of what is written about early number, not
+  anyone's experience of a classroom.
+
+**Weak, and known**
+
+- **On the flattest phones held sideways the things to count are 20 to 28 pixels across.** A screen 256 pixels
+  high has about 100 for the board once the bar and Glim have theirs. They can be counted; they are small.
+- **No sum is written anywhere.** No +, no −, no =. The stories stop where a number sentence would begin.
+- **Each story has one shape.** Some come, from the right; some go, the last ones. Never "how many came?", never
+  two groups compared, never a story told only in words.
+- **The pairs that make five and ten are only chosen, not made.** A child picks the group that fills the frame;
+  nothing is split in two by hand, and nothing is put into the frame one at a time.
+- **Ten is a 1 and a 0 side by side** and nothing says why.
+- **Giving out a number that is written is not built**: the two giving games stop before numerals.
+- _Hear a number_ cannot be played with the sound off, by its nature, and says so.
+- Eighteen cards are a long page for a small child. Play goes to the next one; the page does not group them.
+- The world's content is now 177 kB before compression, by far the largest: every challenge is written out in
+  full, with its choices, its hints and why each wrong answer is tempting.
+
+## Phase 11 (2026-11-25): the Music Lab
+
+### Summary
+
+There is a seventh place to go: the lighthouse, which is now a music room. It has six activities, in the order
+its brief sets out, and a room for playing in with no questions at all. Two of its games are new kinds — a beat
+to tap along with, and a tune to make up to a shape, which is the first thing in the game with many right
+answers. Its sounds are not recordings: every note is made by arithmetic at the moment it is played.
+
+**That last sentence is the whole of the risk.** A recording that is wrong is wrong the same way every time and
+can be listened to once. These sounds were never listened to at all: not by a person, and not by a machine
+either, since there is no recogniser for "does this sound like a chime bar". What was checked is what can be
+checked without ears — that the right pitches are asked for at the right moments, at a sensible loudness, on
+the audio's own clock. Whether the result is pleasant, or is plainly a scale on a phone's small speaker, is
+unknown. It is one function of numbers to change (`strokeOf`), and it wants a person with a phone.
+
+### How it was made, which bears on how far to trust it
+
+In one working tree, by one hand, looked at in a browser on five screen sizes as each board was built, and
+again at the end. Unlike two of the six worlds, all of its code was written and read here. Its tests were
+written with it, and the ones that passed first time were then made to fail (`docs/TEST_RESULTS.md` has the
+list). It was built quickly, in one sitting, straight after the fixes of the pull request before.
+
+### The review
+
+Looked at in the running production build at 390×844, 844×390, 640×256, 320×568 and 1366×768:
+`docs/review/music-lab/`. 1 = poor, 3 = acceptable, 5 = excellent.
+
+| Category             | The Music Lab | Why                                                                                                                                                                                                             |
+| -------------------- | :-----------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composition          |       4       | One board, one thing to do. The drum is the size of the screen's shorter side; bars stand in a row, lowest first. A question that is only listened to leaves a tall phone with two large cards and little else. |
+| Craft and materials  |      3.5      | The same paper, lips and radii as the rest. The drawings are plain: a bar is a rounded rectangle with two pins, a bird is a ball with a beak. Clear, consistent, and no more than that.                         |
+| Cohesive palette     |       4       | A pink role of its own, checked for contrast. The bars are a rainbow, as real chime bars are: seven more colours on one screen than anywhere else in the game, and each means a note.                           |
+| Liveliness           |      3.5      | A bird opens its beak and rings come off it; a bar dips when struck; the beat runs along its lights and pulses on the drum's rim. Nothing else moves, and nothing dances.                                       |
+| Interface legibility |       4       | Every control is 56 points or more on the three tightest screens, measured (`e2e/sizes.spec.ts`), and so is everything in the room to play in (after a fault CI found there: `docs/TEST_RESULTS.md`).           |
+| Motion quality       |       4       | Everything is a response to a sound. With motion reduced the lights go on and off and nothing travels. Seen in a browser, not on a device.                                                                      |
+| The sound            |       —       | **Not rated.** Nobody has heard it.                                                                                                                                                                             |
+| Child comprehension  |       —       | **Not rated.** No child has seen it.                                                                                                                                                                            |
+
+### Seen — cause — fix
+
+| Seen                                                                                                              | Cause                                                                                                                                                                                              | Fix                                                                                                     |
+| ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| A seventh island would have been 71 pixels wide on the smallest phones held sideways, and every island smaller    | Seven places already stand in one row there                                                                                                                                                        | The Music Lab is in the lighthouse, which stood in the middle of every arrangement and did nothing      |
+| "Explorer Harbor" cut short on phones held sideways                                                               | The lighthouse, moved back to make room for its own name, stood level with the two far islands, and its name left theirs no room                                                                   | Set a little nearer; a unit test holds the three names' room                                            |
+| _High and low_ was a strip 20 pixels high on the narrowest phone held sideways                                    | Not the Music Lab's fault: a question that is only a sign kept two rows as well as two columns. **Number Garden's three comparing activities had been drawn that way, live, since the six worlds** | Fixed for every world; a sweep now measures everything a child presses on the three tightest screens    |
+| The same sweep: Memory Forest's cards to pick out were 49 pixels high on the narrowest phone sideways (also live) | Two rows of cards in a board a hundred pixels high                                                                                                                                                 | One row there, with the width given to whichever half is in use: the things to remember, then the cards |
+| The drum was 60 pixels across on the narrowest phone sideways                                                     | The beat's lights stood over it                                                                                                                                                                    | Beside it, on very flat screens; the drum has the board's whole height                                  |
+| The drawing of a tune being made was 40 pixels high there                                                         | Its two tools stood under it                                                                                                                                                                       | Under the sign instead                                                                                  |
+| Six bars were 47 pixels each on a screen 320 points wide                                                          | Six is one too many                                                                                                                                                                                | No activity has more than five bars; a content rule refuses a sixth                                     |
+| The beat was marked "miss", "early" and "late" in the page, though nothing drew them                              | The board wrote every mark it was given                                                                                                                                                            | Only a beat that was met is marked, anywhere                                                            |
+| A drum that is not quite a circle                                                                                 | A width from the screen and a height from the room it had                                                                                                                                          | The room is measured (a container query), and the drum is the largest circle that fits                  |
+| The recogniser heard "it is to go up first"                                                                       | "It has to go up first, and then come down." is a mouthful for the synthesiser                                                                                                                     | "Go up first. Then come down."                                                                          |
+| A tune being made kept what was chosen before the answer was shown, so following Glim's hand led to a wrong tune  | Reasoned, not seen: the hand shows one way, and the child's first notes may belong to another                                                                                                      | Showing a way starts the tune afresh                                                                    |
+| Two birds on an activity's card were 22 pixels each                                                               | Each had a box of its own in a card 70 pixels wide                                                                                                                                                 | On a card the two are one small drawing                                                                 |
+| A test tapped the drum late on a brisk beat and failed, in a way no child's fault                                 | It waited to see each light and then pressed, which is late by however long a press takes                                                                                                          | It keeps the beat as a person does: from the first beats, each tap begun a little ahead                 |
+
+### What is still wrong or weak
+
+**Unverified, and the most important**
+
+- **Nobody has heard it.** Above.
+- **The allowance for keeping the beat is a guess.** A quarter of a beat either way after a steady lateness has
+  been taken off, six beats of eight. It was chosen from what is written about how young children tap and from
+  sums: taps at about the right pace and at random moments pass perhaps one time in ten. Whether a
+  four-year-old who is plainly in time passes every time has not been tried, and that is the direction it must
+  not fail in.
+- **How late a real phone's sound is, and how late its touch,** have not been measured on one. The allowance is
+  for exactly that, and is capped at a third of a beat: a Bluetooth speaker that is later than that will make
+  every tap late.
+- **Whether "high" and "low" are learnt from a small bar and a long bar** is a hope. The words are a figure of
+  speech a child has to be taught, and the game teaches them only by showing which bar is which.
+- **A third apart may be too close** for the youngest. It is the last and hardest of the questions, and a
+  child who cannot do it still finishes: the right one is shown after a wrong try.
+
+**Weak, and known**
+
+- The drawings are plain (above), and the lighthouse's chime bars are a few pixels on the map: what says
+  "music" there is two notes drifting up, which a three-year-old may not read as anything.
+- Where the places stand in one row the lighthouse has no name written under it.
+- On a phone held upright, and on the narrowest phones held sideways, the room's bars stand in two rows of
+  four: a keyboard broken in half. (They were eight in a row sideways, 47 to 53 points wide, until CI's
+  iPhone-sized screen showed it. In a row they are now never under 56.)
+- Three activities are close cousins — two tunes the same or different, a tune found again — and a child may
+  feel they are one game three times.
+- A question that is listened to cannot be hurried: a tune and three more to compare it with is eight seconds
+  before anything can be tapped.
+- Nothing a child makes is kept: a tune is played back once and is gone.
+- No rhythm is tapped back, only a steady beat; there are no black keys; the five other rooms the brief
+  describes are a list on a page.
 
 ## Phases 04 to 10 (2026-11-23): six worlds and a voice
 

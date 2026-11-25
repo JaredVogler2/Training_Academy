@@ -19,6 +19,16 @@ export interface WorldInfo {
   /** What the world teaches, in teaching order. */
   activities: Activity[];
   role: WorldRole;
+  /**
+   * A room to play in freely, where the world has one: nothing is asked there and nothing is kept. `note` is for
+   * the grown-up.
+   */
+  room?: { title: string; note: string };
+  /**
+   * More that could be built here one day and has not been. It is listed for the grown-up, plainly as not built,
+   * and nothing on the page leads to it.
+   */
+  later?: { name: string; about: string }[];
 }
 
 export interface Activity {
@@ -56,12 +66,23 @@ export const WORLDS: readonly WorldInfo[] = [
     name: 'Number Garden',
     focus: 'Amounts first, numerals later',
     about:
-      'Number sense grows from real amounts. Children match, compare and count things they can see before any numeral appears, so a written 3 later means something.',
+      'Number sense grows from real amounts. Children match, compare and count things they can see before any numeral appears, so that a written 3 means something when it comes. Then the numerals, the numbers in order, and adding and taking away as little stories.',
     activities: [
       { title: 'Same amount and different amount', lessons: ['ng-same-amount-01'] },
       { title: 'Seeing small amounts at a glance', lessons: ['ng-glance-01'] },
       { title: 'Counting to five, then ten', lessons: ['ng-give-01', 'ng-give-02'] },
       { title: 'More, fewer and equal', lessons: ['ng-more-01', 'ng-fewer-01', 'ng-equal-01'] },
+      { title: 'Amounts in order: one more each time', lessons: ['ng-stairs-01'] },
+      { title: 'Making five, then ten', lessons: ['ng-frame-01', 'ng-frame-02'] },
+      {
+        title: 'Numerals for amounts, zero to ten',
+        lessons: ['ng-numerals-01', 'ng-numerals-02', 'ng-numerals-03'],
+      },
+      { title: 'The numbers in order', lessons: ['ng-line-01'] },
+      {
+        title: 'Adding and taking away, as stories',
+        lessons: ['ng-add-01', 'ng-take-01', 'ng-add-02', 'ng-take-02'],
+      },
     ],
     role: 'number',
   },
@@ -223,6 +244,35 @@ export const WORLDS: readonly WorldInfo[] = [
       },
     ],
     role: 'music',
+    room: {
+      title: 'Just play',
+      note: 'All eight chime bars of the octave and a drum, with a slow beat to play along to. Nothing is asked there, nothing is right or wrong, and nothing is kept.',
+    },
+    later: [
+      {
+        name: 'Spatial Workshop',
+        about:
+          'Turning shapes and fitting them together, and symmetry, without needing the shapes’ names.',
+      },
+      {
+        name: 'Chess Nursery',
+        about:
+          'The squares of the board, how each piece moves, and plans one step long — with no clock.',
+      },
+      {
+        name: 'Sky Observatory',
+        about: 'Day and night, the phases of the moon, and the planets in their order.',
+      },
+      {
+        name: 'Language Garden',
+        about:
+          'Everyday words and short phrases in another language, from recordings by people who speak it.',
+      },
+      {
+        name: 'Feelings Theatre',
+        about: 'Short made-up scenes about feelings, and how the same thing looks to someone else.',
+      },
+    ],
   },
 ];
 

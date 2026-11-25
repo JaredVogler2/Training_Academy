@@ -27,7 +27,7 @@
       "id": "brand-and-emblems",
       "kind": "vector",
       "origin": "original",
-      "what": "Brand mark, six world emblems, six player pictures",
+      "what": "Brand mark, seven world emblems, six player pictures",
       "paths": ["src/ui/art.tsx", "public/favicon.svg"],
       "licence": "Project",
       "madeWith": "Hand-written SVG"
@@ -63,10 +63,11 @@
       "id": "counting-pictures",
       "kind": "vector",
       "origin": "original",
-      "what": "Number Garden: apple, leaf, snail, acorn, bird, mouse, frog, and the friends things are given to",
+      "what": "Number Garden: apple, leaf, snail, acorn, bird, mouse, frog, and the friends things are given to; towers of blocks, frames of five and ten, numbered stones, stories of things that come and go, and a bell",
       "paths": [
         "src/game/worlds/number-garden/things.tsx",
-        "src/game/worlds/number-garden/GiveBoard.tsx"
+        "src/game/worlds/number-garden/GiveBoard.tsx",
+        "src/game/worlds/number-garden/numbers.tsx"
       ],
       "licence": "Project",
       "madeWith": "Hand-written SVG"
@@ -75,8 +76,8 @@
       "id": "picture-kit",
       "kind": "vector",
       "origin": "original",
-      "what": "The picture kit: 57 plain drawings of things (a sun, a sock, a hen) and 15 drawn lower-case letters",
-      "paths": ["src/art/pictures.tsx", "src/art/letters.tsx"],
+      "what": "The picture kit: 57 plain drawings of things (a sun, a sock, a hen), 15 drawn lower-case letters and the numerals 0 to 9",
+      "paths": ["src/art/pictures.tsx", "src/art/letters.tsx", "src/art/numerals.tsx"],
       "licence": "Project",
       "madeWith": "Hand-written SVG"
     },
@@ -84,7 +85,7 @@
       "id": "world-pictures",
       "kind": "vector",
       "origin": "original",
-      "what": "Each world's own drawings: Reading Cove's sound cards and word tiles; Memory Forest's scenes; Robot Ridge's robot and ground; Inventor Island's bridge, ramp, beam and tub; Explorer Harbor's 37 story pictures, its maps, flags, islands and boat",
+      "what": "Each world's own drawings: Reading Cove's sound cards and word tiles; Memory Forest's scenes; Robot Ridge's robot and ground; Inventor Island's bridge, ramp, beam and tub; Explorer Harbor's 37 story pictures, its maps, flags, islands and boat; the Music Lab's chime bars, bird, drum and signs",
       "paths": [
         "src/game/worlds/reading-cove/index.tsx",
         "src/game/worlds/memory-forest/index.tsx",
@@ -92,7 +93,11 @@
         "src/game/worlds/inventor-island/scenes.tsx",
         "src/game/worlds/explorer-harbor/pictures.tsx",
         "src/game/worlds/explorer-harbor/index.tsx",
-        "src/game/worlds/explorer-harbor/MapBoard.tsx"
+        "src/game/worlds/explorer-harbor/MapBoard.tsx",
+        "src/game/worlds/music-lab/pictures.tsx",
+        "src/game/worlds/music-lab/BeatBoard.tsx",
+        "src/game/worlds/music-lab/TuneBoard.tsx",
+        "src/game/worlds/music-lab/Room.tsx"
       ],
       "licence": "Project",
       "madeWith": "Hand-written SVG. Explorer Harbor's maps are drawn from numbers written by its content generator"
@@ -167,10 +172,10 @@
       "id": "sounds",
       "kind": "audio",
       "origin": "original",
-      "what": "Eight interface sounds",
+      "what": "Eleven interface sounds, and the Music Lab's instruments: chime bars, a pipe, a drum and a click",
       "paths": ["src/audio/audioEngine.ts"],
       "licence": "Project",
-      "madeWith": "Synthesised on the device with the Web Audio API; no audio files"
+      "madeWith": "Synthesised on the device with the Web Audio API, each from two or three oscillators; no audio files, no samples and no recordings, so there is no source audio to license"
     },
     {
       "id": "voice",

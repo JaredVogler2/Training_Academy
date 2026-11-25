@@ -386,11 +386,6 @@
       'tools tools keys' auto / minmax(48px, 0.18fr) minmax(0, 0.9fr) minmax(0, 1.2fr);
   }
 
-  .tool {
-    width: var(--tap-small);
-    height: var(--tap-small);
-  }
-
   .key {
     min-height: 64px;
   }
@@ -410,6 +405,46 @@
 
   .light[data-kind='listen'] {
     max-width: 14px;
+  }
+}
+
+/*
+ * The flattest screens: a phone on its side with the browser's bars showing leaves a board about a hundred pixels
+ * high. There the beat's lights stand beside the drum, not over it, so that the drum has the whole of that height;
+ * and the tune's two tools stand under the sign, not under the drawing, so that the drawing has it.
+ */
+@media (orientation: landscape) and (max-height: 320px) {
+  .beat {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  /*
+   * Only where the drum is the board. (The room to play in has a drum too, in a column narrower than it is high;
+   * said of every drum, this made that one wider than its column and the page wider than the screen, on a phone
+   * 568 points by 320.)
+   */
+  .beat > .drumRoom {
+    width: auto;
+    height: 100%;
+    aspect-ratio: 1;
+  }
+
+  .tune {
+    grid-template:
+      'asked plot keys' minmax(0, 1fr)
+      'tools plot keys' auto / 118px minmax(0, 0.7fr) minmax(0, 1.5fr);
+    gap: 6px 8px;
+  }
+
+  .tools {
+    gap: 6px;
+  }
+
+  .asked {
+    padding: 2px;
+    border-width: 3px;
   }
 }
 

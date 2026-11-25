@@ -27,7 +27,7 @@ models, no texture packs, no icon sets and no audio libraries.
 
 ## Made here, with tools and a voice model from elsewhere
 
-The voice is 395 recordings that this project made and owns. They were made with other people's tools and with a
+The voice is 484 recordings that this project made and owns. They were made with other people's tools and with a
 voice model that this project did not train. None of the tools or the model is shipped; the recordings are.
 
 | What was used                          | Where it comes from                                                                                                | Licence, as far as it was read                                                                              | Used for                           |
@@ -45,24 +45,27 @@ replacing is in one list: `src/voice/manifest.json`.
 
 ## Original work
 
-| What                                                             | Where                                                          | How it was made                                                                                                                    |
-| ---------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Brand mark, favicon, app icons                                   | `src/ui/art.tsx`, `public/favicon.svg`, `public/assets/icons/` | Hand-written SVG; the PNG icons are rendered from it by `npm run icons`                                                            |
-| Six world emblems, six player pictures                           | `src/ui/art.tsx`                                               | Hand-written SVG                                                                                                                   |
-| Interface icons                                                  | `src/ui/icons.tsx`                                             | Hand-written SVG                                                                                                                   |
-| Glim, the guide                                                  | `src/ui/Guide.tsx`, `Guide.module.css`                         | One hand-written SVG, rigged in parts; poses and motion in CSS                                                                     |
-| The modelling kit, and what floats                               | `src/render/hub3d/kit.ts`, `floating.ts`, `islands/parts.ts`   | Written in code on three.js geometry                                                                                               |
-| Academy Rock and the six islands                                 | `src/render/hub3d/islands/*.ts`                                | Sculpted in code with the kit. No model files.                                                                                     |
-| The painted material and its brush texture                       | `src/render/hub3d/paint.ts`                                    | A shader patch on three.js's matte material; the texture is generated on the device from a seed                                    |
-| The water                                                        | `src/render/hub3d/Sea.tsx`                                     | An original shader                                                                                                                 |
-| The hub's pictures (seven islands, boats, a rock, a cloud)       | `src/assets/hub/*.webp`, `sprites.json`                        | Rendered from the island models by `npm run art:sprites`                                                                           |
-| The picture's sea                                                | `src/render/HubPicture.module.css`                             | A CSS gradient matched to the 3D water, and a small inline SVG of wave marks                                                       |
-| Counting pictures (apple, leaf, snail, acorn, bird, mouse, frog) | `src/game/worlds/number-garden/`                               | Hand-written SVG                                                                                                                   |
-| The picture kit: 57 things, and 15 drawn letters                 | `src/art/pictures.tsx`, `src/art/letters.tsx`                  | Hand-written SVG. What each is called, and how it is spelt, is `src/art/lexicon.json`                                              |
-| Each world's own drawings                                        | `src/game/worlds/<world>/`                                     | Hand-written SVG: sound cards; a robot and its ground; a bridge, a ramp, a beam, a tub; 37 story pictures; maps drawn from numbers |
-| Interface sounds                                                 | `src/audio/audioEngine.ts`                                     | Synthesised at run time with the Web Audio API                                                                                     |
-| The voice, and six sounds that are not speech                    | `src/assets/voice/en/`                                         | Made ahead of time by `scripts/voice/make_voice.py`: see above, and _Audio_ below                                                  |
-| Curriculum content                                               | `src/content/packs/`, `src/content/explorer-harbor/`           | Written for this project, from tables, by the generators in `scripts/content/`                                                     |
+| What                                                                                                                      | Where                                                                 | How it was made                                                                                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Brand mark, favicon, app icons                                                                                            | `src/ui/art.tsx`, `public/favicon.svg`, `public/assets/icons/`        | Hand-written SVG; the PNG icons are rendered from it by `npm run icons`                                                                                                                              |
+| Seven world emblems, six player pictures                                                                                  | `src/ui/art.tsx`                                                      | Hand-written SVG                                                                                                                                                                                     |
+| Interface icons                                                                                                           | `src/ui/icons.tsx`                                                    | Hand-written SVG                                                                                                                                                                                     |
+| Glim, the guide                                                                                                           | `src/ui/Guide.tsx`, `Guide.module.css`                                | One hand-written SVG, rigged in parts; poses and motion in CSS                                                                                                                                       |
+| The modelling kit, and what floats                                                                                        | `src/render/hub3d/kit.ts`, `floating.ts`, `islands/parts.ts`          | Written in code on three.js geometry                                                                                                                                                                 |
+| Academy Rock and the six islands                                                                                          | `src/render/hub3d/islands/*.ts`                                       | Sculpted in code with the kit. No model files. Academy Rock has the Music Lab's chime bars and notes on it                                                                                           |
+| The painted material and its brush texture                                                                                | `src/render/hub3d/paint.ts`                                           | A shader patch on three.js's matte material; the texture is generated on the device from a seed                                                                                                      |
+| The water                                                                                                                 | `src/render/hub3d/Sea.tsx`                                            | An original shader                                                                                                                                                                                   |
+| The hub's pictures (seven islands, boats, a rock, a cloud)                                                                | `src/assets/hub/*.webp`, `sprites.json`                               | Rendered from the island models by `npm run art:sprites`                                                                                                                                             |
+| The picture's sea                                                                                                         | `src/render/HubPicture.module.css`                                    | A CSS gradient matched to the 3D water, and a small inline SVG of wave marks                                                                                                                         |
+| Counting pictures (apple, leaf, snail, acorn, bird, mouse, frog); blocks, frames of five and ten, numbered stones, a bell | `src/game/worlds/number-garden/`                                      | Hand-written SVG                                                                                                                                                                                     |
+| The picture kit: 57 things, 15 drawn letters and the ten numerals                                                         | `src/art/pictures.tsx`, `src/art/letters.tsx`, `src/art/numerals.tsx` | Hand-written SVG. What each is called, and how it is spelt, is `src/art/lexicon.json`. The numerals are the shapes a child is taught to write: an open 4, a 7 with no bar, a 9 with a straight stick |
+| Each world's own drawings                                                                                                 | `src/game/worlds/<world>/`                                            | Hand-written SVG: sound cards; a robot and its ground; a bridge, a ramp, a beam, a tub; 37 story pictures; maps drawn from numbers                                                                   |
+| Interface sounds                                                                                                          | `src/audio/audioEngine.ts`                                            | Synthesised at run time with the Web Audio API                                                                                                                                                       |
+| The Music Lab's instruments: chime bars, a pipe, a drum, a click                                                          | `src/audio/audioEngine.ts` (`strokeOf`)                               | Synthesised at run time, each from two or three oscillators. No samples, no sound fonts, no recordings: see _Audio_ below                                                                            |
+| The Music Lab's phrases: about sixty tunes and drum patterns                                                              | `scripts/content/music-lab.mjs`                                       | Written for this project: steps and skips of two to four notes. No song is quoted                                                                                                                    |
+| The Music Lab's drawings                                                                                                  | `src/game/worlds/music-lab/pictures.tsx`                              | Hand-written SVG: chime bars, a bird, a drum, nine signs                                                                                                                                             |
+| The voice, and six sounds that are not speech                                                                             | `src/assets/voice/en/`                                                | Made ahead of time by `scripts/voice/make_voice.py`: see above, and _Audio_ below                                                                                                                    |
+| Curriculum content                                                                                                        | `src/content/packs/`, `src/content/explorer-harbor/`                  | Written for this project, from tables, by the generators in `scripts/content/`                                                                                                                       |
 
 No images, 3D models, textures, shaders, audio recordings, icon sets, illustrations or code were copied from Epoch60
 or from any other source. Epoch60's documents were read for its working practices (a written visual standard,
@@ -175,6 +178,30 @@ rendered from.
 Interface sounds are synthesised on the device: each is two or three notes from one scale, as oscillators with a
 soft envelope (`src/audio/audioEngine.ts`). The motifs are listed in `docs/ART_DIRECTION.md`.
 
+**The Music Lab's instruments are synthesised on the device too, and that is the whole of their licensing:
+there is no source audio.** Nothing was sampled, downloaded or recorded. Each stroke is built when it is
+played (`strokeOf`):
+
+| Instrument | What it is made of                                                                                                                                     |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| chime bar  | a sine at the note, dying away over about a second; a quieter sine two octaves above that dies in a fifth of that; a touch of triangle an octave above |
+| pipe       | a triangle wave held for a fifth of a second, sliding up into its note over the first twentieth, with a quiet octave above                             |
+| drum       | a sine that drops from well above its pitch to 150 hertz in a fourteenth of a second and dies in a third; a short knock three times higher             |
+| click      | a triangle wave at 1150 hertz for a fourteenth of a second                                                                                             |
+
+Notes are equal-tempered from the A above middle C at 440 hertz (`frequencyOf`, `src/engine/music.ts`), white
+keys only, and the content rules refuse any note below middle C or above the E two octaves over it: a phone's
+speaker gives almost nothing below, and a pipe is shrill above. Nothing is louder than three tenths of full
+scale.
+
+**Nobody chose these sounds by ear.** They are numbers picked from what such instruments are known to be made
+of, and no person has heard one. If a chime bar sounds like a door bell, or the drum cannot be heard on a
+phone, the place to change it is that one function.
+
+**With the sound off**, the Music Lab's three listening activities and its room to play in say they need sound
+and offer one button that turns it on; the beat, the notes to play back and the tune to make can be followed by
+eye (`docs/CURRICULUM.md`).
+
 **The voice is recorded ahead of time**, by `scripts/voice/make_voice.py` (`scripts/voice/README.md` says how to
 run it; it needs tools the game does not ship and CI does not install).
 
@@ -192,9 +219,9 @@ run it; it needs tools the game does not ship and CI does not install).
   as other words is reworded and made again; none is shipped. `npm test` fails if a clip is missing, stale, left
   over, changed since it was made, or heard differently.
 - **What that is worth.** It catches a wrong word, a cut-off ending, noise. It says nothing about whether a clip
-  sounds clear, natural or kind. **No person has listened to any of the 395.** Each has `reviewed: null` in the
+  sounds clear, natural or kind. **No person has listened to any of the 484.** Each has `reviewed: null` in the
   manifest, and the grown-ups' area lists them all to be played and marked.
-- **Size.** 395 clips, 4.3 MB in all, the largest under 60 kB; budgets in `scripts/verify-dist.mjs`. A clip is
+- **Size.** 484 clips, 5.4 MB in all, the largest under 60 kB; budgets in `scripts/verify-dist.mjs`. A clip is
   fetched the first time its line is wanted, never with the first screen.
 
 No recording of a real person is in the game. If one is ever added, it needs that person's written consent on

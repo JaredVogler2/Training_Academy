@@ -42,7 +42,11 @@ export function PauseSheet({ open, onResume }: { open: boolean; onResume: () => 
       className={styles.pause}
       aria-labelledby="pause-title"
       data-testid="lesson-paused"
-      onClose={onResume}
+      // A dialog says it has closed a moment after it closes. If the activity has been paused again by then, that
+      // late word is about the pause before, and does not end this one (see `Modal`).
+      onClose={(event) => {
+        if (!event.currentTarget.open) onResume();
+      }}
       onCancel={onResume}
     >
       {open && (

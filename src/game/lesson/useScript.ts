@@ -67,6 +67,13 @@ export function useScript(
 
   // Standing still, nothing will be uncovered: whatever a look would have shown is not waited for.
   if (still) return { beat: script.settled, turn: 0, glanced: true };
-  // Until this run's first moment arrives (and whenever it is not playing), the board is at rest.
-  return active && shown.run === run ? shown : { beat: REST, turn: 0, glanced: false };
+  if (active && shown.run === run) return shown;
+  // Until this run's first moment arrives, the board shows what the script opens with, if it opens with
+  // anything at its very start (a story as it stood before anyone moved), and otherwise is at rest. That moment
+  // is at most a frame away; without this, that frame would show a story already over. Whenever nothing is
+  // playing, the board is at rest.
+  const opening = active
+    ? script.moments.find((moment) => moment.at === 0 && moment.beat !== undefined)?.beat
+    : undefined;
+  return { beat: opening ?? REST, turn: 0, glanced: false };
 }

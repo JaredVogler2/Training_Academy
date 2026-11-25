@@ -102,3 +102,16 @@ export {
   type EvidenceStatus,
   type SkillEvidence,
 } from './evidence';
+export {
+  NUMBER_MOST,
+  RUN_LEAST,
+  RUN_MOST,
+  TOWER_MOST,
+  amountOf,
+  amountShown,
+  countableIn,
+  numberClip,
+  numberMisconception,
+  readNumberPicture,
+  type NumberPicture,
+} from './numbers';

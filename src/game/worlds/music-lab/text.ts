@@ -50,6 +50,18 @@ export const musicText = {
         ? 'Two sets of chime bars, to listen to one after the other'
         : 'Two birds, to listen to one after the other',
   beat: (tempo: number) => `A steady beat, ${String(tempo)} to the minute`,
+  room: {
+    title: 'Just play',
+    back: 'Back to the Music Lab',
+    keys: 'Chime bars, lowest first',
+    drum: 'The drum',
+    beatOn: 'Start the beat',
+    beatOff: 'Stop the beat',
+    lights: 'The beat, four at a time',
+    note: 'For grown-ups: nothing is asked here and nothing is kept. It is for playing.',
+    needsSound: 'This room is for making sounds. Turn the sound on to play.',
+    soundOn: 'Turn the sound on',
+  },
   signs: {
     high: 'Which one is high?',
     low: 'Which one is low?',

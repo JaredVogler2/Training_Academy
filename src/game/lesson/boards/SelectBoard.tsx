@@ -149,6 +149,8 @@ export function SelectBoard({ state, runner, pack, module, paused, calm }: Board
         className={styles.select}
         data-count={view.cards.length}
         data-study={study !== null}
+        // Looking at what is to be remembered, or picking it out again: on a very flat screen each has the room.
+        data-phase={showingStudy ? 'study' : 'answer'}
         data-testid="select-board"
         inert={paused}
       >

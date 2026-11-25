@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "id": "music-lab",
   "world": "music-lab",
-  "contentVersion": 1,
+  "contentVersion": 2,
   "strings": {
     "en": {
       "ml.hint.not-this": "Not this one.",
@@ -2204,7 +2204,7 @@
     },
     {
       "id": "ml-tune-01",
-      "version": 1,
+      "version": 2,
       "world": "music-lab",
       "title": "Make a tune",
       "summary": "Chime bars, and a tune to make up with a shape to it: going up, coming down, over a hill and back, the same thing twice, or home to the biggest bar. There are many right tunes, and your child’s own is as right as any. It can be played back and changed before saying it is done.",
@@ -2313,7 +2313,7 @@
           },
           "task": {
             "type": "tune",
-            "notes": ["c4", "d4", "e4", "g4", "a4", "c5"],
+            "notes": ["c4", "e4", "g4", "a4", "c5"],
             "length": 4,
             "shape": "up",
             "solution": ["c4", "e4", "g4", "c5"]
@@ -2337,7 +2337,7 @@
           },
           "task": {
             "type": "tune",
-            "notes": ["c4", "d4", "e4", "g4", "a4", "c5"],
+            "notes": ["c4", "e4", "g4", "a4", "c5"],
             "length": 4,
             "shape": "down",
             "solution": ["c5", "a4", "e4", "c4"]
@@ -2481,7 +2481,7 @@
           },
           "task": {
             "type": "tune",
-            "notes": ["c4", "d4", "e4", "g4", "a4", "c5"],
+            "notes": ["c4", "d4", "e4", "g4", "a4"],
             "length": 5,
             "shape": "home",
             "solution": ["g4", "a4", "e4", "d4", "c4"]

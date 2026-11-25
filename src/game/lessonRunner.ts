@@ -52,6 +52,24 @@ export interface RunnerDeps {
   onSaveError?: (error: unknown) => void;
 }
 
+/**
+ * Whether an unfinished sitting can be taken up in this lesson: it was begun in this version of it, and every
+ * challenge it has still to do, or has kept back, is one the lesson has.
+ *
+ * It is the lesson's own version that says so, not the version of the world's content, which changes whenever
+ * anything in that world does. (It was both, at first: adding activities to a world sent every child who had
+ * left another of its activities half-way back to the start of it.) A lesson whose challenges or plan change
+ * gets a new version, and the content build refuses a change without one (`src/content/lessons.lock.json`).
+ */
+export function resumable(session: LessonSession, lesson: Lesson): boolean {
+  if (session.lessonId !== lesson.id || session.lessonVersion !== lesson.version) return false;
+  const known = new Set(lesson.challenges.map((challenge) => challenge.id));
+  return (
+    session.steps.every((step) => known.has(step.challengeId)) &&
+    session.reserve.every((id) => known.has(id))
+  );
+}
+
 export class LessonRunner {
   private session: LessonSession;
   private state: RunnerState;
@@ -77,11 +95,17 @@ export class LessonRunner {
     try {
       const existing = await repository.findActiveSession(profileId, lesson.id);
       if (existing) {
-        const current =
-          existing.lessonVersion === lesson.version &&
-          existing.contentVersion === pack.contentVersion;
+        if (resumable(existing, lesson)) {
+          // The world's content may have changed since the sitting began — more activities beside this one —
+          // while this lesson has not. The sitting goes on, and what is answered from here is recorded against
+          // the content as it now is.
+          session =
+            existing.contentVersion === pack.contentVersion
+              ? existing
+              : { ...existing, contentVersion: pack.contentVersion };
+          if (session !== existing) await repository.saveProgress(session);
+        }
         // A sitting of an older version of the lesson cannot be resumed; its answers stay in the record.
-        if (current) session = existing;
         else await repository.discardSession(existing.id);
       }
       if (!session) {

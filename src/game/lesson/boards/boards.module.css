@@ -157,6 +157,29 @@
   }
 }
 
+/*
+ * The flattest screens: a phone on its side with the browser's bars showing leaves a board about a hundred pixels
+ * high, and two rows of cards in that are each under fifty. So the cards stand in one row, and whichever of the two
+ * halves is in use has the width: the things to remember while they are looked at, the cards once those are put
+ * away. (Up to eight cards are then each a fair target; before, six were 49 pixels high.)
+ */
+@media (orientation: landscape) and (max-height: 320px) {
+  .select[data-study='true'][data-phase='study'] {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+
+  .select[data-study='true'][data-phase='answer'] {
+    grid-template-columns: minmax(0, 0.2fr) minmax(0, 1fr);
+  }
+
+  .select[data-phase='answer'] .cards[data-count] {
+    grid-template-columns: none;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 5px;
+  }
+}
+
 /* A card that has gone to a place leaves its room behind it, so that the others do not shuffle along. */
 .card[data-gone='true'] {
   visibility: hidden;

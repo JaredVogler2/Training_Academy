@@ -1,0 +1,96 @@
+// @vitest-environment happy-dom
+import { cleanup, fireEvent, render } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { PauseSheet } from '@/game/lesson/PauseSheet';
+import { Modal } from '@/ui/controls';
+
+afterEach(cleanup);
+
+/**
+ * The dialog every form and warning in the grown-ups' area is shown in.
+ *
+ * A browser's <dialog> says "closed" a moment after it closes. A grown-up who presses "Cancel" and at once the
+ * button that opens the dialog again has it open by the time that word arrives; taken at its word, the dialog
+ * shut in their face. It happened once in CI, on the slowest of its machines, and was a minute of nothing.
+ */
+function dialogOf(container: HTMLElement): HTMLDialogElement {
+  const dialog = container.querySelector('dialog');
+  if (!dialog) throw new Error('No dialog was drawn.');
+  // The test page's <dialog> is not asked to do what a browser's does: these stand in for it.
+  dialog.showModal = function showModal(this: HTMLDialogElement) {
+    this.setAttribute('open', '');
+  };
+  dialog.close = function close(this: HTMLDialogElement) {
+    this.removeAttribute('open');
+  };
+  return dialog;
+}
+
+const draw = (open: boolean, onClose: () => void) => (
+  <Modal open={open} onClose={onClose} title="Add a player" actions={<button>Add</button>}>
+    <p>A nickname is all that is asked for.</p>
+  </Modal>
+);
+
+describe('a modal dialog', () => {
+  it('shows what it is given only while it is open', () => {
+    const { container, rerender, queryByText } = render(draw(false, () => {}));
+    dialogOf(container);
+    expect(queryByText('A nickname is all that is asked for.')).toBeNull();
+    rerender(draw(true, () => {}));
+    expect(queryByText('A nickname is all that is asked for.')).not.toBeNull();
+  });
+
+  it('asks to be closed when the browser closes it: Escape, or the page behind it', () => {
+    const onClose = vi.fn();
+    const { container, rerender } = render(draw(false, onClose));
+    const dialog = dialogOf(container);
+    rerender(draw(true, onClose));
+    expect(dialog.open).toBe(true);
+    // Escape: the browser says "cancel", closes the dialog, and then says "close".
+    fireEvent(dialog, new Event('cancel'));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    dialog.close();
+    fireEvent(dialog, new Event('close'));
+    expect(onClose).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not take a late "closed" from before it was opened again as a wish to close it now', () => {
+    const onClose = vi.fn();
+    const { container, rerender } = render(draw(false, onClose));
+    const dialog = dialogOf(container);
+    rerender(draw(true, onClose));
+    // Cancelled, and at once asked for again…
+    rerender(draw(false, onClose));
+    expect(dialog.open).toBe(false);
+    rerender(draw(true, onClose));
+    expect(dialog.open).toBe(true);
+    // …and only now does the browser say that the first one closed.
+    fireEvent(dialog, new Event('close'));
+    expect(onClose).not.toHaveBeenCalled();
+    expect(dialog.open).toBe(true);
+  });
+});
+
+describe('the pause sheet', () => {
+  it('carries on when the browser closes it, and not for a late "closed" from the pause before', () => {
+    const onResume = vi.fn();
+    const { container, rerender } = render(<PauseSheet open={false} onResume={onResume} />);
+    const dialog = dialogOf(container);
+    rerender(<PauseSheet open onResume={onResume} />);
+    expect(dialog.open).toBe(true);
+    // Carried on, and at once paused again…
+    rerender(<PauseSheet open={false} onResume={onResume} />);
+    rerender(<PauseSheet open onResume={onResume} />);
+    expect(dialog.open).toBe(true);
+    // …before the browser has said that the first pause ended.
+    fireEvent(dialog, new Event('close'));
+    expect(onResume).not.toHaveBeenCalled();
+    // Escape, and the browser closing it, still carry on.
+    fireEvent(dialog, new Event('cancel'));
+    expect(onResume).toHaveBeenCalledTimes(1);
+    dialog.close();
+    fireEvent(dialog, new Event('close'));
+    expect(onResume).toHaveBeenCalledTimes(2);
+  });
+});

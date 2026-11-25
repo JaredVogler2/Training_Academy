@@ -3,6 +3,7 @@
 //   npm run build && npm run screens                          everything, into docs/review/phase-03/
 //   npm run screens -- phase-03/round-1 door,lesson           some groups, into another folder
 //   npm run screens -- worlds worlds                          every world's page and every activity, into worlds/
+//   npm run screens -- music-lab worlds music-lab             the same for one world only (or several, with commas)
 //
 // Groups: door, hub, islands, guide, world, lesson, tips, clickmaps, grownups, phones; and worlds, which is run
 // only when asked for by name. The folder is relative to docs/review/, so a second set can be kept beside the
@@ -10,7 +11,7 @@
 //
 // The `worlds` group is one picture of each world's page and one of each activity at the first thing a child does
 // in it, on a phone, read from the content packs so that none can be missed; and the first activity of each world
-// while it is being shown, and on a phone held sideways.
+// while it is being shown, the last on a phone held sideways, and the world's room to play in, where it has one.
 //
 // The `phones` group is what a phone does that the other screens do not show: the little height a browser leaves
 // with the phone on its side, and a notch. A notch is given to the page through the four --safe-* tokens every
@@ -776,10 +777,16 @@ try {
       'memory-forest',
       'inventor-island',
       'explorer-harbor',
+      'music-lab',
     ];
+    const only = process.argv[4] ? process.argv[4].split(',') : order;
+    for (const world of only) {
+      if (!order.includes(world)) throw new Error(`No such world: ${world}.`);
+    }
     const folder = join(root, 'src/content/packs');
     const packs = readdirSync(folder)
       .map((file) => JSON.parse(readFileSync(join(folder, file), 'utf8')))
+      .filter((pack) => only.includes(pack.world))
       .sort((a, b) => order.indexOf(a.world) - order.indexOf(b.world));
     /** Into an activity the way a child comes in: by a tap on its card, which also wakes the sound. */
     const open = async (page, press, world, lessonId) => {
@@ -821,6 +828,20 @@ try {
         await toTheirTurn(page, press);
         await shot(`${place}-${String(pack.lessons.length)}-${last.id}`);
       });
+      // The world's room to play in, where it has one: reached the way a child reaches it, from the world's page.
+      for (const screen of ['phone', 'phone-landscape']) {
+        await session(screen, async ({ page, press, shot, arrived }) => {
+          await page.goto(`${BASE}/world/${pack.world}`);
+          await page.getByTestId('world-example').waitFor();
+          const door = page.locator(`a[href$="/world/${pack.world}/room"]`);
+          if ((await door.count()) === 0) return;
+          await press(door);
+          await page.waitForURL(/\/room$/);
+          await arrived();
+          await page.waitForTimeout(900);
+          await shot(`${place}-room`);
+        });
+      }
     }
   }
 

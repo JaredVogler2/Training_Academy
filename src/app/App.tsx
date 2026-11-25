@@ -15,6 +15,7 @@ import styles from './App.module.css';
 const WorldView = lazyView('world', () => import('@/game/world/WorldView'));
 const LessonView = lazyView('lesson', () => import('@/game/lesson/LessonView'));
 const GrownUps = lazyView('grown-ups', () => import('@/parent/GrownUps'));
+const MusicRoom = lazyView('music-room', () => import('@/game/worlds/music-lab/Room'));
 const Studio = lazyView('studio', () => import('@/render/hub3d/Studio'));
 const GuideSheet = lazyView('guide-sheet', () => import('@/ui/GuideSheet'));
 
@@ -24,6 +25,7 @@ function titleOf(route: Route): string {
       return pageTitle();
     case 'world':
     case 'play':
+    case 'room':
       return pageTitle(worldById(route.world).name);
     case 'grown-ups':
       return pageTitle(ui.grownUps);
@@ -42,6 +44,9 @@ function RouteView({ route }: { route: Route }) {
       return <WorldView world={route.world} />;
     case 'play':
       return <LessonView world={route.world} lessonId={route.lessonId} />;
+    case 'room':
+      // Only the Music Lab has one (the route table says which worlds do).
+      return <MusicRoom />;
     case 'grown-ups':
       return <GrownUps />;
     case 'studio':
@@ -97,8 +102,9 @@ export function App() {
       >
         {ui.skipToContent}
       </a>
-      {/* An activity has the whole screen: its own bar has the way home, and pause has the two switches. */}
-      {route.name !== 'play' && <TopBar route={route} />}
+      {/* An activity has the whole screen: its own bar has the way home, and pause has the two switches. A room
+          to play in has it too. */}
+      {route.name !== 'play' && route.name !== 'room' && <TopBar route={route} />}
       <main id="main" ref={main} tabIndex={-1} className={styles.main}>
         <ErrorBoundary
           resetKey={path}

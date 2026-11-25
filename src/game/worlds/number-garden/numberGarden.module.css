@@ -32,6 +32,159 @@
 }
 
 /*
+ * A numeral stands in the middle of its card. While it is counted it moves up, and its amount is shown under it
+ * as dots, each hopping in turn like anything else that is counted.
+ */
+.digit {
+  transform: translateY(5px);
+}
+
+.picture[data-scene='numeral'][data-counting='true'] .digit {
+  transform: none;
+}
+
+/* A dot is small, and the numeral is just above it: it hops a little way, and swells. */
+.picture[data-scene='numeral'][data-counting='true'] .thing {
+  animation-name: dot-hop;
+}
+
+@keyframes dot-hop {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-2.5px) scale(1.45);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* The numeral grows for a moment while its name is said. */
+.picture[data-scene='numeral'][data-sounding='true'] {
+  animation: said 0.5s var(--ease-spring);
+}
+
+@keyframes said {
+  40% {
+    transform: scale(1.12);
+  }
+}
+
+/* A step of a staircase, or a stone of a path, lifted while its note is played or its number is said. */
+.step {
+  transition: transform var(--quick) var(--ease-out);
+}
+
+.step[data-lit='true'] {
+  transform: translateY(-7px);
+}
+
+/* Where the missing one goes: the mark on the ground breathes, so that the eye finds it. */
+.mark {
+  animation: beckon 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes beckon {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * A story. Those on the move stand apart from those who stay. While the story is being told they are first shown
+ * as they were before — not yet come, or not yet gone — and then move: come in from the side, or step away and
+ * fade to a shadow of themselves, which is what is left of someone who has gone.
+ */
+.movers {
+  transition:
+    transform 0.7s var(--ease-out),
+    opacity 0.5s linear;
+}
+
+.movers[data-change='leave'] {
+  opacity: 0.36;
+}
+
+/* Back to how it stood, at once: it is the moving that is shown, not the going back. */
+.movers[data-told='before'] {
+  transition: none;
+}
+
+.movers[data-change='join'][data-told='before'] {
+  opacity: 0;
+  transform: translateX(44px);
+}
+
+.movers[data-change='leave'][data-told='before'] {
+  opacity: 1;
+  transform: translateX(var(--back));
+}
+
+/* The little lines in the air beside the ones on the move: not there until they have moved. */
+.wind {
+  opacity: 0.3;
+  transition: opacity 0.3s linear 0.5s;
+}
+
+.movers[data-told='before'] .wind {
+  opacity: 0;
+  transition: none;
+}
+
+/* A number to listen to: a bell. It is a button where it is the thing being asked about. */
+.bell {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.listen {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: var(--tap);
+  border-radius: var(--radius-m);
+}
+
+.waves {
+  opacity: 0.25;
+  transition: opacity var(--quick) linear;
+}
+
+.bell[data-sounding='true'] .waves {
+  opacity: 1;
+  animation: ring 0.5s ease-in-out infinite alternate;
+}
+
+.bell[data-sounding='true'] {
+  animation: swing 0.5s ease-in-out infinite alternate;
+  transform-origin: 50% 10%;
+}
+
+@keyframes ring {
+  from {
+    transform: scale(0.94);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes swing {
+  from {
+    transform: rotate(-5deg);
+  }
+  to {
+    transform: rotate(5deg);
+  }
+}
+
+/*
  * Giving out so many. Three things on the board: the friends who each want one, what has been given so far, and
  * the pile to give from. The pile and what has been given are each one large target — tapping the pile gives the
  * thing that was tapped, tapping what has been given takes one back — so nothing a small finger has to hit is small.

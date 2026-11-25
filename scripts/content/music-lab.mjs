@@ -42,10 +42,21 @@ const playedWords = (voice, played) =>
     ? played.map((step) => (step === 1 ? 'short' : 'long')).join(', ')
     : played.map(noteWord).join(', ');
 
-function lesson({ id, title, summary, minutes = 3, needsSound, demo, guided, pool, count }) {
+function lesson({
+  id,
+  version = 1,
+  title,
+  summary,
+  minutes = 3,
+  needsSound,
+  demo,
+  guided,
+  pool,
+  count,
+}) {
   return {
     id,
-    version: 1,
+    version,
     world: 'music-lab',
     title,
     summary,
@@ -264,7 +275,9 @@ function beatLesson() {
 const THREE_BARS = ['c4', 'e4', 'g4'];
 const FOUR_BARS = ['c4', 'd4', 'e4', 'g4'];
 const FIVE_BARS = ['c4', 'd4', 'e4', 'g4', 'a4'];
-const SIX_BARS = [...FIVE_BARS, 'c5'];
+/** Five again, with the C above in place of the D: for a tune that climbs the whole octave. (Never six: on a screen
+ * 320 points wide a sixth bar leaves each of them narrower than a small finger needs.) */
+const OCTAVE_BARS = ['c4', 'e4', 'g4', 'a4', 'c5'];
 
 const barCard = (note) => ({
   id: note,
@@ -450,6 +463,9 @@ function tuneLesson() {
   });
   return lesson({
     id,
+    // The second version: three of its tunes were first written for six bars, which are too narrow to be a fair
+    // target on a small phone, and went live that way before they were changed to five.
+    version: 2,
     title: 'Make a tune',
     summary:
       'Chime bars, and a tune to make up with a shape to it: going up, coming down, over a hill and back, the same thing twice, or home to the biggest bar. There are many right tunes, and your child’s own is as right as any. It can be played back and changed before saying it is done.',
@@ -460,14 +476,14 @@ function tuneLesson() {
       ['guided-down', 'down', FIVE_BARS, 'a4', 'e4', 'c4'],
     ].map(row),
     pool: [
-      ['up-four', 'up', SIX_BARS, 'c4', 'e4', 'g4', 'c5'],
-      ['down-four', 'down', SIX_BARS, 'c5', 'a4', 'e4', 'c4'],
+      ['up-four', 'up', OCTAVE_BARS, 'c4', 'e4', 'g4', 'c5'],
+      ['down-four', 'down', OCTAVE_BARS, 'c5', 'a4', 'e4', 'c4'],
       ['hill-three', 'hill', FIVE_BARS, 'd4', 'a4', 'e4'],
       ['hill-five', 'hill', FIVE_BARS, 'c4', 'e4', 'a4', 'g4', 'd4'],
       ['twice-four', 'twice', FIVE_BARS, 'e4', 'g4', 'e4', 'g4'],
       ['twice-six', 'twice', FIVE_BARS, 'c4', 'e4', 'g4', 'c4', 'e4', 'g4'],
       ['home-four', 'home', FIVE_BARS, 'e4', 'a4', 'g4', 'c4'],
-      ['home-five', 'home', SIX_BARS, 'g4', 'a4', 'e4', 'd4', 'c4'],
+      ['home-five', 'home', FIVE_BARS, 'g4', 'a4', 'e4', 'd4', 'c4'],
     ].map(row),
     count: 4,
   });
@@ -585,7 +601,7 @@ export function buildMusicLabPack() {
     schemaVersion: 1,
     id: 'music-lab',
     world: 'music-lab',
-    contentVersion: 1,
+    contentVersion: 2,
     strings: { en: STRINGS },
     skills: SKILLS,
     lessons: [

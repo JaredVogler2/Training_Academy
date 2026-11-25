@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { DRUM_HZ, TICK_HZ, audio, playTone } from '@/audio';
 import { keepTime, readTimeKept, writeTimeKept, type BeatMark } from '@/engine';
 import {
@@ -16,6 +16,7 @@ import type { MakeSituation } from '@/game/lesson/script';
 import { useScript } from '@/game/lesson/useScript';
 import lesson from '@/game/lesson/Lesson.module.css';
 import { IconPointer } from '@/ui/icons';
+import { usePressNow } from './press';
 import { beatScript, periodOf } from './script';
 import { musicText } from './text';
 import styles from './musicLab.module.css';
@@ -24,8 +25,6 @@ import styles from './musicLab.module.css';
 export const BEFORE_THE_BEAT = 450;
 /** After the last beat, this share of a beat is waited for a late tap before the tapping is handed in. */
 const WAIT_FOR_LAST = 0.62;
-/** A click that follows a press within this long (ms) is the same tap, and is not counted twice. */
-const SAME_TAP = 900;
 
 interface Going {
   /** Which run of the beat this is about: a new one starts from nothing. */
@@ -95,7 +94,6 @@ export function BeatBoard({ state, runner, pack, paused, calm }: BoardProps) {
   const [going, setGoing] = useState<Going>({ run: '', sounded: 0, tapped: [] });
   const live = useRef<Live | null>(null);
   const [struck, setStruck] = useState(0);
-  const lastPress = useRef(-Infinity);
 
   useEffect(() => {
     if (paused || demo || answered) return;
@@ -179,17 +177,7 @@ export function BeatBoard({ state, runner, pack, paused, calm }: BoardProps) {
       );
     }
   };
-  const press = (event: PointerEvent<HTMLButtonElement>) => {
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
-    lastPress.current = performance.now();
-    strike(lastPress.current);
-  };
-  // A key, or a tap the browser reported only as a click: counted here, and never a second time.
-  const click = () => {
-    const now = performance.now();
-    if (now - lastPress.current < SAME_TAP) return;
-    strike(now);
-  };
+  const press = usePressNow(strike);
 
   // Where the beat has got to, and what each beat to tap looks like.
   const mine = going.run === run && !demo ? going : null;
@@ -250,8 +238,8 @@ export function BeatBoard({ state, runner, pack, paused, calm }: BoardProps) {
             aria-disabled={demo || answered}
             data-same={same}
             data-sounded={sounded}
-            onPointerDown={press}
-            onClick={click}
+            onPointerDown={press.onPointerDown}
+            onClick={press.onClick}
           >
             <svg viewBox="-60 -60 120 120" aria-hidden="true" focusable="false">
               <circle r="56" fill="#ff8f7a" stroke="#c94f3b" strokeWidth="5" />

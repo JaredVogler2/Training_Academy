@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { recordError } from '@/app/diagnostics';
-import { useProfiles } from './profiles';
+import { refreshProfiles, useProfiles } from './profiles';
 import { getRepository } from './services';
 import { WORLDS, isOpen, lessonsOf, type WorldInfo } from './worlds';
 
@@ -13,8 +13,16 @@ const NOTHING: ReadonlySet<string> = new Set();
 
 /** The lessons the player who is playing has finished, by id. Empty until it is known, and for nobody. */
 export function useFinishedLessons(): ReadonlySet<string> {
-  const { activeId } = useProfiles();
+  const { status, activeId } = useProfiles();
   const [found, setFound] = useState<{ for: string; done: ReadonlySet<string> } | null>(null);
+
+  // Who is playing has to be known before what they have finished can be. The map finds out as it opens, and
+  // so do an activity and the grown-ups' area; but a world's page opened by its own address (the page loaded
+  // again, a tab the phone has brought back) has none of them before it. Without this it showed nothing as
+  // finished and sent "Play" back to the first activity.
+  useEffect(() => {
+    if (status === 'loading') void refreshProfiles();
+  }, [status]);
 
   useEffect(() => {
     if (activeId === null) return;

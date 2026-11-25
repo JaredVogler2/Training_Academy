@@ -88,7 +88,7 @@ export function PairsBoard({ state, runner, pack, module, paused, calm }: BoardP
   const { task } = challenge;
   const { Picture } = module;
   const demo = view.stage === 'demo';
-  const [asked, again] = useAgain();
+  const { asked, again, ask } = useAgain(view.stepIndex);
   const seconds = useSeconds();
   usePreparedLines(state);
 
@@ -99,7 +99,7 @@ export function PairsBoard({ state, runner, pack, module, paused, calm }: BoardP
       pairsScript({
         stage: view.stage,
         event,
-        again: asked > 0,
+        again,
         parts: 2,
         sequence: [],
         lines: linesOf(state),
@@ -201,7 +201,7 @@ export function PairsBoard({ state, runner, pack, module, paused, calm }: BoardP
         mood={mood}
         aim={aim}
         after={calm ? 0 : script.length}
-        onAgain={again}
+        onAgain={ask}
       />
     </>
   );

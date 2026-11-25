@@ -99,7 +99,7 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
   const mode = modeOf(task);
   const demo = view.stage === 'demo';
   const revealed = !demo && view.shownAnswer !== null;
-  const [asked, again] = useAgain();
+  const { asked, again, ask } = useAgain(view.stepIndex);
   const seconds = useSeconds();
   usePreparedLines(state);
 
@@ -129,7 +129,7 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
   const situation: RobotSituation = {
     stage: view.stage,
     event,
-    again: asked > 0,
+    again,
     mode,
     way: way.frames.length - 1,
     parts: mode === 'live' ? (answer?.commands.length ?? 0) : mode === 'mend' ? 1 : parts.length,
@@ -614,7 +614,7 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
         mood={mood}
         aim={aim}
         after={calm ? 0 : script.length}
-        onAgain={again}
+        onAgain={ask}
       >
         {mode !== 'live' && !demo && !answered && (
           <ActionButton

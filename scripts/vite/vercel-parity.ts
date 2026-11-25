@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { appendFileSync, existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve, sep } from 'node:path';
 import { getTransformedRoutes } from '@vercel/routing-utils';
 import type { Plugin } from 'vite';
@@ -154,6 +154,21 @@ export function vercelParity(): Plugin {
         return existsSync(absolute) && statSync(absolute).isFile();
       };
 
+      // For the browser tests, which name a file: a note of each page asked for, as it arrives and again when its
+      // answer has been sent, so that a page a browser says it never received can be looked up from the server's
+      // side (e2e/diagnosis.ts). Nothing is noted otherwise.
+      const pageLog = process.env.PREVIEW_PAGE_LOG;
+      let pages = 0;
+      const note = (entry: Record<string, unknown>): void => {
+        if (!pageLog) return;
+        try {
+          appendFileSync(pageLog, `${JSON.stringify(entry)}\n`);
+        } catch {
+          // A note that cannot be written is not worth a failed request.
+        }
+      };
+      if (pageLog) writeFileSync(pageLog, '');
+
       server.middlewares.use((req, res, next) => {
         if (req.method !== 'GET' && req.method !== 'HEAD') {
           next();
@@ -178,6 +193,14 @@ export function vercelParity(): Plugin {
           return;
         }
         if (resolution.path.endsWith('.html')) {
+          const page = {
+            id: (pages += 1),
+            path: pathname,
+            arrived: Date.now(),
+            agent: req.headers['user-agent'] ?? '',
+          };
+          note(page);
+          res.on('finish', () => note({ ...page, answered: Date.now() }));
           // Served here so the headers above are exactly what the page gets.
           res.statusCode = 200;
           res.setHeader('Content-Type', 'text/html; charset=utf-8');

@@ -38,7 +38,7 @@ export function useChoosing({ state, module, paused, calm }: BoardProps) {
   }
   const demo = view.stage === 'demo';
   const glance = challenge.prompt.glance === true;
-  const [asked, again] = useAgain();
+  const { asked, again: toldBefore, ask } = useAgain(view.stepIndex);
   const seconds = useSeconds();
   usePreparedLines(state, module);
 
@@ -58,7 +58,7 @@ export function useChoosing({ state, module, paused, calm }: BoardProps) {
       event,
       prompt: challenge.prompt.stimulus,
       glance,
-      again: asked > 0,
+      again: toldBefore,
       choices: view.choices
         .filter(({ available }) => available)
         .map(({ choice }) => ({ id: choice.id, stimulus: choice.stimulus })),
@@ -70,7 +70,7 @@ export function useChoosing({ state, module, paused, calm }: BoardProps) {
     };
     // `state` changes with every tap; the script depends only on what is listed.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view.key, view.hintsUsed, event, shown, tried, revealed, asked, seconds]);
+  }, [view.key, view.hintsUsed, event, shown, tried, revealed, asked, toldBefore, seconds]);
   const script = useMemo(
     () => (module.chooseScript ?? pointingScript)(situation),
     [module, situation],
@@ -128,6 +128,9 @@ export function useChoosing({ state, module, paused, calm }: BoardProps) {
   );
   const unseen = glance && !answered && willLook && !glanced;
   const turnedAway = glance && (looking || unseen);
+  // Asked to be told again while the look is still to come, or in the middle of it: the look is still owed, so
+  // the question starts over with it. Asked once it has been seen through, only the words are said again.
+  const again = () => ask(!turnedAway);
 
   const standingOf = (choice: Choice, available: boolean): ChoiceStanding => {
     const isAnswer = shown === choice.id && reached;

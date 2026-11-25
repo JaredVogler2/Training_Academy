@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
 import { defineConfig, devices, webkit, type Project } from '@playwright/test';
+import { pageLogPath } from './e2e/diagnosis';
 
 /**
  * Browser tests run against the production build, served by `vite preview` under the same headers, rewrites and
@@ -139,6 +140,8 @@ export default defineConfig({
           timeout: 180_000,
           stdout: 'ignore' as const,
           stderr: 'pipe' as const,
+          // The server notes each page it is asked for, for a test that runs out of time waiting for one.
+          env: { PREVIEW_PAGE_LOG: pageLogPath(PORT) },
         },
       }),
 });

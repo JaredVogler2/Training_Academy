@@ -1,16 +1,23 @@
-import lexiconFile from '@/art/lexicon.json';
+import type { CSSProperties } from 'react';
 import { Letters } from '@/art/letters';
 import { KitPicture, wordFor } from '@/art/pictures';
-import type { Stimulus } from '@/engine';
+import { readReadingPicture, type Stimulus } from '@/engine';
 import type { PictureProps, WorldModule } from '../modules';
-import { chooseScript, makeScript, soundOf } from './script';
+import {
+  BeatsWord,
+  ClapCard,
+  Placed,
+  RhymeWord,
+  Sentence,
+  SentenceToRead,
+  describeScene,
+} from './scenes';
+import { chooseScript, linesFor, makeScript, soundOf } from './script';
 import { voice } from './voice';
+import { lettersOf } from './words';
 import styles from './readingCove.module.css';
 
-/** Reading Cove: sounds first, then letters, then words. */
-
-const lexicon: Readonly<Record<string, { word: string; letters?: string[] }>> = lexiconFile.words;
-const lettersOf = (id: string) => lexicon[id]?.letters ?? [];
+/** Reading Cove: sounds first, then letters, then words, and then words in a row. */
 
 /**
  * Something to listen to, with nothing to see: a shell, the way a shell is held to the ear. Tapping it asks to hear
@@ -73,7 +80,14 @@ function Shell({
   );
 }
 
-function Picture({ stimulus, sounding = false, onAgain, place }: PictureProps) {
+function Picture({
+  stimulus,
+  sounding = false,
+  part,
+  solved = false,
+  onAgain,
+  place,
+}: PictureProps) {
   switch (stimulus.type) {
     case 'picture':
       return (
@@ -95,22 +109,57 @@ function Picture({ stimulus, sounding = false, onAgain, place }: PictureProps) {
           <Letters letters={stimulus.letters} className={styles.letters} />
         </span>
       );
-    case 'word':
+    case 'word': {
+      const letters = lettersOf(stimulus.id);
+      // Which sound is being said, where the saying of it is followed sound by sound.
+      const at = sounding && part !== undefined && part < letters.length ? part : undefined;
       return (
-        <span className={styles.word} data-sounding={sounding} data-word={stimulus.id}>
-          {lettersOf(stimulus.id).map((letter, index) => (
-            <span key={index} className={styles.tile}>
+        <span
+          className={styles.word}
+          data-sounding={sounding}
+          data-word={stimulus.id}
+          data-at={at}
+          style={{ '--at': at ?? 0, '--of': Math.max(1, letters.length) } as CSSProperties}
+        >
+          {letters.map((letter, index) => (
+            <span key={index} className={styles.tile} data-now={index === at}>
               <Letters letters={letter} className={styles.letters} />
             </span>
           ))}
-          {/* A finger running under the word while it is said slowly. */}
+          {/* A finger under the word while it is said slowly. */}
           <span className={styles.sweep} aria-hidden="true" />
         </span>
       );
-    // Things other worlds draw: an amount, a sign, a scene.
+    }
+    case 'scene': {
+      const scene = readReadingPicture(stimulus);
+      switch (scene?.kind) {
+        case 'rhyme':
+          return <RhymeWord word={scene.word} sounding={sounding} />;
+        case 'beats':
+          return <BeatsWord word={scene.word} sounding={sounding} part={part} solved={solved} />;
+        case 'claps':
+          return <ClapCard count={scene.count} sounding={sounding} />;
+        case 'sentence':
+          // On the small card that stands for the activity there is room for two words at a size that can be
+          // seen to be print: the whole line would be a hair's breadth high.
+          return place === 'card' ? (
+            <Sentence words={scene.words.slice(0, 2)} part={undefined} />
+          ) : (
+            <SentenceToRead words={scene.words} part={sounding ? part : undefined} />
+          );
+        case 'placed':
+          return (
+            <Placed thing={scene.thing} how={scene.how} base={scene.base} sounding={sounding} />
+          );
+        case undefined:
+          return null;
+      }
+    }
+    // Things other worlds draw: an amount, a sign.
+    // eslint-disable-next-line no-fallthrough
     case 'quantity':
     case 'sign':
-    case 'scene':
       return null;
   }
 }
@@ -133,9 +182,12 @@ export function describe(stimulus: Stimulus): string {
       return text.letter(stimulus.letters);
     case 'word':
       return text.word(lettersOf(stimulus.id));
+    case 'scene': {
+      const scene = readReadingPicture(stimulus);
+      return scene ? describeScene(scene) : '';
+    }
     case 'quantity':
     case 'sign':
-    case 'scene':
       return '';
   }
 }
@@ -146,6 +198,7 @@ const readingCove: WorldModule = {
   chooseScript,
   makeScript,
   soundOf,
+  linesFor,
   voice,
 };
 export default readingCove;

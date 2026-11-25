@@ -1,6 +1,7 @@
 import {
   SETTINGS_KEY,
   expect,
+  listenIn,
   myTurn,
   next,
   screenFit,
@@ -134,8 +135,8 @@ test.describe('read the word', () => {
   test('is not read out to a child on their own until they ask for help @layout', async ({
     page,
     press,
-    guard,
   }) => {
+    const said = await listenIn(page);
     await page.goto('/world/reading-cove');
     await press(page.locator('[data-lesson="rc-blend-02"]'));
     await expect(lesson(page).locator('[data-word]')).toBeVisible();
@@ -153,18 +154,19 @@ test.describe('read the word', () => {
     }
     await expect(lesson(page)).toHaveAttribute('data-stage', 'independent');
     const word = await lesson(page).locator('[data-word]').getAttribute('data-word');
-    const slow = () =>
-      guard.requested().filter((path) => path.startsWith(`/immutable/slow.${String(word)}-`));
-    // Time enough for anything that was going to be said to have been asked for.
+    // Whether the word was said, not whether its clip was fetched: what a step may need is fetched as the step
+    // arrives, so that a clip the finger moves in time with starts on time.
+    const slow = async () => (await said()).filter((key) => key === `slow.${String(word)}`);
+    // Time enough for anything that was going to be said to have been said.
     await page.waitForTimeout(3000);
-    expect(slow()).toEqual([]);
+    expect(await slow()).toEqual([]);
     // A screen reader is given the letters, not the word.
     await expect(lesson(page).locator('[data-same]')).toContainText(
       `A word to read: ${Array.from(String(word)).join(', ')}`,
     );
 
     await press(page.getByRole('button', { name: 'Help me' }));
-    await expect.poll(() => slow().length).toBe(1);
+    await expect.poll(async () => (await slow()).length).toBe(1);
     await answer(page, press);
     await expect(lesson(page).getByRole('status')).toHaveText('Yes. That is the word.');
   });

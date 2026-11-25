@@ -2,15 +2,16 @@
 
 **Status: seven worlds, a first pass through each.** Every activity the six islands' pages promised is authored
 and playable, and so are the Music Lab's six. Counts in this document are of real content in the repository,
-and the tests pin the ones quoted most. (Number Garden's eleven later activities are on a pull request that is not merged: they are not live.)
+and the tests pin the ones quoted most. (Reading Cove's six later activities are on a pull request that is not
+merged: they are not live.)
 
 |                              | Authored and tested |
 | ---------------------------- | ------------------- |
 | Worlds with playable content | 7 of 7              |
-| Activities (lessons)         | 56                  |
-| Challenges                   | 639                 |
-| Skills                       | 61                  |
-| Spoken lines and words       | 484 recordings      |
+| Activities (lessons)         | 62                  |
+| Challenges                   | 714                 |
+| Skills                       | 67                  |
+| Spoken lines and words       | 552 recordings      |
 
 **Nothing here has been reviewed by an early-years teacher or tried with a child, and no person has listened to
 the recordings.** All three are required before any claim about what the game teaches. Each world's brief in
@@ -171,50 +172,112 @@ at the first try in practice with the guide."_
 
 These tables are written from the pack files.
 
-### Reading Cove — `reading-cove.v1.json` (contentVersion 1)
+### Reading Cove — `reading-cove.v2.json` (contentVersion 2)
 
-10 activities, 126 challenges, 10 skills, 31 spoken lines. Written by `scripts/content/reading-cove.mjs`.
+16 activities, 201 challenges, 16 skills, 56 spoken lines. Written by `scripts/content/reading-cove.mjs`.
 
-**How it teaches.** Listening comes first: a sound, and what made it; a short run of sounds to play back. Then the
-first sound of a word, drawn out by the voice ("sssun"), matched to another word that starts the same. Then a
-letter: its drawn shape with two key words, and the question "which of these starts with this?". Then blending:
-a word said slowly to be found among pictures, and last a printed word to be read and matched to its picture.
+**How it teaches.** Listening comes first: a sound, and what made it; a short run of sounds to play back. Then,
+still by ear and with pictures only, the parts of a word that can be heard before any letter is met: whether two
+words rhyme, how many beats a word is clapped in, and the first sound of a word, drawn out by the voice ("sssun"),
+matched to another word that starts the same. Then a letter: its drawn shape with two key words, and the question
+"which of these starts with this?". Then blending: a word said slowly to be found among pictures, and a printed
+word to be read and matched to its picture. Then the other way about: a word that is heard, and its three letters
+to put in order. Then the first three pairs of letters that write one sound, and words with those in them. And
+last a sentence of five words, read and matched to the picture it tells of.
+
+**What a child is helped with, and what is left to the child.** In each of the six later activities the two steps
+with support and the steps alone differ in one thing, and it is the thing the activity is about:
+
+| Activity          | With support                                                                 | Alone                                         |
+| ----------------- | ---------------------------------------------------------------------------- | --------------------------------------------- |
+| Which one rhymes? | the word is said again before each choice, so the two are heard side by side | the word once, then each choice once          |
+| Clap the word     | the word is said in its beats, a clap and a mark for each                    | the word is only said; the clapping is theirs |
+| Build the word    | the word is said slowly, and each place lights as its sound begins           | the word is said once, plainly                |
+| Two letters       | the pair is given a word that starts with its sound                          | the pair is shown with no word                |
+| Read the word     | the word is said slowly, a finger under each tile                            | nothing is said                               |
+| Read the sentence | it is read aloud, a finger under each word                                   | nothing is said, and no finger shows the way  |
+
+A wrong answer is answered by the thing itself: the word that was picked and the word asked about are said one
+after the other (they do not end the same); the card that was picked is clapped and then the word is (not the same
+number); the letters that were in their places stay there and the word is said slowly. A sentence that was read
+wrongly is not read out: that is asked for, as help.
+
+**Where a sound or a beat begins** is not guessed. A word said slowly, a word in its beats and a sentence read
+aloud each come with marks — when each sound, beat or word begins — which the voice tool writes down from what the
+synthesiser says of its own speech (`src/voice/marks/`, `scripts/voice/make_voice.py`). The finger, the lit place
+and the clap follow those marks. Nobody has checked by ear that they fall where they should.
 
 **What is deliberately not here.** No recording of a letter's sound on its own. A synthesiser adds a vowel to a
 consonant said alone, and no machine check can say whether a single sound is right; a wrong model of a sound is
 worse than none. Letters are taught through words until a person records or approves the sounds. No letter
-names, no capitals, no rhyme, no syllables, no segmenting, no sentences.
+names, no capitals. No word that has not been met as a picture, and no made-up word: the brief's last step, a
+check that a child can read a word they have never seen (P6), is not built, so nothing here shows that. Nothing a
+child says is listened to: reading aloud is not scored. Sentences are all of one shape, "a … on a …" or "a … in a
+…": every word of them can be sounded out from letters that are taught, and every one can be drawn; a sentence
+with a verb in it ("a cat sat") would need drawings of doing, which there are none of. Only three pairs of
+letters, and no word with two consonants together ("ship", not "shrimp").
 
-**Counts, as the tests pin them:** 15 letters taught (s m a t, p i n o, f l c h, u e r); 25 different words
-blended or read, each three letters spelt as it sounds; 14 of them given to read in print; 0 sentences. Nothing
-to be read uses a letter that has not been taught (`tests/content/readingCoveRules.test.ts`). Every activity
-here needs sound and says so.
+**Counts, as the tests pin them:** 15 letters taught (s m a t, p i n o, f l c h, u e r) and 3 pairs (sh ch th);
+33 words in the lexicon spelt as they sound, 7 of them with a pair; 32 different words blended, read or built; 21
+of them given to read in print; 13 built from their letters; 13 words asked about for a rhyme; 13 words clapped
+(4 of one beat, 5 of two, 4 of three); 12 different sentences, answered from 29 different pictures. Nothing to be
+read uses a letter that has not been taught, the little words included (`tests/content/readingCoveRules.test.ts`).
+Every activity here needs sound and says so.
 
-| Activity        | Title                                | Challenges | A sitting                        | The child's part |
-| --------------- | ------------------------------------ | ---------- | -------------------------------- | ---------------- |
-| `rc-listen-01`  | What made that sound?                | 11         | 1 shown, 2 guided, 4 of 8 alone  | a choice         |
-| `rc-listen-02`  | Play it back                         | 11         | 1 shown, 2 guided, 4 of 8 alone  | repeat an order  |
-| `rc-first-01`   | Which one starts the same? (s, m, f) | 11         | 1 shown, 2 guided, 4 of 8 alone  | a choice         |
-| `rc-first-02`   | Which one starts the same? (n, l, r) | 11         | 1 shown, 2 guided, 4 of 8 alone  | a choice         |
-| `rc-letters-01` | Letters and their sounds: s, m, a, t | 14         | 4 shown, 2 guided, 4 of 8 alone  | a choice         |
-| `rc-letters-02` | Letters and their sounds: p, i, n, o | 14         | 4 shown, 2 guided, 4 of 8 alone  | a choice         |
-| `rc-letters-03` | Letters and their sounds: f, l, c, h | 14         | 4 shown, 2 guided, 4 of 8 alone  | a choice         |
-| `rc-letters-04` | Letters and their sounds: u, e, r    | 13         | 3 shown, 2 guided, 4 of 8 alone  | a choice         |
-| `rc-blend-01`   | The slow word                        | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice         |
-| `rc-blend-02`   | Read the word                        | 14         | 1 shown, 2 guided, 4 of 11 alone | a choice         |
+**The ten activities that were live before these did not change**, and could not have: each lesson is held to what
+was written down for it (`src/content/lessons.lock.json`). Their clips for words said slowly were made again, so
+that every such clip has its marks; a finger now steps from tile to tile under a word that is read out, where it
+used to run along under it at one speed whatever the word.
 
-| Skill                                     | For grown-ups                            | What it means                                                                                                                                                         |
-| ----------------------------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `phonics.listening.match-sound-to-source` | Tell sounds apart                        | Hears a sound and finds what made it, out of two or three things that make different sounds.                                                                          |
-| `phonics.listening.repeat-sound-pattern`  | Repeat a pattern of sounds               | Hears two or three sounds one after another and plays them back in the same order.                                                                                    |
-| `phonics.awareness.first-sound-s-m-f`     | Hear the first sound of a word: s, m, f  | Hears that two spoken words start with the same sound, for words that start with s, m or f. Done by ear, with pictures; no letters are shown.                         |
-| `phonics.awareness.first-sound-n-l-r`     | Hear the first sound of a word: n, l, r  | Hears that two spoken words start with the same sound, for words that start with n, l or r.                                                                           |
-| `phonics.letters.s-m-a-t`                 | Link letters to their sounds: s, m, a, t | Shown the letter s or m or a or t with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with. |
-| `phonics.letters.p-i-n-o`                 | Link letters to their sounds: p, i, n, o | Shown the letter p or i or n or o with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with. |
-| `phonics.letters.f-l-c-h`                 | Link letters to their sounds: f, l, c, h | Shown the letter f or l or c or h with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with. |
-| `phonics.letters.u-e-r`                   | Link letters to their sounds: u, e, r    | Shown the letter u or e or r with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with.      |
-| `phonics.blending.hear-slow-word`         | Blend a slow word by ear                 | Hears a short word said slowly, sound running into sound, and knows which word it is, told apart from a word one sound different.                                     |
-| `phonics.decoding.read-short-word`        | Read a short word                        | Reads a three-letter word made of letters already taught, with nothing said aloud, and finds its picture among words that are nearly the same.                        |
+| Activity          | Title                                | Challenges | A sitting                        | The child's part |
+| ----------------- | ------------------------------------ | ---------- | -------------------------------- | ---------------- |
+| `rc-listen-01`    | What made that sound?                | 11         | 1 shown, 2 guided, 4 of 8 alone  | a choice         |
+| `rc-listen-02`    | Play it back                         | 11         | 1 shown, 2 guided, 4 of 8 alone  | repeat an order  |
+| `rc-rhyme-01`     | Which one rhymes?                    | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice         |
+| `rc-syllables-01` | Clap the word                        | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice         |
+| `rc-first-01`     | Which one starts the same? (s, m, f) | 11         | 1 shown, 2 guided, 4 of 8 alone  | a choice         |
+| `rc-first-02`     | Which one starts the same? (n, l, r) | 11         | 1 shown, 2 guided, 4 of 8 alone  | a choice         |
+| `rc-letters-01`   | Letters and their sounds: s, m, a, t | 14         | 4 shown, 2 guided, 4 of 8 alone  | a choice         |
+| `rc-letters-02`   | Letters and their sounds: p, i, n, o | 14         | 4 shown, 2 guided, 4 of 8 alone  | a choice         |
+| `rc-letters-03`   | Letters and their sounds: f, l, c, h | 14         | 4 shown, 2 guided, 4 of 8 alone  | a choice         |
+| `rc-letters-04`   | Letters and their sounds: u, e, r    | 13         | 3 shown, 2 guided, 4 of 8 alone  | a choice         |
+| `rc-blend-01`     | The slow word                        | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice         |
+| `rc-blend-02`     | Read the word                        | 14         | 1 shown, 2 guided, 4 of 11 alone | a choice         |
+| `rc-spell-01`     | Build the word                       | 13         | 1 shown, 2 guided, 4 of 10 alone | put in order     |
+| `rc-letters-05`   | Two letters, one sound: sh, ch, th   | 13         | 3 shown, 2 guided, 4 of 8 alone  | a choice         |
+| `rc-blend-03`     | Read the word: sh, ch, th            | 11         | 1 shown, 2 guided, 4 of 8 alone  | a choice         |
+| `rc-sentences-01` | Read the sentence                    | 12         | 1 shown, 2 guided, 4 of 9 alone  | a choice         |
+
+**Set against the brief** (`prompt-series/05_PHONICS_ADVENTURE.md`):
+
+| The brief's step                                                 | Here                                                                                                                                                  |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0 sounds around us, patterns of sound, rhyme, syllables, by ear | `rc-listen-01`, `rc-listen-02`, `rc-rhyme-01`, `rc-syllables-01`, `rc-first-01`, `rc-first-02`                                                        |
+| P1 hearing single sounds                                         | first sounds only, and only inside words: no sound is played on its own                                                                               |
+| P2 a letter's shape and its sound                                | `rc-letters-01` to `-04`: fifteen letters, lower case, by key words                                                                                   |
+| P3 blending, by ear and then in print                            | `rc-blend-01`, `rc-blend-02`                                                                                                                          |
+| P4 segmenting: first, middle and last sound; tiles put in order  | `rc-spell-01`: three tiles, three places; each place is a sound. No counters apart from the places, and no question of its own about where a sound is |
+| P5 short words, then pairs of letters, then a sentence           | `rc-letters-05`, `rc-blend-03`, `rc-sentences-01`: three pairs, seven words with one, twelve sentences                                                |
+| P6 a word never met before; a made-up word now and then          | not built                                                                                                                                             |
+
+| Skill                                     | For grown-ups                             | What it means                                                                                                                                                                              |
+| ----------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `phonics.listening.match-sound-to-source` | Tell sounds apart                         | Hears a sound and finds what made it, out of two or three things that make different sounds.                                                                                               |
+| `phonics.listening.repeat-sound-pattern`  | Repeat a pattern of sounds                | Hears two or three sounds one after another and plays them back in the same order.                                                                                                         |
+| `phonics.awareness.first-sound-s-m-f`     | Hear the first sound of a word: s, m, f   | Hears that two spoken words start with the same sound, for words that start with s, m or f. Done by ear, with pictures; no letters are shown.                                              |
+| `phonics.awareness.first-sound-n-l-r`     | Hear the first sound of a word: n, l, r   | Hears that two spoken words start with the same sound, for words that start with n, l or r.                                                                                                |
+| `phonics.letters.s-m-a-t`                 | Link letters to their sounds: s, m, a, t  | Shown the letter s or m or a or t with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with.                      |
+| `phonics.letters.p-i-n-o`                 | Link letters to their sounds: p, i, n, o  | Shown the letter p or i or n or o with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with.                      |
+| `phonics.letters.f-l-c-h`                 | Link letters to their sounds: f, l, c, h  | Shown the letter f or l or c or h with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with.                      |
+| `phonics.letters.u-e-r`                   | Link letters to their sounds: u, e, r     | Shown the letter u or e or r with no word to help, finds a picture whose word starts with its sound; and shown a picture, finds the letter its word starts with.                           |
+| `phonics.blending.hear-slow-word`         | Blend a slow word by ear                  | Hears a short word said slowly, sound running into sound, and knows which word it is, told apart from a word one sound different.                                                          |
+| `phonics.decoding.read-short-word`        | Read a short word                         | Reads a three-letter word made of letters already taught, with nothing said aloud, and finds its picture among words that are nearly the same.                                             |
+| `phonics.awareness.rhyme`                 | Hear that two words rhyme                 | Hears a word and finds the one that rhymes with it, told apart from a word that starts the same and a word that only ends with the same sound. Done by ear, with pictures.                 |
+| `phonics.awareness.syllables`             | Clap the beats of a word                  | Hears a word of one, two or three beats said plainly, and says how many beats it has by choosing as many claps.                                                                            |
+| `phonics.segmenting.build-short-word`     | Build a short word from its sounds        | Hears a three-sound word said plainly and puts its three letters in order: the first sound, the middle one, the last.                                                                      |
+| `phonics.letters.sh-ch-th`                | Link two letters to one sound: sh, ch, th | Shown sh or ch or th with no word to help, finds a picture whose word starts with its sound, and shown a picture, finds the pair its word starts with, told apart from the single letters. |
+| `phonics.decoding.read-word-sh-ch-th`     | Read a short word with sh, ch or th       | Reads a word of three sounds, one of them written with two letters, with nothing said aloud, and finds its picture among words that are nearly the same.                                   |
+| `phonics.decoding.read-short-sentence`    | Read a short sentence                     | Reads five short words in a row with nothing said aloud, and finds the picture they tell of among pictures that differ by one word.                                                        |
 
 ### Number Garden — `number-garden.v3.json` (contentVersion 3)
 
@@ -560,15 +623,15 @@ heard says it needs sound.
 
 From the briefs in `prompt-series/`; `docs/PROGRESS.md` has each brief set against what exists.
 
-| World           | Not built                                                                                                                                                                                | Brief |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
-| Reading Cove    | rhyme and syllables; a sound on its own; segmenting; digraphs; sentences; words not met before; capitals; letter names                                                                   | 05    |
-| Number Garden   | giving out a number that is written (the giving games stop before numerals); patterns, shapes, measuring, estimating and coins (the brief's optional M7); counting in twos or beyond ten | 06    |
-| Robot Ridge     | plans of four to ten steps; conditions ("if the bridge is up")                                                                                                                           | 07    |
-| Memory Forest   | a choice of strategy; recall in a later sitting; more than four things                                                                                                                   | 08    |
-| Inventor Island | a wind shelter; a record that the away-from-screen challenge was done; a portfolio card                                                                                                  | 09    |
-| Explorer Harbor | making up a story; stories that branch; a globe, continents, countries, flags, people and places                                                                                         | 10    |
-| The Music Lab   | tapping a rhythm back; black keys; keeping a tune a child has made; the five other rooms its brief describes                                                                             | 11    |
+| World           | Not built                                                                                                                                                                                                                                                                       | Brief |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| Reading Cove    | a sound on its own; a word never met before, or a made-up one, to show that a word can be read and not only known again; reading aloud that is listened to; sentences with a verb; words with two consonants together; more than three pairs of letters; capitals; letter names | 05    |
+| Number Garden   | giving out a number that is written (the giving games stop before numerals); patterns, shapes, measuring, estimating and coins (the brief's optional M7); counting in twos or beyond ten                                                                                        | 06    |
+| Robot Ridge     | plans of four to ten steps; conditions ("if the bridge is up")                                                                                                                                                                                                                  | 07    |
+| Memory Forest   | a choice of strategy; recall in a later sitting; more than four things                                                                                                                                                                                                          | 08    |
+| Inventor Island | a wind shelter; a record that the away-from-screen challenge was done; a portfolio card                                                                                                                                                                                         | 09    |
+| Explorer Harbor | making up a story; stories that branch; a globe, continents, countries, flags, people and places                                                                                                                                                                                | 10    |
+| The Music Lab   | tapping a rhythm back; black keys; keeping a tune a child has made; the five other rooms its brief describes                                                                                                                                                                    | 11    |
 
 Open questions: who reviews the phonics content and the audio; whether a person should record the voice; how
 prerequisites that cross worlds are shown on the map (nothing is locked, and Glim simply points at the next

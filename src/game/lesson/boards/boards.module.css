@@ -198,6 +198,37 @@
   min-height: 0;
 }
 
+/*
+ * An order with a picture to go by: the word that is being built. The picture stands above the places, a third of
+ * the room at most, and the two rows of cards share the rest.
+ */
+.order[data-with] {
+  grid-template-rows:
+    minmax(0, 0.9fr) fit-content(calc(38% - 10px))
+    fit-content(calc(38% - 10px));
+}
+
+.orderPrompt {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  min-height: 0;
+  transition: transform var(--gentle) var(--ease-out);
+}
+
+.orderPrompt[data-named='true'] {
+  transform: scale(1.06);
+}
+
+/* The place of the sound that is being said: lifted, with a sun edge, whether or not its letter is there yet. */
+.slot[data-sounding='true'] {
+  z-index: 1;
+  border-style: solid;
+  border-color: var(--yes);
+  background: #fff6d2;
+  transform: translateY(-4px) scale(1.06);
+}
+
 .slots,
 .tray {
   display: grid;
@@ -477,6 +508,12 @@
   .order {
     grid-template-rows: minmax(0, 1fr);
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  /* With a picture to go by: the picture first, narrower than either row of cards. */
+  .order[data-with] {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.5fr) minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .slot {

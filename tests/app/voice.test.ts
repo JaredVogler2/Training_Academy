@@ -59,7 +59,13 @@ function studio(options: { enabled?: boolean; unlocked?: boolean } = {}) {
   if (options.unlocked ?? true) engine.unlock();
   const download = vi.fn((url: string) => Promise.resolve(new TextEncoder().encode(url).buffer));
   let now = 0;
-  const narrator = new Narrator(engine, download, () => now);
+  const told: string[] = [];
+  const narrator = new Narrator(
+    engine,
+    download,
+    () => now,
+    (key) => told.push(key),
+  );
   narrator.add(bank);
   return {
     context,
@@ -67,6 +73,8 @@ function studio(options: { enabled?: boolean; unlocked?: boolean } = {}) {
     engine,
     download,
     narrator,
+    /** Every line the voice has announced as begun, in order. */
+    told,
     wait: (ms: number) => {
       now += ms;
     },
@@ -210,6 +218,56 @@ describe('when the voice cannot be heard', () => {
     expect(narrator.has('ng.ask')).toBe(true);
     expect(narrator.has('never.heard.of.it')).toBe(false);
     await expect(narrator.say('never.heard.of.it')).resolves.toBe('unheard');
+  });
+});
+
+describe('what the voice lets it be known that it has said', () => {
+  it('is each line as it begins to play, in order', async () => {
+    const { narrator, told, end } = studio();
+    void narrator.say('ng.ask');
+    await settle();
+    expect(told).toEqual(['ng.ask']);
+    end();
+    void narrator.say('ng.yes');
+    await settle();
+    expect(told).toEqual(['ng.ask', 'ng.yes']);
+  });
+
+  it('is not a line that was only fetched ahead', async () => {
+    const { narrator, told, download } = studio();
+    narrator.prepare(['ng.ask', 'ng.yes']);
+    await settle();
+    expect(download).toHaveBeenCalledTimes(2);
+    expect(told).toEqual([]);
+  });
+
+  it('is not a line that could not be said: sound off, too late, hushed on its way, or unknown', async () => {
+    const silent = studio({ enabled: false });
+    await silent.narrator.say('ng.ask');
+    expect(silent.told).toEqual([]);
+
+    const late = studio();
+    let deliver: (data: ArrayBuffer) => void = () => undefined;
+    late.download.mockReturnValueOnce(
+      new Promise<ArrayBuffer>((resolve) => {
+        deliver = resolve;
+      }),
+    );
+    const saying = late.narrator.say('ng.ask');
+    late.wait(4000);
+    deliver(new ArrayBuffer(8));
+    await saying;
+    expect(late.told).toEqual([]);
+
+    const hushed = studio();
+    const interrupted = hushed.narrator.say('ng.ask');
+    hushed.narrator.hush();
+    await interrupted;
+    expect(hushed.told).toEqual([]);
+
+    const unknown = studio();
+    await unknown.narrator.say('never.heard.of.it');
+    expect(unknown.told).toEqual([]);
   });
 });
 

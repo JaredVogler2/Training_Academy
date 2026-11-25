@@ -131,6 +131,15 @@ export class Writer {
     return spoken > 0 ? this.wait(Math.round(spoken) + AFTER_A_LINE) : this;
   }
 
+  /**
+   * Begin a line and do not wait for it: for what is shown while it is being said, such as a finger under each
+   * word as it is read. Whoever starts one waits for it afterwards, for as long as `spoken` says it lasts.
+   */
+  start(key: string): this {
+    this.moments.push({ at: this.clock, sound: { kind: 'say', key } });
+    return this;
+  }
+
   /** How long a line takes, in milliseconds, for a beat that should last as long as its words. */
   spoken(key: string): number {
     return Math.round(this.seconds(key) * 1000);

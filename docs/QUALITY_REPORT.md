@@ -1,16 +1,140 @@
 # Quality report
 
-This file has five parts. The first is the review of Number Garden's later activities, the ones that bring
-numerals in (the second half of phase 06). The second is the review of the Music Lab (phase 11). The third is
-the review of the six worlds and the voice (phases 04 to 10). The fourth is Phase 03's review of what Phase 03
-built. The fifth is Phase 02's report on the home screen, kept as it was written, because it is still the
-assessment of the hub.
+This file has six parts. The first is the review of Reading Cove's later activities, from rhyme to a sentence
+(the second half of phase 05). The second is the review of Number Garden's later activities, the ones that
+bring numerals in (the second half of phase 06). The third is the review of the Music Lab (phase 11). The
+fourth is the review of the six worlds and the voice (phases 04 to 10). The fifth is Phase 03's review of what
+Phase 03 built. The sixth is Phase 02's report on the home screen, kept as it was written, because it is still
+the assessment of the hub.
 
 All are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
 reading of screenshots and of the running game in headless Chromium. Nobody else has reviewed it, no child has
 played it, **no person has listened to the voice**, and it has never run on a real graphics card. The owner has
 opened the live site (Phase 03) on an iPhone; nothing in this file comes from a device. The standard it is rated
 against is `docs/ART_DIRECTION.md`.
+
+## Phase 05, second half (2026-11-25): rhyme to a sentence in Reading Cove
+
+### Summary
+
+Reading Cove had ten activities and stopped at a printed word of three letters. It has sixteen. Two of the new
+ones come early, before any letter, and are done by ear: which one rhymes, and clap the word. Four come after
+the printed word: a word to build from its three letters; sh, ch and th; words with those in them; and a
+sentence of five words, answered by the picture it tells of.
+
+What is new in how they are made is that the screen now follows the voice. A word is said in its beats and a
+clap lands on each; a word is said slowly and the place of each letter lights as its sound begins; a sentence
+is read and a finger stands under the word that is being said. The moments come from the synthesiser, which
+knows which of its samples belong to which sound, and are written down with each recording.
+
+**That is also the whole of the risk, and it is the same risk as before with more resting on it.** Nobody has
+heard a clip. Now clips are cut inside words, and things happen on the screen at moments inside clips, and
+nobody has checked either against what can be heard.
+
+### How it was made, which bears on how far to trust it
+
+In one working tree, by one hand, straight after Number Garden's numerals. The content is 75 challenges written
+as rows of tables; rules that work each answer out again, from how the words are spelt and clapped, refuse a
+row that is wrong, and every rule is shown to fire. The ten activities that were live could not be changed in
+the making of it (each lesson is held to a mark made from the whole of it), and were not. Eleven pictures were
+drawn for it. Every picture of one thing on or in another, twenty-nine of them, was looked at on one sheet; the
+activities were looked at in the running build at six screen sizes, changed, and looked at again. Thirty-seven
+faults were put back, one at a time, to see the tests fail.
+
+What made the clips was changed as well as used, which matters: 25 recordings of slow words that were already
+live were made again, by a different cut. Each was heard by the recogniser as it had been heard before.
+
+### The review
+
+Looked at in the running production build at 390×844, 320×568, 844×390, 750×342, 640×256 and 1366×768:
+`docs/review/reading-cove/`, 19 pictures. 1 = poor, 3 = acceptable, 5 = excellent.
+
+| Category             | The six | Why                                                                                                                                                                                                                                                             |
+| -------------------- | :-----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composition          |    4    | One thing asked about, two or three to answer with, as everywhere. A word to build has its picture above three places and its letters below. A sentence is print across the top and its pictures in a row under it. A tall phone leaves air round a short word. |
+| Craft and materials  |   3.5   | The print is the letters a child is taught, and is good. The pictures of one thing on another are two kit pictures put together by arithmetic: they read, and they are plain. Of the eleven new pictures the chip is the weakest: a ruffled yellow shape.       |
+| Cohesive palette     |    4    | The cove's coral and the kit's colours. Coral is the one colour that means "this, now" in what is read: the end of a word, the finger under a word.                                                                                                             |
+| Liveliness           |   3.5   | A clap pops and the picture nods on each beat; a place lifts as its sound comes; a finger steps from word to word. Between questions nothing moves.                                                                                                             |
+| Interface legibility |    4    | Everything pressed is 56 points or more on the four tightest screens, measured. Print is the new thing to be legible, and on the flattest phone held sideways it is small (below).                                                                              |
+| Motion quality       |    4    | Every movement is the thing being taught, at the moment it is said. With motion reduced nothing is followed: the board stands still and the words are still said. Seen in a browser, not on a device, and never against the sound.                              |
+| The sound            |    —    | **Not rated.** Nobody has heard a clip, a cut or a clap.                                                                                                                                                                                                        |
+| Child comprehension  |    —    | **Not rated.** No child has seen it.                                                                                                                                                                                                                            |
+
+Measured, in pixels, in headless Chromium:
+
+| What is read or pressed                          | 320×568 | 390×844  | 844×390 | 640×256 | 768×1024 | 1366×768 |
+| ------------------------------------------------ | :-----: | :------: | :-----: | :-----: | :------: | :------: |
+| A small letter of a sentence (how high)          |   18    |    30    |   18    |   13    |    35    |    22    |
+| A small letter of a word to read                 |   23    |    29    |   19    |   13    |    30    |    30    |
+| A small letter on a tile to build with           |   20    |    27    |   23    |   16    |    39    |    39    |
+| A letter tile to press (across, high)            | 95, 118 | 118, 147 | 95, 241 | 71, 107 | 232, 291 | 281, 199 |
+| A clap on a card (across)                        |   44    |    82    |   67    |   43    |    95    |   116    |
+| The thing underneath, in a picture of two things |   123   |   156    |   179   |   87    |   334    |   380    |
+| A picture to choose, for a rhyme                 |   87    |   164    |   221   |   87    |   334    |   273    |
+
+### Seen — cause — fix
+
+| Seen                                                                                                            | Cause                                                                                                                             | Fix                                                                                                                                                |
+| --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A slow "ship" was heard by the recogniser as "chip"                                                             | The word was cut where the synthesiser says its first sound begins, and a soft sound is under way a tenth of a second before that | A word is cut in the silence before it. The "sh" of the slow "ship" is now 0.3 seconds long                                                        |
+| There was no silence to cut in: the voice ran "is" straight into "ship", every time                             | The sentence that carries a word ended "…is, ship"                                                                                | Words that are cut this way are carried by "…is that, ship": the "t" closes before the comma. A take with no silence is thrown away                |
+| The mark a clap leaves was a second, smaller sun beside the picture of the sun                                  | It was a spark: a round middle with rays                                                                                          | A clap is two hands meeting, with three short lines of sound                                                                                       |
+| Three claps on a card ran into one another and off its edges                                                    | They were drawn at a size that suited one                                                                                         | Sized so that three fit, with room between                                                                                                         |
+| On a phone held sideways a sentence had letters a few pixels high                                               | It stood in the narrow column every question's picture gets there                                                                 | A sentence has about half the width, like the other wide pictures                                                                                  |
+| On the narrowest phone held upright a sentence's small letters were 10 pixels high                              | Five words on one line, 320 points across                                                                                         | On a phone held upright a sentence is set on two lines, and its pictures stand side by side under it: 18 pixels there, and 30 on an ordinary phone |
+| On the world's page the card for the sentence activity showed a hair's breadth of print                         | A card shows what the activity asks about, and that was the whole line                                                            | The card shows its first two words                                                                                                                 |
+| The recogniser heard "a cat on a cart" and "a hen on a heart"                                                   | Read as slowly as that, the short last word was drawn out into another                                                            | A sentence that is not heard right is read again a little faster; both were then heard right                                                       |
+| The finger under a word that was read out ran along at one speed, whatever the word and however it was said     | It was an animation of fixed length, from before clips had marks                                                                  | It stands under the tile of the sound that is being said, and steps on with it                                                                     |
+| The word fetched ahead for a letter was not the word its script then said                                       | The script gives a letter a word that is not already on the table; what was fetched was the first word, whatever was on the table | Both ask the same way. Found by a test that goes through every question and checks that whatever it says has been fetched                          |
+| A browser test said a word "is not read out" because its clip had not been fetched; clips are now fetched ahead | Fetched and said had been the same thing, and stopped being                                                                       | The voice tells the page each line as it begins to play; tests listen                                                                              |
+| A new browser test failed with no fault in the game                                                             | It read what had been said the instant the way on appeared, and the way on is in the page the instant an answer is given          | It waits for the words                                                                                                                             |
+| Two faults put back to test the tests "were not caught": nothing was printed                                    | Each left a variable unused, the game did not build, and no test ran                                                              | Written again so that the game built. Both were caught                                                                                             |
+| A test said the cards stood at different heights                                                                | The right answer is lifted a few pixels when it is lit                                                                            | It measures the places the cards stand in                                                                                                          |
+
+### What is still wrong or weak
+
+**Unverified, and the most important**
+
+- **Nobody has heard any of it.** 68 new recordings and 25 made again. A recogniser heard each as the right
+  words; that is all that is known.
+- **Where a word is cut into beats has been checked by nothing.** The recogniser hears the word before the
+  breaths go in, because with them it hears three short words or none. So of "el, e, phant" it is known that
+  it is "elephant", and not that the cuts fall where a person would put them. The rule is simple (one consonant
+  between two beats goes with the second, of two the first stays behind) and gives "a, pple" and "um, brel, la".
+- **Whether the clap, the lit place and the finger come when the sound does.** The moments are the
+  synthesiser's own account of its speech, except the first of a word, which is where the silence ends. They
+  were tested for being in order and inside the clip. They were never set against the sound by ear.
+- **Whether a synthesised voice can teach rhyme at all.** Rhyme is in the vowel. The recogniser heard this
+  voice's "hut" as "hot" and its "tin" as "ten" when each was cut out alone, and "cot" as "caught". A child is
+  asked to tell "pot, cot" from "pot, hat".
+- **"th".** One word starts with it, "thumb", and its first sound drawn out is a quiet hiss. "Moth" and "path"
+  end with it.
+- **Whether one showing teaches what "rhymes" means,** or what a card of claps is for, or what the three places
+  are. Each is shown once by Glim, and "rhyme" is said in so many words only there.
+- **Whether the pictures of two things say "on" and "in".** A hen in a hut stands in its doorway; a rat in a
+  cup looks out over the rim; a cat in a pan lies in a pan seen from above, and is small. They read to me.
+- **No teacher has read the order, the words or the wrong answers.** Rhyme and beats before any letter; three
+  pairs and those three; "a" as a word, which is the first thing here that does not sound as its letter was
+  taught and is not remarked on. And the voice is American while "cot" is drawn as a British one: a child in
+  the United States calls that a crib, and may call the shop a store.
+
+**Weak, and known**
+
+- **Nothing shows that a child can read a word they have not met.** Every word that is read has a picture that
+  has been seen and named. The brief's last step (P6) is not built. A child could know "ship" from its shape.
+- **Every sentence has one shape.** "A … on a …", "a … in a …", twelve times. The pictures beside the right one
+  differ in the first word, the last word or the little word, or are the same two things the other way round,
+  so each word has to be read; but there is no verb, no "the", and nothing longer.
+- **A word is built from exactly its own three letters.** Nothing is left over, so the third letter places
+  itself, and there is no word with a pair of letters to build.
+- **Beats are answered by choosing, not by clapping.** Nothing listens, on purpose, and nothing counts taps.
+  Thirteen words, of one, two or three beats.
+- **On the flattest phone held sideways print is small**: 13 pixels for a small letter, in a word and in a
+  sentence alike. It can be read by an adult.
+- **A letter tile stands on a card**, a frame inside a frame, wherever letters are things to press.
+- Sixteen cards are a long page for a small child. Play goes to the next one; the page does not group them.
+- The voice telling the page what it says is there for the tests. Nothing in the game uses it.
+- 552 recordings is a long list for one person to listen through, and it is still the only check that counts.
 
 ## Phase 06, second half (2026-11-25): numerals, order, and adding in Number Garden
 

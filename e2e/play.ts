@@ -4,7 +4,7 @@ import explorerHarbor from '../src/content/packs/explorer-harbor.v1.json' with {
 import memoryForest from '../src/content/packs/memory-forest.v1.json' with { type: 'json' };
 import musicLab from '../src/content/packs/music-lab.v2.json' with { type: 'json' };
 import numberGarden from '../src/content/packs/number-garden.v3.json' with { type: 'json' };
-import readingCove from '../src/content/packs/reading-cove.v1.json' with { type: 'json' };
+import readingCove from '../src/content/packs/reading-cove.v2.json' with { type: 'json' };
 
 /**
  * Playing any activity the way its content says it should be played. A test that is about one board knows that
@@ -112,10 +112,13 @@ export async function answer(page: Page, press: Press, right = true): Promise<vo
       return;
     }
     case 'order': {
-      const filled = page.locator('[data-slot][data-filled="true"]');
-      for (const [index, id] of task.solution.entries()) {
-        if ((await filled.count()) > index) continue;
-        await press(page.locator(`[data-testid="order-board"] ul [data-card="${id}"]`));
+      // Each card that is still waiting, in the order of the answer: a tap sends it to the first empty place.
+      // (A card that a hint has placed, or that was right in a wrong try and has been kept, is in its place
+      // already, wherever among the places that is.)
+      for (const id of task.solution) {
+        const card = page.locator(`[data-testid="order-board"] ul [data-card="${id}"]`);
+        if ((await card.getAttribute('data-gone')) === 'true') continue;
+        await press(card);
       }
       await press(done(page));
       return;

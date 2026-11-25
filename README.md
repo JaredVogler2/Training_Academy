@@ -6,21 +6,22 @@ hosted on Vercel. There is no account, no server, no advertising and no tracking
 
 ## Where it stands
 
-**Seven places have something to do: 56 short activities, 639 challenges, a voice, and music.** Six islands, and
+**Seven places have something to do: 62 short activities, 714 challenges, a voice, and music.** Six islands, and
 a music room in the lighthouse between them. Phases 01 to 03 of 17 are done (the foundation, the look, the
-journey in); phases 04, 05 and 07 to 10 are each partly done, which here means that every activity the islands'
-pages promised is built and tested, and that each phase's brief asks for more than that; phase 06, Number
-Garden, is built as far as adding and taking away within ten; and phase 11, the Music Lab, is built.
+journey in); phases 04 and 07 to 10 are each partly done, which here means that every activity the islands'
+pages promised is built and tested, and that each phase's brief asks for more than that; phase 05, Reading Cove,
+is built as far as a short sentence, and phase 06, Number Garden, as far as adding and taking away within ten;
+and phase 11, the Music Lab, is built.
 [`docs/PROGRESS.md`](docs/PROGRESS.md) sets each brief against what exists. It is built from the plan in
 [`prompt-series/`](prompt-series/README.md).
 
-**Three things to know before relying on it.** No person has listened to any of it: the voice's 484 recordings
+**Three things to know before relying on it.** No person has listened to any of it: the voice's 552 recordings
 were made by a speech synthesiser and checked by a speech recogniser, and the Music Lab's notes are made by
 arithmetic as they are played and have been checked by nothing with ears. No child and no teacher has seen any
-of it. And only some of it is live: the owner's Vercel deployment serves `main`, which has had the six islands
-since 2026-11-23 and the Music Lab's six activities since 2026-11-25; Number Garden's numerals, the Music Lab's
-room to play in and a fix for phones held sideways are on an open pull request and reach the site only when
-that is merged.
+of it. And not all of it is live: the owner's Vercel deployment serves `main`, which has had the six islands
+since 2026-11-23 and, since 2026-11-25, the Music Lab with its room to play in and Number Garden's numerals;
+Reading Cove's six later activities (rhyme to a sentence) are on an open pull request and reach the site only
+when that is merged.
 [`docs/CONTINUE_HERE.md`](docs/CONTINUE_HERE.md) says exactly what was and was not verified.
 
 ![The home screen: a lighthouse and six small islands in a turquoise sea, each with its name under it, and a small glowing guide in a rowing boat pointing at the one that is open](docs/review/phase-02/hub-3d-1366x768.jpg)
@@ -32,8 +33,10 @@ What works today:
   real-time 3D where the device can, and as a picture rendered from the same models where it cannot;
 - Glim, the guide, who demonstrates, points, wonders, celebrates and waits patiently, says what is asked in a
   recorded voice, and says and shows it again when tapped;
-- **Reading Cove**: what made that sound, play it back, the first sound of a word, fifteen letters and their
-  sounds, a word said slowly, a printed word to read. It needs sound, and says so;
+- **Reading Cove**: what made that sound, play it back, which one rhymes, clap the word, the first sound of a
+  word, fifteen letters and their sounds, a word said slowly, a printed word to read; then a word to build from
+  its letters, sh, ch and th, words with those in them, and a sentence of five words to read. It needs sound,
+  and says so;
 - **Number Garden**: the same amount, how many at a glance, one for each up to ten, more, fewer, equal, with no
   numeral anywhere; then amounts in order, the pairs that make five and ten, the numerals from zero to ten, the
   numbers in order, and adding and taking away as little stories;
@@ -54,8 +57,8 @@ What works today:
 - sound and calm-motion switches, keyboard use, names and announcements for screen readers (not yet tried with
   one), and offline use after the first visit.
 
-What does not exist yet: sentences to read, numerals, longer programs, a real map of the world, making up a story,
-and most of what phases 12 to 17 describe. It has not been tried on real graphics hardware or played by a
+What does not exist yet: a check that a child can read a word never met before, longer programs, a real map of
+the world, making up a story, and most of what phases 12 to 17 describe. It has not been tried on real graphics hardware or played by a
 child, and beyond the owner opening the live site on an iPhone it has not run on a phone.
 
 ## Run it

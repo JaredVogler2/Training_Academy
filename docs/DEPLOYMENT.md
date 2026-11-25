@@ -38,9 +38,9 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   passed against the address.
 - **The Music Lab went live on 2026-11-25**, when the owner merged pull request
   [#8](https://github.com/JaredVogler2/Training_Academy/pull/8) as it stood at its first commit: the seventh
-  world and its six activities. What was pushed to that pull request afterwards was not in the merge, and is on
-  pull request [#9](https://github.com/JaredVogler2/Training_Academy/pull/9): the room to play in, the documents,
-  and the fix below. **Checked on the live site half an hour after the merge:** Vercel's record of the
+  world and its six activities. What was pushed to that pull request afterwards was not in the merge, and went
+  into pull request [#9](https://github.com/JaredVogler2/Training_Academy/pull/9): the room to play in, the
+  documents, and a fix for phones held sideways. **Checked on the live site half an hour after the merge:** Vercel's record of the
   production deployment of the merge commit `765be14` said "Ready"; and of 56 browser tests run against the
   address as a desktop, a phone and a Pixel 7 (the smoke tests, and the Pixel's tests that play something in
   every world, the Music Lab's among them), 55 passed. The one that did not is the test of the Music Lab's room,
@@ -49,19 +49,28 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   passed and two failed before I stopped it at seven minutes, and both were that same test.) The update itself
   was **not rehearsed before this merge**; a new visit was checked afterwards, as above, and a returning
   player's update was not.
-- **Two faults are on the live site now, and are fixed on pull request #9**, which is not merged. Both are on
-  phones held sideways and both have been there since the six worlds went live. In Number Garden's "Which has
-  more?", "Which has fewer?" and "Are they equal?", the two groups to choose between are drawn as a strip 48
-  pixels high (20 on the narrowest phones), with most of the screen empty under them. And in Memory Forest's
-  "Things that go together", on the narrowest phones, the cards to pick out are 49 pixels high. Both can still
-  be played. To see that the fix has arrived: open "Which has more?" on a phone held sideways — the two groups
-  should fill the height of the screen.
-- **What is on pull request #9 is not live**: those fixes, the Music Lab's room, Number Garden's numerals, and
-  whatever else that pull request has gained since. Its own description says how far it has got. **The update
-  from what is live to it was rehearsed on 2026-11-25** and passed, 18 of 18, after it had first found a fault
-  that would have reached children: an activity left half-way in Number Garden would have begun again from its
-  first step (`docs/TEST_RESULTS.md` → _An update, rehearsed_). It should be rehearsed again after anything
-  more is added (_Before a release_, below).
+- **Number Garden's numerals, the Music Lab's room and four fixes went live on 2026-11-25**, when the owner
+  merged pull request [#9](https://github.com/JaredVogler2/Training_Academy/pull/9), a quarter of a minute
+  after the last of its checks went green. **The update had been rehearsed before that push** and passed, 18
+  of 18, after it had first found a fault that would have reached children: an activity left half-way in
+  Number Garden would have begun again from its first step (`docs/TEST_RESULTS.md` → _An update, rehearsed_).
+  **Checked on the live site afterwards:** Vercel's record of the production deployment of the merge commit
+  `dbbdbc3` said "Ready"; of 60 browser tests run against the address as a desktop, a phone and a Pixel 7 (the
+  smoke tests, and the Pixel's tests that play something in every world), 60 passed, the Music Lab's room and
+  four of Number Garden's new activities among them; Number Garden's page offers 18 activities and the Music
+  Lab's has its way to the room; and CI's run on `main` was green in all seven jobs with no test run twice.
+- **The two faults that were live on phones held sideways are gone from the site.** In Number Garden's "Which
+  has more?", the two groups to choose between were a strip 48 pixels high (20 on the narrowest phones);
+  measured on the live site after the merge they are 317 by 241 at 844×390 and 237 by 107 at 640×256. The
+  other, Memory Forest's "Things that go together" with cards 49 pixels high on the narrowest phones, was
+  fixed by the same change and was not measured on the site.
+- **What is on pull request [#10](https://github.com/JaredVogler2/Training_Academy/pull/10) is not live**:
+  Reading Cove's six later activities, and whatever else that pull request gains. Its own description says how
+  far it has got. The update from what is live to it was rehearsed on 2026-11-25 and passed, 18 of 18. It
+  should be rehearsed again after anything more is added (_Before a release_, below).
+- **When Reading Cove's later activities go live, 25 recordings that are live now are replaced**: the words
+  said slowly, made again so that each says where its sounds begin. They are the same words, and each was heard
+  by the recogniser as it was before; a phone that has the old ones keeps them until it has the new build.
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The

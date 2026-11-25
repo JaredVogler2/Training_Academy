@@ -1,20 +1,24 @@
 # Continue here
 
 **Seven worlds are built: the six islands, and the Music Lab in the lighthouse. Phases 01 to 03 are complete;
-phases 04 to 10 are each partly done; phase 11 is built and unheard. The rest of the plan is being built on one
-pull request, [#8](https://github.com/JaredVogler2/Training_Academy/pull/8), which is open and is not to be
-merged until it says it is finished.**
+phases 05, 06 and 11 are built as far as their briefs' last optional parts; phases 04 and 07 to 10 are each partly
+done. All of it is unheard. The rest of the plan is being built on one branch, a pull request at a time: the
+owner has merged each one soon after its checks went green, twice now without a word, so every push is kept fit
+to go live. The one that is open is [#10](https://github.com/JaredVogler2/Training_Academy/pull/10).**
 
 - **Date:** 2026-11-25
 - **What is live:** `main`, at `https://training-academy-dun.vercel.app`: the six islands and the Music Lab,
-  45 activities. The owner merged pull request #8 on 2026-11-25 as it stood at its first commit, which was the
-  Music Lab and its six activities. The live site was checked half an hour later: Vercel's production
-  deployment of `765be14` was ready, and 55 of 56 browser tests passed against the address as a desktop, a
-  phone and a Pixel 7. The one that failed is the test of the Music Lab's room, which is not live: the test was
-  ahead of the site. That update was not rehearsed before the merge.
-- **What is not live:** everything on pull request #9, which is open: the Music Lab's room to play in, the fix
-  for the sideways layout of "Which has more?", and Number Garden's eleven new activities (numerals, the
-  numbers in order, adding and taking away).
+  56 activities. The owner merged pull request #9 on 2026-11-25, a quarter of a minute after the last of its
+  checks went green: Number Garden's numerals, the Music Lab's room, and the fixes. The update had been
+  rehearsed before that push (18 of 18). The live site was checked afterwards: Vercel's production deployment
+  of `dbbdbc3` was ready; 60 of 60 browser tests passed against the address as a desktop, a phone and a Pixel
+  7, the room and four of Number Garden's new activities among them; and on a phone held sideways the two
+  groups in "Which has more?" are 317 by 241 pixels, where they were a strip 48 high. CI on `main` was green in
+  all seven jobs, with no test run twice.
+- **What is not live:** Reading Cove's six later activities (rhyme, the beats of a word, building a word, sh ch
+  th, words with those in them, a sentence), on pull request #10. The update from what is live to it was
+  rehearsed: 18 of 18. When it goes live, the 25 recordings of words said slowly that are live now are replaced
+  by ones made again.
 - **The owner's instruction for this stretch of work** (2026-11-25): build all that is left, in the order
   recommended, and the owner will review all of it at once, sounds included, when it is complete. The order:
   the Music Lab; numerals and the number line in Number Garden; rhyme, syllables, letter pairs and sentences in
@@ -23,12 +27,13 @@ merged until it says it is finished.**
 
 ## The one thing that matters most now
 
-**Nobody has listened to anything, and nobody has played.** The game talks — 484 recordings, made by a speech
+**Nobody has listened to anything, and nobody has played.** The game talks — 552 recordings, made by a speech
 synthesiser ahead of time and shipped with it, each checked by a speech recogniser, which is a machine's
-opinion of the words and nothing more — and now it also plays notes, which are made by arithmetic at the moment
+opinion of the words and nothing more — and it also plays notes, which are made by arithmetic at the moment
 they sound and which no ear has checked at all. The briefs call the accuracy of the audio a release gate. That
-gate has not been passed, and with the Music Lab it matters more: three of its activities are nothing but
-listening.
+gate has not been passed, and it matters more with each world: three of the Music Lab's activities are nothing
+but listening, and in Reading Cove a word is now cut into its beats, and a place lights and a finger moves in
+time with what is said, at moments the synthesiser gives for its own speech and nobody has checked by ear.
 
 What to do about the voice is already in the game: **Grown-ups → _The voice: listen to every recording_** plays
 each clip beside what it should say and lets it be marked as sounding right or wrong. For the notes there is no
@@ -36,6 +41,11 @@ such list: open the Music Lab, tap _Just play_, and play the bars from left to r
 each sounding like a small struck bar; the drum should be a soft low knock; the birds in _High and low_ should
 sound like a whistle. If they do not, say what they sound like: every one of them is a few numbers in
 `src/audio/audioEngine.ts`.
+
+And for what is shown in time with the voice, play three things in Reading Cove with the sound on and watch:
+_Clap the word_ (does each clap come on a beat of the word, and is the word cut where a person would cut it?),
+_Build the word_ (does each place light as its sound begins?) and _Read the sentence_ (is the finger under the
+word that is being read?). In each the first step is shown by Glim, so there is nothing to answer first.
 
 The same is true of the pictures and the activities themselves. Each was looked at on a desk at several sizes,
 and no child has seen one.
@@ -45,10 +55,11 @@ and no child has seen one.
 A static React and TypeScript app builds to `dist/` and runs under the same headers and routing that `vercel.json`
 gives it. A visit opens on a front door; behind it is the map, six islands round a lighthouse, and all seven
 places are open. A place's page offers the next thing to play as one large button and every activity as a
-picture. There are **56 activities and 639 challenges**: sounds, letters and blending in Reading Cove; amounts,
-counting and comparing, then numerals, the numbers in order and adding and taking away in Number Garden; a
-robot to steer and a row of steps to mend in Robot Ridge; pairs,
-hidden things, orders and three ways to remember in Memory Forest; guesses that are tested and things to mend
+picture. There are **62 activities and 714 challenges**: sounds, rhyme, the beats of a word, first sounds,
+letters, blending, building a word, pairs of letters and a sentence in Reading Cove; amounts, counting and
+comparing, then numerals, the numbers in order and adding and taking away in Number Garden; a robot to steer
+and a row of steps to mend in Robot Ridge; pairs, hidden things, orders and three ways to remember in Memory
+Forest; guesses that are tested and things to mend
 in Inventor Island; stories to put in order, why things happen and a map to answer on in Explorer Harbor; and in
 the Music Lab high and low, the same or different, a beat to tap, notes to play back, a tune to know again and a
 tune to make, with a room to play in freely. Each activity is shown first by Glim, then tried with help at hand,
@@ -58,30 +69,30 @@ answer is right. Everything is saved on the device.
 
 ## Verified
 
-- Locally: format, lint, typecheck, **1711 unit tests**, the production build and its **1270 build checks**.
-  The whole browser suite in Chromium on seven screen shapes was run on the tree with Number Garden's numerals
-  in it: **986 tests, 853 passed, 133 skipped by design, none failed, none run twice** (34 minutes). Three
-  fixes came after that run, from what CI said of the push before (below), with 54 more browser tests; the
-  specs they touch were run again on every screen and passed. The whole suite on the final tree, and WebKit
-  at all, are CI's: `docs/TEST_RESULTS.md` says what CI made of it.
-- **CI's last two runs each found a fault in the game, and both are fixed here.** A run that was green had
-  one test that needed a second go: a dialog asked for again the instant it was cancelled shut itself, and the
-  pause sheet was written the same way. And the run on this pull request's first push failed: on an iPhone 13
-  held sideways the chime bars in the Music Lab's room were 47 points wide.
-- **The tests that passed first time were made to fail.** The hold on answers while a question is still being
-  played, the row the bars stand in, the allowance for a steady lateness, the count of taps too many, the
-  second answer to one tap: each was taken out of the code and its test seen to fail. `docs/TEST_RESULTS.md`
-  lists them.
+- Locally: format, lint, typecheck, **1837 unit tests**, the production build and its **1406 build checks**.
+  The whole browser suite in Chromium on seven screen shapes was run in one go on the tree with Reading Cove's
+  later activities in it: **1147 tests, 962 passed, 185 skipped by design, none failed, none run twice** (38
+  minutes). One change came after that run (a sentence on two lines on an upright phone); Reading Cove's own
+  tests, the sweep of what a child presses, the accessibility checks and its activities played to their ends
+  were then run again on all seven screens, and passed. WebKit is CI's: `docs/TEST_RESULTS.md` says what CI
+  made of the push before this one.
+- **CI's last complete run, on the push before this one, was green in all seven jobs**, with no test needing
+  a second attempt: the first time Number Garden's numerals and the Music Lab's room ran in Safari's engine.
+  The two runs before it had each found a fault in the game (a dialog asked for again the instant it was
+  cancelled shut itself; on an iPhone 13 held sideways the chime bars were 47 points wide), and both are fixed.
+- **The tests that passed first time were made to fail.** For Reading Cove's later activities, thirty-seven
+  faults were put back one at a time; thirty-six were caught by the test meant for them, and the other is not a
+  fault a child could see. `docs/TEST_RESULTS.md` lists them, and the ones for the Music Lab and Number Garden.
 - **Every activity is played to its end by a browser test**, with the answers its content says are right
   (`e2e/everything.spec.ts`; Robot Ridge and Inventor Island in their own specs). The beat is tapped the way a
   person taps it: from the first beats heard, each tap begun a little ahead.
 - Every content pack is exactly what its generator writes, and every rule that can refuse a challenge has been
   shown to fire (`tests/content/`): 32 of them are the Music Lab's.
 - Every browser test also fails on any console error or warning, failed request, or request to another origin.
-- **The live site**, as above: `main` after pull request #8. `docs/DEPLOYMENT.md` has the check.
+- **The live site**, as above: `main` after pull request #9. `docs/DEPLOYMENT.md` has the check.
 - **The update from what is live to this tree was rehearsed** (`npm run rehearse:update -- origin/main`), in
-  Chromium: 18 of 18, after it had found a fault at 16 of 18 and that was fixed. Rehearse it again after any
-  later change to content or to what is stored.
+  Chromium: 18 of 18, on the final tree. (For the push before, it had found a fault at 16 of 18, which was
+  fixed.) Rehearse it again after any later change to content or to what is stored.
 
 ## Not verified — read this before relying on anything
 
@@ -92,6 +103,11 @@ answer is right. Everything is saved on the device.
 - **Keeping the beat, by a child.** The allowance was chosen from what is written about young children's
   tapping and from arithmetic. Whether a four-year-old who is keeping the beat passes, and one who is not does
   not, is not known.
+- **Whether what is shown comes when it is said.** In Reading Cove a clap, a lit place and a finger follow
+  moments written down with each recording. They are the synthesiser's account of its own speech. Where a word
+  is cut into its beats has been checked by nothing: the recogniser hears the word before it is cut.
+- **Whether a synthesised voice's vowels are clear enough to rhyme by.** The recogniser took its "hut" for
+  "hot" and its "tin" for "ten" when each was cut out alone.
 - **The numerals' shapes, and whether a wrong answer counted out is a help.** The numerals are drawn here, in
   one school's hand (an open 4, a 7 with no bar, a 9 with a straight stick); a child taught another will meet
   two. And every wrong answer in the new Number Garden activities is answered by counting it, which takes
@@ -120,22 +136,26 @@ or sooner if there is a moment:
    watched.
 4. **Look at the numerals** (any of Number Garden's activities from _Numbers one to five_ on) and say whether
    they are the shapes your child is being taught. They are one small file.
-5. **Decide the guide's name.** "Glim" is provisional and unchecked; it is one string in `src/app/strings.ts`.
+5. **Watch the three things in Reading Cove that move in time with the voice** (above), and read a sentence on
+   the smallest phone to hand: is the print large enough?
+6. **Decide the guide's name.** "Glim" is provisional and unchecked; it is one string in `src/app/strings.ts`.
 
-Pull request #9 has a preview on Vercel (behind the owner's Vercel login) for looking at any of this before it
-is merged.
+Pull request #10 has a preview on Vercel (behind the owner's Vercel login) for looking at Reading Cove's new
+activities before it is merged.
 
 ## The next action
 
-If this session is the one still building: carry on down the order above. The Music Lab and Number Garden's
-numerals are done; **next is Reading Cove** (rhyme, syllables, segmenting, letter pairs, sentences), then the
-first-visit help of phase 04, the gaps in the other four worlds, and phases 12 to 17. `docs/PROGRESS.md` → the
-table at the top says which phases are done; its _Known gaps_ table says what each world still lacks.
+If this session is the one still building: carry on down the order above. The Music Lab, Number Garden's
+numerals and Reading Cove's later activities are done; **next is the first-visit help of phase 04** (a
+demonstration of how each kind of game is played, an optional few questions to find where a child should start,
+and help that comes when the trouble is the screen and not the question), then the gaps in the other four
+worlds, and phases 12 to 17. `docs/PROGRESS.md` → the table at the top says which phases are done; its _Known
+gaps_ table says what each world still lacks.
 
 If it is a new session:
 
 > Read prompt-series/README.md and prompt-series/00_MASTER_BRIEF.md, then docs/CONTINUE_HERE.md,
-> docs/PROGRESS.md, docs/CURRICULUM.md and docs/ARCHITECTURE.md. Pull request #9 is open: carry on with what
+> docs/PROGRESS.md, docs/CURRICULUM.md and docs/ARCHITECTURE.md. Pull request #10 is open: carry on with what
 > docs/CONTINUE_HERE.md says is next, on the same branch. It must work on Android and iOS devices on a Vercel
 > deployment.
 
@@ -250,7 +270,9 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
   also reached. Put every fault back (`scratch` tools do it: break one line, run one test, restore) and read
   the result, each time.
 - **Rehearse the update before every push that changes content**, not only before a release: the owner
-  merged the last pull request without warning. `npm run rehearse:update -- origin/main` found that adding
+  has merged two pull requests without warning, the second within seconds of its checks going green. And
+  **look whether the pull request is still open before pushing to it**: a push to a branch whose pull request
+  has been merged goes nowhere a reviewer will see. `npm run rehearse:update -- origin/main` found that adding
   activities to a world sent a child back to the start of an unfinished one. A place is now kept by the
   lesson's own version, and a lesson cannot change without one: `npm run content` refuses it
   (`src/content/lessons.lock.json`). To change a lesson that is live, give it a new version in its generator.
@@ -261,6 +283,38 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
   the first load.
 - **Testing a deployment, name the screens**: `BASE_URL=… npx playwright test --project=desktop
 --project=phone`. Without them the layout tests of five more screens run against the site as well.
+
+**New with Reading Cove's later activities**
+
+- **The synthesiser knows where its own sounds are, and will say.** Loaded with `include_alignments=True` (which
+  needs the `onnx` package beside it) it gives, for a sentence, how many samples each sound of it took. The
+  voice tool uses that to cut a word into its beats, and to write down when each sound of a slow word and each
+  word of a sentence begins: three kinds of clip (`beats`, `slow` written "m-a-p", `read`) with **marks**, kept
+  in the manifest and given to the game in `src/voice/marks/<world>.json`.
+- **A word is cut in the silence before it, not where the synthesiser says it begins.** A sound that starts
+  softly is under way a tenth of a second before that, and "ship" cut there was heard as "chip". And after
+  "is," there is often no silence at all, so a word that is to be cut is carried by "The next word is that, …":
+  the "t" closes before the comma. A take with no silence is thrown away and made again.
+- **What is shown in time with a clip follows its marks** (`follow` in `src/game/worlds/reading-cove/script.ts`,
+  `Writer.start` to begin a line without waiting for it). The part being shown is a beat like any other:
+  `{ show: 'name', which: 'prompt', part }`. A picture gets `part`; the order board lights that place.
+- **A clip that is fetched has not been said.** A world's `linesFor` now names every clip a step may say, so
+  that one something moves in time with starts on time; they are fetched as the step arrives. A browser test
+  that took a request for a clip as proof it was heard is wrong now. The voice tells the page each line as it
+  begins to play (`SAID_EVENT`, `src/audio/index.ts`) and a test listens with `listenIn(page)`.
+- **"Next" is in the page from the moment an answer is right**; only its appearing is delayed. A test that
+  waits for it to be visible has waited for nothing. Wait for what is said, or what is lit.
+- **A lesson that is live is added beside, never changed.** The functions that write the older lessons took
+  new arguments with defaults that write what they always wrote; `npm run content` says at once if one differs
+  from its mark. The clips of a live lesson may be made again (they are not content), and were.
+- **An order can have a picture to go by.** A thing to make may carry `prompt.stimulus`; the order board now
+  shows it above the places. A word to build is that: the picture of the word, and its letters to put in place.
+- **A fault that does not compile proves nothing about a test.** The browser tests build first, with the type
+  checker; a fault that leaves a variable unused fails the build, the tool prints no result, and "no failure"
+  is easy to read into that. Write the fault so that it builds.
+- **What a word is, is in the lexicon** (`src/art/lexicon.json`): the sound it starts with, its spelling sound
+  by sound ("sh" is one entry), its beats. Rules, scripts and drawings read it there. A new picture needs its
+  entry, or a test fails.
 
 **Learned after the six worlds went live**
 

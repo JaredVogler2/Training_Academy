@@ -51,10 +51,15 @@ export class Narrator {
   /** Lines said, and lines that could not be. */
   readonly stats = { said: 0, unheard: 0 };
 
+  /**
+   * `said` is told the key of each line at the moment it begins to play, and of no line that does not: not one
+   * that was fetched ahead and never wanted, not one that arrived too late, not one that was hushed on its way.
+   */
   constructor(
     private readonly engine: AudioEngine,
     private readonly download: (url: string) => Promise<ArrayBuffer>,
     private readonly clock: () => number = () => Date.now(),
+    private readonly said: (key: string) => void = () => undefined,
   ) {}
 
   add(bank: VoiceBank): void {
@@ -146,6 +151,7 @@ export class Narrator {
       }
       this.playing = playing;
       this.stats.said += 1;
+      this.said(key);
     });
   }
 

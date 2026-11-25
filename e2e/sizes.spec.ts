@@ -36,6 +36,11 @@ const SCREENS = [
 
 /** One activity for each kind of board, and for each way a question with choices is laid out. */
 const BOARDS: readonly (readonly [world: string, lesson: string, what: string])[] = [
+  ['reading-cove', 'rc-rhyme-01', 'a word, and pictures that might rhyme with it'],
+  ['reading-cove', 'rc-syllables-01', 'a word, and cards of claps'],
+  ['reading-cove', 'rc-spell-01', 'a word to build from its letters'],
+  ['reading-cove', 'rc-blend-03', 'a word in tiles, and pictures'],
+  ['reading-cove', 'rc-sentences-01', 'a sentence, and pictures'],
   ['number-garden', 'ng-same-amount-01', 'a group, and groups to match it'],
   ['number-garden', 'ng-more-01', 'a sign, and two groups'],
   ['number-garden', 'ng-glance-01', 'a group seen for a moment'],

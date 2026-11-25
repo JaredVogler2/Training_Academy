@@ -23,6 +23,9 @@ import { finish, type Detail, type IslandModel, type Mover } from './types';
 /**
  * Academy Rock: the lighthouse at the middle of the harbour, with the keeper's cottage and a jetty.
  * It is the picture on the app's icon, and the one thing every screen shape keeps in view.
+ *
+ * It is also where the Music Lab is: chime bars stand on the meadow, and notes drift up past the lantern, so that
+ * the place says what it is for to someone who cannot read its name.
  */
 
 const CREAM: readonly [string, string] = ['#f1dfc0', '#fffaf0'];
@@ -31,6 +34,45 @@ const ROOF: readonly [string, string] = ['#b8432f', '#e2604a'];
 const STONE: readonly [string, string] = ['#8d8a9c', '#c4c1d0'];
 const DOOR: readonly [string, string] = ['#7c4a33', '#a9623f'];
 const LAMP = '#ffe9a6';
+/** The chime bars, lowest first: the colours the Music Lab's own bars have. */
+const BARS: readonly (readonly [string, string])[] = [
+  ['#c93f35', '#f0564a'],
+  ['#d97a1f', '#ff9f45'],
+  ['#d9a81f', '#ffd35c'],
+  ['#3f9a4c', '#6fcf74'],
+  ['#3a86c9', '#62b4f3'],
+];
+const NOTE_INK = '#3b2f7a';
+
+/** A quaver, flat, facing along z: a round head, a stem and a flag. About 0.5 tall. */
+function quaver(): Sculpture {
+  const note = new Sculpture();
+  const head = Array.from({ length: 12 }, (_, index) => {
+    const angle = (index / 12) * Math.PI * 2;
+    // A slanted oval, as a note head is.
+    const x = Math.cos(angle) * 0.105;
+    const y = Math.sin(angle) * 0.075;
+    return [x * 0.94 - y * 0.34, y * 0.94 + x * 0.34] as const;
+  });
+  note.add(slab(outlineOf(head), 0.03, 0), { tint: NOTE_INK, glow: 0.35 });
+  note.add(
+    slab(
+      outlineOf([
+        [0.07, 0.01],
+        [0.105, 0.01],
+        [0.105, 0.34],
+        [0.25, 0.22],
+        [0.25, 0.3],
+        [0.105, 0.44],
+        [0.07, 0.44],
+      ]),
+      0.03,
+      0,
+    ),
+    { tint: NOTE_INK, glow: 0.35 },
+  );
+  return note;
+}
 
 export function buildAcademy(detail: Detail): IslandModel {
   const land = landmass({
@@ -222,23 +264,57 @@ export function buildAcademy(detail: Detail): IslandModel {
     },
   });
 
+  // --- The Music Lab: chime bars on the meadow, and notes in the air -------------------------------------------------
+  // Five bars on two rails, each shorter than the last, the low one nearest the tower.
+  const barsAt: [number, number] = [-0.92, 0.5];
+  const railY = land.heightAt(barsAt[0], barsAt[1]) + 0.03;
+  for (const side of [-0.11, 0.11]) {
+    s.add(block(0.74, 0.05, 0.05, 0.02), DOOR, { at: [barsAt[0], railY, barsAt[1] + side] });
+  }
+  BARS.forEach((tint, index) => {
+    const long = 0.46 - index * 0.05;
+    s.add(block(0.105, 0.05, long, 0.02), tint, {
+      at: [barsAt[0] - 0.29 + index * 0.145, railY + 0.05, barsAt[1]],
+    });
+  });
+  // The notes rise beside the lantern, one after the other, and fade as they go: each is small at the start of
+  // its climb and at the end of it. They face the viewer, as the light does.
+  const CLIMB = 0.62;
+  const rising = (dx: number, from: number, phase: number, size: number): Mover => ({
+    geometry: quaver().build(),
+    at: [tower[0] + dx, tower[1] + from, tower[2] + 0.34],
+    rise: CLIMB,
+    animate(time, part) {
+      const along = (((time * 0.16 + phase) % 1) + 1) % 1;
+      part.position.set(
+        tower[0] + dx + Math.sin(along * Math.PI * 2 + phase * 6) * 0.05,
+        tower[1] + from + along * CLIMB,
+        tower[2] + 0.34,
+      );
+      part.rotation.set(-PITCH, 0, Math.sin(time * 1.4 + phase * 9) * 0.18);
+      part.scale.setScalar(size * Math.sin(along * Math.PI) ** 0.6);
+    },
+  });
+  movers.push(rising(0.66, 1.5, 0.3, 1), rising(-0.62, 1.86, 0.62, 0.88));
+
   // --- Green things and stones --------------------------------------------------------------------------------------
   tree(s, [-1.02, land.heightAt(-1.02, -0.1), -0.1], 0.86, undefined, 0.6);
   pine(s, [0.25, land.heightAt(0.25, -0.98), -0.98], 0.7);
-  bush(s, [-0.62, land.heightAt(-0.62, 0.86), 0.86], 0.9);
+  bush(s, [-0.3, land.heightAt(-0.3, 1.0), 1.0], 0.8);
   bush(s, [0.36, land.heightAt(0.36, 0.3), 0.3], 0.7);
   boulder(s, [-1.5, 0.02, -0.72], 1.0, undefined, 0.4);
   boulder(s, [-1.12, 0.02, -1.3], 0.7, undefined, 1.2);
   boulder(s, [1.62, 0.0, -0.78], 0.85, undefined, 2.1);
   if (detail >= 0.5) {
     boulder(s, [-1.78, -0.02, 0.5], 0.55, undefined, 0.9);
+    // Round the chime bars, not under them.
     const blooms: readonly (readonly [number, number, string])[] = [
-      [-0.72, 0.42, '#ffffff'],
-      [-0.95, 0.62, '#ffd35c'],
-      [-0.5, 0.66, '#ff9fc2'],
-      [-1.12, 0.36, '#ff9fc2'],
-      [-0.8, 0.84, '#ffffff'],
-      [-0.4, 0.4, '#ffd35c'],
+      [-1.38, 0.62, '#ffffff'],
+      [-1.02, 0.9, '#ffd35c'],
+      [-0.42, 0.56, '#ff9fc2'],
+      [-1.36, 0.3, '#ff9fc2'],
+      [-0.86, 0.14, '#ffffff'],
+      [-0.4, 0.3, '#ffd35c'],
       [0.52, -0.72, '#ffffff'],
       [-0.6, -0.7, '#ffd35c'],
     ];
@@ -257,6 +333,7 @@ export function buildAcademy(detail: Detail): IslandModel {
       { x: 0.42, z: 0.8, radius: 0.3 },
       { x: 0.8, z: 1.02, radius: 0.3 },
       { x: -1.02, z: -0.1, radius: 0.32 },
+      { x: barsAt[0], z: barsAt[1], radius: 0.5 },
     ],
   });
   // A channel buoy off the western shore.

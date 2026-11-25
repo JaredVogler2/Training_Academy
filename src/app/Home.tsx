@@ -7,9 +7,11 @@ import { HubStage } from '@/render/HubStage';
 import {
   COMPACT_LABELS_BELOW,
   guideBox,
+  hasName,
   hotspotFor,
   labelSize,
   labelWidth,
+  placeOf,
   type Frame,
   type PlaceId,
 } from '@/render/archipelago';
@@ -41,7 +43,8 @@ function WorldSpot({
   onLift: (place: PlaceId | null) => void;
 }) {
   const open = isOpen(world);
-  const { box } = hotspotFor(frame, world.id);
+  const place = placeOf(world.id);
+  const { box } = hotspotFor(frame, place);
   return (
     <Link
       to={{ name: 'world', world: world.id }}
@@ -49,30 +52,36 @@ function WorldSpot({
       style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
       data-role={world.role}
       data-world={world.id}
+      data-place={place}
       data-open={open}
       data-next={next || undefined}
       onClick={() => playCue(open ? 'sail' : 'tap')}
       onPointerEnter={(event) => {
-        if (event.pointerType === 'mouse') onLift(world.id);
+        if (event.pointerType === 'mouse') onLift(place);
       }}
-      onPointerDown={() => onLift(world.id)}
+      onPointerDown={() => onLift(place)}
       onPointerLeave={() => onLift(null)}
       onPointerCancel={() => onLift(null)}
-      onFocus={() => onLift(world.id)}
+      onFocus={() => onLift(place)}
       onBlur={() => onLift(null)}
     >
-      <span
-        className={styles.label}
-        style={{ maxWidth: labelWidth(frame, world.id) }}
-        data-compact={frame.scale < COMPACT_LABELS_BELOW || undefined}
-      >
-        <span className={styles.badge}>
-          {open ? <IconPlay size={16} /> : <IconAsleep size={16} />}
+      {hasName(frame.layout.arrangement, place) ? (
+        <span
+          className={styles.label}
+          style={{ maxWidth: labelWidth(frame, place) }}
+          data-compact={frame.scale < COMPACT_LABELS_BELOW || undefined}
+        >
+          <span className={styles.badge}>
+            {open ? <IconPlay size={16} /> : <IconAsleep size={16} />}
+          </span>
+          <span className={styles.name} data-name>
+            {world.name}
+          </span>
         </span>
-        <span className={styles.name} data-name>
-          {world.name}
-        </span>
-      </span>
+      ) : (
+        // No room for the name to be written here (see `hasName`): it is still what the link is called.
+        <span className="sr-only">{world.name}</span>
+      )}
       <span className="sr-only">. {open ? ui.tryIt : ui.notOpenYet}.</span>
     </Link>
   );
@@ -102,7 +111,7 @@ function HubGuide({
   const box = guideBox(frame);
   // Point from the guide's shoulder to the island: screen y runs downwards, angles run upwards.
   const from = { x: box.left + box.width / 2, y: box.top + box.height * 0.45 };
-  const to = open ? hotspotFor(frame, open.id).anchor : null;
+  const to = open ? hotspotFor(frame, placeOf(open.id)).anchor : null;
   const aim = to ? (Math.atan2(from.y - to.y, to.x - from.x) * 180) / Math.PI : 90;
 
   return (
@@ -122,7 +131,7 @@ function HubGuide({
 }
 
 /**
- * The hub: the archipelago, and the six ways into it. A visit begins at the front door, in front of the map; the
+ * The hub: the archipelago, and the seven ways into it: six islands, and the lighthouse in the middle of them. A visit begins at the front door, in front of the map; the
  * map is already there behind it, and comes alive once the child has said who is playing.
  */
 export function Home() {

@@ -536,3 +536,28 @@
     transform: translateY(-4px) scale(1);
   }
 }
+
+/*
+ * Things to echo that stand in a row in their own order, like the bars of a keyboard (a world asks for this with
+ * `echoLayout`). There is no card round each: the thing itself is what is tapped.
+ */
+.echoCards[data-layout='row'] {
+  grid-template-columns: none;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: clamp(2px, 1.4vw, 14px);
+}
+
+.echoCards[data-layout='row'] .echoCard {
+  padding: 2px;
+  border-width: 3px;
+  border-color: transparent;
+  border-radius: 18px;
+  background: rgb(255 255 255 / 45%);
+  box-shadow: none;
+}
+
+.echoCards[data-layout='row'] .echoCard[data-lit='true'] {
+  border-color: var(--yes);
+  background: #fff6d2;
+}

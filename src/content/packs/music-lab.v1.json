@@ -1,0 +1,2500 @@
+{
+  "format": "training-academy.content-pack",
+  "schemaVersion": 1,
+  "id": "music-lab",
+  "world": "music-lab",
+  "contentVersion": 1,
+  "strings": {
+    "en": {
+      "ml.hint.not-this": "Not this one.",
+      "ml.hl.high.instruction": "Listen. Which one is high?",
+      "ml.hl.low.instruction": "Listen. Which one is low?",
+      "ml.hl.high.correct": "Yes. That one is high.",
+      "ml.hl.low.correct": "Yes. That one is low.",
+      "ml.hl.incorrect": "Not that one. Listen again.",
+      "ml.hl.hint.model": "High sounds are thin and squeaky. Low sounds are deep.",
+      "ml.hl.high.reveal": "This one is high.",
+      "ml.hl.low.reveal": "This one is low.",
+      "ml.same.instruction": "Listen to them both. Are they the same?",
+      "ml.same.same.correct": "Yes. They are the same.",
+      "ml.same.different.correct": "Yes. They are different.",
+      "ml.same.incorrect": "Listen once more.",
+      "ml.same.hint.model": "Listen to the first one. Then listen to the second one.",
+      "ml.same.same.reveal": "They are the same.",
+      "ml.same.different.reveal": "They are different.",
+      "ml.beat.instruction": "Listen to the beat. Then tap the drum with it.",
+      "ml.beat.correct": "Yes. You kept the beat.",
+      "ml.beat.incorrect": "Not quite with the beat. Listen, and try again.",
+      "ml.beat.hint.model": "Listen first. Then tap each time the light comes on.",
+      "ml.beat.hint.reveal": "Tap when I tap.",
+      "ml.echo.instruction": "Listen. Then play it back.",
+      "ml.echo.correct": "Yes. You played it back.",
+      "ml.echo.incorrect": "Not quite. Listen again.",
+      "ml.echo.hint.model": "Here it is again.",
+      "ml.echo.hint.step": "It starts like this.",
+      "ml.echo.hint.reveal": "Play them as I point.",
+      "ml.again.tune.instruction": "Listen to the big bird. Who sings the same tune?",
+      "ml.again.drum.instruction": "Listen to the big drum. Who plays the same?",
+      "ml.again.correct": "Yes. The same again.",
+      "ml.again.incorrect": "That one was different. Listen again.",
+      "ml.again.hint.model": "Listen to the big one. Then listen to each little one.",
+      "ml.again.hint.reveal": "This one is the same.",
+      "ml.tune.up.instruction": "Make a tune that goes up.",
+      "ml.tune.down.instruction": "Make a tune that goes down.",
+      "ml.tune.hill.instruction": "Make a tune that goes up, and then comes down.",
+      "ml.tune.twice.instruction": "Make a little tune. Then play the same again.",
+      "ml.tune.home.instruction": "Make a tune that ends on the biggest bar.",
+      "ml.tune.up.incorrect": "That did not go up every time. Change it, and try again.",
+      "ml.tune.down.incorrect": "That did not go down every time. Change it, and try again.",
+      "ml.tune.hill.incorrect": "Go up first. Then come down.",
+      "ml.tune.twice.incorrect": "The second half has to be the same as the first.",
+      "ml.tune.home.incorrect": "It has to end on the biggest bar.",
+      "ml.tune.up.hint": "Start on a big bar. Then choose a smaller one each time.",
+      "ml.tune.down.hint": "Start on a small bar. Then choose a bigger one each time.",
+      "ml.tune.hill.hint": "Go to smaller bars first. Then come back to bigger ones.",
+      "ml.tune.twice.hint": "Choose two bars. Then choose the same two again.",
+      "ml.tune.home.hint": "Play any bars you like. Play the biggest bar last.",
+      "ml.tune.hint.step": "Start like this.",
+      "ml.tune.hint.reveal": "Here is one way.",
+      "ml.tune.correct": "Yes. Listen to your tune."
+    }
+  },
+  "skills": [
+    {
+      "id": "music.pitch.high-low",
+      "world": "music-lab",
+      "strand": "music",
+      "title": "Tell a high note from a low one",
+      "objective": "Hears two or three notes sung by birds that look alike, and taps the one that was high — or, when asked, the one that was low — when the notes are as little as a third apart.",
+      "prerequisites": []
+    },
+    {
+      "id": "music.pattern.same-different",
+      "world": "music-lab",
+      "strand": "music",
+      "title": "Say whether two short tunes are the same",
+      "objective": "Hears two tunes of three or four notes, or two drum patterns, one after the other, and says whether they were the same or different when only one note or one knock is changed.",
+      "prerequisites": ["music.pitch.high-low"]
+    },
+    {
+      "id": "music.rhythm.steady-beat",
+      "world": "music-lab",
+      "strand": "music",
+      "title": "Tap along with a slow, steady beat",
+      "objective": "Taps a drum in time with a beat of 60 to 84 to the minute, meeting at least six beats of eight within a generous margin. This is rough tempo, not precision.",
+      "prerequisites": []
+    },
+    {
+      "id": "music.memory.play-back",
+      "world": "music-lab",
+      "strand": "music",
+      "title": "Play back a few notes in order",
+      "objective": "Hears three or four notes played on chime bars and plays them back in the same order.",
+      "prerequisites": ["music.pitch.high-low"]
+    },
+    {
+      "id": "music.pattern.repeated-phrase",
+      "world": "music-lab",
+      "strand": "music",
+      "title": "Know a tune again when it comes back",
+      "objective": "Hears a tune of three or four notes and then two or three more, and picks out the one that was the first tune again from others with the same notes in another order.",
+      "prerequisites": ["music.pattern.same-different"]
+    },
+    {
+      "id": "music.making.shape-a-tune",
+      "world": "music-lab",
+      "strand": "music",
+      "title": "Make up a tune with a shape",
+      "objective": "Makes up a tune of three to six notes on chime bars that goes up, goes down, climbs and comes back, says the same thing twice, or comes home to the lowest bar, as asked.",
+      "prerequisites": ["music.memory.play-back"]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "ml-high-low-01",
+      "version": 1,
+      "world": "music-lab",
+      "title": "High and low",
+      "summary": "Two notes are played, and your child taps the one that was high — or, when asked, the one that was low. First they are on chime bars, where the small bar can be seen to be the high one, and far apart. Later birds that look alike sing them, closer together, so that only listening will do.",
+      "skillIds": ["music.pitch.high-low"],
+      "estimatedMinutes": 3,
+      "needsSound": true,
+      "plan": {
+        "demo": ["ml-high-low-01.demo-high", "ml-high-low-01.demo-low"],
+        "guided": [
+          "ml-high-low-01.guided-high",
+          "ml-high-low-01.guided-low",
+          "ml-high-low-01.guided-birds"
+        ],
+        "independent": {
+          "pool": [
+            "ml-high-low-01.high-octave",
+            "ml-high-low-01.low-octave",
+            "ml-high-low-01.high-fifth",
+            "ml-high-low-01.low-fifth",
+            "ml-high-low-01.high-third",
+            "ml-high-low-01.low-third",
+            "ml-high-low-01.high-of-three",
+            "ml-high-low-01.low-of-three"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "ml-high-low-01.demo-high",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "high-far-apart",
+          "prompt": {
+            "instruction": "ml.hl.high.instruction",
+            "stimulus": { "type": "sign", "id": "high" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A chime bar: C",
+              "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+            },
+            {
+              "id": "b",
+              "label": "A chime bar: very high C",
+              "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c6" } }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "reveal", "caption": "ml.hl.high.reveal" }
+          ],
+          "misconceptions": { "a": "picked-the-low-one" },
+          "feedback": { "correct": "ml.hl.high.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.demo-low",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "low-far-apart",
+          "prompt": {
+            "instruction": "ml.hl.low.instruction",
+            "stimulus": { "type": "sign", "id": "low" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A chime bar: very high C",
+              "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c6" } }
+            },
+            {
+              "id": "b",
+              "label": "A chime bar: C",
+              "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "reveal", "caption": "ml.hl.low.reveal" }
+          ],
+          "misconceptions": { "a": "picked-the-high-one" },
+          "feedback": { "correct": "ml.hl.low.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.guided-high",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "high-far-apart",
+          "prompt": {
+            "instruction": "ml.hl.high.instruction",
+            "stimulus": { "type": "sign", "id": "high" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A chime bar: very high E",
+              "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e6" } }
+            },
+            {
+              "id": "b",
+              "label": "A chime bar: E",
+              "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "reveal", "caption": "ml.hl.high.reveal" }
+          ],
+          "misconceptions": { "b": "picked-the-low-one" },
+          "feedback": { "correct": "ml.hl.high.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.guided-low",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "low-far-apart",
+          "prompt": {
+            "instruction": "ml.hl.low.instruction",
+            "stimulus": { "type": "sign", "id": "low" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A chime bar: high G",
+              "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g5" } }
+            },
+            {
+              "id": "b",
+              "label": "A chime bar: C",
+              "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "reveal", "caption": "ml.hl.low.reveal" }
+          ],
+          "misconceptions": { "a": "picked-the-high-one" },
+          "feedback": { "correct": "ml.hl.low.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.guided-birds",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "high-far-apart",
+          "prompt": {
+            "instruction": "ml.hl.high.instruction",
+            "stimulus": { "type": "sign", "id": "high" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A bird: D",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["d4"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A bird: very high D",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["d6"] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "reveal", "caption": "ml.hl.high.reveal" }
+          ],
+          "misconceptions": { "a": "picked-the-low-one" },
+          "feedback": { "correct": "ml.hl.high.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.high-octave",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "high-far-apart",
+          "prompt": {
+            "instruction": "ml.hl.high.instruction",
+            "stimulus": { "type": "sign", "id": "high" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A bird: E",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["e4"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A bird: high E",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["e5"] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "reveal", "caption": "ml.hl.high.reveal" }
+          ],
+          "misconceptions": { "a": "picked-the-low-one" },
+          "feedback": { "correct": "ml.hl.high.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.low-octave",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "low-far-apart",
+          "prompt": {
+            "instruction": "ml.hl.low.instruction",
+            "stimulus": { "type": "sign", "id": "low" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A bird: high D",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["d5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A bird: D",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["d4"] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "reveal", "caption": "ml.hl.low.reveal" }
+          ],
+          "misconceptions": { "a": "picked-the-high-one" },
+          "feedback": { "correct": "ml.hl.low.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.high-fifth",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "high-apart",
+          "prompt": {
+            "instruction": "ml.hl.high.instruction",
+            "stimulus": { "type": "sign", "id": "high" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A bird: high D",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["d5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A bird: G",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["g4"] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "reveal", "caption": "ml.hl.high.reveal" }
+          ],
+          "misconceptions": { "b": "picked-the-low-one" },
+          "feedback": { "correct": "ml.hl.high.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.low-fifth",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "low-apart",
+          "prompt": {
+            "instruction": "ml.hl.low.instruction",
+            "stimulus": { "type": "sign", "id": "low" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A bird: high A",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["a5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A bird: high D",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["d5"] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "reveal", "caption": "ml.hl.low.reveal" }
+          ],
+          "misconceptions": { "a": "picked-the-high-one" },
+          "feedback": { "correct": "ml.hl.low.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.high-third",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "high-close",
+          "prompt": {
+            "instruction": "ml.hl.high.instruction",
+            "stimulus": { "type": "sign", "id": "high" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A bird: high C",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["c5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A bird: high E",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["e5"] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "reveal", "caption": "ml.hl.high.reveal" }
+          ],
+          "misconceptions": { "a": "picked-the-low-one" },
+          "feedback": { "correct": "ml.hl.high.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.low-third",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "low-close",
+          "prompt": {
+            "instruction": "ml.hl.low.instruction",
+            "stimulus": { "type": "sign", "id": "low" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A bird: high E",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["e5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A bird: high G",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["g5"] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "reveal", "caption": "ml.hl.low.reveal" }
+          ],
+          "misconceptions": { "b": "picked-the-high-one" },
+          "feedback": { "correct": "ml.hl.low.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.high-of-three",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "high-of-three",
+          "prompt": {
+            "instruction": "ml.hl.high.instruction",
+            "stimulus": { "type": "sign", "id": "high" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A bird: high C",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["c5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A bird: G",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["g4"] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "A bird: high E",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["e5"] }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "ml.hint.not-this" },
+            { "type": "reveal", "caption": "ml.hl.high.reveal" }
+          ],
+          "misconceptions": { "a": "picked-the-middle-one", "b": "picked-the-low-one" },
+          "feedback": { "correct": "ml.hl.high.correct", "incorrect": "ml.hl.incorrect" }
+        },
+        {
+          "id": "ml-high-low-01.low-of-three",
+          "kind": "choose-one",
+          "skillId": "music.pitch.high-low",
+          "variant": "low-of-three",
+          "prompt": {
+            "instruction": "ml.hl.low.instruction",
+            "stimulus": { "type": "sign", "id": "low" }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A bird: A",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["a4"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A bird: high F",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["f5"] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "A bird: high C",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["c5"] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ml.hl.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ml.hint.not-this" },
+            { "type": "reveal", "caption": "ml.hl.low.reveal" }
+          ],
+          "misconceptions": { "b": "picked-the-high-one", "c": "picked-the-middle-one" },
+          "feedback": { "correct": "ml.hl.low.correct", "incorrect": "ml.hl.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "ml-same-01",
+      "version": 1,
+      "world": "music-lab",
+      "title": "The same, or different?",
+      "summary": "Two birds sing a short tune each — or two drums play a short pattern each — and your child says whether the two were the same or different. The first differences are big ones: a tune that goes up against one that comes down. Later only one note, or one long knock, is changed.",
+      "skillIds": ["music.pattern.same-different"],
+      "estimatedMinutes": 3,
+      "needsSound": true,
+      "plan": {
+        "demo": ["ml-same-01.demo-same", "ml-same-01.demo-different"],
+        "guided": [
+          "ml-same-01.guided-different",
+          "ml-same-01.guided-same",
+          "ml-same-01.guided-drum"
+        ],
+        "independent": {
+          "pool": [
+            "ml-same-01.tune-same-three",
+            "ml-same-01.tune-different-end",
+            "ml-same-01.tune-same-four",
+            "ml-same-01.tune-different-middle",
+            "ml-same-01.bars-same",
+            "ml-same-01.bars-different-start",
+            "ml-same-01.drum-same",
+            "ml-same-01.drum-different"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "ml-same-01.demo-same",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "tune-same",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "pipe", "first": ["c5", "e5", "g5"], "second": ["c5", "e5", "g5"] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "same",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.same.reveal" }
+          ],
+          "misconceptions": { "different": "heard-a-difference" },
+          "feedback": { "correct": "ml.same.same.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.demo-different",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "tune-different",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "pipe", "first": ["c5", "e5", "g5"], "second": ["g5", "e5", "c5"] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "different",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.different.reveal" }
+          ],
+          "misconceptions": { "same": "missed-the-difference" },
+          "feedback": { "correct": "ml.same.different.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.guided-different",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "tune-different",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "pipe", "first": ["e5", "g5"], "second": ["e5", "c5"] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "different",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.different.reveal" }
+          ],
+          "misconceptions": { "same": "missed-the-difference" },
+          "feedback": { "correct": "ml.same.different.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.guided-same",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "tune-same",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "pipe", "first": ["g5", "d5", "e5"], "second": ["g5", "d5", "e5"] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "same",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.same.reveal" }
+          ],
+          "misconceptions": { "different": "heard-a-difference" },
+          "feedback": { "correct": "ml.same.same.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.guided-drum",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "drum-different",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "drum", "firstSteps": [2, 2, 2], "secondSteps": [1, 1, 2] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "different",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.different.reveal" }
+          ],
+          "misconceptions": { "same": "missed-the-difference" },
+          "feedback": { "correct": "ml.same.different.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.tune-same-three",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "tune-same",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "pipe", "first": ["d5", "f5", "a5"], "second": ["d5", "f5", "a5"] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "same",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.same.reveal" }
+          ],
+          "misconceptions": { "different": "heard-a-difference" },
+          "feedback": { "correct": "ml.same.same.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.tune-different-end",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "tune-different",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "pipe", "first": ["c5", "d5", "e5"], "second": ["c5", "d5", "c5"] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "different",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.different.reveal" }
+          ],
+          "misconceptions": { "same": "missed-the-difference" },
+          "feedback": { "correct": "ml.same.different.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.tune-same-four",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "tune-same",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": {
+                "voice": "pipe",
+                "first": ["e5", "d5", "g5", "e5"],
+                "second": ["e5", "d5", "g5", "e5"]
+              }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "same",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.same.reveal" }
+          ],
+          "misconceptions": { "different": "heard-a-difference" },
+          "feedback": { "correct": "ml.same.same.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.tune-different-middle",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "tune-different",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "pipe", "first": ["g5", "e5", "g5"], "second": ["g5", "a5", "g5"] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "different",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.different.reveal" }
+          ],
+          "misconceptions": { "same": "missed-the-difference" },
+          "feedback": { "correct": "ml.same.different.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.bars-same",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "tune-same",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "bar", "first": ["c4", "g4", "e4"], "second": ["c4", "g4", "e4"] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "same",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.same.reveal" }
+          ],
+          "misconceptions": { "different": "heard-a-difference" },
+          "feedback": { "correct": "ml.same.same.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.bars-different-start",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "tune-different",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "bar", "first": ["e4", "g4", "a4"], "second": ["c4", "g4", "a4"] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "different",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.different.reveal" }
+          ],
+          "misconceptions": { "same": "missed-the-difference" },
+          "feedback": { "correct": "ml.same.different.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.drum-same",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "drum-same",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "drum", "firstSteps": [1, 1, 2, 2], "secondSteps": [1, 1, 2, 2] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "same",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.same.reveal" }
+          ],
+          "misconceptions": { "different": "heard-a-difference" },
+          "feedback": { "correct": "ml.same.same.correct", "incorrect": "ml.same.incorrect" }
+        },
+        {
+          "id": "ml-same-01.drum-different",
+          "kind": "choose-one",
+          "skillId": "music.pattern.same-different",
+          "variant": "drum-different",
+          "prompt": {
+            "instruction": "ml.same.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "pair",
+              "of": { "voice": "drum", "firstSteps": [2, 1, 1, 2], "secondSteps": [1, 1, 2, 2] }
+            }
+          },
+          "choices": [
+            { "id": "same", "label": "The same", "stimulus": { "type": "sign", "id": "same" } },
+            {
+              "id": "different",
+              "label": "Different",
+              "stimulus": { "type": "sign", "id": "different" }
+            }
+          ],
+          "answer": "different",
+          "hints": [
+            { "type": "model", "caption": "ml.same.hint.model" },
+            { "type": "reveal", "caption": "ml.same.different.reveal" }
+          ],
+          "misconceptions": { "same": "missed-the-difference" },
+          "feedback": { "correct": "ml.same.different.correct", "incorrect": "ml.same.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "ml-beat-01",
+      "version": 1,
+      "world": "music-lab",
+      "title": "Tapping with the beat",
+      "summary": "A slow, steady beat is played and lit up along a strip: four beats to listen to, then some to join in with on a big drum. Nothing has to be exact. Most of the beats met, give or take a good margin, is keeping the beat, and a tablet that answers a little late is allowed for.",
+      "skillIds": ["music.rhythm.steady-beat"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["ml-beat-01.demo"],
+        "guided": ["ml-beat-01.guided-slow", "ml-beat-01.guided-steady"],
+        "independent": {
+          "pool": [
+            "ml-beat-01.slow-a",
+            "ml-beat-01.slow-b",
+            "ml-beat-01.steady-a",
+            "ml-beat-01.steady-b",
+            "ml-beat-01.brisk-a",
+            "ml-beat-01.brisk-b"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "ml-beat-01.demo",
+          "kind": "make",
+          "skillId": "music.rhythm.steady-beat",
+          "variant": "steady",
+          "prompt": {
+            "instruction": "ml.beat.instruction",
+            "stimulus": { "type": "scene", "scene": "beat", "of": { "tempo": 66, "beats": 4 } }
+          },
+          "task": { "type": "beat", "tempo": 66, "lead": 4, "beats": 4, "need": 3 },
+          "hints": [
+            { "type": "model", "caption": "ml.beat.hint.model" },
+            { "type": "reveal", "caption": "ml.beat.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.beat.correct", "incorrect": "ml.beat.incorrect" }
+        },
+        {
+          "id": "ml-beat-01.guided-slow",
+          "kind": "make",
+          "skillId": "music.rhythm.steady-beat",
+          "variant": "slow",
+          "prompt": {
+            "instruction": "ml.beat.instruction",
+            "stimulus": { "type": "scene", "scene": "beat", "of": { "tempo": 60, "beats": 6 } }
+          },
+          "task": { "type": "beat", "tempo": 60, "lead": 4, "beats": 6, "need": 4 },
+          "hints": [
+            { "type": "model", "caption": "ml.beat.hint.model" },
+            { "type": "reveal", "caption": "ml.beat.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.beat.correct", "incorrect": "ml.beat.incorrect" }
+        },
+        {
+          "id": "ml-beat-01.guided-steady",
+          "kind": "make",
+          "skillId": "music.rhythm.steady-beat",
+          "variant": "steady",
+          "prompt": {
+            "instruction": "ml.beat.instruction",
+            "stimulus": { "type": "scene", "scene": "beat", "of": { "tempo": 66, "beats": 8 } }
+          },
+          "task": { "type": "beat", "tempo": 66, "lead": 4, "beats": 8, "need": 5 },
+          "hints": [
+            { "type": "model", "caption": "ml.beat.hint.model" },
+            { "type": "reveal", "caption": "ml.beat.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.beat.correct", "incorrect": "ml.beat.incorrect" }
+        },
+        {
+          "id": "ml-beat-01.slow-a",
+          "kind": "make",
+          "skillId": "music.rhythm.steady-beat",
+          "variant": "slow",
+          "prompt": {
+            "instruction": "ml.beat.instruction",
+            "stimulus": { "type": "scene", "scene": "beat", "of": { "tempo": 60, "beats": 8 } }
+          },
+          "task": { "type": "beat", "tempo": 60, "lead": 4, "beats": 8, "need": 6 },
+          "hints": [
+            { "type": "model", "caption": "ml.beat.hint.model" },
+            { "type": "reveal", "caption": "ml.beat.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.beat.correct", "incorrect": "ml.beat.incorrect" }
+        },
+        {
+          "id": "ml-beat-01.slow-b",
+          "kind": "make",
+          "skillId": "music.rhythm.steady-beat",
+          "variant": "slow",
+          "prompt": {
+            "instruction": "ml.beat.instruction",
+            "stimulus": { "type": "scene", "scene": "beat", "of": { "tempo": 63, "beats": 8 } }
+          },
+          "task": { "type": "beat", "tempo": 63, "lead": 4, "beats": 8, "need": 6 },
+          "hints": [
+            { "type": "model", "caption": "ml.beat.hint.model" },
+            { "type": "reveal", "caption": "ml.beat.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.beat.correct", "incorrect": "ml.beat.incorrect" }
+        },
+        {
+          "id": "ml-beat-01.steady-a",
+          "kind": "make",
+          "skillId": "music.rhythm.steady-beat",
+          "variant": "steady",
+          "prompt": {
+            "instruction": "ml.beat.instruction",
+            "stimulus": { "type": "scene", "scene": "beat", "of": { "tempo": 69, "beats": 8 } }
+          },
+          "task": { "type": "beat", "tempo": 69, "lead": 4, "beats": 8, "need": 6 },
+          "hints": [
+            { "type": "model", "caption": "ml.beat.hint.model" },
+            { "type": "reveal", "caption": "ml.beat.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.beat.correct", "incorrect": "ml.beat.incorrect" }
+        },
+        {
+          "id": "ml-beat-01.steady-b",
+          "kind": "make",
+          "skillId": "music.rhythm.steady-beat",
+          "variant": "steady",
+          "prompt": {
+            "instruction": "ml.beat.instruction",
+            "stimulus": { "type": "scene", "scene": "beat", "of": { "tempo": 72, "beats": 8 } }
+          },
+          "task": { "type": "beat", "tempo": 72, "lead": 4, "beats": 8, "need": 6 },
+          "hints": [
+            { "type": "model", "caption": "ml.beat.hint.model" },
+            { "type": "reveal", "caption": "ml.beat.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.beat.correct", "incorrect": "ml.beat.incorrect" }
+        },
+        {
+          "id": "ml-beat-01.brisk-a",
+          "kind": "make",
+          "skillId": "music.rhythm.steady-beat",
+          "variant": "brisk",
+          "prompt": {
+            "instruction": "ml.beat.instruction",
+            "stimulus": { "type": "scene", "scene": "beat", "of": { "tempo": 80, "beats": 8 } }
+          },
+          "task": { "type": "beat", "tempo": 80, "lead": 4, "beats": 8, "need": 6 },
+          "hints": [
+            { "type": "model", "caption": "ml.beat.hint.model" },
+            { "type": "reveal", "caption": "ml.beat.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.beat.correct", "incorrect": "ml.beat.incorrect" }
+        },
+        {
+          "id": "ml-beat-01.brisk-b",
+          "kind": "make",
+          "skillId": "music.rhythm.steady-beat",
+          "variant": "brisk",
+          "prompt": {
+            "instruction": "ml.beat.instruction",
+            "stimulus": { "type": "scene", "scene": "beat", "of": { "tempo": 84, "beats": 8 } }
+          },
+          "task": { "type": "beat", "tempo": 84, "lead": 4, "beats": 8, "need": 6 },
+          "hints": [
+            { "type": "model", "caption": "ml.beat.hint.model" },
+            { "type": "reveal", "caption": "ml.beat.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.beat.correct", "incorrect": "ml.beat.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "ml-echo-01",
+      "version": 1,
+      "world": "music-lab",
+      "title": "Play it back",
+      "summary": "A few notes are played on chime bars, each bar lighting as it sounds, and your child plays them back in the same order: two notes at first, then three, then four. Hearing the notes again is help, and is asked for as help. With the sound off the bars still light, so the order can be followed by eye.",
+      "skillIds": ["music.memory.play-back"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["ml-echo-01.demo"],
+        "guided": ["ml-echo-01.guided-two", "ml-echo-01.guided-three"],
+        "independent": {
+          "pool": [
+            "ml-echo-01.three-a",
+            "ml-echo-01.three-b",
+            "ml-echo-01.three-c",
+            "ml-echo-01.three-d",
+            "ml-echo-01.four-a",
+            "ml-echo-01.four-b",
+            "ml-echo-01.four-c",
+            "ml-echo-01.four-d"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "ml-echo-01.demo",
+          "kind": "make",
+          "skillId": "music.memory.play-back",
+          "variant": "two-notes",
+          "prompt": { "instruction": "ml.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              {
+                "id": "c4",
+                "label": "Chime bar: C",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+              },
+              {
+                "id": "e4",
+                "label": "Chime bar: E",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+              },
+              {
+                "id": "g4",
+                "label": "Chime bar: G",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g4" } }
+              }
+            ],
+            "solution": ["c4", "g4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "ml.echo.hint.step" },
+            { "type": "reveal", "caption": "ml.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "ml.echo.correct", "incorrect": "ml.echo.incorrect" }
+        },
+        {
+          "id": "ml-echo-01.guided-two",
+          "kind": "make",
+          "skillId": "music.memory.play-back",
+          "variant": "two-notes",
+          "prompt": { "instruction": "ml.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              {
+                "id": "c4",
+                "label": "Chime bar: C",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+              },
+              {
+                "id": "e4",
+                "label": "Chime bar: E",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+              },
+              {
+                "id": "g4",
+                "label": "Chime bar: G",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g4" } }
+              }
+            ],
+            "solution": ["g4", "e4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "ml.echo.hint.step" },
+            { "type": "reveal", "caption": "ml.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "ml.echo.correct", "incorrect": "ml.echo.incorrect" }
+        },
+        {
+          "id": "ml-echo-01.guided-three",
+          "kind": "make",
+          "skillId": "music.memory.play-back",
+          "variant": "three-notes",
+          "prompt": { "instruction": "ml.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              {
+                "id": "c4",
+                "label": "Chime bar: C",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+              },
+              {
+                "id": "e4",
+                "label": "Chime bar: E",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+              },
+              {
+                "id": "g4",
+                "label": "Chime bar: G",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g4" } }
+              }
+            ],
+            "solution": ["e4", "c4", "g4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "ml.echo.hint.step" },
+            { "type": "reveal", "caption": "ml.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "ml.echo.correct", "incorrect": "ml.echo.incorrect" }
+        },
+        {
+          "id": "ml-echo-01.three-a",
+          "kind": "make",
+          "skillId": "music.memory.play-back",
+          "variant": "three-notes",
+          "prompt": { "instruction": "ml.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              {
+                "id": "c4",
+                "label": "Chime bar: C",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+              },
+              {
+                "id": "e4",
+                "label": "Chime bar: E",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+              },
+              {
+                "id": "g4",
+                "label": "Chime bar: G",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g4" } }
+              }
+            ],
+            "solution": ["g4", "c4", "e4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "ml.echo.hint.step" },
+            { "type": "reveal", "caption": "ml.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "ml.echo.correct", "incorrect": "ml.echo.incorrect" }
+        },
+        {
+          "id": "ml-echo-01.three-b",
+          "kind": "make",
+          "skillId": "music.memory.play-back",
+          "variant": "three-notes",
+          "prompt": { "instruction": "ml.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              {
+                "id": "c4",
+                "label": "Chime bar: C",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+              },
+              {
+                "id": "d4",
+                "label": "Chime bar: D",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "d4" } }
+              },
+              {
+                "id": "e4",
+                "label": "Chime bar: E",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+              },
+              {
+                "id": "g4",
+                "label": "Chime bar: G",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g4" } }
+              }
+            ],
+            "solution": ["d4", "g4", "e4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "ml.echo.hint.step" },
+            { "type": "reveal", "caption": "ml.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "ml.echo.correct", "incorrect": "ml.echo.incorrect" }
+        },
+        {
+          "id": "ml-echo-01.three-c",
+          "kind": "make",
+          "skillId": "music.memory.play-back",
+          "variant": "three-notes",
+          "prompt": { "instruction": "ml.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              {
+                "id": "c4",
+                "label": "Chime bar: C",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+              },
+              {
+                "id": "d4",
+                "label": "Chime bar: D",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "d4" } }
+              },
+              {
+                "id": "e4",
+                "label": "Chime bar: E",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+              },
+              {
+                "id": "g4",
+                "label": "Chime bar: G",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g4" } }
+              }
+            ],
+            "solution": ["e4", "e4", "c4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "ml.echo.hint.step" },
+            { "type": "reveal", "caption": "ml.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "ml.echo.correct", "incorrect": "ml.echo.incorrect" }
+        },
+        {
+          "id": "ml-echo-01.three-d",
+          "kind": "make",
+          "skillId": "music.memory.play-back",
+          "variant": "three-notes",
+          "prompt": { "instruction": "ml.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              {
+                "id": "c4",
+                "label": "Chime bar: C",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+              },
+              {
+                "id": "d4",
+                "label": "Chime bar: D",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "d4" } }
+              },
+              {
+                "id": "e4",
+                "label": "Chime bar: E",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+              },
+              {
+                "id": "g4",
+                "label": "Chime bar: G",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g4" } }
+              },
+              {
+                "id": "a4",
+                "label": "Chime bar: A",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "a4" } }
+              }
+            ],
+            "solution": ["a4", "e4", "g4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "ml.echo.hint.step" },
+            { "type": "reveal", "caption": "ml.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "ml.echo.correct", "incorrect": "ml.echo.incorrect" }
+        },
+        {
+          "id": "ml-echo-01.four-a",
+          "kind": "make",
+          "skillId": "music.memory.play-back",
+          "variant": "four-notes",
+          "prompt": { "instruction": "ml.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              {
+                "id": "c4",
+                "label": "Chime bar: C",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+              },
+              {
+                "id": "d4",
+                "label": "Chime bar: D",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "d4" } }
+              },
+              {
+                "id": "e4",
+                "label": "Chime bar: E",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+              },
+              {
+                "id": "g4",
+                "label": "Chime bar: G",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g4" } }
+              }
+            ],
+            "solution": ["c4", "e4", "d4", "g4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "ml.echo.hint.step" },
+            { "type": "reveal", "caption": "ml.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "ml.echo.correct", "incorrect": "ml.echo.incorrect" }
+        },
+        {
+          "id": "ml-echo-01.four-b",
+          "kind": "make",
+          "skillId": "music.memory.play-back",
+          "variant": "four-notes",
+          "prompt": { "instruction": "ml.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              {
+                "id": "c4",
+                "label": "Chime bar: C",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+              },
+              {
+                "id": "d4",
+                "label": "Chime bar: D",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "d4" } }
+              },
+              {
+                "id": "e4",
+                "label": "Chime bar: E",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+              },
+              {
+                "id": "g4",
+                "label": "Chime bar: G",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g4" } }
+              },
+              {
+                "id": "a4",
+                "label": "Chime bar: A",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "a4" } }
+              }
+            ],
+            "solution": ["g4", "a4", "e4", "c4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "ml.echo.hint.step" },
+            { "type": "reveal", "caption": "ml.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "ml.echo.correct", "incorrect": "ml.echo.incorrect" }
+        },
+        {
+          "id": "ml-echo-01.four-c",
+          "kind": "make",
+          "skillId": "music.memory.play-back",
+          "variant": "four-notes",
+          "prompt": { "instruction": "ml.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              {
+                "id": "c4",
+                "label": "Chime bar: C",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+              },
+              {
+                "id": "d4",
+                "label": "Chime bar: D",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "d4" } }
+              },
+              {
+                "id": "e4",
+                "label": "Chime bar: E",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+              },
+              {
+                "id": "g4",
+                "label": "Chime bar: G",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g4" } }
+              },
+              {
+                "id": "a4",
+                "label": "Chime bar: A",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "a4" } }
+              }
+            ],
+            "solution": ["d4", "d4", "a4", "g4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "ml.echo.hint.step" },
+            { "type": "reveal", "caption": "ml.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "ml.echo.correct", "incorrect": "ml.echo.incorrect" }
+        },
+        {
+          "id": "ml-echo-01.four-d",
+          "kind": "make",
+          "skillId": "music.memory.play-back",
+          "variant": "four-notes",
+          "prompt": { "instruction": "ml.echo.instruction" },
+          "task": {
+            "type": "echo",
+            "cards": [
+              {
+                "id": "c4",
+                "label": "Chime bar: C",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "c4" } }
+              },
+              {
+                "id": "d4",
+                "label": "Chime bar: D",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "d4" } }
+              },
+              {
+                "id": "e4",
+                "label": "Chime bar: E",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "e4" } }
+              },
+              {
+                "id": "g4",
+                "label": "Chime bar: G",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "g4" } }
+              },
+              {
+                "id": "a4",
+                "label": "Chime bar: A",
+                "stimulus": { "type": "scene", "scene": "bar", "of": { "note": "a4" } }
+              }
+            ],
+            "solution": ["e4", "g4", "c4", "d4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.echo.hint.model" },
+            { "type": "step", "count": 1, "caption": "ml.echo.hint.step" },
+            { "type": "reveal", "caption": "ml.echo.hint.reveal" }
+          ],
+          "feedback": { "correct": "ml.echo.correct", "incorrect": "ml.echo.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "ml-again-01",
+      "version": 1,
+      "world": "music-lab",
+      "title": "The same tune again",
+      "summary": "A big bird sings a short tune. Then two or three little birds sing one each, and your child finds the one that sang the big bird’s tune again. The others are nearly the same: the same notes in another order, or one note changed. Some questions are for drums, with long and short knocks.",
+      "skillIds": ["music.pattern.repeated-phrase"],
+      "estimatedMinutes": 4,
+      "needsSound": true,
+      "plan": {
+        "demo": ["ml-again-01.demo"],
+        "guided": ["ml-again-01.guided-two", "ml-again-01.guided-three"],
+        "independent": {
+          "pool": [
+            "ml-again-01.two-a",
+            "ml-again-01.two-b",
+            "ml-again-01.two-c",
+            "ml-again-01.three-a",
+            "ml-again-01.three-b",
+            "ml-again-01.three-c",
+            "ml-again-01.drums-a",
+            "ml-again-01.drums-b"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "ml-again-01.demo",
+          "kind": "choose-one",
+          "skillId": "music.pattern.repeated-phrase",
+          "variant": "two-singers",
+          "prompt": {
+            "instruction": "ml.again.tune.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "phrase",
+              "of": { "voice": "pipe", "notes": ["c5", "g5"], "big": true }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little bird: high C, high G",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["c5", "g5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A little bird: high G, high C",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["g5", "c5"] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ml.again.hint.model" },
+            { "type": "reveal", "caption": "ml.again.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-things-other-order" },
+          "feedback": { "correct": "ml.again.correct", "incorrect": "ml.again.incorrect" }
+        },
+        {
+          "id": "ml-again-01.guided-two",
+          "kind": "choose-one",
+          "skillId": "music.pattern.repeated-phrase",
+          "variant": "two-singers",
+          "prompt": {
+            "instruction": "ml.again.tune.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "phrase",
+              "of": { "voice": "pipe", "notes": ["g5", "e5", "g5"], "big": true }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little bird: high G, high E, high C",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["g5", "e5", "c5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A little bird: high G, high E, high G",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["g5", "e5", "g5"] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.again.hint.model" },
+            { "type": "reveal", "caption": "ml.again.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-thing-changed" },
+          "feedback": { "correct": "ml.again.correct", "incorrect": "ml.again.incorrect" }
+        },
+        {
+          "id": "ml-again-01.guided-three",
+          "kind": "choose-one",
+          "skillId": "music.pattern.repeated-phrase",
+          "variant": "three-singers",
+          "prompt": {
+            "instruction": "ml.again.tune.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "phrase",
+              "of": { "voice": "pipe", "notes": ["c5", "d5", "e5"], "big": true }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little bird: high C, high D, high E",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["c5", "d5", "e5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A little bird: high E, high D, high C",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["e5", "d5", "c5"] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "A little bird: high C, high E, high D",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["c5", "e5", "d5"] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ml.again.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ml.hint.not-this" },
+            { "type": "reveal", "caption": "ml.again.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-things-other-order", "c": "same-things-other-order" },
+          "feedback": { "correct": "ml.again.correct", "incorrect": "ml.again.incorrect" }
+        },
+        {
+          "id": "ml-again-01.two-a",
+          "kind": "choose-one",
+          "skillId": "music.pattern.repeated-phrase",
+          "variant": "two-singers",
+          "prompt": {
+            "instruction": "ml.again.tune.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "phrase",
+              "of": { "voice": "pipe", "notes": ["e5", "g5", "e5"], "big": true }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little bird: high E, high G, high A",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["e5", "g5", "a5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A little bird: high E, high G, high E",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["e5", "g5", "e5"] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.again.hint.model" },
+            { "type": "reveal", "caption": "ml.again.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-thing-changed" },
+          "feedback": { "correct": "ml.again.correct", "incorrect": "ml.again.incorrect" }
+        },
+        {
+          "id": "ml-again-01.two-b",
+          "kind": "choose-one",
+          "skillId": "music.pattern.repeated-phrase",
+          "variant": "two-singers",
+          "prompt": {
+            "instruction": "ml.again.tune.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "phrase",
+              "of": { "voice": "pipe", "notes": ["d5", "f5", "d5", "a5"], "big": true }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little bird: high D, high F, high D, high A",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["d5", "f5", "d5", "a5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A little bird: high D, high F, high A, high D",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["d5", "f5", "a5", "d5"] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ml.again.hint.model" },
+            { "type": "reveal", "caption": "ml.again.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-things-other-order" },
+          "feedback": { "correct": "ml.again.correct", "incorrect": "ml.again.incorrect" }
+        },
+        {
+          "id": "ml-again-01.two-c",
+          "kind": "choose-one",
+          "skillId": "music.pattern.repeated-phrase",
+          "variant": "two-singers",
+          "prompt": {
+            "instruction": "ml.again.tune.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "phrase",
+              "of": { "voice": "bar", "notes": ["c4", "e4", "g4", "e4"], "big": true }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little bird: C, E, G, E",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "bar", "notes": ["c4", "e4", "g4", "e4"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A little bird: C, E, G, C",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "bar", "notes": ["c4", "e4", "g4", "c4"] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ml.again.hint.model" },
+            { "type": "reveal", "caption": "ml.again.hint.reveal" }
+          ],
+          "misconceptions": { "b": "one-thing-changed" },
+          "feedback": { "correct": "ml.again.correct", "incorrect": "ml.again.incorrect" }
+        },
+        {
+          "id": "ml-again-01.three-a",
+          "kind": "choose-one",
+          "skillId": "music.pattern.repeated-phrase",
+          "variant": "three-singers",
+          "prompt": {
+            "instruction": "ml.again.tune.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "phrase",
+              "of": { "voice": "pipe", "notes": ["a5", "g5", "e5"], "big": true }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little bird: high A, high E, high G",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["a5", "e5", "g5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A little bird: high A, high G, high E",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["a5", "g5", "e5"] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "A little bird: high E, high G, high A",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["e5", "g5", "a5"] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.again.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ml.hint.not-this" },
+            { "type": "reveal", "caption": "ml.again.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-things-other-order", "c": "same-things-other-order" },
+          "feedback": { "correct": "ml.again.correct", "incorrect": "ml.again.incorrect" }
+        },
+        {
+          "id": "ml-again-01.three-b",
+          "kind": "choose-one",
+          "skillId": "music.pattern.repeated-phrase",
+          "variant": "three-singers",
+          "prompt": {
+            "instruction": "ml.again.tune.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "phrase",
+              "of": { "voice": "pipe", "notes": ["c5", "c5", "g5"], "big": true }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little bird: high C, high G, high G",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["c5", "g5", "g5"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A little bird: high G, high C, high C",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["g5", "c5", "c5"] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "A little bird: high C, high C, high G",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "pipe", "notes": ["c5", "c5", "g5"] }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "ml.again.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "ml.hint.not-this" },
+            { "type": "reveal", "caption": "ml.again.hint.reveal" }
+          ],
+          "misconceptions": { "a": "one-thing-changed", "b": "same-things-other-order" },
+          "feedback": { "correct": "ml.again.correct", "incorrect": "ml.again.incorrect" }
+        },
+        {
+          "id": "ml-again-01.three-c",
+          "kind": "choose-one",
+          "skillId": "music.pattern.repeated-phrase",
+          "variant": "three-singers",
+          "prompt": {
+            "instruction": "ml.again.tune.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "phrase",
+              "of": { "voice": "bar", "notes": ["g4", "d4", "e4"], "big": true }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little bird: G, E, D",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "bar", "notes": ["g4", "e4", "d4"] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A little bird: D, G, E",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "bar", "notes": ["d4", "g4", "e4"] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "A little bird: G, D, E",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "bar", "notes": ["g4", "d4", "e4"] }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "ml.again.hint.model" },
+            { "type": "eliminate", "remove": ["b"], "caption": "ml.hint.not-this" },
+            { "type": "reveal", "caption": "ml.again.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-things-other-order", "b": "same-things-other-order" },
+          "feedback": { "correct": "ml.again.correct", "incorrect": "ml.again.incorrect" }
+        },
+        {
+          "id": "ml-again-01.drums-a",
+          "kind": "choose-one",
+          "skillId": "music.pattern.repeated-phrase",
+          "variant": "drums",
+          "prompt": {
+            "instruction": "ml.again.drum.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "phrase",
+              "of": { "voice": "drum", "steps": [2, 1, 1], "big": true }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little drum: short, short, long",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "drum", "steps": [1, 1, 2] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A little drum: long, short, short",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "drum", "steps": [2, 1, 1] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ml.again.hint.model" },
+            { "type": "reveal", "caption": "ml.again.hint.reveal" }
+          ],
+          "misconceptions": { "a": "same-things-other-order" },
+          "feedback": { "correct": "ml.again.correct", "incorrect": "ml.again.incorrect" }
+        },
+        {
+          "id": "ml-again-01.drums-b",
+          "kind": "choose-one",
+          "skillId": "music.pattern.repeated-phrase",
+          "variant": "drums",
+          "prompt": {
+            "instruction": "ml.again.drum.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "phrase",
+              "of": { "voice": "drum", "steps": [1, 1, 2, 2], "big": true }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "A little drum: short, short, long, long",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "drum", "steps": [1, 1, 2, 2] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "A little drum: long, long, short, short",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "drum", "steps": [2, 2, 1, 1] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "A little drum: short, long, short, long",
+              "stimulus": {
+                "type": "scene",
+                "scene": "phrase",
+                "of": { "voice": "drum", "steps": [1, 2, 1, 2] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ml.again.hint.model" },
+            { "type": "eliminate", "remove": ["c"], "caption": "ml.hint.not-this" },
+            { "type": "reveal", "caption": "ml.again.hint.reveal" }
+          ],
+          "misconceptions": { "b": "same-things-other-order", "c": "same-things-other-order" },
+          "feedback": { "correct": "ml.again.correct", "incorrect": "ml.again.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "ml-tune-01",
+      "version": 1,
+      "world": "music-lab",
+      "title": "Make a tune",
+      "summary": "Chime bars, and a tune to make up with a shape to it: going up, coming down, over a hill and back, the same thing twice, or home to the biggest bar. There are many right tunes, and your child’s own is as right as any. It can be played back and changed before saying it is done.",
+      "skillIds": ["music.making.shape-a-tune"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["ml-tune-01.demo"],
+        "guided": ["ml-tune-01.guided-up", "ml-tune-01.guided-down"],
+        "independent": {
+          "pool": [
+            "ml-tune-01.up-four",
+            "ml-tune-01.down-four",
+            "ml-tune-01.hill-three",
+            "ml-tune-01.hill-five",
+            "ml-tune-01.twice-four",
+            "ml-tune-01.twice-six",
+            "ml-tune-01.home-four",
+            "ml-tune-01.home-five"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "ml-tune-01.demo",
+          "kind": "make",
+          "skillId": "music.making.shape-a-tune",
+          "variant": "up",
+          "prompt": {
+            "instruction": "ml.tune.up.instruction",
+            "stimulus": { "type": "sign", "id": "up" }
+          },
+          "task": {
+            "type": "tune",
+            "notes": ["c4", "e4", "g4", "c5"],
+            "length": 3,
+            "shape": "up",
+            "solution": ["c4", "e4", "g4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.tune.up.hint" },
+            { "type": "step", "count": 1, "caption": "ml.tune.hint.step" },
+            { "type": "reveal", "caption": "ml.tune.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.tune.correct", "incorrect": "ml.tune.up.incorrect" }
+        },
+        {
+          "id": "ml-tune-01.guided-up",
+          "kind": "make",
+          "skillId": "music.making.shape-a-tune",
+          "variant": "up",
+          "prompt": {
+            "instruction": "ml.tune.up.instruction",
+            "stimulus": { "type": "sign", "id": "up" }
+          },
+          "task": {
+            "type": "tune",
+            "notes": ["c4", "d4", "e4", "g4", "a4"],
+            "length": 3,
+            "shape": "up",
+            "solution": ["c4", "e4", "a4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.tune.up.hint" },
+            { "type": "step", "count": 1, "caption": "ml.tune.hint.step" },
+            { "type": "reveal", "caption": "ml.tune.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.tune.correct", "incorrect": "ml.tune.up.incorrect" }
+        },
+        {
+          "id": "ml-tune-01.guided-down",
+          "kind": "make",
+          "skillId": "music.making.shape-a-tune",
+          "variant": "down",
+          "prompt": {
+            "instruction": "ml.tune.down.instruction",
+            "stimulus": { "type": "sign", "id": "down" }
+          },
+          "task": {
+            "type": "tune",
+            "notes": ["c4", "d4", "e4", "g4", "a4"],
+            "length": 3,
+            "shape": "down",
+            "solution": ["a4", "e4", "c4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.tune.down.hint" },
+            { "type": "step", "count": 1, "caption": "ml.tune.hint.step" },
+            { "type": "reveal", "caption": "ml.tune.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.tune.correct", "incorrect": "ml.tune.down.incorrect" }
+        },
+        {
+          "id": "ml-tune-01.up-four",
+          "kind": "make",
+          "skillId": "music.making.shape-a-tune",
+          "variant": "up",
+          "prompt": {
+            "instruction": "ml.tune.up.instruction",
+            "stimulus": { "type": "sign", "id": "up" }
+          },
+          "task": {
+            "type": "tune",
+            "notes": ["c4", "d4", "e4", "g4", "a4", "c5"],
+            "length": 4,
+            "shape": "up",
+            "solution": ["c4", "e4", "g4", "c5"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.tune.up.hint" },
+            { "type": "step", "count": 1, "caption": "ml.tune.hint.step" },
+            { "type": "reveal", "caption": "ml.tune.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.tune.correct", "incorrect": "ml.tune.up.incorrect" }
+        },
+        {
+          "id": "ml-tune-01.down-four",
+          "kind": "make",
+          "skillId": "music.making.shape-a-tune",
+          "variant": "down",
+          "prompt": {
+            "instruction": "ml.tune.down.instruction",
+            "stimulus": { "type": "sign", "id": "down" }
+          },
+          "task": {
+            "type": "tune",
+            "notes": ["c4", "d4", "e4", "g4", "a4", "c5"],
+            "length": 4,
+            "shape": "down",
+            "solution": ["c5", "a4", "e4", "c4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.tune.down.hint" },
+            { "type": "step", "count": 1, "caption": "ml.tune.hint.step" },
+            { "type": "reveal", "caption": "ml.tune.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.tune.correct", "incorrect": "ml.tune.down.incorrect" }
+        },
+        {
+          "id": "ml-tune-01.hill-three",
+          "kind": "make",
+          "skillId": "music.making.shape-a-tune",
+          "variant": "hill",
+          "prompt": {
+            "instruction": "ml.tune.hill.instruction",
+            "stimulus": { "type": "sign", "id": "hill" }
+          },
+          "task": {
+            "type": "tune",
+            "notes": ["c4", "d4", "e4", "g4", "a4"],
+            "length": 3,
+            "shape": "hill",
+            "solution": ["d4", "a4", "e4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.tune.hill.hint" },
+            { "type": "step", "count": 1, "caption": "ml.tune.hint.step" },
+            { "type": "reveal", "caption": "ml.tune.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.tune.correct", "incorrect": "ml.tune.hill.incorrect" }
+        },
+        {
+          "id": "ml-tune-01.hill-five",
+          "kind": "make",
+          "skillId": "music.making.shape-a-tune",
+          "variant": "hill",
+          "prompt": {
+            "instruction": "ml.tune.hill.instruction",
+            "stimulus": { "type": "sign", "id": "hill" }
+          },
+          "task": {
+            "type": "tune",
+            "notes": ["c4", "d4", "e4", "g4", "a4"],
+            "length": 5,
+            "shape": "hill",
+            "solution": ["c4", "e4", "a4", "g4", "d4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.tune.hill.hint" },
+            { "type": "step", "count": 1, "caption": "ml.tune.hint.step" },
+            { "type": "reveal", "caption": "ml.tune.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.tune.correct", "incorrect": "ml.tune.hill.incorrect" }
+        },
+        {
+          "id": "ml-tune-01.twice-four",
+          "kind": "make",
+          "skillId": "music.making.shape-a-tune",
+          "variant": "twice",
+          "prompt": {
+            "instruction": "ml.tune.twice.instruction",
+            "stimulus": { "type": "sign", "id": "twice" }
+          },
+          "task": {
+            "type": "tune",
+            "notes": ["c4", "d4", "e4", "g4", "a4"],
+            "length": 4,
+            "shape": "twice",
+            "solution": ["e4", "g4", "e4", "g4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.tune.twice.hint" },
+            { "type": "step", "count": 2, "caption": "ml.tune.hint.step" },
+            { "type": "reveal", "caption": "ml.tune.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.tune.correct", "incorrect": "ml.tune.twice.incorrect" }
+        },
+        {
+          "id": "ml-tune-01.twice-six",
+          "kind": "make",
+          "skillId": "music.making.shape-a-tune",
+          "variant": "twice",
+          "prompt": {
+            "instruction": "ml.tune.twice.instruction",
+            "stimulus": { "type": "sign", "id": "twice" }
+          },
+          "task": {
+            "type": "tune",
+            "notes": ["c4", "d4", "e4", "g4", "a4"],
+            "length": 6,
+            "shape": "twice",
+            "solution": ["c4", "e4", "g4", "c4", "e4", "g4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.tune.twice.hint" },
+            { "type": "step", "count": 2, "caption": "ml.tune.hint.step" },
+            { "type": "reveal", "caption": "ml.tune.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.tune.correct", "incorrect": "ml.tune.twice.incorrect" }
+        },
+        {
+          "id": "ml-tune-01.home-four",
+          "kind": "make",
+          "skillId": "music.making.shape-a-tune",
+          "variant": "home",
+          "prompt": {
+            "instruction": "ml.tune.home.instruction",
+            "stimulus": { "type": "sign", "id": "home" }
+          },
+          "task": {
+            "type": "tune",
+            "notes": ["c4", "d4", "e4", "g4", "a4"],
+            "length": 4,
+            "shape": "home",
+            "solution": ["e4", "a4", "g4", "c4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.tune.home.hint" },
+            { "type": "step", "count": 1, "caption": "ml.tune.hint.step" },
+            { "type": "reveal", "caption": "ml.tune.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.tune.correct", "incorrect": "ml.tune.home.incorrect" }
+        },
+        {
+          "id": "ml-tune-01.home-five",
+          "kind": "make",
+          "skillId": "music.making.shape-a-tune",
+          "variant": "home",
+          "prompt": {
+            "instruction": "ml.tune.home.instruction",
+            "stimulus": { "type": "sign", "id": "home" }
+          },
+          "task": {
+            "type": "tune",
+            "notes": ["c4", "d4", "e4", "g4", "a4", "c5"],
+            "length": 5,
+            "shape": "home",
+            "solution": ["g4", "a4", "e4", "d4", "c4"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ml.tune.home.hint" },
+            { "type": "step", "count": 1, "caption": "ml.tune.hint.step" },
+            { "type": "reveal", "caption": "ml.tune.hint.reveal" }
+          ],
+          "maxTries": 3,
+          "feedback": { "correct": "ml.tune.correct", "incorrect": "ml.tune.home.incorrect" }
+        }
+      ]
+    }
+  ]
+}

@@ -78,6 +78,12 @@ export function wrongAnswerTo(view: ChallengeView): string | null {
       const other = first?.options.find((option) => option !== task.solution[0]);
       return other ? [other, ...task.solution.slice(1)].join('-') : null;
     }
+    case 'beat':
+      // Not one beat met.
+      return Array.from({ length: task.beats }, () => 'miss').join('-');
+    case 'tune':
+      // One bar, over and over: no shape there is to ask for.
+      return Array.from({ length: task.length }, () => task.notes[1] ?? '').join('-');
   }
 }
 

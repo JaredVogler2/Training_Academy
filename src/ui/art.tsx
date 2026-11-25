@@ -334,6 +334,46 @@ function ExplorerHarbor() {
   );
 }
 
+/** Chime bars, each shorter than the last, with a beater lying across them and a note in the air. */
+function MusicLab() {
+  const bars: readonly (readonly [number, number, string, string])[] = [
+    [18, 62, '#f0564a', '#b83a30'],
+    [35, 54, '#ff9f45', '#c46a17'],
+    [52, 46, '#ffd35c', '#c88a00'],
+    [69, 38, '#6fcf74', '#2f8440'],
+    [86, 30, '#62b4f3', '#2a6fb5'],
+  ];
+  return (
+    <>
+      <ellipse cx="60" cy="108" rx="40" ry="5" fill={INK} opacity="0.1" />
+      <path d="M12 98 104 82" stroke="#9a6a45" strokeWidth="7" strokeLinecap="round" />
+      <path d="M12 52 104 62" stroke="#9a6a45" strokeWidth="7" strokeLinecap="round" />
+      {bars.map(([x, tall, fill, rim]) => (
+        <g key={x}>
+          <rect
+            x={x}
+            y={78 - tall / 2}
+            width="14"
+            height={tall}
+            rx="6"
+            fill={fill}
+            stroke={rim}
+            strokeWidth="2.500"
+          />
+          <circle cx={x + 7} cy={84 - tall / 2} r="1.800" fill={rim} />
+          <circle cx={x + 7} cy={72 + tall / 2} r="1.800" fill={rim} />
+        </g>
+      ))}
+      <path d="M30 34 88 70" stroke="#7a5236" strokeWidth="4.500" strokeLinecap="round" />
+      <circle cx="27" cy="32" r="8.500" fill="#a993f8" stroke="#6b4fd0" strokeWidth="2.500" />
+      <g fill={INK}>
+        <ellipse cx="88" cy="30" rx="6.500" ry="5" transform="rotate(-20 88 30)" />
+        <path d="M92.500 28V8l14 5v6l-11-4v14z" />
+      </g>
+    </>
+  );
+}
+
 const EMBLEMS: Record<WorldId, () => ReactNode> = {
   'reading-cove': ReadingCove,
   'number-garden': NumberGarden,
@@ -341,6 +381,7 @@ const EMBLEMS: Record<WorldId, () => ReactNode> = {
   'memory-forest': MemoryForest,
   'inventor-island': InventorIsland,
   'explorer-harbor': ExplorerHarbor,
+  'music-lab': MusicLab,
 };
 
 export function WorldEmblem({ world, ...props }: ArtProps & { world: WorldId }) {

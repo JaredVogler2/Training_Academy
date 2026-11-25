@@ -10,6 +10,7 @@ import {
   buildMemoryForestPack,
   buildMemoryForestVoice,
 } from '../../scripts/content/memory-forest.mjs';
+import { buildMusicLabPack } from '../../scripts/content/music-lab.mjs';
 import { buildNumberGardenPack } from '../../scripts/content/number-garden.mjs';
 import {
   buildReadingCovePack,
@@ -28,6 +29,7 @@ describe.each([
   ['memory-forest', buildMemoryForestPack],
   ['inventor-island', buildInventorIslandPack],
   ['explorer-harbor', buildExplorerHarborPack],
+  ['music-lab', buildMusicLabPack],
 ])('%s', (_world, build) => {
   it('is the pack its generator writes, to the letter', async () => {
     const pack = build();

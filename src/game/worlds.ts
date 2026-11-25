@@ -1,11 +1,13 @@
 import type { WorldId } from '@/engine';
 
 /**
- * The six worlds of the archipelago: what each is for, in words a grown-up can check, and what there is to play in
- * it. An activity with no lessons has not been built: the world's page says so, and offers nothing for it.
+ * The worlds of the archipelago — six islands, and the Music Lab in the lighthouse between them: what each is for,
+ * in words a grown-up can check, and what there is to play in it. An activity with no lessons has not been built:
+ * the world's page says so, and offers nothing for it.
  */
 
-export type WorldRole = 'reading' | 'number' | 'robot' | 'memory' | 'inventor' | 'explorer';
+export type WorldRole =
+  'reading' | 'number' | 'robot' | 'memory' | 'inventor' | 'explorer' | 'music';
 
 export interface WorldInfo {
   id: WorldId;
@@ -182,6 +184,45 @@ export const WORLDS: readonly WorldInfo[] = [
       },
     ],
     role: 'explorer',
+  },
+  {
+    id: 'music-lab',
+    name: 'Music Lab',
+    focus: 'High and low, a steady beat, a tune of your own',
+    about:
+      'A music room in the lighthouse, with chime bars and a drum. Children listen for high and low, tell whether two short tunes are the same, tap along with a slow beat, play back a few notes, and make up small tunes of their own. Nobody needs to read music or to have a musical ear: every sound can be heard again as often as they like, and what is noticed is listening, order and rough tempo — never talent.',
+    activities: [
+      {
+        title: 'High and low',
+        lessons: ['ml-high-low-01'],
+        together: {
+          what: 'Sing or hum two notes, one high and squeaky, one low and growly, and ask which was the high one. Stretch up tall for a high sound and crouch down for a low one. Then let your child make the two sounds for you to guess.',
+          safety: 'Nothing to watch out for. Keep it quiet enough to be kind to small ears.',
+        },
+      },
+      { title: 'The same, or different?', lessons: ['ml-same-01'] },
+      {
+        title: 'Tapping with the beat',
+        lessons: ['ml-beat-01'],
+        together: {
+          what: 'Put on any slow, steady song and pat your knees together in time with it. Walk around the room to the beat. Now and then stop the music, and freeze.',
+          safety:
+            'Clear the floor first. Keep the volume low: loud music close to small ears is not safe.',
+        },
+      },
+      { title: 'Play it back', lessons: ['ml-echo-01'] },
+      { title: 'The same tune again', lessons: ['ml-again-01'] },
+      {
+        title: 'Make a tune',
+        lessons: ['ml-tune-01'],
+        together: {
+          what: 'Line up three or four glasses with different amounts of water and tap each gently with a wooden spoon. Find the lowest and the highest, then make up a tune that climbs and comes back down.',
+          safety:
+            'Stay with your child: glasses break. Tap gently, use sturdy tumblers, and mop up spills so nobody slips.',
+        },
+      },
+    ],
+    role: 'music',
   },
 ];
 

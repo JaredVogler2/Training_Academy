@@ -2,6 +2,7 @@ import type { WorldId } from '@/engine';
 import { explorerHarborRules } from './explorerHarbor';
 import { inventorIslandRules } from './inventorIsland';
 import { memoryForestRules } from './memoryForest';
+import { musicLabRules } from './musicLab';
 import { numberGardenRules } from './numberGarden';
 import { readingCoveRules } from './readingCove';
 import { robotRidgeRules } from './robotRidge';
@@ -17,4 +18,5 @@ export const WORLD_RULES: Partial<Record<WorldId, WorldRules>> = {
   'memory-forest': memoryForestRules,
   'inventor-island': inventorIslandRules,
   'explorer-harbor': explorerHarborRules,
+  'music-lab': musicLabRules,
 };

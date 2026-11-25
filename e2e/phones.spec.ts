@@ -1,5 +1,6 @@
 import {
   LESSON_PATH,
+  LIGHTHOUSE_SHARE,
   NOTCH_SIDEWAYS,
   NOTCH_UPRIGHT,
   arrived,
@@ -134,13 +135,22 @@ for (const [name, width, height, narrowest] of [
       await page.goto('/');
       await hubPicturesLoaded(page);
       await expect(page.locator('[data-arrangement="strip"]').first()).toBeVisible();
-      await expect(worlds(page)).toHaveCount(6);
+      await expect(worlds(page)).toHaveCount(7);
       for (const world of await worlds(page).all()) {
         const box = await world.boundingBox();
         if (!box) throw new Error('An island is not on screen.');
-        expect(box.width).toBeGreaterThanOrEqual(narrowest);
-        expect(box.height).toBeGreaterThanOrEqual(96);
+        // The lighthouse stands in the row with the islands. Its own island is a little smaller, and the guide
+        // is moored where its name would be written: its tap area is the island and the tower, and no more.
+        const lighthouse = (await world.getAttribute('data-place')) === 'academy';
+        expect(box.width).toBeGreaterThanOrEqual(
+          lighthouse ? narrowest * LIGHTHOUSE_SHARE - 0.5 : narrowest,
+        );
+        expect(box.height).toBeGreaterThanOrEqual(lighthouse ? 84 : 96);
       }
+      // It has no name written under it here, and is the Music Lab all the same to anyone who asks by name.
+      const musicLab = page.getByRole('link', { name: /^Music Lab/ });
+      await expect(musicLab).toBeVisible();
+      await expect(musicLab.locator('[data-name]')).toHaveCount(0);
       const glim = page.getByRole('button', { name: /Glim/ });
       await expect(glim).toBeVisible();
       const guide = await glim.boundingBox();

@@ -9,15 +9,20 @@ import {
   drawnBoxes,
   frameFor,
   guideBox,
+  hasName,
   labelBox,
   hotspotFor,
   labelRoom,
   labelSize,
   labelWidth,
+  placeOf,
   project,
   visibleDepth,
   type Box,
 } from '@/render/archipelago';
+
+/** The six islands: every place but the lighthouse, in teaching order. */
+const ISLANDS = PLACES.filter((place) => place !== 'academy');
 
 /** What a notch (at each side, on a phone held sideways) and a home bar take from the screen, in CSS pixels. */
 interface Taken {
@@ -113,10 +118,10 @@ describe('choosing an arrangement', () => {
     const flat = frameFor({ width: 800, height: 264 }, freeOf(800, 264, 52));
     expect(flat.layout.arrangement).toBe('strip');
     // One row, in teaching order from left to right, the lighthouse in the middle of it.
-    const across = WORLD_IDS.map((world) => hotspotFor(flat, world).anchor.x);
+    const across = ISLANDS.map((world) => hotspotFor(flat, world).anchor.x);
     expect([...across].sort((a, b) => a - b)).toEqual(across);
     const level = hotspotFor(flat, 'academy').anchor.y;
-    for (const world of WORLD_IDS) expect(hotspotFor(flat, world).anchor.y).toBeCloseTo(level, 6);
+    for (const world of ISLANDS) expect(hotspotFor(flat, world).anchor.y).toBeCloseTo(level, 6);
     expect(hotspotFor(flat, 'academy').anchor.x).toBeCloseTo(400, 6);
     expect(across.filter((x) => x < 400)).toHaveLength(3);
 
@@ -146,6 +151,12 @@ describe('choosing an arrangement', () => {
     }
   });
 
+  it('has a place for every world: an island for six of them, and the lighthouse for the Music Lab', () => {
+    expect(WORLD_IDS.map(placeOf)).toEqual([...ISLANDS, 'academy']);
+    expect(new Set(WORLD_IDS.map(placeOf)).size).toBe(WORLD_IDS.length);
+    expect([...PLACES].sort()).toEqual(WORLD_IDS.map(placeOf).sort());
+  });
+
   it('places all seven places, each in its own spot', () => {
     for (const aspect of [0.4, 0.5, 0.7, 0.9, 1.1, 1.3, 1.6, 2, 2.6]) {
       const { spots } = arrange(aspect);
@@ -169,7 +180,10 @@ describe.each(FITTED)('fitting %s', (_name, width, height, bar, taken, narrowest
   const free = freeOf(width, height, bar, taken);
   const frame = frameFor(stage, free);
   const spots = PLACES.map((place) => hotspotFor(frame, place));
-  const worlds = spots.filter((spot) => spot.place !== 'academy');
+  const islands = spots.filter((spot) => spot.place !== 'academy');
+  const lighthouse = hotspotFor(frame, 'academy');
+  const { arrangement } = frame.layout;
+  const named = PLACES.filter((place) => hasName(arrangement, place));
 
   it('keeps every place inside the free part of the screen', () => {
     for (const { place, box } of spots) {
@@ -180,27 +194,35 @@ describe.each(FITTED)('fitting %s', (_name, width, height, bar, taken, narrowest
     }
   });
 
-  it('gives every world a tap area a small child can hit', () => {
-    for (const { place, box } of worlds) {
+  it('gives every island a tap area a small child can hit', () => {
+    for (const { place, box } of islands) {
       expect(box.width, place).toBeGreaterThanOrEqual(narrowest);
       expect(box.height, place).toBeGreaterThanOrEqual(96);
     }
   });
 
+  it('gives the lighthouse one too: a little narrower, as its island is, and no lower than 84 pixels', () => {
+    // Its island is 2.05 across to an island's 2.3. In a row, where its name is not written, the tap area is the
+    // island and the tower and nothing more: 72 by 86 on the smallest phone held sideways.
+    const share = EXTENTS.academy.radius / EXTENTS['number-garden'].radius;
+    expect(lighthouse.box.width).toBeGreaterThanOrEqual(narrowest * share - 0.5);
+    expect(lighthouse.box.height).toBeGreaterThanOrEqual(84);
+  });
+
   it('never lets two tap areas overlap', () => {
-    for (const [index, one] of worlds.entries()) {
-      for (const other of worlds.slice(index + 1)) {
+    for (const [index, one] of spots.entries()) {
+      for (const other of spots.slice(index + 1)) {
         expect(overlap(one.box, other.box), `${one.place} and ${other.place}`).toBe(0);
       }
     }
   });
 
-  it('keeps the lighthouse clear of every tap area', () => {
-    for (const world of worlds) {
-      for (const box of drawnBoxes(frame, 'academy')) {
-        expect(overlap(world.box, box), world.place).toBe(0);
-      }
-    }
+  it('writes the name of the lighthouse under it wherever the guide is not moored there', () => {
+    expect(hasName(arrangement, 'academy')).toBe(arrangement !== 'strip');
+    for (const island of ISLANDS) expect(hasName(arrangement, island)).toBe(true);
+    const [island] = drawnBoxes(frame, 'academy');
+    const under = lighthouse.box.top + lighthouse.box.height - (island.top + island.height);
+    expect(under).toBeCloseTo(arrangement === 'strip' ? 0 : labelRoom(frame.scale), 6);
   });
 
   it('uses the screen: the islands are as large as the space allows', () => {
@@ -230,11 +252,9 @@ describe.each(FITTED)('fitting %s', (_name, width, height, bar, taken, narrowest
     expect(guide.left + guide.width).toBeLessThanOrEqual(free.left + free.width + 0.5);
     expect(guide.top).toBeGreaterThanOrEqual(free.top - 0.5);
     expect(guide.top + guide.height).toBeLessThanOrEqual(free.top + free.height + 0.5);
-    for (const world of worlds) {
-      expect(overlap(world.box, guide), `the guide and ${world.place}`).toBe(0);
-    }
-    for (const box of drawnBoxes(frame, 'academy')) {
-      expect(overlap(box, guide), 'the guide and the lighthouse').toBe(0);
+    // Every tap area: the islands with their names, and the lighthouse with its name where it has one.
+    for (const spot of spots) {
+      expect(overlap(spot.box, guide), `the guide and ${spot.place}`).toBe(0);
     }
   });
 
@@ -262,7 +282,7 @@ describe.each(FITTED)('fitting %s', (_name, width, height, bar, taken, narrowest
         for (const drawn of drawnBoxes(frame, place)) {
           expect(overlap(box, drawn), `${name} and ${place}`).toBe(0);
         }
-        if (place !== 'academy') {
+        if (named.includes(place)) {
           expect(overlap(box, labelBox(frame, place)), `${name} and the name of ${place}`).toBe(0);
         }
       }
@@ -283,7 +303,7 @@ describe.each(FITTED)('fitting %s', (_name, width, height, bar, taken, narrowest
         for (const drawn of drawnBoxes(frame, place)) {
           expect(overlap(box, drawn), `a cloud and ${place}`).toBe(0);
         }
-        if (place !== 'academy') {
+        if (named.includes(place)) {
           expect(overlap(box, labelBox(frame, place)), `a cloud and the name of ${place}`).toBe(0);
         }
       }
@@ -301,7 +321,7 @@ describe('the tap areas', () => {
   const frame = frameFor({ width: 390, height: 844 }, freeOf(390, 844, 64));
 
   it('cover the island, its landmark and its name', () => {
-    for (const world of WORLD_IDS) {
+    for (const world of PLACES) {
       const spot = hotspotFor(frame, world);
       const extent = EXTENTS[world];
       expect(spot.span).toBeCloseTo(extent.radius * 2 * frame.scale, 6);
@@ -341,7 +361,7 @@ describe('names under the islands', () => {
       [800, 264],
     ] as const) {
       const row = frameFor({ width, height }, freeOf(width, height, 52));
-      const names = WORLD_IDS.map((world) => {
+      const names = ISLANDS.map((world) => {
         const { anchor } = hotspotFor(row, world);
         const wide = labelWidth(row, world);
         return { left: anchor.x - wide / 2, right: anchor.x + wide / 2 };
@@ -353,9 +373,36 @@ describe('names under the islands', () => {
     }
   });
 
+  it('leave the far islands’ names their room on a phone held sideways: the lighthouse’s is not level with them', () => {
+    // The lighthouse stands between the two far islands there. Set as far back as they are, its name was level
+    // with theirs and a hair's breadth from each, and "Explorer Harbor" was cut short for want of room.
+    for (const [width, height, bar, taken] of [
+      [844, 390, 52, {}],
+      [750, 342, 52, {}],
+      [667, 331, 52, {}],
+      [863, 360, 52, {}],
+      [844, 342, 52, { sides: 47, bottom: 21 }],
+    ] as const) {
+      const frame = frameFor({ width, height }, freeOf(width, height, bar, taken));
+      expect(frame.layout.arrangement, `${String(width)}×${String(height)}`).toBe('wide');
+      for (const island of ['inventor-island', 'explorer-harbor'] as const) {
+        const { box } = hotspotFor(frame, island);
+        expect(
+          labelWidth(frame, island),
+          `${island} at ${String(width)}×${String(height)}`,
+        ).toBeCloseTo(box.width * 1.32, 6);
+      }
+      // And its own name has the same room.
+      expect(labelWidth(frame, 'academy')).toBeCloseTo(
+        hotspotFor(frame, 'academy').box.width * 1.32,
+        6,
+      );
+    }
+  });
+
   it('sit directly under their island, as wide as the island', () => {
     const frame = frameFor({ width: 1366, height: 768 }, freeOf(1366, 768, 64));
-    for (const world of WORLD_IDS) {
+    for (const world of PLACES) {
       const spot = hotspotFor(frame, world);
       const name = labelBox(frame, world);
       expect(name.left).toBeCloseTo(spot.box.left, 6);

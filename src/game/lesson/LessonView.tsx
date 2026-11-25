@@ -12,6 +12,7 @@ import { getRepository, localDay, newId, newSeed, now } from '@/game/services';
 import { worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds/modules';
 import { IslandPicture } from '@/render/IslandPicture';
+import { placeOf } from '@/render/extents';
 import { Guide } from '@/ui/Guide';
 import { ActionButton, ActionLink } from '@/ui/controls';
 import { IconHint, IconHome, IconPause, IconReplay, IconSoundOn } from '@/ui/icons';
@@ -135,7 +136,7 @@ function Finished({
   return (
     <section className={styles.finished} data-testid="lesson-finished">
       <div className={styles.finishedArt}>
-        <IslandPicture place={world} />
+        <IslandPicture place={placeOf(world)} />
         <Guide state="celebrate" className={styles.finishedGuide} />
       </div>
       <h1>{lessonText.allDone}</h1>

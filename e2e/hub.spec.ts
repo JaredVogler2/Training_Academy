@@ -109,7 +109,9 @@ test.describe('the 3D hub', () => {
       timeout: 30_000,
     });
     await expect(stage(page)).toHaveAttribute('data-hub-mode', 'picture');
-    await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(6);
+    await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(
+      WORLD_NAMES.length,
+    );
   });
 
   test('is taken down when the hub is left and built afresh on return, one canvas at a time', async ({
@@ -233,7 +235,7 @@ test.describe('the map', () => {
     page,
   }) => {
     await page.goto('/');
-    await expect(worlds(page)).toHaveCount(6);
+    await expect(worlds(page)).toHaveCount(7);
     await hubPicturesLoaded(page);
     const report = await worlds(page).evaluateAll((links) =>
       links.map((link) => {
@@ -290,7 +292,10 @@ test.describe('the map', () => {
     const offsets = await worlds(page).evaluateAll((links) =>
       links.map((link) => {
         const world = link.getAttribute('data-world') ?? '';
-        const picture = document.querySelector(`[data-sprite="${world}"]`);
+        // Each world's picture is the picture of its place: an island, or for the Music Lab the lighthouse.
+        const picture = document.querySelector(
+          `[data-sprite="${link.getAttribute('data-place') ?? ''}"]`,
+        );
         const [x, y] = (picture?.getAttribute('data-anchor') ?? '0,0').split(',').map(Number);
         const stage = document.querySelector('[data-testid="hub-stage"]')?.getBoundingClientRect();
         const box = link.getBoundingClientRect();
@@ -304,28 +309,40 @@ test.describe('the map', () => {
         };
       }),
     );
+    expect(offsets).toHaveLength(7);
     for (const offset of offsets) {
       expect(offset.across, offset.world).toBeLessThanOrEqual(1);
       expect(offset.inside, offset.world).toBe(true);
     }
   });
 
-  test('the lighthouse is scenery: tapping it goes nowhere', async ({ page, press }) => {
+  test('the lighthouse is the Music Lab: a tap on its tower goes there', async ({
+    page,
+    press,
+  }) => {
     await page.goto('/');
     await hubPicturesLoaded(page);
     const lighthouse = page.locator('[data-sprite="academy"]');
     const box = await lighthouse.boundingBox();
     if (!box) throw new Error('The lighthouse is not on screen.');
+    // Half-way up the tower, well above the island: what is there to be tapped is the way into the Music Lab.
+    const tower = { x: box.x + box.width / 2, y: box.y + box.height * 0.45 };
     const hit = await page.evaluate(
-      ([x, y]) => document.elementFromPoint(x ?? 0, y ?? 0)?.closest('a, button')?.tagName ?? null,
-      [box.x + box.width / 2, box.y + box.height * 0.45],
+      ([x, y]) =>
+        document
+          .elementFromPoint(x ?? 0, y ?? 0)
+          ?.closest('a')
+          ?.getAttribute('data-world') ?? null,
+      [tower.x, tower.y],
     );
-    expect(hit).toBeNull();
-    await press(page.locator('body'), {
-      position: { x: box.x + box.width / 2, y: box.y + box.height * 0.45 },
-    });
-    await expect(page).toHaveURL(/\/$/);
-    await expect(worlds(page)).toHaveCount(6);
+    expect(hit).toBe('music-lab');
+    const link = page.getByRole('link', { name: /^Music Lab/ });
+    await expect(link).toHaveAttribute('data-place', 'academy');
+    const area = await link.boundingBox();
+    if (!area) throw new Error('The Music Lab has no tap area.');
+    await press(link, { position: { x: tower.x - area.x, y: tower.y - area.y } });
+    await expect(page).toHaveURL(/\/world\/music-lab$/);
+    await expect(page.getByRole('heading', { level: 1, name: 'Music Lab' })).toBeVisible();
   });
 
   test('the island with keyboard focus rises; it settles when focus moves on', async ({ page }) => {
@@ -346,7 +363,7 @@ test.describe('the map', () => {
   }) => {
     test.skip(hasTouch, 'A keyboard journey, checked on the desktop projects.');
     await page.goto('/');
-    await expect(worlds(page)).toHaveCount(6);
+    await expect(worlds(page)).toHaveCount(7);
     const order = await worlds(page).evaluateAll((links) =>
       links.map((link) => link.querySelector('[data-name]')?.textContent ?? ''),
     );

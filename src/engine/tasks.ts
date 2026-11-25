@@ -1,4 +1,5 @@
 import { testDesign } from './models';
+import { extraAllowed, fitsShape, readTimeKept } from './music';
 import { fitsTask, parseProgram, runProgram } from './robot';
 import type { Task } from './schema';
 
@@ -15,6 +16,8 @@ import type { Task } from './schema';
  *   pairs    how many turns it took           "7"
  *   program  the commands, by first letter    "f-f-l-f", or done three times over, "x3-f-l"
  *   design   the value chosen for each part   "thick-two"
+ *   beat     how each beat was met            "on-on-late-on", with "x2" after it for two taps too many
+ *   tune     the notes, first to last         "c4-e4-g4"
  */
 
 export interface Judgement {
@@ -72,7 +75,10 @@ export function solutionOf(task: Task): string | null {
     case 'program':
       return task.solution;
     case 'design':
+    case 'tune':
       return writeTokens(task.solution);
+    case 'beat':
+      return writeTokens(Array.from({ length: task.beats }, () => 'on'));
   }
 }
 
@@ -91,7 +97,10 @@ export function solutionParts(task: Task): string[] {
     case 'program':
       return task.solution.split('-');
     case 'design':
+    case 'tune':
       return [...task.solution];
+    case 'beat':
+      return Array.from({ length: task.beats }, () => 'on');
   }
 }
 
@@ -101,6 +110,8 @@ export function cardIdsOf(task: Task): string[] {
     case 'give':
     case 'program':
     case 'design':
+    case 'beat':
+    case 'tune':
       return [];
     case 'order':
     case 'echo':
@@ -201,6 +212,38 @@ export function judgeTask(task: Task, response: string): Judgement | null {
       return result.works
         ? { correct: true, clean: true }
         : { correct: false, clean: false, misconception: result.outcome };
+    }
+    case 'beat': {
+      const kept = readTimeKept(response, task.beats);
+      if (!kept) return null;
+      const count = (mark: string) => kept.marks.filter((each) => each === mark).length;
+      const tooMany = kept.extra > extraAllowed(task.beats);
+      if (count('on') >= task.need && !tooMany) return { correct: true, clean: true };
+      const early = count('early');
+      const late = count('late');
+      const missed = count('miss');
+      return {
+        correct: false,
+        clean: false,
+        misconception: tooMany
+          ? 'too-many-taps'
+          : missed > early + late
+            ? 'too-few-taps'
+            : early > late
+              ? 'ahead-of-the-beat'
+              : late > early
+                ? 'behind-the-beat'
+                : 'uneven',
+      };
+    }
+    case 'tune': {
+      if (tokens.length !== task.length || !tokens.every((note) => task.notes.includes(note))) {
+        return null;
+      }
+      const verdict = fitsShape(task.shape, tokens, task.notes[0] ?? '');
+      return verdict.fits
+        ? { correct: true, clean: true }
+        : { correct: false, clean: false, misconception: verdict.problem ?? 'another-shape' };
     }
   }
 }

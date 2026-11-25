@@ -1,4 +1,6 @@
 import {
+  comparePitch,
+  fitsShape,
   fitsTask,
   parseProgram,
   quantityMisconception,
@@ -7,6 +9,7 @@ import {
   solutionParts,
   solveProgram,
   testDesign,
+  type BeatTask,
   type Challenge,
   type ChooseOneChallenge,
   type ContentPack,
@@ -14,6 +17,7 @@ import {
   type Lesson,
   type MakeChallenge,
   type ProgramTask,
+  type TuneTask,
 } from '@/engine';
 import { WORLD_RULES, type Report, type WorldRules } from './rules';
 
@@ -198,11 +202,46 @@ function lintDesign(task: DesignTask, report: Report): void {
   }
 }
 
+/** A beat to tap: enough of it has to be met that tapping at any old time will not do. */
+function lintBeat(task: BeatTask, report: Report): void {
+  if (task.need > task.beats) {
+    report('beat-need', `${task.need} beats have to be met and there are only ${task.beats}`);
+  } else if (task.need * 2 <= task.beats) {
+    report('beat-need', 'half the beats or fewer would do: tapping at half the pace would pass');
+  }
+}
+
+/** A tune to make up: the bars are in order, the tune shown is one they allow, and it has the shape asked for. */
+function lintTune(task: TuneTask, report: Report): void {
+  for (const [index, note] of task.notes.entries()) {
+    const before = task.notes[index - 1];
+    if (before !== undefined && comparePitch(note, before) <= 0) {
+      report('tune-notes', 'the bars must go from the lowest to the highest, with none twice');
+    }
+  }
+  if (
+    task.solution.length !== task.length ||
+    !task.solution.every((note) => task.notes.includes(note))
+  ) {
+    report('tune-solution-unbuildable', 'the tune shown cannot be played on the bars there are');
+    return;
+  }
+  const verdict = fitsShape(task.shape, task.solution, task.notes[0] ?? '');
+  if (!verdict.fits) {
+    report(
+      'tune-solution-wrong',
+      `the tune shown does not have the shape asked for: ${verdict.problem ?? ''}`,
+    );
+  }
+}
+
 /** A thing to make: its cards are told apart, its answer can be made from them, its hints lead to it. */
 function lintTask(challenge: MakeChallenge, report: Report): void {
   const { task } = challenge;
   if (task.type === 'program') lintProgram(task, report);
   else if (task.type === 'design') lintDesign(task, report);
+  else if (task.type === 'beat') lintBeat(task, report);
+  else if (task.type === 'tune') lintTune(task, report);
   else if (task.type !== 'give') {
     const ids = task.cards.map((card) => card.id);
     for (const id of duplicates(ids)) report('card-id-duplicate', `card id "${id}" is used twice`);

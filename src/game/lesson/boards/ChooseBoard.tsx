@@ -70,6 +70,7 @@ export function ChooseBoard(props: BoardProps) {
               counting={counting('prompt')}
               place="prompt"
               sounding={named('prompt')}
+              part={beat.show === 'name' ? beat.part : undefined}
               solved={same}
               onAgain={again}
             />

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
-import { playCount, playCue, sayLine } from '@/audio';
+import { playCount, playCue, playTone, sayLine } from '@/audio';
 import { writeTokens } from '@/engine';
 import { IconPointer } from '@/ui/icons';
 import {
@@ -197,8 +197,10 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
       const next = [...tapped, id];
       // A thing that makes a sound of its own makes it; anything else gets the next note of the scale.
       const card = cardOf(id);
+      const tone = card ? module.toneOf?.(card.stimulus) : null;
       const own = card ? module.soundOf?.(card.stimulus) : null;
-      if (own) sayLine(own);
+      if (tone) playTone(tone.timbre, tone.pitch);
+      else if (own) sayLine(own);
       else playCount(tapped.length);
       setFlash({ id, at: next.length });
       setWork({ placed: next, judged: view.key });
@@ -211,7 +213,11 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
     return (
       <>
         <div className={styles.echo} data-testid="echo-board" inert={paused}>
-          <ul className={styles.echoCards} data-count={view.cards.length}>
+          <ul
+            className={styles.echoCards}
+            data-count={view.cards.length}
+            data-layout={module.echoLayout}
+          >
             {view.cards.map((id, index) => {
               const card = cardOf(id);
               if (!card) return null;

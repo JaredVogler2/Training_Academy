@@ -88,7 +88,7 @@ test.describe('how the site is served @smoke', () => {
   }) => {
     // The guard in fixtures.ts fails this test on any console problem, failed request or third-party request.
     await page.goto('/');
-    await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(6);
+    await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(7);
     await page.getByRole('link', { name: /Number Garden/ }).click();
     await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
     await page.getByRole('link', { name: 'Play', exact: true }).click();

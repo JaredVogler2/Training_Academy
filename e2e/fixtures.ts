@@ -273,7 +273,7 @@ export async function arrived(page: Page): Promise<void> {
   });
 }
 
-/** The six worlds, as the hub names them. */
+/** The seven worlds, as the hub names them: six islands, and the Music Lab in the lighthouse. */
 export const WORLD_NAMES = [
   'Reading Cove',
   'Number Garden',
@@ -281,7 +281,14 @@ export const WORLD_NAMES = [
   'Memory Forest',
   'Inventor Island',
   'Explorer Harbor',
+  'Music Lab',
 ];
+
+/**
+ * How wide the lighthouse's tap area is beside an island's. Its own island is a little smaller than the others
+ * (2.05 across to their 2.3), so it is a little narrower wherever they are.
+ */
+export const LIGHTHOUSE_SHARE = 2.05 / 2.3;
 
 export const LESSON_PATH = '/world/number-garden/play/ng-same-amount-01';
 

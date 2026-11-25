@@ -1,4 +1,5 @@
 import * as v from 'valibot';
+import { TUNE_SHAPES } from './music';
 
 /**
  * Every shape the game stores or authors, as runtime-checked schemas. The TypeScript types are inferred from them,
@@ -26,6 +27,7 @@ export const WORLD_IDS = [
   'memory-forest',
   'inventor-island',
   'explorer-harbor',
+  'music-lab',
 ] as const;
 export type WorldId = (typeof WORLD_IDS)[number];
 
@@ -36,6 +38,7 @@ export const STRANDS = [
   'memory',
   'engineering',
   'language-and-world',
+  'music',
 ] as const;
 export type Strand = (typeof STRANDS)[number];
 
@@ -376,6 +379,43 @@ const DesignTaskSchema = v.strictObject({
   solution: v.pipe(v.array(token('option')), v.minLength(1), v.maxLength(3)),
 });
 
+/** A note by its name on a keyboard: a white key and its octave ("c4" is middle C). See src/engine/music.ts. */
+const NoteSchema = v.pipe(
+  v.string(),
+  v.regex(/^[a-g][2-6]$/, 'a note is a letter a–g and an octave 2–6'),
+);
+
+/**
+ * Tap along with a slow, steady beat. A few beats are listened to first; then so many are to be tapped. What is
+ * judged is rough tempo — most of the beats met, give or take a generous margin (src/engine/music.ts) — never
+ * precision.
+ */
+const BeatTaskSchema = v.strictObject({
+  type: v.literal('beat'),
+  /** Beats in a minute. Slow: a child's tapping settles at about this pace. */
+  tempo: v.pipe(v.number(), v.integer(), v.minValue(50), v.maxValue(100)),
+  /** How many beats are heard first, before any is to be tapped. */
+  lead: v.pipe(v.number(), v.integer(), v.minValue(2), v.maxValue(4)),
+  /** How many beats are to be tapped. */
+  beats: v.pipe(v.number(), v.integer(), v.minValue(4), v.maxValue(12)),
+  /** How many of them have to be met for the tapping to count as in time. */
+  need: v.pipe(v.number(), v.integer(), v.minValue(2), v.maxValue(12)),
+});
+
+/**
+ * Make up a short tune that has the shape asked for: going up, coming home. There are many right tunes, and any
+ * of them is right; the one written here is shown when an answer is shown.
+ */
+const TuneTaskSchema = v.strictObject({
+  type: v.literal('tune'),
+  /** The bars there are to play, lowest first. */
+  notes: v.pipe(v.array(NoteSchema), v.minLength(3), v.maxLength(8)),
+  /** How many notes the tune is to have. */
+  length: v.pipe(v.number(), v.integer(), v.minValue(3), v.maxValue(6)),
+  shape: v.picklist(TUNE_SHAPES),
+  solution: v.pipe(v.array(NoteSchema), v.minLength(3), v.maxLength(6)),
+});
+
 export const TaskSchema = v.variant('type', [
   GiveTaskSchema,
   OrderTaskSchema,
@@ -384,10 +424,14 @@ export const TaskSchema = v.variant('type', [
   PairsTaskSchema,
   ProgramTaskSchema,
   DesignTaskSchema,
+  BeatTaskSchema,
+  TuneTaskSchema,
 ]);
 export type Task = v.InferOutput<typeof TaskSchema>;
 export type ProgramTask = v.InferOutput<typeof ProgramTaskSchema>;
 export type DesignTask = v.InferOutput<typeof DesignTaskSchema>;
+export type BeatTask = v.InferOutput<typeof BeatTaskSchema>;
+export type TuneTask = v.InferOutput<typeof TuneTaskSchema>;
 
 const MakeChallengeSchema = v.strictObject({
   id: ChallengeIdSchema,

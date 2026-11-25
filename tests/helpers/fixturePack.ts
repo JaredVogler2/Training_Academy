@@ -107,6 +107,28 @@ const design = (name: string) =>
     },
   );
 
+const beat = (name: string) =>
+  make(
+    name,
+    'beat-slow',
+    { type: 'beat', tempo: 60, lead: 4, beats: 8, need: 6 },
+    {
+      hints: [
+        { type: 'model', caption: strings.model },
+        { type: 'reveal', caption: strings.reveal },
+      ],
+    },
+  );
+
+const tune = (name: string) =>
+  make(name, 'tune-up', {
+    type: 'tune',
+    notes: ['c4', 'e4', 'g4', 'c5'],
+    length: 3,
+    shape: 'up',
+    solution: ['c4', 'e4', 'g4'],
+  });
+
 const raw = {
   format: 'training-academy.content-pack',
   schemaVersion: 1,
@@ -157,8 +179,10 @@ const raw = {
             `${LESSON}.round-the-rock`,
             `${LESSON}.mend-it`,
             `${LESSON}.ramp`,
+            `${LESSON}.keep-time`,
+            `${LESSON}.climb`,
           ],
-          count: 9,
+          count: 11,
           maxReprobes: 0,
         },
       },
@@ -192,6 +216,8 @@ const raw = {
           solution: 'f-f-f',
         }),
         design('ramp'),
+        beat('keep-time'),
+        tune('climb'),
       ],
     },
   ],

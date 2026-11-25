@@ -487,7 +487,7 @@ describe('a thing to make, in a lesson', () => {
       response: answerTo(view),
     }));
     expect(clean.session.status).toBe('completed');
-    expect(clean.session.tally.independentFirstTryCorrect).toBe(9);
+    expect(clean.session.tally.independentFirstTryCorrect).toBe(11);
 
     const stumbling = play(lesson, newSession(lesson, 12), (view) => ({
       type: 'answer',

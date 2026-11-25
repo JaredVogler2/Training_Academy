@@ -56,12 +56,12 @@ answer is right. Everything is saved on the device.
 
 ## Verified
 
-- Locally, on the commit that carries this: format, lint, typecheck, **1546 unit tests**, the production build
-  and its **build checks**; the Music Lab's 22 browser tests on a desktop and a touch phone, and its layout
-  tests on six screens; every Music Lab activity played to its end; the automated accessibility checks on its
-  page, its room and every activity; and the map, shell, journey, phone, offline and resilience tests on six
-  screens. The whole browser suite (760 tests in Chromium) is left to CI: `docs/TEST_RESULTS.md` says what CI
-  made of it.
+- Locally: format, lint, typecheck, **1547 unit tests**, the production build and its **1192 build checks**,
+  and the whole browser suite in Chromium on seven screen shapes: **868 tests, 761 passed, 107 skipped by
+  design, none failed, none run twice** (32 minutes). That includes the Music Lab's 22 browser tests on a
+  desktop and a touch phone, its layout tests on six screens, every activity of every world played to its end,
+  and the automated accessibility checks on every page, room and activity. WebKit runs only in CI:
+  `docs/TEST_RESULTS.md` says what CI made of it.
 - **The tests that passed first time were made to fail.** The hold on answers while a question is still being
   played, the row the bars stand in, the allowance for a steady lateness, the count of taps too many, the
   second answer to one tap: each was taken out of the code and its test seen to fail. `docs/TEST_RESULTS.md`

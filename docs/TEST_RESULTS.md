@@ -3,10 +3,9 @@
 Everything in this file was actually run. Where something was not run, it says so.
 
 - **Date:** 2026-11-25
-- **Code under test:** `main` as the owner merged it on 2026-11-23 (pull request #6, the six worlds), with the
-  fixes of the pull request this document came with: five faults found after the six worlds went live, and what
-  the tests learned from them. The release check below was run on that tree. What was run on the live site was
-  run on what was live, and says so.
+- **Code under test:** `main` as the owner merged it on 2026-11-25 (pull request #7), with the pull request this
+  document came with: the Music Lab, a seventh world, and what its tests found in the six that were live. The
+  release check below was run on that tree. What was run on the live site was run on what was live, and says so.
 - **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright 1.63.0
   with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
 - **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium and WebKit builds that Playwright 1.63.0 installs.
@@ -23,21 +22,27 @@ npm run verify:release
 
 Result of the last local run: **passed.**
 
-| Step                   | Result                                                                                                          |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `npm run format:check` | clean                                                                                                           |
-| `npm run lint`         | no errors, no warnings                                                                                          |
-| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                  |
-| `npm test`             | **1393 tests in 49 files, all passed**                                                                          |
-| `npm run build`        | built; 476 files in `dist/`, 395 of them the voice's recordings                                                 |
-| `npm run verify:dist`  | **1066 checks, all passed** (sizes below)                                                                       |
-| `npm run test:e2e`     | **668 browser tests: 621 passed, 47 skipped by design, 0 failed (Chromium, seven screen shapes, 26.6 minutes)** |
+| Step                   | Result                                                                                                           |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `npm run format:check` | clean                                                                                                            |
+| `npm run lint`         | no errors, no warnings                                                                                           |
+| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                   |
+| `npm test`             | **1547 tests in 53 files, all passed**                                                                           |
+| `npm run build`        | built; 534 files in `dist/`, 446 of them the voice's recordings                                                  |
+| `npm run verify:dist`  | **1192 checks, all passed** (sizes below)                                                                        |
+| `npm run test:e2e`     | **868 browser tests: 761 passed, 107 skipped by design, 0 failed (Chromium, seven screen shapes, 32.0 minutes)** |
 
-The browser tests in that table were run on the tree as it was one change before this document was last
-committed. The change after it was to the tests' own reporting and to how CI shares its screens: what a test that
-runs out of time says for itself, after CI's run on this pull request had shown a use for more (below). With
-it, the unit tests were run again, and the smoke, shell and voice specs on the desktop and the phone: 1393, and
-48 passed. The whole suite on the final tree is CI's.
+The browser tests in that table were run on the tree as it was committed with the Music Lab's documents, before
+the review screenshots (`docs/review/music-lab/`) and this table were added: nothing the game is built from
+changed in between. By screen: desktop 277 passed, phone 296, the sideways phone, the tablet and the small phone
+36 each, the two Android shapes 40 each. No test was run a second time.
+
+The 107 that are skipped skip themselves, and say why. On the desktop: the 54 measurements of what a child
+presses, which are made once, as a touch phone, at three sizes of their own; eight of Robot Ridge's, which are
+for a touch screen too small to be a desktop's; and one about a world that is not open, which none is now. On
+the phone: the 37 activities played to their ends by their content's answers, which are played once, on the
+desktop (the other eight are played by working out what is on the screen, in `robot.spec.ts` and
+`inventor.spec.ts`, on every screen); six keyboard journeys; and the same one about a world that is not open.
 
 The tree has 12 browser tests (six, on the desktop and on the phone) and 18 unit tests that the six worlds did
 not have. Each of the browser tests was run against the code as it was and failed there; so were the three unit
@@ -549,6 +554,11 @@ recording reachable from it by static import; no inline script or style (so the 
 its icons; and that the service worker pre-downloads exactly the first screen's files and knows every hashed file.
 
 ## Screenshots
+
+`docs/review/music-lab/` — 11 JPEGs of the Music Lab, taken the same way as the six worlds' below, by
+`npm run screens -- music-lab worlds music-lab`: its page, every activity at the first thing a child does in it,
+the first while Glim is showing it, the last on a phone held sideways, and the room to play in on a phone held
+both ways. They were looked at; `docs/QUALITY_REPORT.md` says what was seen.
 
 `docs/review/worlds/` — 57 JPEGs of the six worlds, taken from the running production build by
 `npm run screens -- worlds worlds` (headless Chromium, 2× pixel density): each world's page; every activity at the

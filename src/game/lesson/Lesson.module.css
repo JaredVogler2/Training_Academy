@@ -640,6 +640,18 @@
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
   }
 
+  /*
+   * A question that is only a sign stands beside what it asks about, and is narrow. (It used to keep the two
+   * rows it has on an upright screen as well as these two columns: the sign and the groups shared the upper,
+   * shallow row, and the lower one stood empty. On a phone held sideways "which has more?" was a strip a
+   * finger's width high.)
+   */
+  .board[data-prompt='sign'],
+  .board[data-prompt='sign'][data-count='3'] {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.42fr) minmax(0, 1.9fr);
+  }
+
   /* Three pictures in a row need as much room as the three they are answered with. */
   .board[data-asks-about='strip'],
   .board[data-asks-about='strip'][data-count='3'] {

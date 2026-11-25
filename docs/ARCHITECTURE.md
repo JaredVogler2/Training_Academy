@@ -22,7 +22,8 @@ src/
              import three.js.
   assets/    The hub's pictures, rendered from the island models (docs/ASSETS.md).
   ui/        Controls (buttons, toggle, hold button, modal), icons, hand-drawn vector art, and the guide.
-  audio/     The audio engine: unlock on first touch, mute, a handful of synthesised cues.
+  audio/     The audio engine: unlock on first touch, mute, a handful of synthesised cues, the voice, and
+             instruments made from oscillators (the Music Lab's notes) with a clock to put them on a beat.
   parent/    The grown-ups area.
   app/       The shell: entry wiring, history router, settings, error boundary, diagnostics, lazy-chunk loader,
              service-worker registration.
@@ -65,13 +66,19 @@ Things worth knowing:
 
 - **A challenge is a choice or a thing to make.** A `choose-one` challenge has choices and one right answer. A
   `make` challenge has a task — give an amount, put cards in order, repeat an order, pick some out, find pairs,
-  write a row of steps for a robot, change the parts of a thing until it works — and `judgeTask`
-  (`src/engine/tasks.ts`) says whether what was made is right, which parts of it were (they are kept), and
-  whether it was done cleanly. Anything that satisfies the rule is right: a robot's row is run
-  (`src/engine/robot.ts`, which also has the solver the content is checked with), and a design is tested by a
-  small exact model (`src/engine/models.ts`). There is no list of accepted answers to drift out of date.
-- **A made thing is written as text** — `egg1-egg2-egg3`, `x2-f-f-l` — so an attempt's record is the same shape
-  for every kind of game, and the format a saved copy is written in did not change.
+  write a row of steps for a robot, change the parts of a thing until it works, tap along with a beat, make up
+  a tune with a shape — and `judgeTask` (`src/engine/tasks.ts`) says whether what was made is right, which
+  parts of it were (they are kept), and whether it was done cleanly. Anything that satisfies the rule is right:
+  a robot's row is run (`src/engine/robot.ts`, which also has the solver the content is checked with), a
+  design is tested by a small exact model (`src/engine/models.ts`), and a tune is asked only whether it has
+  the shape (`src/engine/music.ts`). There is no list of accepted answers to drift out of date.
+- **A made thing is written as text** — `egg1-egg2-egg3`, `x2-f-f-l`, `c4-e4-g4`, `on-on-late-on-x1` — so an
+  attempt's record is the same shape for every kind of game, and the format a saved copy is written in did not
+  change.
+- **Time is never read by the engine, even to judge a beat.** The board that hears the taps hands them to
+  `keepTime` as numbers on the page's clock beside the beats' own numbers, and what comes back — a mark for
+  each beat, and how many taps belonged to none — is the answer the engine is given. `keepTime` is pure, and
+  its tests are sums.
 - **A wrong answer is never a dead end.** A choice just tried is taken away and the child tries again; when only
   the right choice is left it is revealed, and tapping it completes the challenge as an assisted solve. A made
   thing keeps what was right in it; after three wrong tries (unless the challenge says otherwise) the answer is
@@ -245,8 +252,9 @@ it is the only thing that can say so.
 
 ## The hub
 
-The hub is the map: Academy Rock and six islands in a sea, each island a link. It is drawn twice — as a picture and
-in real-time 3D — and navigated once, through ordinary links laid over whichever is showing.
+The hub is the map: Academy Rock, with its lighthouse, and six islands in a sea. Each of the seven is a link:
+the islands to their worlds, the lighthouse to the Music Lab. It is drawn twice — as a picture and in
+real-time 3D — and navigated once, through ordinary links laid over whichever is showing.
 
 ### One layout, three users
 
@@ -273,10 +281,18 @@ times the scale, plus an offset. Three things use that one sum, and so agree to 
 | The links (`app/Home.tsx`)       | Each island's box on screen — the tap area — and the size of its name |
 
 `render/extents.ts` holds the two things both the layout and the pictures depend on: the camera's angle and the room
-each island is given. `tests/render/archipelago.test.ts` checks, for twenty-five screen shapes, that every tap area
-is at least 96 pixels square (90 and 81 wide on the two narrowest phones held sideways), that no two overlap, that
-the lighthouse (which is scenery) never lies inside one, that every name fits under its island, and that the guide,
-the boats, the rocks and the clouds are clear of all of them.
+each island is given; and `placeOf`, which says where each world is. `tests/render/archipelago.test.ts` checks,
+for twenty-five screen shapes, that every island's tap area is at least 96 pixels square (90 and 81 wide on
+the two narrowest phones held sideways) and the lighthouse's in proportion (its island is a little smaller),
+that no two of the seven overlap, that every name fits under its place, and that the guide, the boats, the
+rocks and the clouds are clear of all of them.
+
+**The lighthouse has its name under it in every arrangement but one.** Where the places stand in one row the
+guide is moored directly in front of it, and a very flat screen has no height for a name and a guide both
+(`hasName`). There the lighthouse is the whole of its own tap area and is still called the Music Lab to
+anything that asks a link its name. Elsewhere its name is a neighbour like any other: a name may be wider than
+its island only as far as half the water to the next name on its level, which is why, on a wide screen, the
+lighthouse is set a little nearer than the two far islands and not between them.
 
 ### What is drawn
 
@@ -348,10 +364,17 @@ assistive technology everywhere: the caption beside it says the same thing in wo
 
 ## Worlds and their activities
 
-`game/worlds.ts` lists the six worlds with grown-up-readable descriptions, and for each of its activities the
+`game/worlds.ts` lists the seven worlds with grown-up-readable descriptions, and for each of its activities the
 lessons that make it up and something to try together away from the screen. An activity with no lessons is not
-built, and a world with none shows a plain "not open yet" page with nothing that looks tappable; all six worlds
-now have lessons for every activity, so no such page is reachable, and the code for it remains.
+built, and a world with none shows a plain "not open yet" page with nothing that looks tappable; every world
+now has lessons for every activity, so no such page is reachable, and the code for it remains. A world may
+also have a room to play in freely (`room`: the Music Lab's, at `/world/music-lab/room`, where nothing is
+asked and nothing is kept) and a list of what could be built there one day and has not been (`later`), which
+its page shows to the grown-up as a list to read and nothing more.
+
+**A world is not a place on the map.** Six worlds have an island each; the Music Lab is in the lighthouse.
+`placeOf(world)` (`src/render/extents.ts`) says where a world is, and everything that draws or measures the map
+deals in places.
 
 `game/progress.ts` reads which lessons a player has finished, and from that the next lesson in a world and the
 next world: what a world's large Play button goes to, and where Glim points on the map. Nothing is locked.
@@ -359,17 +382,19 @@ next world: what a world's large Play button goes to, and where Glim points on t
 `game/worlds/modules.ts` is the registry of per-world code. Each world has a module, fetched with its content
 pack on entering that world and never before:
 
-| A module gives | What it is                                                                                                                                  |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Picture`      | How a stimulus is drawn, as a question, a choice or a card; lit when it is named; with its gap filled when its question has been answered   |
-| `describe`     | The same picture in words, for a screen reader                                                                                              |
-| `countable`    | How many things a picture holds, where counting is how the world teaches (Number Garden only)                                               |
-| `chooseScript` | How the world shows off a question with choices: counting, saying a word slowly, uncovering and covering, telling a story as far as it goes |
-| `makeScript`   | The same for a thing to make, where the world has more to say than the board (a story told back picture by picture)                         |
-| `soundOf`      | The recording a picture makes of its own accord when lit or tapped (a drum)                                                                 |
-| `boards`       | Boards for games only this world has, by the kind of task (`program`, `design`, `give`) or the scene a question is about (`scene:map`)      |
-| `linesFor`     | Lines a challenge is told with beside its own, to be fetched before they are wanted                                                         |
-| `voice`        | Where this world's recordings are and how long each lasts                                                                                   |
+| A module gives | What it is                                                                                                                                     |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Picture`      | How a stimulus is drawn, as a question, a choice or a card; lit when it is named; with its gap filled when its question has been answered      |
+| `describe`     | The same picture in words, for a screen reader                                                                                                 |
+| `countable`    | How many things a picture holds, where counting is how the world teaches (Number Garden only)                                                  |
+| `chooseScript` | How the world shows off a question with choices: counting, saying a word slowly, uncovering and covering, telling a story as far as it goes    |
+| `makeScript`   | The same for a thing to make, where the world has more to say than the board (a story told back picture by picture)                            |
+| `soundOf`      | The recording a picture makes of its own accord when lit or tapped (a drum)                                                                    |
+| `toneOf`       | The note a picture plays when it is tapped, where it is an instrument (a chime bar's own pitch)                                                |
+| `echoLayout`   | `row`, where things to repeat stand in a row in their own order with nothing round them, like the bars of a keyboard                           |
+| `boards`       | Boards for games only this world has, by the kind of task (`program`, `design`, `give`, `beat`, `tune`) or the scene asked about (`scene:map`) |
+| `linesFor`     | Lines a challenge is told with beside its own, to be fetched before they are wanted                                                            |
+| `voice`        | Where this world's recordings are and how long each lasts                                                                                      |
 
 `game/lessonRunner.ts` runs one sitting: resume or create, answer, hint, next, restart. It updates the screen first and
 saves second; a failed save never interrupts a child (the lesson continues in memory and says it is not saved).
@@ -379,16 +404,16 @@ saves second; a failed save never interrupts a child (the lesson continues in me
 `game/lesson/` is the frame every world's activities are played in. On the `play` route it has the whole screen:
 the shell's top bar is not rendered there.
 
-| Part                | What it does                                                                                                                                                                                                                                |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `LessonView.tsx`    | Draws what the runner says: a bar (home, steps, help, pause), a board, and the end of the sitting. Where a lesson needs sound and there is none, a gate with one button. It never decides what is right.                                    |
-| `Stage.ts`          | Chooses the board: the world's own for this kind of task or scene if it has one, otherwise the frame's.                                                                                                                                     |
-| `boards/`           | The frame's boards: a question with choices; things to pick out; an order to make or to repeat; pairs to find. `useChoosing` is everything a question with choices needs worked out, for any board that draws one (a map does).             |
-| `frame.tsx`         | What every board shares: what a board is given, the foot (Glim, what Glim is saying, the way on or "Done"), and the small decisions that are the same whatever the game.                                                                    |
-| `script.ts`         | Pure. A script is beats (`rest`, `ask`, `count` a group, `name` one thing, `glance`, `do` a part, `same`) and sounds (a note, a cue, a line to say) on a clock, with where the board settles. A line waits for its recording only if heard. |
-| `useScript.ts`      | Plays a script with timers: the current beat, and the sounds as they fall due. A new run starts from the top; paused or out of sight, nothing plays and the voice stops; with calm motion the board goes straight to where it settles.      |
-| `PauseSheet.tsx`    | A modal `<dialog>`: one button to carry on, the way home, and the sound and calm-motion switches. Opened by the pause button, and by the page going out of sight — so the tap that carries on is also the touch that wakes a phone's audio. |
-| `Lesson.module.css` | One screen, no scrolling, from 320 pixels wide to a desktop, and down to the 342 pixels of height Safari leaves on a phone held sideways.                                                                                                   |
+| Part                | What it does                                                                                                                                                                                                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LessonView.tsx`    | Draws what the runner says: a bar (home, steps, help, pause), a board, and the end of the sitting. Where a lesson needs sound and there is none, a gate with one button. It never decides what is right.                                                                        |
+| `Stage.ts`          | Chooses the board: the world's own for this kind of task or scene if it has one, otherwise the frame's.                                                                                                                                                                         |
+| `boards/`           | The frame's boards: a question with choices; things to pick out; an order to make or to repeat; pairs to find. `useChoosing` is everything a question with choices needs worked out, for any board that draws one (a map does).                                                 |
+| `frame.tsx`         | What every board shares: what a board is given, the foot (Glim, what Glim is saying, the way on or "Done"), and the small decisions that are the same whatever the game.                                                                                                        |
+| `script.ts`         | Pure. A script is beats (`rest`, `ask`, `count` a group, `name` one thing, `glance`, `do` a part, `same`) and sounds (a counting note, a cue, a stroke of an instrument, a line to say) on a clock, with where the board settles. A line waits for its recording only if heard. |
+| `useScript.ts`      | Plays a script with timers: the current beat, and the sounds as they fall due. A new run starts from the top; paused or out of sight, nothing plays and the voice stops; with calm motion the board goes straight to where it settles.                                          |
+| `PauseSheet.tsx`    | A modal `<dialog>`: one button to carry on, the way home, and the sound and calm-motion switches. Opened by the pause button, and by the page going out of sight — so the tap that carries on is also the touch that wakes a phone's audio.                                     |
+| `Lesson.module.css` | One screen, no scrolling, from 320 pixels wide to a desktop, and down to the 342 pixels of height Safari leaves on a phone held sideways.                                                                                                                                       |
 
 Three things the frame does that are easy to undo by accident:
 
@@ -414,6 +439,11 @@ Three things the frame does that are easy to undo by accident:
 - **A button is never put in the place of another.** Where a count has to start from the first thing, what hops
   is made afresh inside a button that stays: a button that is replaced drops a press that is under way, and
   whatever was focused on it.
+- **A script can be the question itself.** Two notes, and which was the high one: there is nothing to answer
+  until both have sounded, and nothing to answer at all if they are not played. A script that says so
+  (`Writer.essential()`) is played even where the person has asked for less movement — what it lights then
+  simply goes on and off — and a question with choices takes no answer until the last thing it names has been
+  named (`hearing`, in `useChoosing`). Asking again plays the whole of it again, as often as asked.
 
 A world's page (`game/world/WorldView.tsx`) shows the island with the world's emblem pinned to it; one large
 Play button that goes to the next lesson not yet finished; and every lesson as a card with a picture built from
@@ -424,6 +454,27 @@ What has been finished is the player's own, so whatever shows it has to know who
 (`game/progress.ts`). The map finds that out as it opens, and so do an activity and the grown-ups' area; a
 world's page can be the first thing opened — a page loaded again, a tab a phone has brought back — and asks for
 itself if nobody has. (It did not, at first: such a page showed nothing as finished.)
+
+### Music
+
+The Music Lab's notes are not files. `AudioEngine.tone(timbre, frequency, { at? })` builds one stroke of an
+instrument from two or three oscillators — a chime bar (its note, with a bright ring two octaves above that
+dies sooner), a pipe (held for a moment, with a small chirp into the note), a drum (a low note that drops to its
+pitch, and a knock above it), a click — and schedules it on the audio context. Nothing is recorded, so nothing
+is downloaded, licensed or cached, and the whole of it works offline from the first visit. The cost is that
+nobody chose these sounds by ear: they are numbers (`strokeOf`), and `docs/QUALITY_REPORT.md` says so.
+
+Two things in it are there for timing. `audio().clock` gives the audio context's own time and, where the
+browser reports it, how late a sound is heard after it is played; a click that has to fall on a beat is
+scheduled on that clock a beat ahead (`{ at }`), and the light for the same beat is set for the same moment
+plus that lateness, so that what is seen and what is heard agree. And an instrument answers a press, not a
+click (`usePressNow`, `src/game/worlds/music-lab/press.ts`): a click arrives when the finger lifts, which for a
+drum is always late.
+
+`src/engine/music.ts` is the arithmetic: what a note is called and how high it is, whether a tune has a shape,
+and `keepTime`, which says how taps kept time with beats. The Music Lab's own code
+(`src/game/worlds/music-lab/`) is its pictures, its scripts, a board for the beat, a board for making a tune,
+and the room to play in.
 
 ### The voice
 

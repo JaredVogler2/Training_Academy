@@ -6,16 +6,18 @@ hosted on Vercel. There is no account, no server, no advertising and no tracking
 
 ## Where it stands
 
-**All six islands have something to do: 39 short activities, 429 challenges, and a voice.** Phases 01 to 03 of 17
-are done (the foundation, the look, the journey in); phases 04 to 10 are each partly done, which here means that
-every activity the six world pages promised is built and tested, and that each phase's brief asks for more than
-that. [`docs/PROGRESS.md`](docs/PROGRESS.md) sets each brief against what exists. It is built from the plan in
+**Seven places have something to do: 45 short activities, 497 challenges, a voice, and music.** Six islands, and
+a music room in the lighthouse between them. Phases 01 to 03 of 17 are done (the foundation, the look, the
+journey in); phases 04 to 10 are each partly done, which here means that every activity the six islands' pages
+promised is built and tested, and that each phase's brief asks for more than that; phase 11, the Music Lab, is
+built. [`docs/PROGRESS.md`](docs/PROGRESS.md) sets each brief against what exists. It is built from the plan in
 [`prompt-series/`](prompt-series/README.md).
 
-**Three things to know before relying on it.** No person has listened to the voice: its 395 recordings were made
-by a speech synthesiser and checked by a speech recogniser. No child and no teacher has seen any of it. And it
-is live: the owner's Vercel deployment serves `main`, all six worlds have been on it since 2026-11-23, and a
-change reaches it only when the pull request that carries it is merged.
+**Three things to know before relying on it.** No person has listened to any of it: the voice's 446 recordings
+were made by a speech synthesiser and checked by a speech recogniser, and the Music Lab's notes are made by
+arithmetic as they are played and have been checked by nothing with ears. No child and no teacher has seen any
+of it. And only some of it is live: the owner's Vercel deployment serves `main`, which has had the six islands
+since 2026-11-23; the Music Lab is on an open pull request and reaches the site only when that is merged.
 [`docs/CONTINUE_HERE.md`](docs/CONTINUE_HERE.md) says exactly what was and was not verified.
 
 ![The home screen: a lighthouse and six small islands in a turquoise sea, each with its name under it, and a small glowing guide in a rowing boat pointing at the one that is open](docs/review/phase-02/hub-3d-1366x768.jpg)
@@ -23,8 +25,8 @@ change reaches it only when the pull request that carries it is merged.
 What works today:
 
 - a visit opens on a front door: Glim waves, and the child says who is playing by tapping a picture;
-- the home screen is the map: a lighthouse and six modelled islands, each island a button. It is drawn in real-time
-  3D where the device can, and as a picture rendered from the same models where it cannot;
+- the home screen is the map: a lighthouse and six modelled islands, each of the seven a button. It is drawn in
+  real-time 3D where the device can, and as a picture rendered from the same models where it cannot;
 - Glim, the guide, who demonstrates, points, wonders, celebrates and waits patiently, says what is asked in a
   recorded voice, and says and shows it again when tapped;
 - **Reading Cove**: what made that sound, play it back, the first sound of a word, fifteen letters and their
@@ -36,6 +38,9 @@ What works today:
 - **Inventor Island**: a guess that is tested, and a thing to mend: bridges, ramps, balancing, float or sink;
 - **Explorer Harbor**: a story to put in order and hear told back, how it ends, what made it happen, what happens
   next, and a map to answer on: land and water, near and far;
+- **The Music Lab**, in the lighthouse: high and low, the same or different, a slow beat to tap along with, notes
+  to play back, a tune to know again, a tune to make up; and a room with a whole octave of chime bars and a drum
+  to play freely. Its sounds are made on the device: nothing is recorded;
 - in every activity: Glim shows it first, some steps are done with help at hand and some alone; a wrong answer is
   taught, never marked wrong; help, pause and the way home are always there; and what was done unaided at the
   first try is recorded apart from everything else;
@@ -46,7 +51,7 @@ What works today:
   one), and offline use after the first visit.
 
 What does not exist yet: sentences to read, numerals, longer programs, a real map of the world, making up a story,
-music, and most of what phases 11 to 17 describe. It has not been tried on real graphics hardware or played by a
+and most of what phases 12 to 17 describe. It has not been tried on real graphics hardware or played by a
 child, and beyond the owner opening the live site on an iPhone it has not run on a phone.
 
 ## Run it
@@ -117,7 +122,7 @@ Two pages exist for looking at the art and are linked from nowhere: `/studio/<is
 src/engine    the learning engine: pure TypeScript, no browser, no clock, no randomness of its own
 src/content   the curriculum: one written-out pack for each world, and the rules that refuse a wrong one
 src/storage   saving on the device: IndexedDB, then localStorage, then memory; migrations; export and import
-src/game      the six worlds, the lesson runner, the boards activities are played on, the world pages
+src/game      the seven worlds, the lesson runner, the boards activities are played on, the world pages
 src/art       the picture kit and the drawn letters
 src/render    the map: where everything goes, the hub as a picture, and the 3D harbour (three.js, loaded when used)
 src/assets    the hub's pictures, rendered from the island models; the voice's recordings
@@ -145,19 +150,19 @@ This describes the design. It is not a legal review; that is part of Phase 14.
 
 ## Documents
 
-| Document                                             | What it holds                                                                 |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------- |
-| [`docs/CONTINUE_HERE.md`](docs/CONTINUE_HERE.md)     | The exact tested state, what is unverified, and the next action               |
-| [`docs/PROGRESS.md`](docs/PROGRESS.md)               | Phase-by-phase status                                                         |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)       | Structure and decisions                                                       |
-| [`docs/CURRICULUM.md`](docs/CURRICULUM.md)           | How content is authored, what is authored, how evidence is reported           |
-| [`docs/TEST_RESULTS.md`](docs/TEST_RESULTS.md)       | Commands run and their results                                                |
-| [`docs/QUALITY_REPORT.md`](docs/QUALITY_REPORT.md)   | An honest assessment of how it looks and performs, with known shortcomings    |
-| [`docs/ART_DIRECTION.md`](docs/ART_DIRECTION.md)     | The visual standard: view, shapes, colour, light, motion, the guide, sound    |
-| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)           | Connecting Vercel, what `vercel.json` does, what a first preview must prove   |
-| [`docs/ASSETS.md`](docs/ASSETS.md)                   | Every asset, its licence, and how each kind of asset is made                  |
-| [`docs/review/`](docs/review/)                       | Screenshots of the running build, phase by phase; the six worlds in `worlds/` |
-| [`prompt-series/README.md`](prompt-series/README.md) | The seventeen-phase build plan                                                |
+| Document                                             | What it holds                                                                              |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| [`docs/CONTINUE_HERE.md`](docs/CONTINUE_HERE.md)     | The exact tested state, what is unverified, and the next action                            |
+| [`docs/PROGRESS.md`](docs/PROGRESS.md)               | Phase-by-phase status                                                                      |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)       | Structure and decisions                                                                    |
+| [`docs/CURRICULUM.md`](docs/CURRICULUM.md)           | How content is authored, what is authored, how evidence is reported                        |
+| [`docs/TEST_RESULTS.md`](docs/TEST_RESULTS.md)       | Commands run and their results                                                             |
+| [`docs/QUALITY_REPORT.md`](docs/QUALITY_REPORT.md)   | An honest assessment of how it looks and performs, with known shortcomings                 |
+| [`docs/ART_DIRECTION.md`](docs/ART_DIRECTION.md)     | The visual standard: view, shapes, colour, light, motion, the guide, sound                 |
+| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)           | Connecting Vercel, what `vercel.json` does, what a first preview must prove                |
+| [`docs/ASSETS.md`](docs/ASSETS.md)                   | Every asset, its licence, and how each kind of asset is made                               |
+| [`docs/review/`](docs/review/)                       | Screenshots of the running build, phase by phase; the worlds in `worlds/` and `music-lab/` |
+| [`prompt-series/README.md`](prompt-series/README.md) | The seventeen-phase build plan                                                             |
 
 ## Deployment
 

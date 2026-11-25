@@ -2313,7 +2313,7 @@
           },
           "task": {
             "type": "tune",
-            "notes": ["c4", "d4", "e4", "g4", "a4", "c5"],
+            "notes": ["c4", "e4", "g4", "a4", "c5"],
             "length": 4,
             "shape": "up",
             "solution": ["c4", "e4", "g4", "c5"]
@@ -2337,7 +2337,7 @@
           },
           "task": {
             "type": "tune",
-            "notes": ["c4", "d4", "e4", "g4", "a4", "c5"],
+            "notes": ["c4", "e4", "g4", "a4", "c5"],
             "length": 4,
             "shape": "down",
             "solution": ["c5", "a4", "e4", "c4"]
@@ -2481,7 +2481,7 @@
           },
           "task": {
             "type": "tune",
-            "notes": ["c4", "d4", "e4", "g4", "a4", "c5"],
+            "notes": ["c4", "d4", "e4", "g4", "a4"],
             "length": 5,
             "shape": "home",
             "solution": ["g4", "a4", "e4", "d4", "c4"]

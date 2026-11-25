@@ -1,15 +1,16 @@
 # Curriculum
 
-**Status: six worlds, a first pass through each.** Every activity the six world pages promised is authored and
-playable. Counts in this document are of real, shipped content, and the tests pin the ones quoted most.
+**Status: seven worlds, a first pass through each.** Every activity the six islands' pages promised is authored
+and playable, and so are the Music Lab's six. Counts in this document are of real content in the repository,
+and the tests pin the ones quoted most. (The Music Lab is on a pull request that is not merged: it is not live.)
 
 |                              | Authored and tested |
 | ---------------------------- | ------------------- |
-| Worlds with playable content | 6 of 6              |
-| Activities (lessons)         | 39                  |
-| Challenges                   | 429                 |
-| Skills                       | 44                  |
-| Spoken lines and words       | 395 recordings      |
+| Worlds with playable content | 7 of 7              |
+| Activities (lessons)         | 45                  |
+| Challenges                   | 497                 |
+| Skills                       | 50                  |
+| Spoken lines and words       | 446 recordings      |
 
 **Nothing here has been reviewed by an early-years teacher or tried with a child, and no person has listened to
 the recordings.** All three are required before any claim about what the game teaches. Each world's brief in
@@ -24,8 +25,8 @@ These come from `prompt-series/00_MASTER_BRIEF.md` and are enforced where a mach
    `plan.demo` and `plan.guided` must be non-empty.)_
 3. **No reading needed, and no sound needed except where sound is the lesson.** Pictures and the guide's hand carry
    the task; captions are for the adult alongside and for screen readers; the voice adds to them. Reading Cove's
-   activities are about sounds and cannot be done without them: each is marked `needsSound`, and shows a gate
-   with one button when sound is off. Where two activities differ only in what is asked (more, fewer), each asks
+   activities, and three of the Music Lab's, are about sounds and cannot be done without them: each is marked
+   `needsSound`, and shows a gate with one button when sound is off. Where two activities differ only in what is asked (more, fewer), each asks
    one thing throughout, so that its demonstration is enough.
 4. **Teach on a miss.** A wrong answer takes that choice away and re-teaches; it is never a red cross, a lost life or a
    timer. _(Engine behaviour; there is no "wrong" colour in the design tokens.)_
@@ -79,6 +80,8 @@ kind "make"         a thing the child makes, judged by a rule (src/engine/tasks.
                 pairs    cards to turn two at a time until every pair is found
                 program  a row of steps for a robot on a grid
                 design   parts to change until a thing works, tested by a small model
+                beat     a slow beat to tap along with; most of the beats met is keeping it
+                tune     a tune to make up with a shape (up, down, a hill, twice, home); any such tune is right
   maxTries?     after this many wrong tries (three, unless said) the answer is shown and followed
 
 both
@@ -91,8 +94,8 @@ both
 
 What a picture can be (`stimulus`): an amount of one of seven things; a picture from the kit (`src/art`); a
 sound; a letter or two; a printed word; a sign that stands for the question; and a `scene`, which is a picture
-only its own world knows how to draw (a robot's ground, a bench, a strip of a story, a map) and which that
-world's rules check.
+only its own world knows how to draw (a robot's ground, a bench, a strip of a story, a map, a chime bar, a bird
+with a tune to sing) and which that world's rules check.
 
 ### ID conventions
 
@@ -115,7 +118,8 @@ IDs are permanent once content ships: the learner's record refers to them. To ch
 **The lint** (`src/content/lint.ts`): references (plan to challenges, lesson to skills, strings), duplicates, the
 prerequisite graph, plan arithmetic (`count` no more than the pool, a bar no higher than `count`, more than one
 variant in the pool), hint ladders (never remove the answer, reveal last and only last), and for each kind of
-task that its marked solution is one the rule accepts — a robot's row is run, a bench's design is tested.
+task that its marked solution is one the rule accepts — a robot's row is run, a bench's design is tested, a
+tune is checked for its shape, and a beat must ask for more than half its beats.
 
 **Its world's rules** (`src/content/rules/<world>.ts`): that the marked answer is the one and only right answer
 for what that world asks, and that what is offered beside it is wrong for a reason someone chose. A world with
@@ -431,6 +435,69 @@ progression):
 All of this is exercised in a browser by `e2e/journey.spec.ts` and `e2e/lesson.spec.ts`, and at the level of the
 engine and the runner by `tests/engine/`, `tests/game/lessonRunner.test.ts` and `tests/game/lessonScript.test.ts`.
 
+### The Music Lab — `music-lab.v1.json` (contentVersion 1)
+
+6 activities, 68 challenges, 6 skills, 51 spoken lines. Written by `scripts/content/music-lab.mjs`. It is in the
+lighthouse, and beside its activities it has a room to play in freely, where nothing is asked and nothing is
+kept.
+
+**How it teaches.** By ear, and from far apart to close together. High and low begin on chime bars two octaves
+apart, where the small bar can be seen to be the high one; then birds that look exactly alike sing them, down to
+a third apart, so that only listening will do. Two tunes are the same or different: at first one goes up and
+one comes down, at last one note is changed. A beat is listened to for four beats and then tapped. Notes are
+played back in the order they sounded. A tune is found again among tunes with the same notes in another order.
+And a tune is made up to a shape — up, down, a hill, the same twice, home to the lowest bar — which is the one
+place in the game with many right answers, all of them the child's own.
+
+**Every question can be heard again**, by tapping Glim, as often as asked, and it is never counted as help:
+hearing a question is the question. And **nothing can be answered until the last of it has sounded**: a tap
+after the first of two notes would be a guess at a question not yet put.
+
+**Keeping time** (`keepTime`, `src/engine/music.ts`) is rough tempo and nothing finer. Each tap goes with the
+beat it is nearest to. The taps' own steady lateness — their median, up to a third of a beat — is taken off,
+because a speaker that sounds late, a screen that reports a touch late and a child who is always a shade behind
+all look the same from here and none of them is being out of time. Then a tap within 26 % of a beat either way
+has met its beat, and meeting six beats of eight is keeping the beat. Tapping twice as fast meets every beat and
+is not keeping it: taps that belong to no beat are counted, and more than one in four is too many. A beat that
+was not met is never marked: the lights of the ones that were met come on, and the beat comes round again.
+After three tries that were not in time Glim taps along, and then tapping with it at all is enough.
+
+**With the sound off.** _Tapping with the beat_ and _Play it back_ can be done by eye — the beat is lit as well
+as clicked, the bars light as they sound — and so can _Make a tune_, whose shape is drawn as it is made. The
+other three are nothing but listening: they say they need sound, and wait behind one large button that turns it
+on. The room to play in does the same.
+
+**What is deliberately not here.** No notation. No note names said to the child. No black keys: every tune is
+on the white keys from middle C up, because a phone's speaker gives almost nothing below it (the rules refuse a
+note outside C4 to E6). No song: every phrase was made up for this game from steps and skips of two to four
+notes. And nothing called talent: a test fails if that word, or gifted, or ability, appears in a skill.
+
+**What the rules check** (`src/content/rules/musicLab.ts`, 32 of them): in a question about high and low, each
+choice is one note, no two the same, at least a tone apart, the one marked is the highest (or lowest), and
+where a child answers alone the choices are not bars, which give it away by their size; "the same" is right
+exactly when the two are the same, and they are as long as each other so that counting cannot answer it; of the
+little birds exactly one sings what the big bird sang; bars stand lowest first, each called by its own note; a
+beat's picture is of that beat and a tune's sign is of its shape; and an activity whose questions can only be
+heard says it needs sound.
+
+| Activity         | Title                   | Challenges | A sitting                       | The child's part   |
+| ---------------- | ----------------------- | ---------- | ------------------------------- | ------------------ |
+| `ml-high-low-01` | High and low            | 13         | 2 shown, 3 guided, 4 of 8 alone | a choice           |
+| `ml-same-01`     | The same, or different? | 13         | 2 shown, 3 guided, 4 of 8 alone | a choice           |
+| `ml-beat-01`     | Tapping with the beat   | 9          | 1 shown, 2 guided, 3 of 6 alone | tap a drum in time |
+| `ml-echo-01`     | Play it back            | 11         | 1 shown, 2 guided, 4 of 8 alone | repeat an order    |
+| `ml-again-01`    | The same tune again     | 11         | 1 shown, 2 guided, 4 of 8 alone | a choice           |
+| `ml-tune-01`     | Make a tune             | 11         | 1 shown, 2 guided, 4 of 8 alone | make a tune        |
+
+| Skill                           | For grown-ups                            | What it means                                                                                                                                                                   |
+| ------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `music.pitch.high-low`          | Tell a high note from a low one          | Hears two or three notes sung by birds that look alike, and taps the one that was high — or, when asked, the one that was low — when the notes are as little as a third apart.  |
+| `music.pattern.same-different`  | Say whether two short tunes are the same | Hears two tunes of three or four notes, or two drum patterns, one after the other, and says whether they were the same or different when only one note or one knock is changed. |
+| `music.rhythm.steady-beat`      | Tap along with a slow, steady beat       | Taps a drum in time with a beat of 60 to 84 to the minute, meeting at least six beats of eight within a generous margin. This is rough tempo, not precision.                    |
+| `music.memory.play-back`        | Play back a few notes in order           | Hears three or four notes played on chime bars and plays them back in the same order.                                                                                           |
+| `music.pattern.repeated-phrase` | Know a tune again when it comes back     | Hears a tune of three or four notes and then two or three more, and picks out the one that was the first tune again from others with the same notes in another order.           |
+| `music.making.shape-a-tune`     | Make up a tune with a shape              | Makes up a tune of three to six notes on chime bars that goes up, goes down, climbs and comes back, says the same thing twice, or comes home to the lowest bar, as asked.       |
+
 ## What each world does not have yet
 
 From the briefs in `prompt-series/`; `docs/PROGRESS.md` has each brief set against what exists.
@@ -443,6 +510,7 @@ From the briefs in `prompt-series/`; `docs/PROGRESS.md` has each brief set again
 | Memory Forest   | a choice of strategy; recall in a later sitting; more than four things                                                 | 08    |
 | Inventor Island | a wind shelter; a record that the away-from-screen challenge was done; a portfolio card                                | 09    |
 | Explorer Harbor | making up a story; stories that branch; a globe, continents, countries, flags, people and places                       | 10    |
+| The Music Lab   | tapping a rhythm back; black keys; keeping a tune a child has made; the five other rooms its brief describes           | 11    |
 
 Open questions: who reviews the phonics content and the audio; whether a person should record the voice; how
 prerequisites that cross worlds are shown on the map (nothing is locked, and Glim simply points at the next

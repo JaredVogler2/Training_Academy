@@ -51,12 +51,19 @@ jobs:
         #
         # The desktop screen has every test and is two thirds of Chromium's work by itself, so it shares a job
         # with the tablet only. (With the two small phones as well, that job reached 31.7 of its 40 minutes once
-        # an activity that shows something first could no longer be answered early.)
+        # an activity that shows something first could no longer be answered early.) And it is itself in two
+        # halves: it is the screen every activity is played to its end on, a question that is listened to takes
+        # as long as it takes to hear, and with the Music Lab the one job took 29 minutes. Playwright deals the
+        # tests of the two screens between the halves.
         include:
-          - name: chromium, desktop and tablet
+          - name: chromium, desktop and tablet, first half
             engine: chromium
             projects: >-
-              --project=desktop --project=tablet
+              --project=desktop --project=tablet --shard=1/2
+          - name: chromium, desktop and tablet, second half
+            engine: chromium
+            projects: >-
+              --project=desktop --project=tablet --shard=2/2
           - name: chromium, phones
             engine: chromium
             projects: >-

@@ -104,6 +104,63 @@ Four of them hold the page's clock (`holdClock` and `watchFor` in `e2e/fixtures.
 and "between two lights" are places a test stands in, not moments it has to be quick enough to catch. A test
 that has to be quick passes for a month and then fails in CI, which is how the third of these was found.
 
+### What the Music Lab added to the tests, and what the tests found
+
+- **Keeping time is tested as sums** (`tests/engine/music.test.ts`, 29 tests): taps as numbers beside beats as
+  numbers — on the beat; a fifth of a beat out either way; a third of a beat late every time (a slow speaker),
+  which is kept; the same distance out, now early and now late, which is not; half speed; double speed; two
+  taps on one beat; no taps. And what a tune's shape is, case by case.
+- **Every one of the Music Lab's 32 content rules is shown to fire** (`tests/content/musicLabRules.test.ts`),
+  and the pack is held to what was promised of it: six activities in the brief's order, far more than ten
+  patterns, high and low asked alone only of things that look alike, every beat slow and never asked for
+  whole, and no skill that speaks of talent.
+- **What is played, and in what order, is tested without a sound** (`tests/game/musicLab.test.tsx`, 31 tests):
+  each one who has something to play is lifted while it plays; the whole question is played again for the
+  asking; a bird's picture is the same picture whatever it sings; and nothing a singer sings is ever put into
+  words on the page.
+- **The instruments are tested against a stand-in for the browser's audio** (`tests/app/audio.test.ts`): what
+  each is made of, that a click can be put at a moment on the audio's clock and never in the past, how loud
+  anything may be, and that the note of the tap that woke the audio is played when it wakes.
+- **In a browser** (`e2e/music.spec.ts`, 22 tests; `e2e/sizes.spec.ts`, 54): nothing can be answered until the
+  last of a question has sounded, and a tap in the middle of it is not taken for an answer; the beat is kept
+  by tapping with a finger and with a mouse, with the sound off, and with every tap a third of a beat late;
+  left alone it is not kept and nothing is marked as missed; a tune is made, changed, played over and handed
+  in, and one of another shape stays to be changed; and the room to play in has the whole octave, keeps
+  nothing on the device, and stops its beat when told to.
+
+**Tests that passed the first time they were run were made to fail**, by taking out the thing they are about:
+
+| Taken out                                                                                                            | The test that then failed                                                                                                                                               |
+| -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| the hold on answers while a question is still being played                                                           | both browser tests of hearing a question through                                                                                                                        |
+| the row that bars stand in                                                                                           | the browser test of the row — on a phone; on a desktop four bars stand in a row regardless, which is why that test now walks on to four bars and is run on every screen |
+| the steady lateness taken off the taps                                                                               | two timing tests (one of them only once it was rewritten: at a quarter of a second late the taps were inside the margin anyway, and the test had proved nothing)        |
+| counting a second tap on one beat as a tap too many                                                                  | two timing tests                                                                                                                                                        |
+| refusing a hammered drum                                                                                             | the test of a beat as a task                                                                                                                                            |
+| playing the whole question again when Glim is asked                                                                  | the script test of asking again                                                                                                                                         |
+| saying nothing of what a bird sings                                                                                  | the test that reads every picture's words                                                                                                                               |
+| the drum only struck once the listening is over, in a demonstration                                                  | the script test of a demonstrated beat                                                                                                                                  |
+| answering a tap once, not again when the finger lifts; the first mouse button only; no instrument with the sound off | three tests of the room                                                                                                                                                 |
+| the lighthouse set nearer than the far islands on a wide screen                                                      | the layout test of the three names' room                                                                                                                                |
+| the sideways layout of a question that is only a sign                                                                | four tests of the size sweep                                                                                                                                            |
+
+**What the tests found that was already live.** Looking at the Music Lab on the narrowest phone held sideways
+showed its first activity as a strip twenty pixels high. The fault was not the Music Lab's: a question that is
+only a sign kept, sideways, the two rows it has upright as well as its two columns, so the sign and the groups
+shared the shallow upper row and the lower one stood empty. **Number Garden's "Which has more?", "Which has
+fewer?" and "Are they equal?" have been drawn that way on every phone held sideways since the six worlds went
+live**: groups 48 pixels high at 844 by 390, 20 at 640 by 256. Every test of them passed, because a thing 20
+pixels high can be tapped. It is fixed for every world, and `e2e/sizes.spec.ts` now measures, on the three
+tightest screens, everything a child presses in one activity of each kind of board, eighteen of them. That
+sweep found two more, both on the narrowest phone sideways: Memory Forest's cards to pick out were 49 pixels
+high (also live; now one row), and the Music Lab's own two tools 48. With those fixed it passes with no
+exception written into it.
+
+**And one that the tests had been told to expect.** The map tests said the lighthouse "is scenery: tapping it
+goes nowhere", counted six links, and checked each world's picture under a link of the same name. They were
+changed to say what is now true — seven links, the lighthouse the way into the Music Lab — and not loosened:
+the test that every picture sits under its tap area now asks each link for its place.
+
 ## Continuous integration
 
 Every push to a pull request, and to `main`, runs five jobs (`.github/workflows/ci.yml`): lint, types, unit tests
@@ -243,6 +300,24 @@ in any of them.
 That is 621 passed and 47 skipped in Chromium, as in the local run, and 503 passed and 105 skipped in WebKit.
 The page that never comes did not happen in this run, which says nothing about the next one.
 
+**Three runs since**, all green in all five jobs, and in none did a test need a second attempt (each job's
+artifact is under 1.1 MB; a retried test leaves a trace of tens of megabytes):
+
+| Run | What                                                         | Chromium, desktop and tablet | Chromium, phones | WebKit, desktop and tablet | WebKit, phones   |
+| --- | ------------------------------------------------------------ | ---------------------------- | ---------------- | -------------------------- | ---------------- |
+| 33  | pull request #7, its last commit (`df682f9`), documents only | passed                       | passed           | passed                     | passed           |
+| 34  | `main` after the owner merged pull request #7 (`71d66e0`)    | 19.7 minutes                 | 27.5 minutes     | 14.4 minutes               | 18.9 minutes     |
+| 35  | pull request #8, its first commit (`4f906f4`): the Music Lab | 29.2 minutes for the job     | 26.6 for the job | 15.5 for the job           | 23.3 for the job |
+
+Run 35 is the Music Lab's activities and its first seventeen browser tests, in Chromium and in WebKit: what
+WebKit makes of pitched oscillators, of a click put on the audio's clock and of a tap timed against it, passed
+there. (It is still not Safari on an iPhone, and nothing was heard.)
+
+**The time, again.** The desktop job went from 19.7 minutes to 29.2 with the Music Lab in it: the desktop is
+the screen every activity is played to its end on, and a question that is listened to takes as long as it
+takes to hear. So that job is now two (`--shard=1/2`, `--shard=2/2`), each with half the tests of the desktop
+and the tablet. What those two take is for the next run to say.
+
 **Phase 03** is pull request [#4](https://github.com/JaredVogler2/Training_Academy/pull/4). The first run with
 the whole phase in it to pass was [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45093042202)
 below, on `d2e644c`: **all three jobs passed, with no failed test and no retry.**
@@ -371,7 +446,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 1393)
+## What the unit tests cover (Vitest, 1547)
 
 | Area                                                              | Files                                                                                                                                                   | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -396,6 +471,7 @@ failures were the useful part:
 | **What each world shows** (Phases 05 to 10)                       | `tests/game/readingCove.test.ts`, `memoryForest.test.ts`, `explorerHarbor.test.ts`, `robotScript.test.ts`, `robotRun.test.ts`, `inventorIsland.test.ts` | Each world's scripts, as pure data: a word is said slowly before it is asked about; things to remember are uncovered, covered, and only then asked about, and never uncovered again for the asking; a story is told as far as it goes and told back in order; a robot's run is the frames the interpreter gives                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | **What has been finished** (after the six worlds)                 | `tests/game/progress.test.tsx`                                                                                                                          | A page that is the first thing opened finds out who is playing by itself, once, and then says what they have finished; on a device nobody has played on it says nothing and stays so; the next thing to do in a world, and on the map                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **Asking again** (after the six worlds)                           | `tests/game/again.test.tsx`                                                                                                                             | It belongs to one step, and the next starts as if nothing had been asked; an asking that comes before a showing is over starts the step again and is not "again"; the event of a tap is not taken for "not yet"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Music** (Phase 11)                                              | `tests/engine/music.test.ts`, `tests/content/musicLabRules.test.ts`, `tests/game/musicLab.test.tsx`, `musicRoom.test.tsx`, `tests/app/audio.test.ts`    | Notes and their pitches; a tune's shape; keeping time, as sums; the Music Lab's 32 rules; what is played and in what order; the instruments' make-up and timing; the room to play in                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | **What the browser tests decide by** (after the six worlds)       | `tests/config/e2eDiagnosis.test.ts`                                                                                                                     | WebKit's words for a download it could not load are recognised, cut short or whole, and nothing else is taken for them; the preview server notes each page as it arrives and again when it has answered, and nothing else, and only when told where; and what a test that ran out of time is told about its page                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ## What the browser tests cover (Playwright, against the production build)
@@ -667,6 +743,13 @@ The owner connected the repository to Vercel during this work; production is `ma
 | The same                                           | the same                                        | each world's page opened by its address and counted                                                                                     | 10, 7, 4, 6, 4 and 8 activities, each page with Play; none says it is not open                                                                       |
 | The same                                           | the same                                        | the first activity of each of the five new worlds opened by a tap, as a phone                                                           | each started and fetched its recordings (five to ten of them) from the site itself, each a 200 and `audio/mpeg`; no error, no warning, no other site |
 | The same                                           | the same                                        | 52 browser tests: the 16 smoke tests, and the 36 tests of the Pixel 7 screen (`--project=android`), which play something in every world | 52 passed                                                                                                                                            |
+
+**After the owner merged pull request #7** (2026-11-25, `71d66e0`), a few minutes after the merge: Vercel's own
+record of the deployment said "Ready"; the service worker the site served was byte for byte the one a local
+build of that commit makes; an activity finished on the site showed as finished on its world's page opened by
+its own address, where the build before showed nothing finished; after one tap on Glim in "How many, at a
+glance" the two steps after it still uncovered their groups, where the build before left them covered; and 52
+browser tests passed against the address, as before. The three faults that had been live were gone from it.
 
 That is evidence that Vercel serves what was built, with the headers and routing the tests expect, and that the
 voice's files arrive. It is not a phone, and nobody has heard those recordings play. Nor is it evidence that

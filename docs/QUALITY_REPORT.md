@@ -1,14 +1,104 @@
 # Quality report
 
-This file has three parts. The first is the review of the six worlds and the voice (phases 04 to 10). The second is
-Phase 03's review of what Phase 03 built. The third is Phase 02's report on the home screen, kept as it was
-written, because it is still the assessment of the hub.
+This file has four parts. The first is the review of the Music Lab (phase 11). The second is the review of the
+six worlds and the voice (phases 04 to 10). The third is Phase 03's review of what Phase 03 built. The fourth is
+Phase 02's report on the home screen, kept as it was written, because it is still the assessment of the hub.
 
 All are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
 reading of screenshots and of the running game in headless Chromium. Nobody else has reviewed it, no child has
 played it, **no person has listened to the voice**, and it has never run on a real graphics card. The owner has
 opened the live site (Phase 03) on an iPhone; nothing in this file comes from a device. The standard it is rated
 against is `docs/ART_DIRECTION.md`.
+
+## Phase 11 (2026-11-25): the Music Lab
+
+### Summary
+
+There is a seventh place to go: the lighthouse, which is now a music room. It has six activities, in the order
+its brief sets out, and a room for playing in with no questions at all. Two of its games are new kinds — a beat
+to tap along with, and a tune to make up to a shape, which is the first thing in the game with many right
+answers. Its sounds are not recordings: every note is made by arithmetic at the moment it is played.
+
+**That last sentence is the whole of the risk.** A recording that is wrong is wrong the same way every time and
+can be listened to once. These sounds were never listened to at all: not by a person, and not by a machine
+either, since there is no recogniser for "does this sound like a chime bar". What was checked is what can be
+checked without ears — that the right pitches are asked for at the right moments, at a sensible loudness, on
+the audio's own clock. Whether the result is pleasant, or is plainly a scale on a phone's small speaker, is
+unknown. It is one function of numbers to change (`strokeOf`), and it wants a person with a phone.
+
+### How it was made, which bears on how far to trust it
+
+In one working tree, by one hand, looked at in a browser on five screen sizes as each board was built, and
+again at the end. Unlike two of the six worlds, all of its code was written and read here. Its tests were
+written with it, and the ones that passed first time were then made to fail (`docs/TEST_RESULTS.md` has the
+list). It was built quickly, in one sitting, straight after the fixes of the pull request before.
+
+### The review
+
+Looked at in the running production build at 390×844, 844×390, 640×256, 320×568 and 1366×768:
+`docs/review/music-lab/`. 1 = poor, 3 = acceptable, 5 = excellent.
+
+| Category             | The Music Lab | Why                                                                                                                                                                                                             |
+| -------------------- | :-----------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composition          |       4       | One board, one thing to do. The drum is the size of the screen's shorter side; bars stand in a row, lowest first. A question that is only listened to leaves a tall phone with two large cards and little else. |
+| Craft and materials  |      3.5      | The same paper, lips and radii as the rest. The drawings are plain: a bar is a rounded rectangle with two pins, a bird is a ball with a beak. Clear, consistent, and no more than that.                         |
+| Cohesive palette     |       4       | A pink role of its own, checked for contrast. The bars are a rainbow, as real chime bars are: seven more colours on one screen than anywhere else in the game, and each means a note.                           |
+| Liveliness           |      3.5      | A bird opens its beak and rings come off it; a bar dips when struck; the beat runs along its lights and pulses on the drum's rim. Nothing else moves, and nothing dances.                                       |
+| Interface legibility |       4       | Every control is 56 points or more on the three tightest screens, measured (`e2e/sizes.spec.ts`), with one exception that is not in an activity: the room's eight bars are 53 points wide at 640×256.           |
+| Motion quality       |       4       | Everything is a response to a sound. With motion reduced the lights go on and off and nothing travels. Seen in a browser, not on a device.                                                                      |
+| The sound            |       —       | **Not rated.** Nobody has heard it.                                                                                                                                                                             |
+| Child comprehension  |       —       | **Not rated.** No child has seen it.                                                                                                                                                                            |
+
+### Seen — cause — fix
+
+| Seen                                                                                                              | Cause                                                                                                                                                                                              | Fix                                                                                                     |
+| ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| A seventh island would have been 71 pixels wide on the smallest phones held sideways, and every island smaller    | Seven places already stand in one row there                                                                                                                                                        | The Music Lab is in the lighthouse, which stood in the middle of every arrangement and did nothing      |
+| "Explorer Harbor" cut short on phones held sideways                                                               | The lighthouse, moved back to make room for its own name, stood level with the two far islands, and its name left theirs no room                                                                   | Set a little nearer; a unit test holds the three names' room                                            |
+| _High and low_ was a strip 20 pixels high on the narrowest phone held sideways                                    | Not the Music Lab's fault: a question that is only a sign kept two rows as well as two columns. **Number Garden's three comparing activities had been drawn that way, live, since the six worlds** | Fixed for every world; a sweep now measures everything a child presses on the three tightest screens    |
+| The same sweep: Memory Forest's cards to pick out were 49 pixels high on the narrowest phone sideways (also live) | Two rows of cards in a board a hundred pixels high                                                                                                                                                 | One row there, with the width given to whichever half is in use: the things to remember, then the cards |
+| The drum was 60 pixels across on the narrowest phone sideways                                                     | The beat's lights stood over it                                                                                                                                                                    | Beside it, on very flat screens; the drum has the board's whole height                                  |
+| The drawing of a tune being made was 40 pixels high there                                                         | Its two tools stood under it                                                                                                                                                                       | Under the sign instead                                                                                  |
+| Six bars were 47 pixels each on a screen 320 points wide                                                          | Six is one too many                                                                                                                                                                                | No activity has more than five bars; a content rule refuses a sixth                                     |
+| The beat was marked "miss", "early" and "late" in the page, though nothing drew them                              | The board wrote every mark it was given                                                                                                                                                            | Only a beat that was met is marked, anywhere                                                            |
+| A drum that is not quite a circle                                                                                 | A width from the screen and a height from the room it had                                                                                                                                          | The room is measured (a container query), and the drum is the largest circle that fits                  |
+| The recogniser heard "it is to go up first"                                                                       | "It has to go up first, and then come down." is a mouthful for the synthesiser                                                                                                                     | "Go up first. Then come down."                                                                          |
+| A tune being made kept what was chosen before the answer was shown, so following Glim's hand led to a wrong tune  | Reasoned, not seen: the hand shows one way, and the child's first notes may belong to another                                                                                                      | Showing a way starts the tune afresh                                                                    |
+| Two birds on an activity's card were 22 pixels each                                                               | Each had a box of its own in a card 70 pixels wide                                                                                                                                                 | On a card the two are one small drawing                                                                 |
+| A test tapped the drum late on a brisk beat and failed, in a way no child's fault                                 | It waited to see each light and then pressed, which is late by however long a press takes                                                                                                          | It keeps the beat as a person does: from the first beats, each tap begun a little ahead                 |
+
+### What is still wrong or weak
+
+**Unverified, and the most important**
+
+- **Nobody has heard it.** Above.
+- **The allowance for keeping the beat is a guess.** A quarter of a beat either way after a steady lateness has
+  been taken off, six beats of eight. It was chosen from what is written about how young children tap and from
+  sums: taps at about the right pace and at random moments pass perhaps one time in ten. Whether a
+  four-year-old who is plainly in time passes every time has not been tried, and that is the direction it must
+  not fail in.
+- **How late a real phone's sound is, and how late its touch,** have not been measured on one. The allowance is
+  for exactly that, and is capped at a third of a beat: a Bluetooth speaker that is later than that will make
+  every tap late.
+- **Whether "high" and "low" are learnt from a small bar and a long bar** is a hope. The words are a figure of
+  speech a child has to be taught, and the game teaches them only by showing which bar is which.
+- **A third apart may be too close** for the youngest. It is the last and hardest of the questions, and a
+  child who cannot do it still finishes: the right one is shown after a wrong try.
+
+**Weak, and known**
+
+- The drawings are plain (above), and the lighthouse's chime bars are a few pixels on the map: what says
+  "music" there is two notes drifting up, which a three-year-old may not read as anything.
+- Where the places stand in one row the lighthouse has no name written under it.
+- The room's bars are 53 points wide on the narrowest phone held sideways, and 71 by 116 on the narrowest
+  upright, in two rows of four: a keyboard broken in half.
+- Three activities are close cousins — two tunes the same or different, a tune found again — and a child may
+  feel they are one game three times.
+- A question that is listened to cannot be hurried: a tune and three more to compare it with is eight seconds
+  before anything can be tapped.
+- Nothing a child makes is kept: a tune is played back once and is gone.
+- No rhythm is tapped back, only a steady beat; there are no black keys; the five other rooms the brief
+  describes are a list on a page.
 
 ## Phases 04 to 10 (2026-11-23): six worlds and a voice
 

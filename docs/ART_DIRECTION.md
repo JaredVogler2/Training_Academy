@@ -45,15 +45,15 @@ The arithmetic is in `src/render/archipelago.ts`; nothing in it touches a graphi
 Each island has one landmark, in the middle, that reads as a black shape a hundred pixels wide. If two landmarks
 could be confused in silhouette, one of them is wrong.
 
-| Place           | Landmark                                                  | In silhouette                      | What it says about the world                          | What moves                               |
-| --------------- | --------------------------------------------------------- | ---------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
-| Academy Rock    | A lighthouse in coral and cream bands, a keeper's cottage | A tall banded column with a cap    | Home. The light that guides. (It is the app's icon.)  | Its flag, a star of light, a rowing boat |
-| Reading Cove    | A house of three enormous books under an open book        | A stepped block with a peaked roof | Books — and a great shell on the beach, for listening | Flag, bookmark, palms, a boat            |
-| Number Garden   | Three sunflowers — small, bigger, biggest                 | Three discs on stems               | Amounts you can see: beds of 1, 2 and 3 pumpkins      | The sunflowers nod                       |
-| Robot Ridge     | A workshop shaped like a robot, on a rocky ridge          | A box on a box, with an antenna    | A friendly machine; arrow tiles lead to its door      | It waves; its antenna blinks; cogs turn  |
-| Memory Forest   | One great tree with a door and two round windows          | A dome on a trunk                  | A face you remember; toadstools in matching pairs     | Lanterns sway; fireflies circle          |
-| Inventor Island | A windmill, a workshop with a light-bulb sign, a rocket   | A cross on a tapered tower         | Things that are built, and tried                      | The sails turn                           |
-| Explorer Harbor | A ship with a striped sail, and a lookout on stilts       | Triangles of sail, a hut on legs   | Setting out; looking far                              | The ship rides the swell; pennants fly   |
+| Place           | Landmark                                                                                | In silhouette                      | What it says about the world                                                                         | What moves                                                                              |
+| --------------- | --------------------------------------------------------------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Academy Rock    | A lighthouse in coral and cream bands, a keeper's cottage, and chime bars on the meadow | A tall banded column with a cap    | Home. The light that guides. (It is the app's icon.) And the Music Lab: the notes say what is inside | Its flag, a star of light, a rowing boat; two notes that rise past the lantern and fade |
+| Reading Cove    | A house of three enormous books under an open book                                      | A stepped block with a peaked roof | Books — and a great shell on the beach, for listening                                                | Flag, bookmark, palms, a boat                                                           |
+| Number Garden   | Three sunflowers — small, bigger, biggest                                               | Three discs on stems               | Amounts you can see: beds of 1, 2 and 3 pumpkins                                                     | The sunflowers nod                                                                      |
+| Robot Ridge     | A workshop shaped like a robot, on a rocky ridge                                        | A box on a box, with an antenna    | A friendly machine; arrow tiles lead to its door                                                     | It waves; its antenna blinks; cogs turn                                                 |
+| Memory Forest   | One great tree with a door and two round windows                                        | A dome on a trunk                  | A face you remember; toadstools in matching pairs                                                    | Lanterns sway; fireflies circle                                                         |
+| Inventor Island | A windmill, a workshop with a light-bulb sign, a rocket                                 | A cross on a tapered tower         | Things that are built, and tried                                                                     | The sails turn                                                                          |
+| Explorer Harbor | A ship with a striped sail, and a lookout on stilts                                     | Triangles of sail, a hut on legs   | Setting out; looking far                                                                             | The ship rides the swell; pennants fly                                                  |
 
 **Shape rules**
 
@@ -70,7 +70,7 @@ Every model is measured against the room the layout gives it (`tests/render/isla
 
 ## Colour
 
-### Eight roles
+### Nine roles
 
 | Role         | Light · mid · deep                | Where it is                                                                                                                 |
 | ------------ | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
@@ -82,9 +82,13 @@ Every model is measured against the room the layout gives it (`tests/render/isla
 | **Leaf**     | `#e0f6dd` · `#6fcf74` · `#2f8440` | Everything that grows. Number Garden.                                                                                       |
 | **Sky blue** | `#dff0ff` · `#62b4f3` · `#2a6fb5` | Robot Ridge.                                                                                                                |
 | **Violet**   | `#ece6ff` · `#a993f8` · `#6b4fd0` | Memory Forest: its blossom, its door, its lanterns' caps.                                                                   |
+| **Rose**     | `#ffe3f1` · `#f58fc2` · `#a8327a` | The Music Lab: its page, its boards, the signs that stand for what is asked. Deep rose on its tint is 5.1 to 1.             |
 
-The six world colours are the ones Phase 01 chose (`src/styles/tokens.css`); each island wears its own in the
-things a child looks at first.
+The six islands' colours are the ones Phase 01 chose (`src/styles/tokens.css`); each island wears its own in the
+things a child looks at first. The Music Lab's rose was added with it. Its chime bars are the one place where
+colour is a code: seven colours for the seven notes of the scale, low C red and climbing through orange,
+yellow, green, blue and violet to pink, as sets of real chime bars are coloured. A child is never asked to know
+the code; it is there so that the same note is always the same bar.
 
 ### Rules
 
@@ -286,8 +290,8 @@ required to read: names are for the grown-up alongside and for a screen reader.
 
 Synthesised on the device (`src/audio/audioEngine.ts`). Soft, short, quiet, in one key, so that any two can
 sound together. Everything works with sound off except the activities that are about sounds, which say so. There
-is no music. A unit test
-holds every motif to the same limits: under 0.7 seconds, and never louder than a fifth of full volume.
+is no background music anywhere. A unit test holds every motif to the same limits: under 0.7 seconds, and never
+louder than a fifth of full volume.
 
 | Motif    | Notes                                       | Means                                                                                   |
 | -------- | ------------------------------------------- | --------------------------------------------------------------------------------------- |
@@ -303,6 +307,14 @@ holds every motif to the same limits: under 0.7 seconds, and never louder than a
 | The same | Two notes at once                           | The group and its match, lit together                                                   |
 | Done     | C–E–G and the C above                       | The end of an activity                                                                  |
 
+**The Music Lab's instruments** are made the same way and in the same key (C, the white keys only), so that a
+bar struck while a motif is sounding is never sour against it. There are four, and each is meant to be told
+from the others at once: a **chime bar**, which rings and dies away; a **pipe**, which is held, for the birds;
+a **drum**, low and soft; and a **click**, for the beat. None is louder than three tenths of full volume, and
+no note is below middle C, where a phone's speaker gives almost nothing. What they are made of is in
+`docs/ASSETS.md`. **Nobody has heard them**: they are this document's intentions turned into numbers, and the
+first person to listen should say whether the numbers are right.
+
 ## Pictures inside an activity
 
 Added in phases 04 to 10. An activity's pictures are a different thing from the map: they are there to be
@@ -315,6 +327,12 @@ counted, named, remembered or put in order, and anything in them that is not the
   instead, with ground under it and sky over it, so that a story's pictures can be told from things to choose.
 - **A picture never holds its own answer.** The picture of what became of a snowman has no sun in it; a flag on
   a map is the same flag on land and on water.
+- **Who sings is not what is sung.** In the Music Lab every bird that is not the leader is the same bird,
+  whatever its tune: a question about what was heard must not be answerable by looking. A chime bar is the
+  other way about, on purpose — a low bar is a long bar, as on a real instrument, because that is true and worth
+  seeing — and so bars are never what a child is asked about alone.
+- **A sign stands for a question, and is drawn as what it means**: an arrow up to a small note, two shapes that
+  match, dots that climb. It is a picture of the answer's kind, never of the answer.
 - **A letter is drawn, not set in a font**, with the strokes a child will later be taught, and only in lower case.
 - **What is hidden is covered by something of the world** — a leaf, in Memory Forest — and is gone, not dimmed.
 - **A map** is blue water with small waves and green land with a rim of sand, so that the two differ in more than

@@ -264,7 +264,9 @@ function beatLesson() {
 const THREE_BARS = ['c4', 'e4', 'g4'];
 const FOUR_BARS = ['c4', 'd4', 'e4', 'g4'];
 const FIVE_BARS = ['c4', 'd4', 'e4', 'g4', 'a4'];
-const SIX_BARS = [...FIVE_BARS, 'c5'];
+/** Five again, with the C above in place of the D: for a tune that climbs the whole octave. (Never six: on a screen
+ * 320 points wide a sixth bar leaves each of them narrower than a small finger needs.) */
+const OCTAVE_BARS = ['c4', 'e4', 'g4', 'a4', 'c5'];
 
 const barCard = (note) => ({
   id: note,
@@ -460,14 +462,14 @@ function tuneLesson() {
       ['guided-down', 'down', FIVE_BARS, 'a4', 'e4', 'c4'],
     ].map(row),
     pool: [
-      ['up-four', 'up', SIX_BARS, 'c4', 'e4', 'g4', 'c5'],
-      ['down-four', 'down', SIX_BARS, 'c5', 'a4', 'e4', 'c4'],
+      ['up-four', 'up', OCTAVE_BARS, 'c4', 'e4', 'g4', 'c5'],
+      ['down-four', 'down', OCTAVE_BARS, 'c5', 'a4', 'e4', 'c4'],
       ['hill-three', 'hill', FIVE_BARS, 'd4', 'a4', 'e4'],
       ['hill-five', 'hill', FIVE_BARS, 'c4', 'e4', 'a4', 'g4', 'd4'],
       ['twice-four', 'twice', FIVE_BARS, 'e4', 'g4', 'e4', 'g4'],
       ['twice-six', 'twice', FIVE_BARS, 'c4', 'e4', 'g4', 'c4', 'e4', 'g4'],
       ['home-four', 'home', FIVE_BARS, 'e4', 'a4', 'g4', 'c4'],
-      ['home-five', 'home', SIX_BARS, 'g4', 'a4', 'e4', 'd4', 'c4'],
+      ['home-five', 'home', FIVE_BARS, 'g4', 'a4', 'e4', 'd4', 'c4'],
     ].map(row),
     count: 4,
   });

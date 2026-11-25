@@ -220,6 +220,19 @@ export default function WorldView({ world }: { world: WorldId }) {
         </section>
       )}
 
+      {open && info.room && (
+        <section className={styles.room} aria-label={worldText.roomHeading}>
+          <ActionLink
+            to={{ name: 'room', world }}
+            big
+            className={styles.roomButton}
+            icon={<WorldEmblem world={world} className={styles.roomArt} />}
+          >
+            {info.room.title}
+          </ActionLink>
+        </section>
+      )}
+
       <section className={styles.about} aria-labelledby="world-about" data-selectable>
         <h2 id="world-about">{worldText.forGrownUps}</h2>
         <p>{info.about}</p>
@@ -246,6 +259,27 @@ export default function WorldView({ world }: { world: WorldId }) {
             ? `${worldText.openExplain}${unbuilt ? ` ${worldText.partExplain}` : ''}`
             : worldText.laterExplain}
         </p>
+        {open && info.room && (
+          <p className={styles.note}>
+            <strong>{info.room.title}.</strong> {info.room.note}
+          </p>
+        )}
+        {info.later && (
+          <>
+            <h3>{worldText.laterHeading}</h3>
+            {/* A list to read, and nothing more: none of these is a link or a button, because none exists. */}
+            <ul className={styles.rooms} data-testid="rooms-not-built">
+              {info.later.map((room) => (
+                <li key={room.name}>
+                  <span className={styles.roomName}>{room.name}</span>
+                  <span className={styles.stage}>{worldText.notBuilt}</span>
+                  <p className={styles.together}>{room.about}</p>
+                </li>
+              ))}
+            </ul>
+            <p className={styles.note}>{worldText.laterRooms}</p>
+          </>
+        )}
       </section>
     </article>
   );

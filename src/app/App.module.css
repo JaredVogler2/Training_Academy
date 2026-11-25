@@ -180,8 +180,9 @@
   }
 }
 
-/* An activity fills the screen: there is no top bar above it. */
-.app[data-route='play'] {
+/* An activity fills the screen: there is no top bar above it. A room to play in does too. */
+.app[data-route='play'],
+.app[data-route='room'] {
   grid-template-rows: 1fr;
 }
 

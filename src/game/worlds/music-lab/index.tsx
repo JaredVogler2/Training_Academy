@@ -2,7 +2,7 @@ import type { Stimulus } from '@/engine';
 import type { PictureProps, WorldModule } from '../modules';
 import { BeatBoard } from './BeatBoard';
 import { TuneBoard } from './TuneBoard';
-import { Bar, BeatPicture, Player, Sign } from './pictures';
+import { Bar, BeatPicture, Duo, Player, Sign } from './pictures';
 import type { Voice } from './phrases';
 import { chooseScript, makeScript } from './script';
 import { musicText } from './text';
@@ -13,7 +13,7 @@ import styles from './musicLab.module.css';
 
 const voiceOf = (value: unknown): Voice => (value === 'bar' || value === 'drum' ? value : 'pipe');
 
-function Picture({ stimulus, sounding = false, part }: PictureProps) {
+function Picture({ stimulus, sounding = false, part, place }: PictureProps) {
   switch (stimulus.type) {
     case 'sign':
       return <Sign id={stimulus.id} />;
@@ -24,6 +24,7 @@ function Picture({ stimulus, sounding = false, part }: PictureProps) {
         return <Player voice={voiceOf(of.voice)} big={of.big === true} sounding={sounding} />;
       }
       if (scene === 'pair') {
+        if (place === 'card') return <Duo voice={voiceOf(of.voice)} />;
         // Two who play one after the other: each is lifted in its own turn.
         return (
           <span className={styles.pair} data-scene="pair">

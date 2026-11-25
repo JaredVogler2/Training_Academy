@@ -19,6 +19,16 @@ export interface WorldInfo {
   /** What the world teaches, in teaching order. */
   activities: Activity[];
   role: WorldRole;
+  /**
+   * A room to play in freely, where the world has one: nothing is asked there and nothing is kept. `note` is for
+   * the grown-up.
+   */
+  room?: { title: string; note: string };
+  /**
+   * More that could be built here one day and has not been. It is listed for the grown-up, plainly as not built,
+   * and nothing on the page leads to it.
+   */
+  later?: { name: string; about: string }[];
 }
 
 export interface Activity {
@@ -223,6 +233,35 @@ export const WORLDS: readonly WorldInfo[] = [
       },
     ],
     role: 'music',
+    room: {
+      title: 'Just play',
+      note: 'All eight chime bars of the octave and a drum, with a slow beat to play along to. Nothing is asked there, nothing is right or wrong, and nothing is kept.',
+    },
+    later: [
+      {
+        name: 'Spatial Workshop',
+        about:
+          'Turning shapes and fitting them together, and symmetry, without needing the shapes’ names.',
+      },
+      {
+        name: 'Chess Nursery',
+        about:
+          'The squares of the board, how each piece moves, and plans one step long — with no clock.',
+      },
+      {
+        name: 'Sky Observatory',
+        about: 'Day and night, the phases of the moon, and the planets in their order.',
+      },
+      {
+        name: 'Language Garden',
+        about:
+          'Everyday words and short phrases in another language, from recordings by people who speak it.',
+      },
+      {
+        name: 'Feelings Theatre',
+        about: 'Short made-up scenes about feelings, and how the same thing looks to someone else.',
+      },
+    ],
   },
 ];
 

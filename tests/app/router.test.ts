@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parsePath, sameRoute, toPath, type Route } from '@/app/router';
+import { ROOMS, parsePath, sameRoute, toPath, type Route } from '@/app/router';
 import { WORLD_IDS } from '@/engine';
 
 const known: Route[] = [
@@ -7,6 +7,7 @@ const known: Route[] = [
   { name: 'grown-ups' },
   ...WORLD_IDS.map((world): Route => ({ name: 'world', world })),
   ...WORLD_IDS.map((world): Route => ({ name: 'play', world, lessonId: 'ng-same-amount-01' })),
+  ...ROOMS.map((world): Route => ({ name: 'room', world })),
 ];
 
 describe('routes', () => {
@@ -23,6 +24,16 @@ describe('routes', () => {
       world: 'number-garden',
       lessonId: 'ng-same-amount-01',
     });
+  });
+
+  it('knows the room to play in freely, in the one world that has one', () => {
+    expect(ROOMS).toEqual(['music-lab']);
+    expect(parsePath('/world/music-lab/room')).toEqual({ name: 'room', world: 'music-lab' });
+    expect(toPath({ name: 'room', world: 'music-lab' })).toBe('/world/music-lab/room');
+    // A world with no room has no such page, and a room has nothing beyond its door.
+    for (const path of ['/world/number-garden/room', '/world/music-lab/room/extra']) {
+      expect(parsePath(path)).toEqual({ name: 'not-found', path });
+    }
   });
 
   it('forgives stray slashes', () => {

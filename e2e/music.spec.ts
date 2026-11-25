@@ -1,5 +1,7 @@
+import AxeBuilder from '@axe-core/playwright';
 import {
   SETTINGS_KEY,
+  arrived,
   expect,
   holdClock,
   myTurn,
@@ -552,5 +554,154 @@ test.describe('the Music Lab: make a tune', () => {
       expect(box?.width ?? 0).toBeGreaterThanOrEqual(47.5);
       expect(box?.height ?? 0).toBeGreaterThanOrEqual(47.5);
     }
+  });
+});
+
+test.describe('the Music Lab: a room to play in', () => {
+  const room = (page: Page) => page.getByTestId('music-room');
+  const bars = (page: Page) => room(page).locator('button[data-note]');
+  const beat = (page: Page) => room(page).getByRole('button', { name: /the beat$/ });
+
+  async function enter(page: Page, press: Press): Promise<void> {
+    await page.goto('/world/music-lab');
+    await press(page.getByRole('link', { name: 'Just play' }));
+    await expect(room(page)).toBeVisible();
+  }
+
+  test('is reached from the Music Lab’s page, has the whole octave, and fits the screen @layout', async ({
+    page,
+    press,
+  }) => {
+    await enter(page, press);
+    await expect(page).toHaveURL(/\/world\/music-lab\/room$/);
+    // Measured once the page has arrived: it rises a little as it comes in.
+    await arrived(page);
+    // Nothing scrolls: a page that slides under a finger is no instrument.
+    expect(await screenFit(page)).toEqual({ sideways: [], taller: 0 });
+    const drawn = await bars(page).evaluateAll((list) =>
+      list.map((bar) => {
+        const box = bar.getBoundingClientRect();
+        return {
+          note: bar.getAttribute('data-note') ?? '',
+          left: box.left,
+          top: box.top,
+          width: box.width,
+          height: box.height,
+        };
+      }),
+    );
+    expect(drawn.map((bar) => bar.note)).toEqual(['c4', 'd4', 'e4', 'f4', 'g4', 'a4', 'b4', 'c5']);
+    for (const [index, bar] of drawn.entries()) {
+      // Wide enough for a small finger on every screen there is a project for, and tall.
+      expect(bar.width, bar.note).toBeGreaterThanOrEqual(48);
+      expect(bar.height, bar.note).toBeGreaterThanOrEqual(84);
+      const before = drawn[index - 1];
+      if (!before) continue;
+      // Lowest first: along a row from left to right, and where there are two rows, the low row above.
+      const sameRow = Math.abs(bar.top - before.top) < 1;
+      if (sameRow) expect(bar.left, bar.note).toBeGreaterThan(before.left + before.width - 1);
+      else expect(bar.top, bar.note).toBeGreaterThan(before.top + before.height - 1);
+    }
+    const drum = await room(page).getByRole('button', { name: 'The drum' }).boundingBox();
+    expect(drum?.width ?? 0).toBeGreaterThanOrEqual(96);
+    expect(Math.abs((drum?.width ?? 0) - (drum?.height ?? 1))).toBeLessThan(1);
+    const start = await beat(page).boundingBox();
+    expect(start?.width ?? 0).toBeGreaterThanOrEqual(55.5);
+  });
+
+  test('lights a bar when it is played, by touch or with a mouse, and keeps nothing', async ({
+    page,
+    press,
+  }) => {
+    await enter(page, press);
+    const stored = () =>
+      page.evaluate(async () => {
+        const names = (await indexedDB.databases()).map((each) => each.name);
+        return { local: Object.keys(localStorage).sort(), databases: names.sort() };
+      });
+    const before = await stored();
+    const g = room(page).locator('button[data-note="g4"]');
+    await press(g);
+    await expect(g).toHaveAttribute('data-lit', 'true');
+    await expect(g).toHaveAttribute('data-lit', 'false');
+    await press(room(page).getByRole('button', { name: 'The drum' }));
+    for (const note of ['c4', 'e4', 'c5'])
+      await press(room(page).locator(`button[data-note="${note}"]`));
+    // Nothing was asked and nothing is written down: what is stored on the device is what was there before.
+    expect(await stored()).toEqual(before);
+    await press(page.getByRole('link', { name: 'Back to the Music Lab' }));
+    await expect(page.getByRole('heading', { level: 1, name: 'Music Lab' })).toBeVisible();
+  });
+
+  test('has a slow beat to play along to, lit four at a time, that stops when it is told to', async ({
+    page,
+    press,
+  }) => {
+    await page.clock.install();
+    await enter(page, press);
+    await holdClock(page);
+    const now = () =>
+      room(page)
+        .locator('[data-light][data-now="true"]')
+        .evaluateAll((list) => list.map((light) => light.getAttribute('data-light')).join());
+    // Off until it is asked for.
+    await expect(beat(page)).toHaveAttribute('aria-pressed', 'false');
+    expect(await watchFor(page, 2000, now)).toEqual(['']);
+
+    await press(beat(page));
+    await expect(beat(page)).toHaveAttribute('aria-pressed', 'true');
+    await expect(beat(page)).toHaveAccessibleName('Stop the beat');
+    // Seventy-two to the minute: six beats take five seconds, and the four lights take turns and come round.
+    expect(await watchFor(page, 5100, now, 50)).toEqual(['', '0', '1', '2', '3', '0', '1']);
+
+    await press(beat(page));
+    await expect(beat(page)).toHaveAccessibleName('Start the beat');
+    expect(await watchFor(page, 3000, now)).toEqual(['']);
+  });
+
+  test('asks for the sound where it is off, instead of offering an instrument that makes none', async ({
+    page,
+    press,
+  }) => {
+    await page.addInitScript((key) => {
+      window.localStorage.setItem(
+        key,
+        JSON.stringify({ version: 1, sound: false, motion: 'system', graphics: 'pictures' }),
+      );
+    }, SETTINGS_KEY);
+    await enter(page, press);
+    await expect(page.getByTestId('room-needs-sound')).toBeVisible();
+    await expect(bars(page)).toHaveCount(0);
+    await press(page.getByRole('button', { name: 'Turn the sound on' }));
+    await expect(bars(page)).toHaveCount(8);
+  });
+
+  test('passes the automated accessibility checks, and so does the page that leads to it', async ({
+    page,
+    press,
+  }) => {
+    const check = async (context: string) => {
+      await arrived(page);
+      const results = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze();
+      expect(
+        results.violations.map(
+          (violation) =>
+            `${violation.id}: ${violation.nodes.map((node) => node.target.join(' ')).join(' | ')}`,
+        ),
+        context,
+      ).toEqual([]);
+    };
+    await page.goto('/world/music-lab');
+    // The rooms that have not been built are a list to read: nothing in it can be pressed.
+    const later = page.getByTestId('rooms-not-built');
+    await expect(later.getByRole('listitem')).toHaveCount(5);
+    await expect(later.locator('a, button')).toHaveCount(0);
+    await expect(later.getByText('Not built')).toHaveCount(5);
+    await check('the Music Lab’s page');
+    await press(page.getByRole('link', { name: 'Just play' }));
+    await expect(room(page)).toBeVisible();
+    await check('the room to play in');
   });
 });

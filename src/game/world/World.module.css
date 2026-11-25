@@ -336,6 +336,48 @@
   font-size: var(--text-s);
 }
 
+/* The way into a room to play in freely: one wide button with the world's own picture on it. */
+.room {
+  display: grid;
+  justify-items: center;
+}
+
+.roomButton.roomButton {
+  gap: 14px;
+  min-height: 72px;
+  padding: 8px 28px 8px 12px;
+}
+
+.roomArt {
+  width: 52px;
+  height: 52px;
+}
+
+/* More that could be built here one day. A list to read: nothing in it looks like something to press. */
+.rooms {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.rooms li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border: 2px dashed var(--line);
+  border-radius: var(--radius-s);
+}
+
+.rooms .together {
+  grid-column: 1 / -1;
+}
+
+.roomName {
+  font-weight: 800;
+}
+
 @keyframes world-float {
   from {
     transform: translateY(-3px) rotate(-1.5deg);

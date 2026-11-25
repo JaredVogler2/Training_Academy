@@ -195,6 +195,33 @@ export function Player({
   );
 }
 
+/**
+ * Two who play one after the other, drawn small and close, for where there is little room: the picture on an
+ * activity's card. (In the activity itself each has a place of its own, and is lifted in its turn.)
+ */
+export function Duo({ voice }: { voice: Voice }) {
+  const one =
+    voice === 'drum' ? (
+      <Drum big={false} sounding={false} />
+    ) : voice === 'bar' ? (
+      <Chimes big={false} />
+    ) : (
+      <Bird big={false} sounding={false} />
+    );
+  return (
+    <svg
+      className={styles.player}
+      viewBox="-78 -40 156 78"
+      aria-hidden="true"
+      focusable="false"
+      data-voice={voice}
+    >
+      <g transform="translate(-38 2)">{one}</g>
+      <g transform="translate(38 2)">{one}</g>
+    </svg>
+  );
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Signs: what is being asked, as a picture
 // ---------------------------------------------------------------------------------------------------------------------

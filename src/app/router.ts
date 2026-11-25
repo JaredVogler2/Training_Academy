@@ -9,12 +9,17 @@ export type Route =
   | { name: 'home' }
   | { name: 'world'; world: WorldId }
   | { name: 'play'; world: WorldId; lessonId: string }
+  /** A room to play in freely, where a world has one: nothing is asked there and nothing is kept. */
+  | { name: 'room'; world: WorldId }
   | { name: 'grown-ups' }
   /** The art studio: one island, or one drawing, on its own. Not linked from the game. */
   | { name: 'studio'; view: string }
   | { name: 'not-found'; path: string };
 
 const LESSON_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** The worlds that have a room to play in freely. */
+export const ROOMS: readonly WorldId[] = ['music-lab'];
 
 function isWorldId(value: string): value is WorldId {
   return (WORLD_IDS as readonly string[]).includes(value);
@@ -49,6 +54,9 @@ export function parsePath(pathname: string): Route {
   }
   if (first === 'world' && second !== undefined && isWorldId(second)) {
     if (third === undefined) return { name: 'world', world: second };
+    if (third === 'room' && fourth === undefined && ROOMS.includes(second)) {
+      return { name: 'room', world: second };
+    }
     if (third === 'play' && fourth !== undefined && rest.length === 0 && LESSON_SLUG.test(fourth)) {
       return { name: 'play', world: second, lessonId: fourth };
     }
@@ -64,6 +72,8 @@ export function toPath(route: Route): string {
       return `/world/${route.world}`;
     case 'play':
       return `/world/${route.world}/play/${route.lessonId}`;
+    case 'room':
+      return `/world/${route.world}/room`;
     case 'grown-ups':
       return '/grown-ups';
     case 'studio':

@@ -609,6 +609,51 @@ test.describe('the Music Lab: a room to play in', () => {
     expect(start?.width ?? 0).toBeGreaterThanOrEqual(55.5);
   });
 
+  // Screens that no project has. On the first of them a bar was once 47 points wide, and only Safari's engine
+  // in CI had a screen of that width to show it on: it is what Safari leaves a page on an iPhone 13 held
+  // sideways. The other two are the narrowest phones held sideways, where the bars stand four and four.
+  for (const [what, width, height, rows] of [
+    ['an iPhone 13 held sideways, in Safari (750 by 342)', 750, 342, 1],
+    ['the narrowest phone held sideways, in its browser (640 by 256)', 640, 256, 2],
+    ['a small phone held sideways (568 by 320)', 568, 320, 2],
+  ] as const) {
+    test.describe(`on ${what}`, () => {
+      test.use({ viewport: { width, height } });
+
+      test('every bar is a fair target for a small finger, the drum is round and large, and nothing scrolls', async ({
+        page,
+        press,
+      }, testInfo) => {
+        test.skip(testInfo.project.name !== 'phone', 'measured once, as a touch phone');
+        await enter(page, press);
+        await arrived(page);
+        expect(await screenFit(page)).toEqual({ sideways: [], taller: 0 });
+        const drawn = await bars(page).evaluateAll((list) =>
+          list.map((bar) => {
+            const box = bar.getBoundingClientRect();
+            return {
+              note: bar.getAttribute('data-note') ?? '',
+              top: box.top,
+              width: box.width,
+              height: box.height,
+            };
+          }),
+        );
+        expect(drawn).toHaveLength(8);
+        expect(new Set(drawn.map((bar) => Math.round(bar.top))).size).toBe(rows);
+        for (const bar of drawn) {
+          expect(bar.width, bar.note).toBeGreaterThanOrEqual(56);
+          expect(bar.height, bar.note).toBeGreaterThanOrEqual(56);
+        }
+        const drum = await room(page).getByRole('button', { name: 'The drum' }).boundingBox();
+        expect(drum?.width ?? 0).toBeGreaterThanOrEqual(96);
+        expect(Math.abs((drum?.width ?? 0) - (drum?.height ?? 1))).toBeLessThan(1);
+        const start = await beat(page).boundingBox();
+        expect(Math.min(start?.width ?? 0, start?.height ?? 0)).toBeGreaterThanOrEqual(55.5);
+      });
+    });
+  }
+
   test('lights a bar when it is played, by touch or with a mouse, and keeps nothing', async ({
     page,
     press,

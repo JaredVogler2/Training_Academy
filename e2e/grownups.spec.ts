@@ -60,6 +60,42 @@ test.describe('the grown-ups area', () => {
     await page.keyboard.up('Space');
   });
 
+  test('a dialog that is cancelled and asked for again in the same breath is there', async ({
+    page,
+  }) => {
+    await openGrownUps(page);
+    await page.getByRole('button', { name: 'Add a player' }).click();
+    await expect(page.getByLabel('Nickname', { exact: true })).toBeVisible();
+    // "Cancel", and then "Add a player" in the moment after the dialog has closed and before the browser has
+    // said so. (A browser says a dialog closed in a turn of its own, afterwards.) That late word used to shut
+    // the dialog that had just been opened: it was a slow machine in CI that found the moment, and a test there
+    // waited a minute for a dialog that was not coming.
+    const closedInBetween = await page.evaluate(async () => {
+      const press = (name: string) => {
+        const button = [...document.querySelectorAll('button')].find(
+          (each) => each.textContent.trim() === name,
+        );
+        if (!button) throw new Error(`No button called ${name}.`);
+        button.click();
+      };
+      const dialog = document.querySelector('dialog[open]');
+      if (!(dialog instanceof HTMLDialogElement)) throw new Error('No dialog is open.');
+      press('Cancel');
+      // Wait for the game to close it, without ever letting the browser take its turn.
+      for (let turn = 0; turn < 200 && dialog.open; turn++) await Promise.resolve();
+      const closed = !dialog.open;
+      press('Add a player');
+      return closed;
+    });
+    // The moment was found: the dialog had closed, and nothing had yet been said about it.
+    expect(closedInBetween).toBe(true);
+    await expect(page.getByLabel('Nickname', { exact: true })).toBeVisible();
+    // And it is still there once the browser has had its say.
+    await page.waitForTimeout(400);
+    await expect(page.getByLabel('Nickname', { exact: true })).toBeVisible();
+    await expect(page.locator('dialog[open]')).toHaveCount(1);
+  });
+
   test('players can be added, switched, changed and removed, and are still there after a reload', async ({
     page,
   }) => {

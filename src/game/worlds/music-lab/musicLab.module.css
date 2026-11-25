@@ -420,7 +420,12 @@
     align-items: center;
   }
 
-  .drumRoom {
+  /*
+   * Only where the drum is the board. (The room to play in has a drum too, in a column narrower than it is high;
+   * said of every drum, this made that one wider than its column and the page wider than the screen, on a phone
+   * 568 points by 320.)
+   */
+  .beat > .drumRoom {
     width: auto;
     height: 100%;
     aspect-ratio: 1;

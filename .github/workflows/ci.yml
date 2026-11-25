@@ -55,6 +55,9 @@ jobs:
         # halves: it is the screen every activity is played to its end on, a question that is listened to takes
         # as long as it takes to hear, and with the Music Lab the one job took 29 minutes. Playwright deals the
         # tests of the two screens between the halves.
+        #
+        # The phones are in two halves as well. The phone screen is where everything a child presses is measured,
+        # on each kind of board at each of the tightest screens, and with that the one job took 32.5 minutes.
         include:
           - name: chromium, desktop and tablet, first half
             engine: chromium
@@ -64,11 +67,16 @@ jobs:
             engine: chromium
             projects: >-
               --project=desktop --project=tablet --shard=2/2
-          - name: chromium, phones
+          - name: chromium, phones, first half
             engine: chromium
             projects: >-
               --project=phone --project=small-phone --project=phone-landscape
-              --project=android --project=android-landscape
+              --project=android --project=android-landscape --shard=1/2
+          - name: chromium, phones, second half
+            engine: chromium
+            projects: >-
+              --project=phone --project=small-phone --project=phone-landscape
+              --project=android --project=android-landscape --shard=2/2
           - name: webkit, desktop and tablet
             engine: webkit
             projects: >-

@@ -190,7 +190,14 @@ interface ModalProps {
   actions: ReactNode;
 }
 
-/** A modal dialog on the native <dialog> element: focus is trapped and Escape closes it, for free. */
+/**
+ * A modal dialog on the native <dialog> element: focus is trapped and Escape closes it, for free.
+ *
+ * A dialog says it has closed a moment after it closes, not as it closes. If it has been opened again by then —
+ * "Cancel", and at once the button that opens it — that late word is about the time before, and is not taken
+ * as a wish to close this one. (It was, at first: the dialog opened and shut, and whoever had asked for it was
+ * left looking at the page.)
+ */
 export function Modal({ open, onClose, title, children, actions }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -205,7 +212,9 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
       ref={ref}
       className={styles.modal}
       aria-label={title}
-      onClose={onClose}
+      onClose={(event) => {
+        if (!event.currentTarget.open) onClose();
+      }}
       onCancel={onClose}
     >
       {open && (

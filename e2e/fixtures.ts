@@ -507,6 +507,25 @@ export async function choose(page: Page, press: Fixtures['press'], right: boolea
   throw new Error(`No ${right ? 'matching' : 'non-matching'} choice is on the table.`);
 }
 
+/**
+ * Listen in on the voice: every line it says on this page from now on, by key, in order. The game tells the page
+ * each time a line begins to play (src/audio/index.ts), and this writes them down. Ask before the page is opened.
+ *
+ * A clip being fetched is not a clip being said: the lines a step may need are fetched as the step arrives, so
+ * that a clip something is shown in time with starts on time. Whether a child was told a thing is asked here.
+ */
+export async function listenIn(page: Page): Promise<() => Promise<string[]>> {
+  await page.addInitScript(() => {
+    const said: string[] = [];
+    (window as unknown as { saidSoFar: string[] }).saidSoFar = said;
+    window.addEventListener('training-academy:said', (event) => {
+      said.push((event as CustomEvent<string>).detail);
+    });
+  });
+  return () =>
+    page.evaluate(() => [...((window as unknown as { saidSoFar?: string[] }).saidSoFar ?? [])]);
+}
+
 export const myTurn = (page: Page) => page.getByRole('button', { name: 'My turn' });
 export const next = (page: Page) => page.getByRole('button', { name: 'Next' });
 export const finished = (page: Page) => page.getByTestId('lesson-finished');

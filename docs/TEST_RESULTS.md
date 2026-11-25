@@ -3,10 +3,10 @@
 Everything in this file was actually run. Where something was not run, it says so.
 
 - **Date:** 2026-11-25
-- **Code under test:** `main` as the owner merged it on 2026-11-25 (pull request #8, the Music Lab's six
-  activities), with the pull request this document came with (#9): the Music Lab's room, Number Garden's eleven
-  later activities, and the fixes that CI's last two runs led to. The release check below was run on that
-  tree, in the parts it says. What was run on the live site was run on what was live, and says so.
+- **Code under test:** `main` as the owner merged it on 2026-11-25 (pull request #9: the Music Lab's room,
+  Number Garden's eleven later activities, and the fixes that CI's runs led to), with the pull request this
+  document came with (#10): Reading Cove's six later activities. The release check below was run on that tree,
+  in the parts it says. What was run on the live site was run on what was live, and says so.
 - **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright 1.63.0
   with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
 - **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium and WebKit builds that Playwright 1.63.0 installs.
@@ -23,33 +23,34 @@ npm run verify:release
 
 Result of the last local run: **passed.**
 
-| Step                   | Result                                                                                                                   |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `npm run format:check` | clean                                                                                                                    |
-| `npm run lint`         | no errors, no warnings                                                                                                   |
-| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                           |
-| `npm test`             | **1711 tests in 59 files, all passed**                                                                                   |
-| `npm run build`        | built; 572 files in `dist/`, 484 of them the voice's recordings                                                          |
-| `npm run verify:dist`  | **1270 checks, all passed** (sizes below)                                                                                |
-| `npm run test:e2e`     | **986 browser tests: 853 passed, 133 skipped by design, 0 failed (Chromium, seven screen shapes, 34.1 minutes)**; see on |
+| Step                   | Result                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `npm run format:check` | clean                                                                                                                     |
+| `npm run lint`         | no errors, no warnings                                                                                                    |
+| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                            |
+| `npm test`             | **1837 tests in 61 files, all passed**                                                                                    |
+| `npm run build`        | built; 640 files in `dist/`, 552 of them the voice's recordings                                                           |
+| `npm run verify:dist`  | **1406 checks, all passed** (sizes below)                                                                                 |
+| `npm run test:e2e`     | **1147 browser tests: 962 passed, 185 skipped by design, 0 failed (Chromium, seven screen shapes, 38.0 minutes)**; see on |
 
-**What the browser tests were run on, exactly.** The whole suite was run once on the tree with Number Garden's
-numerals in it: 986 tests, 853 passed, 133 skipped by design, none failed and none run a second time, in 34.1
-minutes. By screen: desktop 311 passed, phone 334, the sideways phone, the tablet and the small phone 40 each,
-the two Android shapes 44 each. While it ran, CI's results on the push before came in (below), and three
-things were changed because of them: the layout of the Music Lab's room, the dialog and the pause sheet, and
-54 browser tests were added (the room at three more screen sizes, a dialog asked for again at once, and a
-fourth screen in the sweep of what a child presses). After those changes the specs they touch were run again
-on all seven screens — the grown-ups' area, the Music Lab, the sweep, and everything that pauses an activity
-(the journey, the sample activity, the voice, the phones): two runs, 282 tests passed and none failed (97 more skipped themselves, as below). And after the change to how a saved place is kept (_An update, rehearsed_, below), the Music Lab, the journey, the sample activity, and the tests of lost storage and of no connection, with the Music Lab's activities played to their ends: 131 passed, none failed. **The whole
-suite, now 1040 tests, has not been run in one go on the final tree here: that run is CI's.**
+**What the browser tests were run on, exactly.** The whole suite was run in one go on the tree with Reading
+Cove's later activities in it: 1147 tests, 962 passed, 185 skipped by design, none failed and none run a second
+time, in 38.0 minutes. By screen: desktop 333 passed, phone 396, the sideways phone, the tablet and the small
+phone 45 each, the two Android shapes 49 each. One change came after that run: measuring the print showed a
+sentence's small letters 10 pixels high on the narrowest phone, so on a phone held upright a sentence is now
+set on two lines with its pictures side by side. After it, Reading Cove's own tests, the sweep of what a child
+presses, the accessibility checks and its sixteen activities played to their ends were run again on all seven
+screens: 139 passed and none failed, once a test that had measured a lifted card where it meant the place the
+card stands in was put right. The unit tests, the build and its checks in the table are of the final tree.
+**WebKit is CI's**, as always.
 
-The 133 that were skipped skip themselves, and say why. On the desktop: the 69 measurements of what a child
-presses, which are made once, as a touch phone, at screen sizes of their own; eight of Robot Ridge's, which
-are for a touch screen too small to be a desktop's; and one about a world that is not open, which none is now.
-On the phone: the 48 activities played to their ends by their content's answers, which are played once, on
-the desktop (the other eight are played by working out what is on the screen, in `robot.spec.ts` and
-`inventor.spec.ts`, on every screen); six keyboard journeys; and the same one about a world that is not open.
+The 185 that were skipped skip themselves, and say why. On the desktop, 124: the 112 measurements of what a
+child presses (28 boards on four screens), which are made once, as a touch phone, at screen sizes of their own;
+three of the Music Lab's room at sizes of their own, likewise; eight of Robot Ridge's, which are for a touch
+screen too small to be a desktop's; and one about a world that is not open, which none is now. On the phone,
+61: the 54 activities played to their ends by their content's answers, which are played once, on the desktop
+(the other eight are played by working out what is on the screen, in `robot.spec.ts` and `inventor.spec.ts`,
+on every screen); six keyboard journeys; and the same one about a world that is not open.
 
 The tree has 12 browser tests (six, on the desktop and on the phone) and 18 unit tests that the six worlds did
 not have. Each of the browser tests was run against the code as it was and failed there; so were the three unit
@@ -228,6 +229,91 @@ where 2900 was allowed, because 142 challenges written out in full are 134 kB. T
 twice before for the same reason, which is a budget that does not mean anything. There are now two: the game
 itself (everything but the voice and the content: 2427 kB of 2700, a tighter limit than it had) and the
 content (516 kB of 900), which is meant to grow and is still fetched one world at a time.
+
+### What Reading Cove's later activities added to the tests, and what the tests found
+
+- **What a picture is, is read in one place and tested there** (`tests/engine/reading.test.ts`, 32 tests): a
+  word to rhyme with, a word to clap, a card of one, two or three claps, a sentence, one thing on or in
+  another; seventeen ways of writing one that is not well made, each refused; a sentence and the picture it
+  tells of as two ways of writing one thing; and what each wrong answer says.
+- **Every new rule is shown to fire, and the pack is held to what is said of it**
+  (`tests/content/readingCoveRules.test.ts`, 41 tests, 23 of them a pack broken on purpose): one rhyme and no
+  more in every rhyme question, worked out from how the words are spelt; beside every rhyme a child is asked
+  alone, a word that starts the same; a word to clap of each number of beats, three times over, with every
+  card there to choose from; thirteen words to build, each from exactly its own letters; twelve sentences,
+  every letter of every word taught, the little words included, and every picture offered one word away from
+  what the sentence says or the same two things swapped; nothing in print before the letter lessons, and no
+  pair of letters before the fifteen single ones.
+- **What is said and shown, and when, is tested without a screen** (`tests/game/readingCove.test.ts`, 34 more
+  tests, 51 in all): with support the word to rhyme with is said before each choice and alone once; a word is
+  clapped for a child at the moments its recording's marks give, with a clap sounded at each, and alone is only
+  said; a card is played with as many claps as it shows; a sentence is read with the finger under each word as
+  that word begins, alone not at all, and not after a wrong answer either; a word to build is said slowly with
+  support, and in the demonstration each letter goes to its place as its sound comes; and every clip any
+  script of any question says is one that is fetched ahead for it. **That last test found a fault**: the word
+  fetched ahead for a letter was not the word its script gives it, where the first choice of word was already
+  on the table.
+- **The drawings are tested for what they must not show** (`tests/game/readingScenes.test.tsx`, 27 tests): no
+  clap under a word until it is clapped, and never more than have been; the row of claps starting from one
+  place whatever the word, so that where the first stands says nothing; no finger under a sentence that is not
+  being read; and for what they must: all twenty-nine pictures of one thing on or in another can be drawn, both
+  things are in each, the smaller one is all inside the picture, and a thing in a cup is hidden below the cup's
+  near edge.
+- **The voice tool's work is tested by what it wrote** (`tests/config/voice.test.ts`, 3 more tests): every clip
+  that has several things in it to follow has a mark for each, in order and inside the clip, and no other clip
+  has any; the game is given the same marks; and the slow words that begin softly keep their beginning — the
+  first sound of "ship", "shop", "sun", "fish" and "fan" lasts 0.15 seconds or more, and each was heard as
+  itself.
+- **What the voice says can be listened in on** (`tests/app/voice.test.ts`, 3 more tests): each line as it
+  begins to play; not a line that was only fetched; not one that could not be said.
+- **In a browser** (`e2e/words.spec.ts`, 9 tests; `e2e/sizes.spec.ts`, five more boards on four screens): each
+  activity is answered wrongly and then rightly. With the clock held, the claps under a word are watched
+  arriving one at a time and leaving none standing; the places for a word's letters are watched lighting first,
+  middle, last; the finger under a sentence is watched going from word to word and away. And what the voice
+  said is listened to: a word to rhyme with twice with support; nothing clapped, nothing said slowly and no
+  sentence read to a child alone, until help is asked for. All six are played to their ends, and each is put
+  through the automated accessibility checks, by the tests that do that for every activity.
+
+**A test that used to prove something stopped proving it, and was changed.** "Read the word is not read out to
+a child on their own" looked for the slow word's clip among the files the page had asked for, and found none.
+Clips are now fetched as a step arrives, so that one a finger moves in time with starts on time; the clip would
+have been there, said or not. The test now listens to what the voice says (`listenIn`), and so do the new ones.
+
+**Each test that passed the first time it was run was made to fail**, by putting back the fault it is about:
+thirty-seven faults, one at a time.
+
+| Where             | Put back                                                                                      | The test meant for it                                                                  |
+| ----------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| the drawings (10) | every clap shown at once; claps shown for a word that is only named                           | failed, both                                                                           |
+|                   | the row of claps in the middle from the start (so its first clap says how many)               | failed                                                                                 |
+|                   | a finger under a sentence at rest                                                             | failed                                                                                 |
+|                   | a thing in a cup not hidden by the cup; no way to put a hat on a rat; a cat as large as a mat | failed, all three                                                                      |
+|                   | one name for every picture's clip; no tile lifted; a whole sentence on the small card         | failed, all three                                                                      |
+| the scripts (11)  | support the same as none, for a rhyme; the choices said again for the asking                  | failed, both                                                                           |
+|                   | a word clapped for a child alone; clapped again for the asking; a card one clap short         | failed, all three                                                                      |
+|                   | the marks ignored, and everything spread evenly                                               | failed (seven tests)                                                                   |
+|                   | a sentence read to a child alone; a word said slowly to a child alone                         | failed, both                                                                           |
+|                   | every letter put down at once in the demonstration; a word in print swept, not stepped        | failed, both                                                                           |
+|                   | the finger left under the last word of a sentence for an eighth of a second                   | **passed**, and rightly: nothing a child would see, and nothing a test should fail for |
+| the voice (3)     | never announced; announced when asked, not when played; announced when fetched                | failed, all three                                                                      |
+| in a browser (13) | support the same as none, for a rhyme                                                         | failed                                                                                 |
+|                   | claps all at once; a word clapped for a child alone                                           | failed, both                                                                           |
+|                   | no place lit; no picture above the places; a word said slowly to a child alone                | failed, all three                                                                      |
+|                   | a finger under a sentence at rest; a sentence read to a child alone, and after a wrong answer | failed, all three                                                                      |
+|                   | a word in print read out to a child alone, with one letter to a sound and with two            | failed, both                                                                           |
+|                   | a sentence on one line on a phone held upright; its pictures one above another                | failed, both                                                                           |
+
+Two of the faults in a browser were first written so that the game no longer built (a variable left unused), and
+the tool that runs them printed nothing for those two, which is not the same as a test passing. They were
+written again so that the game built, and the tests failed as they should. And one of the browser tests failed
+before any fault was put in: it read what the voice had said the instant the way on appeared, which is the
+instant the answer is given, before anything has been said. It now waits for the words.
+
+**What looking found that no test would have.** A slow "ship" was heard by the recogniser as "chip". The
+synthesiser's account of where a sound begins is late for a sound that starts softly, by up to a tenth of a
+second, and the word had been cut there. Words are now cut in the silence before them, and carried by a
+sentence that leaves one. All 32 slow words were made again that way: 31 heard as themselves, as before, and
+"lip" heard as "lep" in its carrier sentence only, as before.
 
 ## Continuous integration
 
@@ -419,6 +505,26 @@ everything a child presses in an activity has the 750-point screen as a fourth.
 The room is not live (the merge of pull request #8 was of its first commit, before the room), so nobody has
 met 47-point bars. The dialog is live, as it has been all along.
 
+**And two runs after those. The second ran everything, and everything passed.**
+
+| Run | What                                                          | Chromium, desktop and tablet    | Chromium, phones                 | WebKit, desktop and tablet                 | WebKit, phones |
+| --- | ------------------------------------------------------------- | ------------------------------- | -------------------------------- | ------------------------------------------ | -------------- |
+| 38  | pull request #9, Number Garden's numerals (`30d47ae`)         | cancelled by the next push      | cancelled                        | cancelled                                  | cancelled      |
+| 39  | pull request #9, the place kept through an update (`0afde1b`) | 17.9 and 8.6 for the two halves | 12.3 and 18.5 for the two halves | 15.3 minutes, after 12.8 installing WebKit | 22.1 minutes   |
+
+| 40 | `main` after the owner merged pull request #9 (`dbbdbc3`) | passed, both halves | passed, both halves | passed | passed |
+
+Run 39 is the first to have Number Garden's numerals, the room at its three sizes and the dialog test in
+Safari's engine, and all of them passed there. No test in any job needed a second attempt: the six artifacts
+are between 0.5 and 1.0 MB, where one with a retried test's trace in it is several. The check itself took 1.8
+minutes. The phones, as two halves, are well inside their limit. The WebKit job for the desktop and the tablet
+spent 12.8 of its 28.7 minutes installing the browser, which is the network's doing and not the tests'; it has
+taken half a minute in other runs, and is worth a look if it happens again, since that job's limit is forty.
+
+The owner merged the pull request seventeen seconds after run 39's last job finished. Run 40 is the same tree
+on `main`: green in all seven jobs in 26 minutes, and again no artifact over 1.0 MB, so no test in it needed a
+second attempt either.
+
 **And the time, a third time.** The two halves of the desktop took 15.5 and 11.3 minutes, where the one job
 had taken 29.2: that worked. But the phones took 32.5 of their 40: the phone is the screen everything pressed
 is measured on, 54 tests then and more now. The phones are two halves as well.
@@ -551,7 +657,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 1711)
+## What the unit tests cover (Vitest, 1837)
 
 | Area                                                              | Files                                                                                                                                                   | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -626,6 +732,7 @@ phone 360 pixels wide leaves a page about 264 to 280. `phones.spec.ts` tests bot
 | `garden.spec.ts`                             | Number Garden's boards: a group taken in at a glance is covered before the choices are turned over, and another look is help; giving one at a time, taking back, and saying when it is done; more, fewer and equal each ask one thing **Asking to be told again in one step takes nothing from the next, and asked before a look is over it starts the step again with the look still to come** (with the clock held); a world's page opened by its own address, and loaded again, knows what has been finished; the button to take one back is the same button all through a count                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `numbers.spec.ts` (Number Garden's numerals) | A staircase's gap has nothing in it until the right tower is stood there, and towers to choose from stand side by side on every screen; a frame is filled only by the group that fills it, and an empty one answered with 0 stays empty; **a numeral shows its dots only while it is counted** (clock held: on the wrong numeral, then on the right one, and at no other time); a number that is said takes no answer until it has been said, and with the sound off says it needs sound; a bare stone has no number until it is found; **a story is shown from its first moment as it stood before anyone moved**, and to someone who has asked for less movement stands as it ends; those who went are faded and are not counted; and each kind of question says in words what it shows and never its answer                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `reading.spec.ts`                            | Reading Cove: with sound off an activity shows a gate and starts when it is opened; a sound can be heard again; a wrong picture is answered with its own sound; a printed word is read before its pictures are offered                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `words.spec.ts` (Reading Cove's later ones)  | **What a child is helped with and what is left to them**: a word to rhyme with is said beside each choice with support; a word is clapped for a child one clap at a time and none is left standing, and alone nothing is clapped; each place for a letter lights as its sound is said, and alone none does; the picture of the word stands above the places, and a letter that was right in a wrong try stays; two letters that write one sound stand on one tile; a finger goes from word to word under a sentence that is read to a child, and alone the sentence is not read and no finger shows; **what the voice said is listened to, not inferred from what was fetched**; on a phone held upright a sentence is on two lines with its pictures side by side                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `memory.spec.ts`                             | Memory Forest: **nothing that is covered can be read off the page**; the cards to answer with are blank while things are on show; two that differ turn back; an order is shown again only as help; the question about the very start comes last **An order being shown takes no tap until all of it has been shown**: a tap is made in every pause, with the clock held, and none counts; asking again in the middle of an order gives it whole, and takes nothing from the next                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `harbor.spec.ts`                             | Explorer Harbor: a story is put in order and **told back picture by picture, each lifted while its own line is written under it**; a missing picture is nowhere in the page until it is found; **every place on a map is drawn where the content says, with land under it or not as the answer says**; places are 56 points or more and apart, down to 640×256; the boat sails to the island chosen                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `robot.spec.ts`                              | Robot Ridge: each of four activities played rightly and wrongly by reading the ground from the screen and solving it; a run pauses and goes on; help; the keyboard; with less motion the way is marked instead of walked; axe on every board; the largest boards on 360×740 and 640×256                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -636,24 +743,25 @@ phone 360 pixels wide leaves a page about 264 to 280. `phones.spec.ts` tests bot
 
 | What                                                    | Size (gzip) | Budget  |
 | ------------------------------------------------------- | ----------- | ------- |
-| Script for the first screen                             | 105.0 kB    | 110 kB  |
+| Script for the first screen                             | 105.1 kB    | 110 kB  |
 | Styles for the first screen                             | 7.4 kB      | 12 kB   |
 | Fonts                                                   | 67.2 kB     | 80 kB   |
 | The hub's pictures (WebP, not gzipped)                  | 284.0 kB    | 330 kB  |
 | 3D hub (on demand)                                      | 260.0 kB    | 290 kB  |
-| Largest other on-demand part (Number Garden's content)  | 12.5 kB     | 30 kB   |
-| The game: everything but the voice and the content, raw | 2426.7 kB   | 2700 kB |
-| The content: seven packs, raw                           | 515.8 kB    | 900 kB  |
-| The voice: 484 recordings (MP3, not gzipped)            | 5509 kB     | 9000 kB |
+| Largest other on-demand part (Number Garden's content)  | 12.4 kB     | 30 kB   |
+| The game: everything but the voice and the content, raw | 2498.7 kB   | 2700 kB |
+| The content: seven packs, raw                           | 573.9 kB    | 900 kB  |
+| The voice: 552 recordings (MP3, not gzipped)            | 6108 kB     | 9000 kB |
 | The largest recording                                   | 32.8 kB     | 60 kB   |
 
-A world's code is 2.5 to 12.2 kB and its content 3.5 to 12.5 kB, each fetched on entering that world; the
-lesson frame is 8.3 kB and the part of the engine that judges answers 5.6 kB, fetched with the first activity;
-and a recording is fetched the first time its line is wanted.
+A world's code is 2.5 to 12.2 kB and its content 3.5 to 12.4 kB, each fetched on entering that world (Reading
+Cove's are 11.0 and 11.2); the lesson frame is 8.5 kB and the part of the engine that judges answers 5.6 kB,
+fetched with the first activity; and a recording is fetched when the step that may say it arrives.
 
 **Two of these are worth watching.** The script for the first screen is 105 kB of the 110 it is allowed, and
-it has grown with every activity: what each world offers, with the grown-ups' words about it, is in it. The
-next batch of activities will need those words moved out of the first load. And the budget for the whole build
+it has grown with every activity: what each world offers, with the grown-ups' words about it, is in it. (Six
+more activities in Reading Cove added a tenth of a kilobyte.) A larger batch of activities will need those
+words moved out of the first load. And the budget for the whole build
 is now two budgets, because one had stopped meaning anything: it had been raised twice to let content in, and
 Number Garden's numerals went over it again (2942 kB of 2900). Content is meant to grow and has a limit of its
 own; what is left is the game itself, and its limit is tighter than the old one.
@@ -663,6 +771,12 @@ recording reachable from it by static import; no inline script or style (so the 
 its icons; and that the service worker pre-downloads exactly the first screen's files and knows every hashed file.
 
 ## Screenshots
+
+`docs/review/reading-cove/` — 19 JPEGs of Reading Cove, taken the same way, by
+`npm run screens -- reading-cove worlds reading-cove`: its page with all sixteen cards, every activity at the
+first thing a child does in it, the first while Glim is showing it, and the last, the sentence, on a phone held
+sideways. They were looked at, with more that were not kept (every activity at five more sizes, and all
+twenty-nine pictures of one thing on or in another on one sheet); `docs/QUALITY_REPORT.md` says what was seen.
 
 `docs/review/music-lab/` — 11 JPEGs of the Music Lab, taken the same way as the six worlds' below, by
 `npm run screens -- music-lab worlds music-lab`: its page, every activity at the first thing a child does in it,
@@ -870,6 +984,16 @@ its own address, where the build before showed nothing finished; after one tap o
 glance" the two steps after it still uncovered their groups, where the build before left them covered; and 52
 browser tests passed against the address, as before. The three faults that had been live were gone from it.
 
+**After the owner merged pull request #9** (2026-11-25, `dbbdbc3`), two hours after the merge:
+Vercel's own record of the deployment said "Ready". The tests of that commit, not of this tree, were run
+against the address (the tests here are ahead of the site by six activities): 60 passed of 60, eight smoke
+tests as a desktop and as a phone and 44 as a Pixel 7, which play something in every world, the Music Lab's
+room and four of Number Garden's new activities among them. A probe opened "Which has more?" on a phone held
+sideways and measured the two groups to choose between: 317 by 241 pixels at 844×390 and 237 by 107 at
+640×256, where the build before drew a strip 48 high and 20 high. It counted 18 activities on Number Garden's
+page, six and a way to the room on the Music Lab's, and ten on Reading Cove's, which is right: its six new ones
+are not live.
+
 That is evidence that Vercel serves what was built, with the headers and routing the tests expect, and that the
 voice's files arrive. It is not a phone, and nobody has heard those recordings play. Nor is it evidence that
 what was built was right: the five faults in _What was found after the six worlds went live_ were on the site
@@ -886,8 +1010,10 @@ same address, as a deployment puts one build in the place of another, and eighte
 | ------------------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `334e0e8`, the build before the six worlds: what a phone had | `0e836eb`, the build that went live | **16 of 18.** The two that failed: a world's page opened by its address did not show what was finished, and Play went back to the first activity |
 | `0e836eb`, what is live                                      | this tree                           | **18 of 18**                                                                                                                                     |
-| `765be14`, what is live now (the Music Lab's six activities) | pull request #9 as first written    | **16 of 18.** The activity left at its third step was begun again at its first, and its stored place was gone                                    |
-| `765be14`, what is live now                                  | this tree                           | **18 of 18**                                                                                                                                     |
+| `765be14`, what was live then (the Music Lab's activities)   | pull request #9 as first written    | **16 of 18.** The activity left at its third step was begun again at its first, and its stored place was gone                                    |
+| `765be14`, what was live then                                | pull request #9 with the fix        | **18 of 18**                                                                                                                                     |
+| `765be14`, what was live then                                | this tree, with Reading Cove's six  | **18 of 18**, twice: before the last change to how a sentence is laid out, and after it                                                          |
+| `dbbdbc3`, what is live now (pull request #9 merged)         | this tree, with Reading Cove's six  | **18 of 18**                                                                                                                                     |
 
 What held both times:
 

@@ -84,6 +84,11 @@
   max-height: 100%;
 }
 
+/*
+ * The finger under a word that is being said slowly. Where the clip says when each of its sounds begins, the
+ * finger stands under the tile of the sound that is being said and steps on with it (--at is which tile, --of how
+ * many there are). Where nothing says so it runs along under the whole word, as it always did.
+ */
 .sweep {
   position: absolute;
   bottom: 0;
@@ -95,8 +100,76 @@
   opacity: 0;
 }
 
-.word[data-sounding='true'] .sweep {
+.word[data-sounding='true']:not([data-at]) .sweep {
   animation: sweep 1.3s ease-in-out both;
+}
+
+.word[data-at] .sweep {
+  left: calc((100% / var(--of)) * var(--at) + 10%);
+  width: calc(100% / var(--of) - 20%);
+  opacity: 1;
+  transition: left 140ms var(--ease-out);
+}
+
+.word .tile[data-now='true'] {
+  transform: translateY(-4px) scale(1.05);
+  border-color: var(--deep);
+}
+
+/* A word to find a rhyme for: the end of it, under the picture, swells while the word is said. */
+.ending {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.frame[data-sounding='true'] .ending {
+  animation: swell 0.6s var(--ease-out) both;
+}
+
+/* A clap arrives with a pop, and the picture above it nods. */
+.clap {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.clap[data-now='true'] {
+  animation: pop 0.3s var(--ease-spring) both;
+}
+
+.clapped {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: nod 0.3s var(--ease-out);
+}
+
+/* A card of claps that is being played: each claps in its turn (the delay is set on each one). */
+.picture[data-sounding='true'] .clap {
+  animation: pop 0.3s var(--ease-spring) both;
+}
+
+/* A sentence: one line of print, as large as the room allows, with room under it for a finger. */
+.sentence {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 2px clamp(4px, 2vw, 14px);
+  border: 3px solid #f0dcae;
+  border-radius: 18px;
+  background: #fff8e4;
+}
+
+.print {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.finger {
+  animation: arrive 0.14s var(--ease-out) both;
 }
 
 @keyframes say {
@@ -108,6 +181,56 @@
   }
   100% {
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes swell {
+  0% {
+    transform: scaleY(1);
+  }
+  40% {
+    transform: scaleY(1.9);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.25);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes nod {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.06, 0.94);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

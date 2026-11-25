@@ -13,7 +13,7 @@ import { describe, expect, it } from 'vitest';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (path: string) => readFileSync(join(root, path), 'utf8');
 
-type Kind = 'line' | 'word' | 'onset' | 'slow' | 'sound';
+type Kind = 'line' | 'read' | 'word' | 'onset' | 'slow' | 'beats' | 'sound';
 
 interface Clip {
   group: string;
@@ -27,6 +27,8 @@ interface Clip {
   check: 'matches' | 'in-sentence' | 'differs' | 'made';
   takes: number;
   reviewed: string | null;
+  /** For a clip with several things in it to follow: when each begins, in seconds from its start. */
+  marks?: number[];
 }
 
 const manifest = JSON.parse(read('src/voice/manifest.json')) as {
@@ -38,11 +40,24 @@ const clips = Object.entries(manifest.clips);
 /** What each section of a lines file holds. */
 const KINDS: Record<string, Kind> = {
   lines: 'line',
+  read: 'read',
   words: 'word',
   onsets: 'onset',
   slow: 'slow',
+  beats: 'beats',
   sounds: 'sound',
 };
+
+/**
+ * How many things a clip has in it to follow, from how it is written: the words of a sentence read aloud, the
+ * beats of "el-e-phant", the sounds of "m-a-p". `null` for a clip that is one thing from beginning to end.
+ */
+function partsOf(clip: Clip): number | null {
+  if (clip.kind === 'read') return clip.text.trim().split(/\s+/).length;
+  if (clip.kind === 'beats') return clip.text.split('-').length;
+  if (clip.kind === 'slow' && clip.text.includes('-')) return clip.text.split('-').length;
+  return null;
+}
 
 /** Every clip the game asks for, gathered the way the script that makes them gathers it. */
 function wanted(): Map<string, { group: string; kind: string; text: string }> {
@@ -139,8 +154,62 @@ describe('the voice', () => {
     // A sentence is either heard word for word or it is listed above: "nearly" is not a result a sentence can have.
     // A sound that is not speech has nothing to be heard as, and only such a sound may say so.
     for (const [key, clip] of clips) {
-      if (clip.kind === 'line') expect(['matches', 'differs'], key).toContain(clip.check);
+      if (clip.kind === 'line' || clip.kind === 'read') {
+        expect(['matches', 'differs'], key).toContain(clip.check);
+      }
       expect(clip.check === 'made', key).toBe(clip.kind === 'sound');
+    }
+  });
+
+  it('says where each word, beat or sound begins in every clip that has them to follow, and in no other', () => {
+    let marked = 0;
+    for (const [key, clip] of clips) {
+      const parts = partsOf(clip);
+      if (parts === null) {
+        expect(clip.marks, key).toBeUndefined();
+        continue;
+      }
+      marked += 1;
+      const marks = clip.marks ?? [];
+      expect(marks, key).toHaveLength(parts);
+      // In order, each after the one before, and all of them inside the clip.
+      for (const [index, at] of marks.entries()) {
+        expect(at, key).toBeGreaterThanOrEqual(0);
+        expect(at, key).toBeLessThan(clip.seconds);
+        if (index > 0) expect(at, key).toBeGreaterThan(marks[index - 1] ?? 0);
+      }
+      // A word that is cut out begins with its first sound; a sentence may begin with a breath.
+      if (clip.kind !== 'read') expect(marks[0], key).toBe(0);
+      else expect(marks[0], key).toBeLessThan(0.2);
+    }
+    // Every word that is said slowly is written with its sounds apart, so every one of them is marked.
+    expect(clips.filter(([, clip]) => clip.kind === 'slow' && !clip.text.includes('-'))).toEqual(
+      [],
+    );
+    expect(marked).toBeGreaterThan(40);
+  });
+
+  it('gives the game those marks group by group, and no file of marks for a group without any', () => {
+    const groups = new Map<string, Record<string, number[]>>();
+    for (const [key, clip] of clips) {
+      if (clip.marks) groups.set(clip.group, { ...groups.get(clip.group), [key]: clip.marks });
+    }
+    const files = readdirSync(join(root, 'src/voice/marks')).sort();
+    expect(files).toEqual([...groups.keys()].sort().map((group) => `${group}.json`));
+    for (const [group, marks] of groups) {
+      expect(JSON.parse(read(`src/voice/marks/${group}.json`)), group).toEqual(marks);
+    }
+  });
+
+  it('gives a sound that begins softly its whole beginning: "ship" is not cut down to "chip"', () => {
+    // The synthesiser says a soft first sound begins later than it does. A slow word cut there lost its first
+    // tenth of a second, and a recogniser heard "ship" as "chip". Cut where the silence before the word ends, the
+    // first sound of each of these lasts a fifth of a second and more.
+    for (const key of ['slow.ship', 'slow.shop', 'slow.sun', 'slow.fish', 'slow.fan']) {
+      const clip = manifest.clips[key];
+      expect(clip, key).toBeDefined();
+      expect(clip?.check, key).toBe('matches');
+      expect((clip?.marks?.[1] ?? 0) - (clip?.marks?.[0] ?? 0), key).toBeGreaterThanOrEqual(0.15);
     }
   });
 

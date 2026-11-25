@@ -32,6 +32,14 @@ export function audio(): AudioEngine {
   return created;
 }
 
+/**
+ * The name of the event the page sends itself each time a line begins to be said; its `detail` is the line's key.
+ * Nothing in the game listens for it. It is there so that what was said can be told from outside — by the browser
+ * tests, which used to take a clip's being fetched for its being said, and are wrong about that now that clips are
+ * fetched ahead.
+ */
+export const SAID_EVENT = 'training-academy:said';
+
 /** The page's voice: the bundled lines, played through the same audio as the cues. */
 export function voice(): Narrator {
   narrator ??= new Narrator(
@@ -42,6 +50,9 @@ export function voice(): Narrator {
       return response.arrayBuffer();
     },
     () => performance.now(),
+    (key) => {
+      window.dispatchEvent(new CustomEvent(SAID_EVENT, { detail: key }));
+    },
   );
   return narrator;
 }

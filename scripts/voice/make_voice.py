@@ -10,13 +10,22 @@ What is said comes from these places, and nowhere else:
   src/voice/lines/*.json     what a world needs beside its lines: the names of its pictures, said plainly, with
                              the first sound drawn out, and slowly; and sounds that are not speech at all
 
-A clip is of one of five kinds:
+A clip is of one of seven kinds:
 
   line    a sentence, said as it is written
+  read    a sentence read aloud, a little slowly, as a grown-up reads to a child with a finger under the words.
+          It is told where each word begins
   word    one word, cut from the end of a sentence (said alone, the synthesiser clips it)
   onset   one word with its first sound drawn out: "sssun"
-  slow    one word said slowly, sound running into sound: "mmmaaap"
+  slow    one word said slowly, sound running into sound: "mmmaaap". Written with its sounds apart, "m-a-p", it
+          is also told where in the clip each sound begins
+  beats   one word said in its beats, with a breath between them: "el - e - phant". It is written that way,
+          "el-e-phant", and is told where each beat begins
   sound   not speech: a drum, a bell. Made from arithmetic, by the recipes at the foot of this file
+
+Where a sound or a beat begins is not guessed and not listened for. The synthesiser is asked which of the samples
+it made belong to which sound of the sentence (it works that out in order to speak at all), and a word is cut
+where it says. That needs the `onnx` package beside the others (scripts/voice/requirements.txt).
 
 What is written:
 
@@ -25,6 +34,8 @@ What is written:
                                           recogniser heard when it was played back, and whether a person has
                                           listened to it yet (nobody has, until someone says so there)
   src/voice/timings/<group>.json          how long each clip of a group lasts, for the game
+  src/voice/marks/<group>.json            for a clip that has words, beats or sounds to follow: when each begins,
+                                          in seconds
 
 The voice is a speech synthesiser run here, on this machine, ahead of time. The game itself never synthesises
 speech and never fetches a sound from anywhere but its own files.
@@ -42,6 +53,10 @@ beside what was meant:
                 a short word on its own is hard for a recogniser, so this is the usual result for those
   differs       it heard something else; the manifest says what
   made          (sounds that are not speech) there is nothing to recognise
+
+A word in beats is checked before the breaths are put in: a recogniser cannot follow speech with a silence in the
+middle of each word, and hears three short words or none. So `matches` says of such a clip that the word it was
+cut from is the right word, and nothing about where the cuts fall.
 
 A sentence is tried several times, because the synthesiser does not say a thing the same way twice, and the first
 take that is heard right is kept. This is a filter for gross faults — a wrong word, a clipped ending, noise — and
@@ -66,6 +81,7 @@ LINES = ROOT / 'src/voice/lines.json'
 WORLD_LINES = ROOT / 'src/voice/lines'
 MANIFEST = ROOT / 'src/voice/manifest.json'
 TIMINGS = ROOT / 'src/voice/timings'
+MARKS = ROOT / 'src/voice/marks'
 CLIPS = ROOT / 'src/assets/voice/en'
 
 # How the voice is asked to speak: a little slower than its usual pace, and a little steadier.
@@ -73,6 +89,16 @@ SENTENCE = {'length_scale': 1.14, 'noise_scale': 0.5, 'noise_w_scale': 0.6}
 # A word on its own is said at the end of this, after a comma, and cut out: said alone, the synthesiser clips it.
 CARRIER = 'The next word is, {word}.'
 WORD = {'length_scale': 1.2, 'noise_scale': 0.5, 'noise_w_scale': 0.6}
+# A word that is cut where the synthesiser says its sounds begin (a slow word with its sounds marked, a word in
+# beats) is carried by this instead. The cut has to fall in a silence, and after "is," there is often none: the
+# voice runs "is" into a word that starts with "sh" every time. The "t" of "that" closes before the comma, and of
+# eight words tried four times each, every take but one had a silence there to cut in.
+CUT_CARRIER = 'The next word is that, {word}.'
+# A sentence read aloud for a finger to follow: slower than a line that is only spoken. Read so slowly, a short
+# word at the end can be drawn out until it is another word ("cot" was heard as "cart", "hut" as "heart"), so a
+# take that is not heard right is followed by one read a little faster.
+READ = {'length_scale': 1.8, 'noise_scale': 0.5, 'noise_w_scale': 0.6}
+READ_PACES = [1.8, 1.8, 1.6, 1.6, 1.45]
 TAKES = 5
 BITRATE = '48k'
 # A first sound drawn out: the sound is given to the synthesiser this many times over.
@@ -88,7 +114,22 @@ SOUND_ALIKE = {
     'tin': {'tinn'}, 'cot': {'caught', 'cott'}, 'hut': {'hutt'}, 'ram': {'ramm'}, 'pan': {'pann'}, 'can': {'cann'},
     'one': {'won'}, 'two': {'too', 'to'}, 'four': {'for'}, 'eight': {'ate'}, 'bell': {'belle'}, 'log': {'logue'},
 }
-KINDS = {'lines': 'line', 'words': 'word', 'onsets': 'onset', 'slow': 'slow', 'sounds': 'sound'}
+KINDS = {
+    'lines': 'line', 'read': 'read', 'words': 'word', 'onsets': 'onset', 'slow': 'slow', 'beats': 'beats',
+    'sounds': 'sound',
+}  # fmt: skip
+
+# How the synthesiser writes a word down, as far as cutting one up needs to know: the marks that are not sounds,
+# the sounds that are vowels (each run of them is the middle of one beat), and the pairs written as two that are one.
+STRESS = 'ˈˌ'
+LONG = 'ː'
+VOWELS = set('aɑæɐəɚɜɝɛeiɪoɔɒuʊʌ')
+ONE_SOUND = {('t', 'ʃ'), ('d', 'ʒ')}
+# The breath between two beats of a word, and how far past its last sound a word is let ring: both in seconds.
+BREATH = 0.28
+RING = 0.08
+# A word can be cut out of its sentence where the sound before it falls below this part of the word's loudest.
+QUIET = 0.03
 
 NUMBERS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']
 
@@ -170,13 +211,104 @@ class Studio:
         self.np = np
         self.config = SynthesisConfig
         self.resample = resample_poly
-        self.voice = PiperVoice.load(voice_path)
+        # Asked for with its alignments: which samples belong to which sound. Without the `onnx` package it loads
+        # all the same and says nothing of them; the clips that need them then say what is missing.
+        self.voice = PiperVoice.load(voice_path, include_alignments=True)
         self.rate = self.voice.config.sample_rate
         self.listener = WhisperModel(listener_path, device='cpu', compute_type='int8')
 
     def say(self, text, settings):
         chunks = list(self.voice.synthesize(text, self.config(**settings)))
         return self.np.concatenate([chunk.audio_float_array for chunk in chunks])
+
+    def say_aligned(self, text, settings):
+        """One sentence, and for each sound of it the samples that are its: (audio, [(sound, start, end)])."""
+        chunks = list(self.voice.synthesize(text, self.config(**settings), include_alignments=True))
+        if len(chunks) != 1 or chunks[0].phoneme_alignments is None:
+            raise SystemExit(
+                'The synthesiser did not say which samples belong to which sound. That needs the onnx package '
+                '(scripts/voice/requirements.txt) and a sentence said in one piece.'
+            )
+        spans, at = [], 0
+        for each in chunks[0].phoneme_alignments:
+            spans.append((each.phoneme, at, at + each.num_samples))
+            at += each.num_samples
+        return chunks[0].audio_float_array, spans
+
+    def sounds_of_word(self, audio, spans, word):
+        """The sounds of the last word of a carrier sentence, in order: (as written, start, end, is a vowel).
+
+        A stress mark belongs to the sound after it and a length mark to the vowel before it; vowels that run
+        together are one sound, and so are the two letters an affricate is written with. `end` of the last sound
+        reaches a little into the pause after it, so that the word is not cut off as it dies away.
+
+        The first sound begins where the silence before the word ends, not where the synthesiser says it does: a
+        sound that starts softly (an s, an f, an sh) is under way up to a tenth of a second before that, and a
+        word cut there has lost its beginning. "Ship" cut so was heard as "chip". `None` if there is no silence
+        before the word: said in one breath with the sentence before it, it cannot be cut out whole.
+        """
+        np = self.np
+        alone = [phoneme for phoneme in self.voice.phonemize(word)[0] if phoneme not in '.,!? ']
+        stop = max(index for index, (phoneme, _, _) in enumerate(spans) if phoneme == '.')
+        first = stop - len(alone)
+        sounds, waiting = [], None
+        for phoneme, start, end in spans[first:stop]:
+            if phoneme in STRESS:
+                waiting = start if waiting is None else waiting
+                continue
+            begin, fresh = (start, False) if waiting is None else (waiting, True)
+            waiting = None
+            last = sounds[-1] if sounds else None
+            vowel = phoneme in VOWELS
+            joins = last is not None and not fresh and ((last[3] and vowel) or (last[0][-1], phoneme) in ONE_SOUND)
+            if last is not None and (phoneme == LONG or joins):
+                sounds[-1] = (last[0] + phoneme, last[1], end, last[3])
+            else:
+                sounds.append((phoneme, begin, end, vowel))
+        if not sounds:
+            return None
+        what, begin, end, vowel = sounds[-1]
+        ring = min(spans[stop][2] - spans[stop][1], int(self.rate * RING))
+        sounds[-1] = (what, begin, end + ring, vowel)
+
+        # The silence before the word: the last hundredth of a second, in the pause the comma makes, that is
+        # quieter than a small part of the word at its loudest.
+        frame = max(1, int(self.rate * 0.01))
+        pause = first
+        while pause > 0 and spans[pause - 1][0] in ' ,':
+            pause -= 1
+        said, word_end = sounds[0][1], sounds[-1][2]
+        level = lambda at: float(np.sqrt(np.mean(audio[at : at + frame] ** 2)))  # noqa: E731
+        loudest = max(level(at) for at in range(said, max(said + 1, word_end - frame), frame))
+        quiet = [at for at in range(spans[pause][1], said + frame, frame) if level(at) < QUIET * loudest]
+        if not quiet:
+            return None
+        what, _, end, vowel = sounds[0]
+        sounds[0] = (what, min(quiet[-1] + frame, said), end, vowel)
+        return sounds
+
+    def levelled(self, cut):
+        """At one loudness for every clip: the level of its loudest tenth of a second, brought to the same mark."""
+        np = self.np
+        cut = cut.astype(np.float32).copy()
+        window = max(1, int(self.rate * 0.1))
+        power = np.convolve(cut**2, np.ones(window) / window, mode='valid') if len(cut) > window else cut**2
+        loudest = float(np.sqrt(power.max())) if len(cut) else 0.0
+        if loudest > 0:
+            cut *= 0.2 / loudest
+        peak = float(np.abs(cut).max()) if len(cut) else 0.0
+        if peak > 0.97:
+            cut *= 0.97 / peak
+        return cut
+
+    def faded(self, cut, rise=0.006, fall=0.04):
+        """With its two ends brought to nothing, so that a cut makes no click."""
+        np = self.np
+        cut = cut.astype(np.float32).copy()
+        up, down = min(len(cut), int(self.rate * rise)), min(len(cut), int(self.rate * fall))
+        cut[:up] *= np.linspace(0, 1, up, dtype=np.float32)
+        cut[len(cut) - down :] *= np.linspace(1, 0, down, dtype=np.float32)
+        return cut
 
     def words_heard(self, audio, pad=0.5):
         """What the recogniser hears, word by word: (word, start, end), in seconds from the start of `audio`."""
@@ -205,16 +337,23 @@ class Studio:
         target = plain(word)
         return heard == target or heard in SOUND_ALIKE.get(target, set())
 
+    def ends(self, audio, lead=0.02, tail=0.05):
+        """Where the sound in a clip begins and ends, with a little room either side: (begin, end), in samples."""
+        np = self.np
+        level = np.abs(audio)
+        loud = np.nonzero(level > 0.02 * float(level.max()))[0]
+        if len(loud) == 0:
+            return None
+        return max(0, int(loud[0]) - int(self.rate * lead)), min(len(audio), int(loud[-1]) + int(self.rate * tail))
+
     def trimmed(self, audio, lead=0.02, tail=0.05):
         """Without the silence at either end, faded in and out, and at one loudness for every clip."""
         np = self.np
         frame = max(1, int(self.rate * 0.005))
-        level = np.abs(audio)
-        loud = np.nonzero(level > 0.02 * float(level.max()))[0]
-        if len(loud) == 0:
+        ends = self.ends(audio, lead, tail)
+        if ends is None:
             return audio
-        begin = max(0, int(loud[0]) - int(self.rate * lead))
-        end = min(len(audio), int(loud[-1]) + int(self.rate * tail))
+        begin, end = ends
         cut = audio[begin:end].astype(np.float32).copy()
         fade_in = min(len(cut), frame)
         fade_out = min(len(cut), frame * 8)
@@ -239,6 +378,33 @@ class Studio:
             heard = self.heard(audio)
             result = (audio, heard, 'matches' if same_words(heard, plain(text)) else 'differs', take)
             if result[2] == 'matches':
+                break
+        return result
+
+    def read(self, text):
+        """A sentence read aloud a little slowly, and where in it each of its words begins."""
+        words = plain(text).split()
+        result = None
+        for take, pace in enumerate(READ_PACES, start=1):
+            audio, spans = self.say_aligned(text, {**READ, 'length_scale': pace})
+            starts, fresh = [], True
+            for sound, start, _ in spans:
+                if sound in '^$':
+                    continue
+                if sound in ' .,!?':
+                    fresh = True
+                elif fresh:
+                    starts.append(start)
+                    fresh = False
+            if len(starts) != len(words):
+                raise SystemExit(f'"{text}" has {len(words)} words; the synthesiser says it in {len(starts)}.')
+            begin, _ = self.ends(audio) or (0, len(audio))
+            clip = self.trimmed(audio)
+            heard = self.heard(clip)
+            check = 'matches' if same_words(heard, plain(text)) else 'differs'
+            marks = [round(float(max(0, start - begin)) / self.rate, 2) for start in starts]
+            result = (clip, heard or '(nothing)', check, take, marks)
+            if check == 'matches':
                 break
         return result
 
@@ -318,8 +484,95 @@ class Studio:
                 frames = file.readframes(file.getnframes())
         return np.frombuffer(frames, dtype=np.int16).astype(np.float32) / 32768
 
+    def beats(self, text):
+        """A word said in its beats, written "el-e-phant": the word as it is said, with a breath where each ends.
+
+        Each run of vowels is the middle of a beat. Of the consonants between two of them one goes with the beat
+        that follows, and of more than one the first stays behind: "um | brel | la".
+        """
+        np = self.np
+        word = text.replace('-', '')
+        wanted_beats = text.count('-') + 1
+        result = None
+        for take in range(1, 2 * TAKES + 1):
+            audio, spans = self.say_aligned(CUT_CARRIER.format(word=word), WORD)
+            sounds = self.sounds_of_word(audio, spans, word)
+            if sounds is None:
+                continue
+            middles = [index for index, sound in enumerate(sounds) if sound[3]]
+            if len(middles) != wanted_beats:
+                said = ' '.join(sound[0] for sound in sounds)
+                raise SystemExit(f'"{text}" is written in {wanted_beats} beats; the synthesiser says it in {len(middles)}: {said}')
+            cuts = []
+            for here, there in zip(middles, middles[1:]):
+                between = there - here - 1
+                cuts.append(there if between == 0 else here + 1 if between == 1 else here + 2)
+            edges = [0, *cuts, len(sounds)]
+            parts = [(sounds[a][1], sounds[b - 1][2]) for a, b in zip(edges, edges[1:])]
+            # Checked before the breaths go in: with them a recogniser hears three short words, or none.
+            whole = self.levelled(self.faded(audio[parts[0][0] : parts[-1][1]]))
+            heard = self.heard(whole)
+            check = 'matches' if self.same_word(heard, word) else 'differs'
+            breath = np.zeros(int(self.rate * BREATH), dtype=np.float32)
+            pieces, marks, at = [], [], 0
+            for index, (start, end) in enumerate(parts):
+                piece = self.faded(audio[start:end], fall=0.04 if index == len(parts) - 1 else 0.012)
+                marks.append(round(at / self.rate, 2))
+                pieces += [piece] if index == len(parts) - 1 else [piece, breath]
+                at += len(piece) + len(breath)
+            result = (self.levelled(np.concatenate(pieces)), heard or '(nothing)', check, take, marks)
+            if check == 'matches':
+                break
+        if result is None:
+            raise SystemExit(f'"{word}" was never said with a silence before it to cut it at.')
+        return result
+
+    def slow_with_marks(self, text):
+        """A word said slowly, written "m-a-p", and where in it each of its sounds begins."""
+        word = text.replace('-', '')
+        wanted_sounds = text.count('-') + 1
+        ranks = ['matches', 'in-sentence', 'differs']
+        best = None
+        for take, (method, amount) in enumerate(SLOW, start=1):
+            settings = {**WORD, 'length_scale': amount} if method == 'voice' else WORD
+            audio, sounds = None, None
+            for _ in range(TAKES):
+                audio, spans = self.say_aligned(CUT_CARRIER.format(word=word), settings)
+                sounds = self.sounds_of_word(audio, spans, word)
+                if sounds is not None:
+                    break
+            if sounds is None:
+                continue
+            if len(sounds) != wanted_sounds:
+                said = ' '.join(sound[0] for sound in sounds)
+                raise SystemExit(f'"{text}" is written as {wanted_sounds} sounds; the synthesiser says {len(sounds)}: {said}')
+            begin = sounds[0][1]
+            cut = audio[begin : sounds[-1][2]]
+            starts = [(sound[1] - begin) / self.rate for sound in sounds]
+            if method == 'stretch':
+                cut, starts = self.stretched(cut, amount), [at / amount for at in starts]
+            clip = self.levelled(self.faded(cut))
+            alone = self.heard(clip)
+            sentence = self.words_heard(audio)
+            in_sentence = bool(sentence) and self.same_word(plain(sentence[-1][0]), word)
+            check = 'matches' if self.same_word(alone, word) else 'in-sentence' if in_sentence else 'differs'
+            # A word said slowly takes a while to say.
+            if len(clip) / self.rate < SLOW_AT_LEAST:
+                check = 'differs'
+            candidate = (clip, alone or '(nothing)', check, take, [round(float(at), 2) for at in starts])
+            if best is None or ranks.index(check) < ranks.index(best[2]):
+                best = candidate
+            if check == 'matches':
+                break
+        if best is None:
+            raise SystemExit(f'"{word}" was never said with a silence before it to cut it at.')
+        return best
+
     def slow(self, text):
         """A word said slowly, sound running into sound."""
+        if '-' in text:
+            return self.slow_with_marks(text)
+
         def way(method, amount):
             if method == 'voice':
                 return lambda: self.say(CARRIER.format(word=text), {**WORD, 'length_scale': amount})
@@ -369,6 +622,18 @@ def save(manifest, clips):
     for group, timings in groups.items():
         path = TIMINGS / f'{group}.json'
         path.write_text(json.dumps({key: timings[key] for key in sorted(timings)}, indent=2) + '\n')
+    # Where each beat or sound of a clip begins, for the clips that have them to follow.
+    marked = {}
+    for key, (group, _, _) in clips.items():
+        entry = manifest['clips'].get(key)
+        if entry and entry.get('marks') is not None:
+            marked.setdefault(group, {})[key] = entry['marks']
+    MARKS.mkdir(parents=True, exist_ok=True)
+    for path in MARKS.glob('*.json'):
+        if path.stem not in marked:
+            path.unlink()
+    for group, marks in marked.items():
+        (MARKS / f'{group}.json').write_text(json.dumps({key: marks[key] for key in sorted(marks)}) + '\n')
 
 
 def main():
@@ -425,15 +690,21 @@ def main():
         'modelSha256': sha256(model),
         'modelFrom': 'rhasspy/piper-voices on Hugging Face (repository licence: MIT)',
         'modelTrainedOn': 'LibriVox recordings (public domain), per the model card',
-        'settings': {'sentence': SENTENCE, 'word': WORD, 'carrier': CARRIER},
+        'settings': {
+            'sentence': SENTENCE, 'read': READ, 'readPaces': READ_PACES, 'word': WORD, 'carrier': CARRIER,
+            'cutCarrier': CUT_CARRIER,
+        },  # fmt: skip
         'format': f'MP3, mono, {studio.rate} Hz, {BITRATE}',
         'checkedWith': f'faster-whisper 1.2.1, model {Path(args.listener).name}',
     }
     differs = 0
     for index, key in enumerate(todo, start=1):
         group, kind, text = clips[key]
-        make = {'line': studio.sentence, 'word': studio.word, 'onset': studio.onset, 'slow': studio.slow, 'sound': studio.sound}
-        audio, heard, check, takes = make[kind](text)
+        make = {
+            'line': studio.sentence, 'read': studio.read, 'word': studio.word, 'onset': studio.onset,
+            'slow': studio.slow, 'beats': studio.beats, 'sound': studio.sound,
+        }  # fmt: skip
+        audio, heard, check, takes, *marks = make[kind](text)
         path = clip_path(group, key)
         seconds = studio.write(audio, path)
         manifest['clips'][key] = {
@@ -450,6 +721,9 @@ def main():
             # Whether a person has listened to this clip and passed it: null until one has.
             'reviewed': None,
         }
+        if marks:
+            # When each beat, or each sound, of the clip begins: seconds from its start.
+            manifest['clips'][key]['marks'] = marks[0]
         differs += check == 'differs'
         print(f'[{index}/{len(todo)}] {check:11} {key:36} {seconds:4.1f}s  "{text}"' + (f'  heard: "{heard}"' if check != 'matches' else ''))
         if index % 5 == 0:

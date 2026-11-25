@@ -785,6 +785,189 @@ export const PICTURES = {
       </>
     ),
   },
+  ship: {
+    word: 'ship',
+    draw: (
+      <>
+        <path d="M0-27v38" {...line} stroke="#7a5236" strokeWidth="3.600" />
+        <path d="M4-24l20 30H4z" fill="#fff6e6" />
+        <path d="M-4-17L-20 6h16z" fill="#ffe2ad" />
+        <path d="M0-27l9 3-9 4z" fill="#ef5350" />
+        <path d="M-27 10h54l-9 14h-36z" fill="#c94f3b" />
+        <path d="M-22 15h44" {...line} stroke="#ef7b5a" strokeWidth="2.400" />
+        <path
+          d="M-29 27c5-4 9 3 14.500 0s9 3 14.500 0 9 3 14.500 0 9 3 14.500 0"
+          {...line}
+          stroke="#62b4f3"
+          strokeWidth="3"
+        />
+      </>
+    ),
+  },
+  shop: {
+    word: 'shop',
+    draw: (
+      <>
+        <path d="M-22-6h44v32h-44z" fill="#fff1d6" />
+        <path d="M-16-27h32v10h-32z" fill="#2a6fb5" />
+        <path d="M-11-22h22" {...line} stroke="#bfe3ff" strokeWidth="2.400" />
+        <path d="M-27-17h54l-3 13h-48z" fill="#ef5350" />
+        <path d="M-16-17h10l-1 13h-9zM5-17h10l1 13H6z" fill="#fff6e6" />
+        <path d="M5 8h13v18H5z" fill="#7a5236" />
+        <circle cx="15" cy="18" r="1.400" fill="#f5c04a" />
+        <path d="M-18 4h17v13h-17z" fill="#bfe3ff" />
+        <path d="M-18 4h17v13h-17zM-9.500 4v13" {...line} stroke="#c98a4b" strokeWidth="2.400" />
+      </>
+    ),
+  },
+  chin: {
+    word: 'chin',
+    draw: (
+      <>
+        <path d="M-22-6c0-15 10-22 22-22s22 7 22 22c0 18-10 29-22 29S-22 12-22-6z" fill="#f2c9a0" />
+        <path
+          d="M-22-8c0-14 10-21 22-21s22 7 22 21c-6-10-16-13-22-13s-16 3-22 13z"
+          fill="#7a5236"
+        />
+        <path d="M-10 21c5 4 15 4 20 0-3-9-17-9-20 0z" fill="#ef7b5a" />
+        <circle cx="-9" cy="-6" r="2" fill={INK} />
+        <circle cx="9" cy="-6" r="2" fill={INK} />
+        <path d="M-6 6c4 3 8 3 12 0" {...line} stroke={INK} strokeWidth="2" />
+        <path d="M20 31L9 23" {...line} stroke="#e0b088" strokeWidth="7" />
+      </>
+    ),
+  },
+  chip: {
+    word: 'chip',
+    draw: (
+      <>
+        <path
+          d="M-27 2c2-14 16-22 30-20 14 2 24 12 22 24-2 11-14 18-28 16C-17 20-29 14-27 2z"
+          fill="#f5c04a"
+        />
+        <path
+          d="M-18-3c6-8 16-10 24-7M-20 6c8-8 22-10 36-5M-14 14c8-6 20-7 30-3"
+          {...line}
+          stroke="#dba032"
+          strokeWidth="2.400"
+        />
+        <circle cx="-8" cy="-9" r="1.400" fill="#fff6e6" />
+        <circle cx="10" cy="2" r="1.400" fill="#fff6e6" />
+        <circle cx="-4" cy="10" r="1.400" fill="#fff6e6" />
+        <path d="M20-20l5 3-4 4zM-26-18l4-1 0 5z" fill="#f5c04a" />
+      </>
+    ),
+  },
+  moth: {
+    word: 'moth',
+    draw: (
+      <>
+        <path
+          d="M-2-14c-4-8-9-11-13-12M2-14c4-8 9-11 13-12"
+          {...line}
+          stroke="#6b5d50"
+          strokeWidth="2"
+        />
+        <path d="M-3-6C-12-22-30-20-29-6c1 10 14 12 26 6z" fill="#c9b79c" />
+        <path d="M3-6C12-22 30-20 29-6 28 4 15 6 3 0z" fill="#c9b79c" />
+        <path d="M-3 2c-10 0-20 6-17 16 3 8 15 4 17-6z" fill="#b3a084" />
+        <path d="M3 2c10 0 20 6 17 16-3 8-15 4-17-6z" fill="#b3a084" />
+        <circle cx="-17" cy="-8" r="4" fill="#8a7b6b" />
+        <circle cx="17" cy="-8" r="4" fill="#8a7b6b" />
+        <circle cx="-11" cy="12" r="2.400" fill="#8a7b6b" />
+        <circle cx="11" cy="12" r="2.400" fill="#8a7b6b" />
+        <ellipse cy="2" rx="4.500" ry="15" fill="#6b5d50" />
+      </>
+    ),
+  },
+  path: {
+    word: 'path',
+    draw: (
+      <>
+        <path d="M-30 28V-4c14-8 46-8 60 0v32z" fill="#bfe6a8" />
+        <path
+          d="M-14 28C-12 16 12 14 8 4 6-2-6-2-3-9h7c-2 5 12 5 13 13 1 10-14 12-9 24z"
+          fill="#e7c08a"
+        />
+        <path d="M-21-6v-9M22 2v-9" {...line} stroke="#7a5236" strokeWidth="3" />
+        <circle cx="-21" cy="-18" r="7" fill="#5fbf64" />
+        <circle cx="22" cy="-10" r="7" fill="#5fbf64" />
+        <path d="M-24 14l2-5 2 5M17 20l2-5 2 5" {...line} stroke="#5fbf64" strokeWidth="2" />
+      </>
+    ),
+  },
+  cheese: {
+    word: 'cheese',
+    draw: (
+      <>
+        <path d="M-27 6L18-20c7 6 10 14 10 22z" fill="#ffe08a" />
+        <path d="M-27 6l55-4v20l-55 4z" fill="#ffd35c" />
+        <path d="M-27 6l55-4" {...line} stroke="#f5a623" strokeWidth="2.400" />
+        <circle cx="-12" cy="15" r="4" fill="#f5a623" />
+        <circle cx="6" cy="10" r="3" fill="#f5a623" />
+        <circle cx="18" cy="16" r="2.400" fill="#f5a623" />
+        <circle cx="8" cy="-8" r="2.600" fill="#f5c04a" />
+      </>
+    ),
+  },
+  thumb: {
+    word: 'thumb',
+    draw: (
+      <>
+        <path d="M-27 0h11v26h-11z" fill="#62b4f3" />
+        <path d="M-9 4V-18c0-9 13-9 13 0V4z" fill="#f6d5b3" />
+        <path d="M-16 0h24c6 0 10 4 10 9v9c0 5-4 8-10 8h-24z" fill="#f2c9a0" />
+        <path d="M0 9h17M0 17h17" {...line} stroke="#d9a877" strokeWidth="2.400" />
+        <path d="M-6-19c1-3 6-3 7 0" {...line} stroke="#fff1e0" strokeWidth="2" />
+      </>
+    ),
+  },
+  banana: {
+    word: 'banana',
+    draw: (
+      <>
+        <path
+          d="M-25-13c-1 24 22 38 46 24 4-2 4-7 0-8-18 4-32-4-38-17-2-4-8-3-8 1z"
+          fill="#ffd35c"
+        />
+        <path d="M-18-6c5 12 18 20 34 16" {...line} stroke="#fff1b8" strokeWidth="3" />
+        <path d="M-26-12l-1-8 7 3z" fill="#7a5236" />
+        <circle cx="22" cy="7" r="2.400" fill="#7a5236" />
+      </>
+    ),
+  },
+  lemon: {
+    word: 'lemon',
+    draw: (
+      <>
+        <g transform="rotate(-18)">
+          <path
+            d="M-28 0c4-3 6-4 8-8 8-12 30-12 38 0 2 4 5 6 10 8-5 2-8 4-10 8-8 12-30 12-38 0-2-4-4-5-8-8z"
+            fill="#ffe14a"
+          />
+          <path d="M-13-8c6-5 14-6 21-3" {...line} stroke="#fff6b0" strokeWidth="3" />
+          <circle cx="-6" cy="5" r="1" fill="#f5c04a" />
+          <circle cx="4" cy="8" r="1" fill="#f5c04a" />
+          <circle cx="10" cy="2" r="1" fill="#f5c04a" />
+        </g>
+        <path d="M-2-17c0-8 8-12 16-10-1 8-8 12-16 10z" fill="#5fbf64" />
+      </>
+    ),
+  },
+  rocket: {
+    word: 'rocket',
+    draw: (
+      <>
+        <path d="M-6 12c0 8 3 12 6 18 3-6 6-10 6-18z" fill="#f5a623" />
+        <path d="M-3 12c0 4 1 7 3 10 2-3 3-6 3-10z" fill="#ffd35c" />
+        <path d="M-12 2l-10 14h10zM12 2l10 14H12z" fill="#ef5350" />
+        <path d="M0-29c11 9 13 24 12 42h-24c-1-18 1-33 12-42z" fill="#e9eef7" />
+        <path d="M0-29c5 4 8 9 10 15h-20c2-6 5-11 10-15z" fill="#ef5350" />
+        <circle cy="-3" r="5.500" fill="#2a6fb5" />
+        <circle cy="-3" r="3.500" fill="#bfe3ff" />
+      </>
+    ),
+  },
 } satisfies Record<string, KitPicture>;
 
 export type PictureId = keyof typeof PICTURES;

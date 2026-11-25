@@ -322,7 +322,7 @@ counted, named, remembered or put in order, and anything in them that is not the
 
 - **One plain drawing for one thing**, about the middle of a square, in the two-dimensional language above: flat
   shapes, soft colours, a little ink for an eye or a seam. Nothing a child might count that is not the thing: no
-  spots, petals or windows. The picture kit (`src/art/pictures.tsx`) is 57 of these.
+  spots, petals or windows. The picture kit (`src/art/pictures.tsx`) is 68 of these.
 - **A thing stands on a small soft shadow and nothing else.** A picture that is part of a story is a small scene
   instead, with ground under it and sky over it, so that a story's pictures can be told from things to choose.
 - **A picture never holds its own answer.** The picture of what became of a snowman has no sun in it; a flag on
@@ -343,6 +343,24 @@ counted, named, remembered or put in order, and anything in them that is not the
 - **A sign stands for a question, and is drawn as what it means**: an arrow up to a small note, two shapes that
   match, dots that climb. It is a picture of the answer's kind, never of the answer.
 - **A letter is drawn, not set in a font**, with the strokes a child will later be taught, and only in lower case.
+  Two letters that write one sound stand together on one tile, so that a word has a tile for each sound: sh, i,
+  p.
+- **A sentence is one line of print**, in those same letters, every word at one size, on a card of the paper a
+  letter tile is made of. It is as wide as the screen and takes no more height than its letters, so that the
+  pictures it is answered with have the room. Nothing in it is coloured or lit unless it is being read to the
+  child, and then one coral line stands under the word that is being said: a finger.
+- **One thing on another is the two kit pictures themselves**, the one underneath whole and at its usual size,
+  the other smaller and put where it would rest: on the roof, on the head, in the doorway, in the cup with the
+  near side of the cup in front of it. Nothing is redrawn for the purpose, so a cat on a mat is plainly the cat
+  and the mat a child already knows. Every pair a sentence uses was looked at; a pair that would not read is
+  not offered.
+- **A clap is two hands meeting**, with three short lines of the sound they make. It is the mark a clap leaves
+  under a word and the mark on the cards a child answers with, so a card is read by matching, not by counting
+  something new. (It was a spark at first: a round middle with rays, which beside the kit's sun was a second,
+  smaller sun.) No clap is drawn before it is clapped, and while they are coming they start from the same place
+  whatever the word, so that where the first one stands says nothing of how many there will be.
+- **The end of a word has a mark**, where a question is about how a word ends: a line under the picture in two
+  parts, a short pale one and a long coral one, and the long one swells while the word is said.
 - **What is hidden is covered by something of the world** — a leaf, in Memory Forest — and is gone, not dimmed.
 - **A map** is blue water with small waves and green land with a rim of sand, so that the two differ in more than
   colour; its places are far apart; and it keeps its own shape on every screen, so that a place is in the same

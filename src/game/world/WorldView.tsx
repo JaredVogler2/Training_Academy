@@ -77,6 +77,11 @@ function picturesOf(shown: Challenge): Stimulus[] {
   ) {
     return shown.prompt.stimulus ? [shown.prompt.stimulus] : [];
   }
+  // Something made to go with a picture (a word built from its letters): the picture, and the first of it.
+  if (task.type === 'order' && shown.prompt.stimulus) {
+    const first = task.cards.find((card) => card.id === task.solution[0]);
+    return first ? [shown.prompt.stimulus, first.stimulus] : [shown.prompt.stimulus];
+  }
   const wanted = task.type === 'pairs' ? task.cards.slice(0, 2) : task.cards;
   const ids: readonly string[] = task.type === 'pairs' ? [] : task.solution;
   const first = wanted.filter((card) => ids.length === 0 || ids.includes(card.id)).slice(0, 2);

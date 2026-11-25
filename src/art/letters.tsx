@@ -25,14 +25,54 @@ const GLYPHS: Readonly<Record<string, { width: number; path: string; dot?: [numb
 
 export const LETTERS = Object.keys(GLYPHS);
 
+const GAP = 5;
+const INK = '#22304f';
+
+const glyphsOf = (letters: string) =>
+  Array.from(letters, (letter) => GLYPHS[letter]).flatMap((glyph) => (glyph ? [glyph] : []));
+
+/** How wide some letters are when they are drawn side by side, on the grid their strokes are written on. */
+export function lettersWidth(letters: string): number {
+  const glyphs = glyphsOf(letters);
+  return glyphs.reduce((total, glyph) => total + glyph.width, 0) + GAP * (glyphs.length - 1);
+}
+
+/**
+ * The strokes of some letters, to be put inside a picture: centred on x = 0, sitting on the line y = 0. A word in
+ * a sentence is drawn with this, so that every word of the sentence is written at one size.
+ */
+export function LetterStrokes({ letters }: { letters: string }) {
+  const glyphs = glyphsOf(letters);
+  const left = -lettersWidth(letters) / 2;
+  // Where each letter's middle is: after everything before it, and the gaps between.
+  const centres = glyphs.map(
+    (glyph, index) =>
+      left +
+      glyphs.slice(0, index).reduce((total, before) => total + before.width + GAP, 0) +
+      glyph.width / 2,
+  );
+  return (
+    <>
+      {glyphs.map((glyph, index) => (
+        <g key={index} transform={`translate(${String(centres[index] ?? 0)} 0)`}>
+          <path
+            d={glyph.path}
+            fill="none"
+            stroke={INK}
+            strokeWidth="5.500"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          {glyph.dot && <circle cx={glyph.dot[0]} cy={glyph.dot[1]} r="3.400" fill={INK} />}
+        </g>
+      ))}
+    </>
+  );
+}
+
 /** One or two letters as a picture, as large as the box it is given. */
 export function Letters({ letters, className }: { letters: string; className?: string }) {
-  const glyphs = Array.from(letters, (letter) => GLYPHS[letter]).flatMap((glyph) =>
-    glyph ? [glyph] : [],
-  );
-  const gap = 5;
-  const width = glyphs.reduce((total, glyph) => total + glyph.width, 0) + gap * (glyphs.length - 1);
-  let x = -width / 2;
+  const width = lettersWidth(letters);
   return (
     <svg
       className={className}
@@ -41,23 +81,7 @@ export function Letters({ letters, className }: { letters: string; className?: s
       focusable="false"
       data-letters={letters}
     >
-      {glyphs.map((glyph, index) => {
-        const centre = x + glyph.width / 2;
-        x += glyph.width + gap;
-        return (
-          <g key={index} transform={`translate(${String(centre)} 0)`}>
-            <path
-              d={glyph.path}
-              fill="none"
-              stroke="#22304f"
-              strokeWidth="5.500"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {glyph.dot && <circle cx={glyph.dot[0]} cy={glyph.dot[1]} r="3.400" fill="#22304f" />}
-          </g>
-        );
-      })}
+      <LetterStrokes letters={letters} />
     </svg>
   );
 }

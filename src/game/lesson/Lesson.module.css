@@ -115,6 +115,22 @@
   grid-template-rows: minmax(0, 0.42fr) minmax(0, 1.58fr);
 }
 
+/*
+ * A sentence. On a phone held upright it is set on two lines, so that its letters are large enough to read (on
+ * one line, at 320 points across, a small letter was 10 pixels high), and it has half the room. The pictures
+ * it is answered with stand side by side under it on every screen, which suits them: each is about as tall as
+ * it is wide.
+ */
+.board[data-asks-about='sentence'],
+.board[data-asks-about='sentence'][data-count='3'] {
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.board[data-asks-about='sentence'] .choices {
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-auto-flow: column;
+}
+
 .prompt {
   display: grid;
   grid-template: minmax(0, 1fr) / minmax(0, 1fr);
@@ -626,6 +642,12 @@
     grid-template-rows: minmax(0, 0.9fr) minmax(0, 1.1fr);
   }
 
+  /* With the width for it a sentence is one line, and needs little height. */
+  .board[data-asks-about='sentence'],
+  .board[data-asks-about='sentence'][data-count='3'] {
+    grid-template-rows: minmax(0, 0.5fr) minmax(0, 1.5fr);
+  }
+
   .caption {
     font-size: 1.0625rem;
   }
@@ -670,14 +692,18 @@
   /*
    * Three pictures in a row need as much room as the three they are answered with. So does anything else that
    * is wide and is counted or read from left to right: a staircase of towers, a frame of five or ten, a path of
-   * numbered stones, a story with those who stay on one side and those who come or go on the other.
+   * numbered stones, a story with those who stay on one side and those who come or go on the other, a sentence
+   * in print (which in the narrow column every other question gets had letters a few points high).
    */
   .board[data-asks-about='strip'],
   .board[data-asks-about='strip'][data-count='3'],
   .board[data-asks-about='stairs'],
   .board[data-asks-about='stairs'][data-count='3'],
   .board[data-asks-about='path'],
-  .board[data-asks-about='path'][data-count='3'] {
+  .board[data-asks-about='path'][data-count='3'],
+  .board[data-asks-about='sentence'],
+  .board[data-asks-about='sentence'][data-count='3'] {
+    grid-template-rows: minmax(0, 1fr);
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.3fr);
   }
 

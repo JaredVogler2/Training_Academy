@@ -9,7 +9,7 @@ have been run and passed; the evidence is linked. `docs/CONTINUE_HERE.md` has th
 | 02    | Visual identity and art pipeline               | **Done** (2026-11-22) — see below                                      |
 | 03    | World and player journey, first vertical slice | **Done** (2026-11-23) — see below                                      |
 | 04    | Audio and pre-reader onboarding                | **Partly done** (2026-11-23): the voice is built; onboarding is not    |
-| 05    | Phonics                                        | **Partly done**: Reading Cove's four activities; no sentences          |
+| 05    | Phonics                                        | **Built** (2026-11-25) to a short sentence; the last step, P6, is not  |
 | 06    | Math                                           | **Built** (2026-11-25) to adding within ten; the optional M7 is not    |
 | 07    | Robots (visual programming)                    | **Partly done**: Robot Ridge's four activities; no conditionals        |
 | 08    | Memory                                         | **Partly done**: Memory Forest's four activities; no second-day recall |
@@ -30,8 +30,9 @@ tested and playable, and the brief asked for more than that. The tables below sa
 
 Built on 2026-11-25. The owner merged pull request
 [#8](https://github.com/JaredVogler2/Training_Academy/pull/8) the same day as it stood at its first commit, so
-**the six activities are live**; the room to play in and the list of rooms not built came after that commit and
-are on pull request [#9](https://github.com/JaredVogler2/Training_Academy/pull/9), which is not merged. Its
+**the six activities are live**; the room to play in and the list of rooms not built came after that commit,
+on pull request [#9](https://github.com/JaredVogler2/Training_Academy/pull/9), which the owner merged later
+that day: they are live too. Its
 acceptance list is met as far as a machine can meet it. The one thing on that list a machine cannot say is
 whether the audio "works" to an ear: every sound here is made by arithmetic at the moment it is played, the
 browser accepted all of it without complaint, and **no person has heard a note of it.**
@@ -94,21 +95,29 @@ and **no person has listened to any of the recordings**.
 
 ### Phase 05 — Reading Cove
 
-| Asked for                                                         | What there is                                                                                                                                                                                   |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P0: sounds around us, sound patterns, rhyme, syllables            | Two activities: what made that sound, and play it back. **No rhyme, no syllables**                                                                                                              |
-| P0/P1: first sounds by ear                                        | Two activities, six first sounds (s, m, f, n, l, r), with the first sound drawn out                                                                                                             |
-| P2: a letter shape linked to its sound                            | Four activities, **15 letters** (s m a t, p i n o, f l c h, u e r), lower case, each taught through key words. **No recording of a sound on its own**: a synthesiser cannot be trusted with one |
-| P3: blending, by ear and then in print                            | Two activities: a word said slowly, then a printed word. **25 words are blended, 14 of them read in print**                                                                                     |
-| P4: segmenting; P5: digraphs, sentences; P6: transfer, nonsense   | **Not built**                                                                                                                                                                                   |
-| At least 10 correspondences, 25 CVC words, 10 decodable sentences | 15 letters; 25 words; **0 sentences**                                                                                                                                                           |
-| No untaught letter in anything to be read                         | Enforced by the content rules (`src/content/rules/readingCove.ts`) and tested                                                                                                                   |
-| Review list and sample pronunciations; audio is a release gate    | The list exists (grown-ups' area → _The voice_). **The gate is not passed: nobody has listened**                                                                                                |
+Sixteen activities, in the order the brief sets its steps out. `docs/CURRICULUM.md` has each of them, and what a
+child is helped with and what is left to the child in each.
+
+| Asked for                                                                         | What there is                                                                                                                                                                                                                                                      |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| P0: sounds around us, sound patterns, rhyme, syllables                            | Four activities: what made that sound, play it back, **which one rhymes**, and **clap the word** (one, two and three beats). By ear, with pictures: no letter is shown before the letter lessons, and a test says so                                               |
+| P0/P1: first sounds by ear                                                        | Two activities, six first sounds (s, m, f, n, l, r), with the first sound drawn out                                                                                                                                                                                |
+| P2: a letter shape linked to its sound                                            | Four activities, **15 letters** (s m a t, p i n o, f l c h, u e r), lower case, each taught through key words. **No recording of a sound on its own**: a synthesiser cannot be trusted with one                                                                    |
+| P3: blending, by ear and then in print                                            | Two activities: a word said slowly, then a printed word, with a finger under the tile of the sound that is being said                                                                                                                                              |
+| P4: segmenting: counters, first/middle/last, tiles in order                       | **Build the word**: a word is heard and its three letters are put in three places. Each place is one sound, and lights as that sound is said, with support. There are no counters apart from the places, and no separate question about where in a word a sound is |
+| P5: short words, then digraphs, then a sentence                                   | **sh, ch, th** as pairs on one tile, told apart from s, c, t and h; seven words with a pair in them to read; and **twelve sentences** of five words, each answered by the picture it tells of, among pictures one word different                                   |
+| P6: a word never met before; a made-up word now and then                          | **Not built.** Every word that is read is one whose picture has been met. Nothing here shows that a child can read a word and not only know it again                                                                                                               |
+| At least 10 correspondences, 25 CVC words, 10 decodable sentences                 | 15 letters and 3 pairs; 32 words blended, read or built (33 in the lexicon); **12 sentences**. Each count is pinned by a test                                                                                                                                      |
+| No untaught letter in anything to be read                                         | Enforced by the content rules (`src/content/rules/readingCove.ts`) and tested, for the little words of a sentence as well                                                                                                                                          |
+| Named games: Sound Safari, Letter Forge, Blend Bridge, Word Garden, Sentence Path | The activities do what those games are described as doing; none has that name, and tracing a letter (the brief's optional part of Letter Forge) is not built                                                                                                       |
+| "Animated characters visually stretch, pop and connect"                           | A picture hops as its word is said; a place lights and a finger steps as each sound comes; a clap pops for each beat. There are no characters for the sounds                                                                                                       |
+| Review list and sample pronunciations; audio is a release gate                    | The list exists (grown-ups' area → _The voice_). **The gate is not passed: nobody has listened**, and where a clip's sounds, beats and words begin has been checked by no ear                                                                                      |
 
 ### Phase 06 — Number Garden
 
 Seven activities were built with the six worlds. Eleven more were built on 2026-11-25, on pull request
-[#9](https://github.com/JaredVogler2/Training_Academy/pull/9), which is not merged: **those eleven are not live.**
+[#9](https://github.com/JaredVogler2/Training_Academy/pull/9), which the owner merged that day: **all eighteen
+are live.**
 
 | Asked for                                                                 | What there is                                                                                                                                                                                                                                                                                     |
 | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -363,7 +372,9 @@ to put it on a phone.
 | Going to an island is a fade, not a journey; nothing on an island answers a tap except by rising                                                                                                                                                                                                                                                                                                                   | 17          |
 | The hub's picture has still islands                                                                                                                                                                                                                                                                                                                                                                                | 17          |
 | The voice is synthesised and unheard: no person has listened to any recording, and no single letter-sound is recorded                                                                                                                                                                                                                                                                                              | 04, 05      |
-| 56 activities and 639 challenges that no early-years teacher has reviewed and no child has played                                                                                                                                                                                                                                                                                                                  | 05–11       |
+| 62 activities and 714 challenges that no early-years teacher has reviewed and no child has played                                                                                                                                                                                                                                                                                                                  | 05–11       |
+| A word said slowly, a word clapped in its beats and a sentence read aloud are followed on the screen (a place, a clap, a finger) at times the synthesiser gives for its own speech. No person has checked that they fall where they should, and the cuts between the beats of a word have been checked by nothing at all                                                                                           | 04, 05      |
+| Nothing shows that a child can read a word they have not met: every word read in Reading Cove is one whose picture has been seen and named. The brief's last step (P6) is not built                                                                                                                                                                                                                                | 05, 12      |
 | **Nobody has heard the Music Lab**: its notes are made by arithmetic as they are played, and whether they sound like chime bars, a pipe and a drum, or sound pleasant at all, is not known                                                                                                                                                                                                                         | owner       |
 | The lighthouse has no name written under it where the places stand in one row (very flat screens): the guide is moored there                                                                                                                                                                                                                                                                                       | 17          |
 | Evidence thresholds are product heuristics; no spaced review, no difficulty adjustment                                                                                                                                                                                                                                                                                                                             | 12          |
@@ -381,6 +392,26 @@ to put it on a phone.
 
 ## Log
 
+- **2026-11-25** — Reading Cove: rhyme, the beats of a word, building a word, sh ch th, and a sentence. Six
+  activities beside the ten that were there, 75 challenges, eleven new pictures, and the world's brief is met as
+  far as its fifth step of six. Two came first in the order, before any letter: which one rhymes, and clap the
+  word. The voice tool learnt to ask the synthesiser which of its samples belong to which sound, and from that
+  to cut a word into its beats and to write down when each sound of a slow word and each word of a sentence
+  begins; the screen follows those marks, so a place lights, a clap pops and a finger steps on in time with what
+  is said. Looking at the first slow words it cut showed a fault the old way of cutting had as well: a word
+  that starts softly was cut after its beginning, and "ship" was heard as "chip". Words are now carried by a
+  sentence that leaves a silence before them, and are cut in the silence. The ten activities that were live are
+  unchanged, lesson for lesson (the lock would have refused them otherwise); their slow words were made again
+  with marks. The browser tests used to take a clip's being fetched for its being said, which stopped being
+  true when clips began to be fetched ahead, so the voice now tells the page what it says and the tests listen.
+  Thirty-seven faults were put back one at a time to see the new tests fail. Thirty-six were caught by the test
+  meant for them; the other left a finger under the last word of a sentence an eighth of a second longer, which
+  is nothing a test should fail for. And measuring the print showed a sentence's small letters ten pixels high
+  on the narrowest phone, so on a phone held upright a sentence is set on two lines, its pictures side by side
+  under it: eighteen pixels there. While this was being built the owner merged the pull request before it
+  (#9), seventeen seconds after its last check went green: Number Garden's numerals, the Music Lab's room and
+  the fixes are live, and were checked on the site afterwards (`docs/DEPLOYMENT.md`). This work is on pull
+  request #10. Nobody has heard any of it.
 - **2026-11-25** — Number Garden: numerals, the numbers in order, adding and taking away. Eleven activities
   after the seven that were there, 142 challenges, and the world's brief is met as far as adding and taking
   away within ten (its optional last part, and two of its five named games, are not built). No change was

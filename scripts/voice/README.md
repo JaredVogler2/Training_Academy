@@ -38,8 +38,32 @@ Only clips that are missing, or whose words have changed, are made: a clip that 
 stays byte for byte what it was. `--again KEY …` makes named clips afresh; `--prune` deletes clips nothing asks for
 any more; `--check` makes nothing and fails if anything is out of date (it needs neither model).
 
-What is said comes from the content packs (`src/content/packs/*.json`, every line of `strings.en`) and from
-`src/voice/lines.json` (what every world shares, and single words). Nothing else is ever said.
+What is said comes from the content packs (`src/content/packs/*.json`, every line of `strings.en`), from
+`src/voice/lines.json` (what every world shares, and single words) and from `src/voice/lines/<world>.json`
+(what a world needs besides, written by its generator). Nothing else is ever said.
+
+## Clips that are followed on the screen
+
+Three kinds of clip have several things in them, one after another, and the screen shows each as it comes: a
+word said slowly, written with its sounds apart (`"m-a-p"`); a word said in its beats (`"el-e-phant"`); and a
+sentence read aloud. Each is made with **marks**: the moment, in seconds from the start of the clip, that each
+sound, beat or word begins. They are written into the manifest and, group by group, into
+`src/voice/marks/<group>.json`, which the game reads.
+
+The marks are not guessed and not listened for. The synthesiser is asked which of the samples it made belong to
+which sound (it needs the `onnx` package for that, which is in `requirements.txt`). Two things about that are
+worth knowing before changing the script:
+
+- **A word is cut in the silence before it, not where the synthesiser says it begins.** A sound that starts
+  softly (s, f, sh) is under way up to a tenth of a second earlier than that. "Ship" cut at the given moment was
+  heard as "chip".
+- **There has to be a silence.** After "The next word is," the voice often runs straight on, and always does
+  into "sh". Words that are cut this way are carried by "The next word is that, …" instead, and a take with no
+  silence before the word is thrown away.
+
+A word in its beats is the word as it is said, cut between its beats, with a breath put in. The recogniser hears
+it before the breaths go in (with them it hears three short words, or none), so `matches` says the right word
+was cut up and nothing about where the cuts fall. **Nobody has listened to where they fall.**
 
 ## What is checked, and what is not
 
@@ -58,5 +82,6 @@ it reads `null`, and the game's documents say the voice has not been reviewed.
 
 - The files in `src/assets/voice` are this project's own.
 - `piper-tts` is GPL-3.0 software. It is used here as a tool; none of it is in the game.
+- `onnx` is Apache-2.0 software, used the same way.
 - The voice model comes from the `rhasspy/piper-voices` repository (MIT). Its model card says it was trained on
   LibriVox recordings, which are in the public domain. `docs/ASSETS.md` has the details.

@@ -86,6 +86,12 @@ Things worth knowing:
   about, refuses one that is not well made (stairs that do not go up by one, more leaving than were there),
   and says the one amount it stands for: how many it shows, or how many it asks for. The content rules, the
   scripts and the drawings all ask it, so the three cannot disagree about what the answer to a picture is.
+- **Reading Cove's later pictures are read the same way**, by `src/engine/reading.ts`: a word to find a rhyme
+  for, a word to clap, a card of one to three claps, a sentence in print, and one thing on or in another. It
+  says what a picture is and refuses one that is not well made (four claps; a thing on itself); it knows a
+  sentence and the picture it tells of as two ways of writing one thing. It does not know a word: how a word
+  ends, how it is spelt sound by sound and how many beats it has are the lexicon's (`src/art/lexicon.json`),
+  and the rules look them up there.
 - **A wrong answer is never a dead end.** A choice just tried is taken away and the child tries again; when only
   the right choice is left it is revealed, and tapping it completes the challenge as an assisted solve. A made
   thing keeps what was right in it; after three wrong tries (unless the challenge says otherwise) the answer is
@@ -394,19 +400,19 @@ next world: what a world's large Play button goes to, and where Glim points on t
 `game/worlds/modules.ts` is the registry of per-world code. Each world has a module, fetched with its content
 pack on entering that world and never before:
 
-| A module gives | What it is                                                                                                                                     |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Picture`      | How a stimulus is drawn, as a question, a choice or a card; lit when it is named; with its gap filled when its question has been answered      |
-| `describe`     | The same picture in words, for a screen reader                                                                                                 |
-| `countable`    | How many things a picture holds, where counting is how the world teaches (Number Garden only)                                                  |
-| `chooseScript` | How the world shows off a question with choices: counting, saying a word slowly, uncovering and covering, telling a story as far as it goes    |
-| `makeScript`   | The same for a thing to make, where the world has more to say than the board (a story told back picture by picture)                            |
-| `soundOf`      | The recording a picture makes of its own accord when lit or tapped (a drum)                                                                    |
-| `toneOf`       | The note a picture plays when it is tapped, where it is an instrument (a chime bar's own pitch)                                                |
-| `echoLayout`   | `row`, where things to repeat stand in a row in their own order with nothing round them, like the bars of a keyboard                           |
-| `boards`       | Boards for games only this world has, by the kind of task (`program`, `design`, `give`, `beat`, `tune`) or the scene asked about (`scene:map`) |
-| `linesFor`     | Lines a challenge is told with beside its own, to be fetched before they are wanted                                                            |
-| `voice`        | Where this world's recordings are and how long each lasts                                                                                      |
+| A module gives | What it is                                                                                                                                           |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Picture`      | How a stimulus is drawn, as a question, a choice or a card; lit when it is named; with its gap filled when its question has been answered            |
+| `describe`     | The same picture in words, for a screen reader                                                                                                       |
+| `countable`    | How many things a picture holds, where counting is how the world teaches (Number Garden only)                                                        |
+| `chooseScript` | How the world shows off a question with choices: counting, saying a word slowly, uncovering and covering, telling a story as far as it goes          |
+| `makeScript`   | The same for a thing to make, where the world has more to say than the board (a story told back picture by picture)                                  |
+| `soundOf`      | The recording a picture makes of its own accord when lit or tapped (a drum)                                                                          |
+| `toneOf`       | The note a picture plays when it is tapped, where it is an instrument (a chime bar's own pitch)                                                      |
+| `echoLayout`   | `row`, where things to repeat stand in a row in their own order with nothing round them, like the bars of a keyboard                                 |
+| `boards`       | Boards for games only this world has, by the kind of task (`program`, `design`, `give`, `beat`, `tune`) or the scene asked about (`scene:map`)       |
+| `linesFor`     | Lines a challenge is told with beside its own, to be fetched before they are wanted: a story's lines; in Reading Cove, every clip its script may say |
+| `voice`        | Where this world's recordings are and how long each lasts                                                                                            |
 
 `game/lessonRunner.ts` runs one sitting: resume or create, answer, hint, next, restart. It updates the screen first and
 saves second; a failed save never interrupts a child (the lesson continues in memory and says it is not saved).
@@ -465,6 +471,14 @@ Three things the frame does that are easy to undo by accident:
   (`Writer.essential()`) is played even where the person has asked for less movement — what it lights then
   simply goes on and off — and a question with choices takes no answer until the last thing it names has been
   named (`hearing`, in `useChoosing`). Asking again plays the whole of it again, as often as asked.
+- **A script can show one part of a thing at a time.** `{ show: 'name', which: 'prompt', part }` is the third
+  tile of a word, the fourth word of a sentence, the second place of three. A picture is given `part`; the
+  order board lights that place. A script that follows a recording begins the line without waiting for it
+  (`Writer.start`) and sets a beat at each moment the recording's marks give (_The voice_, below), so a finger
+  steps and a place lights in time with what is said.
+- **An order can have a picture to go by.** A thing to make may carry a picture (`prompt.stimulus`); the order
+  board shows it above the places (beside them, on a phone held sideways). A word to build from its letters is
+  that: the picture of the word, three places, three tiles.
 
 A world's page (`game/world/WorldView.tsx`) shows the island with the world's emblem pinned to it; one large
 Play button that goes to the next lesson not yet finished; and every lesson as a card with a picture built from
@@ -507,6 +521,7 @@ offline, and because a browser's own speech cannot be checked.
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `scripts/voice/make_voice.py`  | Not part of the game. Reads every line the packs and `src/voice/lines*.json` ask for, says each with a speech synthesiser, has a speech recogniser listen to it, and writes the clip, its length and what was heard. Its README says how to run it. |
 | `src/voice/manifest.json`      | For every clip: its words, its file's hash, how it was checked (`matches`, `in-sentence`, `made` for a sound that is not speech) and whether a person has listened. Nothing is marked as listened to.                                               |
+| `src/voice/marks/<group>.json` | For a clip that has several things in it to follow — a word said slowly, a word in its beats, a sentence read aloud — the moment each sound, beat or word begins. Written by the voice tool from the synthesiser's own account of its speech.       |
 | `src/assets/voice/en/<group>/` | The clips, one group for each world, one for words shared between worlds, one for lines every activity uses.                                                                                                                                        |
 | `src/audio/voice.ts`           | The `Narrator`: fetches a clip when it is first wanted, decodes it on the game's one audio context, keeps a few dozen decoded, says one line at a time, stops on pause and on leaving, and turns the cue sounds down while it speaks.               |
 | `src/parent/VoiceCheck.tsx`    | In the grown-ups' area: every clip, what it should say and how it was checked, to play and to mark as sounding right or wrong. The marks stay on the device; the wrong ones are listed to send on.                                                  |
@@ -515,6 +530,15 @@ Nothing waits on the voice. A line that cannot be heard — sound off, audio not
 that failed — is not said, and a script is told it takes no time, so what is shown never stands still for words
 nobody hears. A test fails if a line that can be said has no clip, if a clip is not in the manifest, or if any
 clip was heard as other words (`tests/config/voice.test.ts`).
+
+**Fetched ahead, and said when said.** A board asks for the lines of a step as the step arrives
+(`usePreparedLines`), and a world can add to them everything its script may say for that step
+(`WorldModule.linesFor`): Reading Cove names each picture's word, plain, drawn out and slow, and a sentence's
+recording. That is so a clip which something moves in time with starts when the moving does. It also means
+that a clip's having been fetched says nothing about its having been heard. The page is told each line at the
+moment it begins to play — an event on the window, `SAID_EVENT` in `src/audio/index.ts`, with the line's key —
+and nothing in the game listens for it: it is there for whatever needs to know from outside, which today is
+the browser tests (`listenIn` in `e2e/fixtures.ts`).
 
 ## Bundle splitting
 

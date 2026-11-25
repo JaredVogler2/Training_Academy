@@ -1,14 +1,16 @@
 {
-  "about": "What each picture of the kit (src/art/pictures.tsx) is called, and what Reading Cove needs to know about the word: the letter whose sound it starts with, where that is one of the sounds taught, and whether it is spelt just as it sounds, one letter for each sound, so that it can be sounded out. A word the voice cannot be relied on to say clearly is left as a picture only: \"nut\" is one.",
+  "about": "What each picture of the kit (src/art/pictures.tsx) is called, and what Reading Cove needs to know about the word. `starts`: the letter, or the two letters that write one sound, whose sound it starts with, where that is one of the sounds taught. `letters`: the word as it is spelt, one entry for each sound, where it is spelt just as it sounds and so can be sounded out (\"sh\" is one entry: two letters, one sound). `beats`: the word in the beats it is clapped in, for the words that are clapped. A word the voice cannot be relied on to say clearly is left as a picture only: \"nut\" is one.",
   "words": {
     "sun": {
       "word": "sun",
       "starts": "s",
-      "letters": ["s", "u", "n"]
+      "letters": ["s", "u", "n"],
+      "beats": ["sun"]
     },
     "moon": {
       "word": "moon",
-      "starts": "m"
+      "starts": "m",
+      "beats": ["moon"]
     },
     "mat": {
       "word": "mat",
@@ -78,7 +80,8 @@
     "cat": {
       "word": "cat",
       "starts": "c",
-      "letters": ["c", "a", "t"]
+      "letters": ["c", "a", "t"],
+      "beats": ["cat"]
     },
     "cap": {
       "word": "cap",
@@ -103,7 +106,8 @@
     "hen": {
       "word": "hen",
       "starts": "h",
-      "letters": ["h", "e", "n"]
+      "letters": ["h", "e", "n"],
+      "beats": ["hen"]
     },
     "nut": {
       "word": "nut"
@@ -156,7 +160,9 @@
     },
     "fish": {
       "word": "fish",
-      "starts": "f"
+      "starts": "f",
+      "letters": ["f", "i", "sh"],
+      "beats": ["fish"]
     },
     "fox": {
       "word": "fox",
@@ -214,7 +220,8 @@
     },
     "apple": {
       "word": "apple",
-      "starts": "a"
+      "starts": "a",
+      "beats": ["ap", "ple"]
     },
     "axe": {
       "word": "axe",
@@ -222,7 +229,8 @@
     },
     "igloo": {
       "word": "igloo",
-      "starts": "i"
+      "starts": "i",
+      "beats": ["ig", "loo"]
     },
     "ink": {
       "word": "ink",
@@ -230,15 +238,18 @@
     },
     "octopus": {
       "word": "octopus",
-      "starts": "o"
+      "starts": "o",
+      "beats": ["oc", "to", "pus"]
     },
     "olive": {
       "word": "olive",
-      "starts": "o"
+      "starts": "o",
+      "beats": ["ol", "ive"]
     },
     "umbrella": {
       "word": "umbrella",
-      "starts": "u"
+      "starts": "u",
+      "beats": ["um", "brel", "la"]
     },
     "egg": {
       "word": "egg",
@@ -246,7 +257,58 @@
     },
     "elephant": {
       "word": "elephant",
-      "starts": "e"
+      "starts": "e",
+      "beats": ["el", "e", "phant"]
+    },
+    "ship": {
+      "word": "ship",
+      "starts": "sh",
+      "letters": ["sh", "i", "p"]
+    },
+    "shop": {
+      "word": "shop",
+      "starts": "sh",
+      "letters": ["sh", "o", "p"]
+    },
+    "chin": {
+      "word": "chin",
+      "starts": "ch",
+      "letters": ["ch", "i", "n"]
+    },
+    "chip": {
+      "word": "chip",
+      "starts": "ch",
+      "letters": ["ch", "i", "p"]
+    },
+    "cheese": {
+      "word": "cheese",
+      "starts": "ch"
+    },
+    "thumb": {
+      "word": "thumb",
+      "starts": "th"
+    },
+    "moth": {
+      "word": "moth",
+      "starts": "m",
+      "letters": ["m", "o", "th"]
+    },
+    "path": {
+      "word": "path",
+      "starts": "p",
+      "letters": ["p", "a", "th"]
+    },
+    "banana": {
+      "word": "banana",
+      "beats": ["ba", "na", "na"]
+    },
+    "lemon": {
+      "word": "lemon",
+      "beats": ["lem", "on"]
+    },
+    "rocket": {
+      "word": "rocket",
+      "beats": ["rock", "et"]
     }
   }
 }

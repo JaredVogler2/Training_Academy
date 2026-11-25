@@ -49,15 +49,19 @@ export const WORLDS: readonly WorldInfo[] = [
     name: 'Reading Cove',
     focus: 'Sounds first, then letters, then words',
     about:
-      'Reading starts with listening. Children tune in to sounds, hear the first sound of a word, and only then meet the letter that stands for it — no alphabet needed to begin.',
+      'Reading starts with listening. Children tune in to sounds, hear rhymes, the beats and the first sound of a word, and only then meet the letter that stands for it — no alphabet needed to begin. Then words to blend, to build and to read, and at last a sentence.',
     activities: [
       { title: 'Listening for sounds all around', lessons: ['rc-listen-01', 'rc-listen-02'] },
+      { title: 'Rhymes, and the beats of a word', lessons: ['rc-rhyme-01', 'rc-syllables-01'] },
       { title: 'Hearing the first sound in a word', lessons: ['rc-first-01', 'rc-first-02'] },
       {
         title: 'Linking a letter shape to its sound',
         lessons: ['rc-letters-01', 'rc-letters-02', 'rc-letters-03', 'rc-letters-04'],
       },
       { title: 'Blending sounds into words', lessons: ['rc-blend-01', 'rc-blend-02'] },
+      { title: 'Building a word from its sounds', lessons: ['rc-spell-01'] },
+      { title: 'Two letters, one sound: sh, ch, th', lessons: ['rc-letters-05', 'rc-blend-03'] },
+      { title: 'Reading a sentence', lessons: ['rc-sentences-01'] },
     ],
     role: 'reading',
   },

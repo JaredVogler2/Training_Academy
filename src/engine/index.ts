@@ -115,3 +115,15 @@ export {
   readNumberPicture,
   type NumberPicture,
 } from './numbers';
+export {
+  CLAPS_MOST,
+  PLACINGS,
+  clapsMisconception,
+  placedBy,
+  placedMisconception,
+  readReadingPicture,
+  sentenceClip,
+  sentenceFor,
+  type Placing,
+  type ReadingPicture,
+} from './reading';

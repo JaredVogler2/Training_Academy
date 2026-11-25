@@ -83,6 +83,9 @@ export function echoScript(situation: MakeSituation): Script {
  *
  *   order   cards lie in a row out of order, with a place for each: first, next, last. A tap sends a card to the
  *           first empty place; a tap on a placed card takes it back. When every place is filled the child says so.
+ *           Where the task has a picture that goes with it (the word that is being built from its letters), the
+ *           picture stands above the places, and a script can light one place at a time: the place of the sound
+ *           that is being said.
  *   echo    things light up one after another, and the child taps them in the same order. There is nothing to
  *           hand in: the last tap is the answer.
  */
@@ -173,6 +176,11 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
   const again = () => ask(!watching);
   // In an order that has been got right, the story is told back: the card whose turn it is, and its words.
   const telling = !echo && beat.show === 'name' ? beat.which : null;
+  // What goes with an order, where it has something: named as a whole, or one place of it at a time.
+  const shownWith = echo ? undefined : challenge.prompt.stimulus;
+  const ofPrompt = !echo && beat.show === 'name' && beat.which === 'prompt';
+  const promptNamed = ofPrompt && beat.part === undefined;
+  const soundingPlace = ofPrompt ? beat.part : undefined;
   const lit = showing ? beat.which : null;
   const doing = beat.show === 'do' ? beat.parts : demo && beat.show === 'same' ? length : 0;
   const same = beat.show === 'same';
@@ -294,7 +302,19 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
 
   return (
     <>
-      <div className={styles.order} data-count={length} data-testid="order-board" inert={paused}>
+      <div
+        className={styles.order}
+        data-count={length}
+        data-with={shownWith ? shownWith.type : undefined}
+        data-testid="order-board"
+        inert={paused}
+      >
+        {shownWith && (
+          <div className={styles.orderPrompt} data-named={promptNamed} data-testid="order-prompt">
+            <span className="sr-only">{module.describe(shownWith, 'prompt')}</span>
+            <Picture stimulus={shownWith} place="prompt" sounding={promptNamed} onAgain={again} />
+          </div>
+        )}
         <ol className={styles.slots} data-same={same || (answered && filled)}>
           {slots.map((id, index) => {
             const card = id === null ? null : cardOf(id);
@@ -308,6 +328,7 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
                   data-slot={index}
                   data-filled={card !== null && card !== undefined}
                   data-telling={id !== null && id === telling}
+                  data-sounding={index === soundingPlace}
                   data-fixed={index < fixed.length && !demo}
                   aria-label={`${lessonText.place(index + 1)}: ${card ? card.label : lessonText.empty}`}
                   aria-disabled={busy || !card || index < fixed.length}

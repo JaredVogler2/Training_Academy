@@ -8,6 +8,7 @@ import { nextLessonIn, useFinishedLessons } from '@/game/progress';
 import { isOpen, lessonsOf, worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds/modules';
 import { IslandPicture } from '@/render/IslandPicture';
+import { placeOf } from '@/render/extents';
 import { WorldEmblem } from '@/ui/art';
 import { ActionLink } from '@/ui/controls';
 import { IconAsleep, IconBack, IconCheck, IconPlay } from '@/ui/icons';
@@ -67,8 +68,13 @@ function picturesOf(shown: Challenge): Stimulus[] {
   }
   const { task } = shown;
   if (task.type === 'give') return [task.want];
-  // A robot's journey and a thing on a workbench are pictures of their own, where the task has one.
-  if (task.type === 'program' || task.type === 'design') {
+  // A robot's journey, a thing on a workbench, a beat and a tune are pictures of their own, where the task has one.
+  if (
+    task.type === 'program' ||
+    task.type === 'design' ||
+    task.type === 'beat' ||
+    task.type === 'tune'
+  ) {
     return shown.prompt.stimulus ? [shown.prompt.stimulus] : [];
   }
   const wanted = task.type === 'pairs' ? task.cards.slice(0, 2) : task.cards;
@@ -125,7 +131,7 @@ export default function WorldView({ world }: { world: WorldId }) {
       <header className={styles.hero}>
         {/* The place, and pinned to it what the place is for: one picture a child can take in at a glance. */}
         <div className={styles.emblem}>
-          <IslandPicture place={world} />
+          <IslandPicture place={placeOf(world)} />
           <span className={styles.badge}>
             <WorldEmblem world={world} />
           </span>

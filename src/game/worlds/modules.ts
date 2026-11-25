@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react';
 import { loadChunk } from '@/app/chunks';
-import { addVoice, type VoiceBank } from '@/audio';
+import { addVoice, type Timbre, type VoiceBank } from '@/audio';
 import type { Challenge, MakeChallenge, Stimulus, WorldId } from '@/engine';
 import type { BoardProps } from '@/game/lesson/frame';
 import type { ChooseSituation, MakeSituation, Script } from '@/game/lesson/script';
@@ -19,6 +19,8 @@ export interface PictureProps {
   place?: 'prompt' | 'choice' | 'card';
   /** It is being named or played at this moment. */
   sounding?: boolean;
+  /** Which of the things in it is being played, from 0, where it has more than one (two singers side by side). */
+  part?: number | undefined;
   /**
    * What it asks has just been answered, and the answer is being shown beside it. A picture with a gap in it — a
    * story with its ending missing — shows what belongs there.
@@ -50,6 +52,16 @@ export interface WorldModule {
    */
   soundOf?(stimulus: Stimulus): string | null;
   /**
+   * The note a picture plays when it is tapped or lit, where it is an instrument: a chime bar's own pitch. `null`
+   * for everything else.
+   */
+  toneOf?(stimulus: Stimulus): { timbre: Timbre; pitch: string | number } | null;
+  /**
+   * Things to echo stand in a row in the order they are written, like the bars of a keyboard, with nothing round
+   * them: the board lays them out so, where this says `row`.
+   */
+  echoLayout?: 'row';
+  /**
    * Boards for games only this world has, by what they are for: a kind of task (`program`), or a scene a question
    * is asked about (`scene:map`). The lesson frame has boards of its own for everything else.
    */
@@ -70,6 +82,7 @@ const MODULES: Partial<Record<WorldId, () => Promise<{ default: WorldModule }>>>
   'memory-forest': () => import('./memory-forest'),
   'inventor-island': () => import('./inventor-island'),
   'explorer-harbor': () => import('./explorer-harbor'),
+  'music-lab': () => import('./music-lab'),
 };
 
 export function hasWorldModule(world: WorldId): boolean {

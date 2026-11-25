@@ -419,6 +419,19 @@ describe('every lint rule fires', () => {
     'design-solution-wrong': (pack) => {
       made(pack, 'ramp').task.solution = ['low'];
     },
+    'beat-need': (pack) => {
+      // Half the beats: tapping at half the pace would pass.
+      made(pack, 'keep-time').task.need = 4;
+    },
+    'tune-notes': (pack) => {
+      made(pack, 'climb').task.notes = ['c4', 'g4', 'e4', 'c5'];
+    },
+    'tune-solution-unbuildable': (pack) => {
+      made(pack, 'climb').task.solution = ['c4', 'e4', 'a4'];
+    },
+    'tune-solution-wrong': (pack) => {
+      made(pack, 'climb').task.solution = ['g4', 'e4', 'c4'];
+    },
     'design-nothing-to-find': (pack) => {
       made(pack, 'ramp').task.controls[0].options = ['mid', 'mid'];
     },

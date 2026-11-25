@@ -42,7 +42,7 @@ test.describe('a brand-new child', () => {
     await expect(pictures).toHaveCount(6);
     // The map is behind the door to be seen, and switched off: no island can be tapped or reached by keyboard.
     const islandLinks = page.locator('a[data-world]');
-    await expect(islandLinks).toHaveCount(6);
+    await expect(islandLinks).toHaveCount(7);
     expect(
       await islandLinks.evaluateAll((links) => links.every((link) => link.closest('[inert]'))),
     ).toBe(true);
@@ -61,7 +61,7 @@ test.describe('a brand-new child', () => {
 
     // The map: Glim, having said hello, points at the island to go to, and it has something to play.
     const worlds = page.getByRole('navigation', { name: 'Worlds' });
-    await expect(worlds.getByRole('link')).toHaveCount(6);
+    await expect(worlds.getByRole('link')).toHaveCount(7);
     const open = worlds.locator('a[data-next="true"]');
     await expect(open).toHaveCount(1);
     await expect(open).toHaveAttribute('data-open', 'true');
@@ -104,7 +104,7 @@ test.describe('a brand-new child', () => {
     await press(finished(page).getByRole('link', { name: 'Islands' }));
 
     // Home: the map again, with no front door (this visit has begun) and the same player.
-    await expect(worlds.getByRole('link')).toHaveCount(6);
+    await expect(worlds.getByRole('link')).toHaveCount(7);
     await expect(frontDoor(page)).toHaveCount(0);
     await expect(page.getByText('Shell', { exact: true })).toBeVisible();
   });
@@ -119,7 +119,7 @@ test.describe('a brand-new child', () => {
 
     // A refresh in the same visit goes straight to the map.
     await page.reload();
-    await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(6);
+    await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(7);
     await expect(frontDoor(page)).toHaveCount(0);
 
     // A new visit (the tab's memory gone, the device's kept) opens on the front door, with that player on it.
@@ -250,7 +250,7 @@ test.describe('when it does not go right first time', () => {
     // Home from the pause sheet: the islands, at once.
     await press(paused(page).getByRole('link', { name: 'Leave the activity' }));
     const worlds = page.getByRole('navigation', { name: 'Worlds' });
-    await expect(worlds.getByRole('link')).toHaveCount(6);
+    await expect(worlds.getByRole('link')).toHaveCount(7);
 
     // And back in: the step that was left.
     await press(worlds.getByRole('link', { name: /Number Garden/ }));

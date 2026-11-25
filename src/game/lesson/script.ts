@@ -1,4 +1,4 @@
-import type { Cue } from '@/audio';
+import type { Cue, Timbre } from '@/audio';
 import type { Stage, Stimulus } from '@/engine';
 
 /**
@@ -23,8 +23,11 @@ export type Beat =
   | { show: 'count'; group: string }
   /** What was asked about and its answer, lit together: these go together. */
   | { show: 'same' }
-  /** One picture lifted while it is named or sounded: `prompt`, or the id of a choice or a card. */
-  | { show: 'name'; which: string }
+  /**
+   * One picture lifted while it is named or sounded: `prompt`, or the id of a choice or a card. Where the picture
+   * has more than one thing in it (two singers side by side), `part` says which of them it is, from 0.
+   */
+  | { show: 'name'; which: string; part?: number }
   /** What has to be taken in at a glance is uncovered, for a look. */
   | { show: 'glance' }
   /** A thing being made, part by part: the first `parts` parts of the answer are in place. */
@@ -34,6 +37,8 @@ export type Sound =
   /** The climbing note for the `index`-th thing counted (0 is the first). */
   | { kind: 'count'; index: number }
   | { kind: 'cue'; cue: Cue }
+  /** One stroke of an instrument: a note by its name ("c4"), or, for a drum or a click, a pitch in hertz. */
+  | { kind: 'tone'; timbre: Timbre; pitch: string | number }
   /** A line for the voice, by its key. */
   | { kind: 'say'; key: string };
 
@@ -50,6 +55,11 @@ export interface Script {
   settled: Beat;
   /** Milliseconds from start to rest. */
   length: number;
+  /**
+   * What it shows is the question itself — a tune to listen to, and who is singing it — so it is played even
+   * where the person has asked for less movement. (What it lights then simply goes on and off.)
+   */
+  essential?: boolean;
 }
 
 export type ScriptEvent =
@@ -74,6 +84,7 @@ export const SAME: Beat = { show: 'same' };
 export class Writer {
   readonly moments: Moment[] = [];
   private clock = 0;
+  private needed = false;
 
   constructor(private readonly seconds: Seconds = () => 0) {}
 
@@ -98,6 +109,18 @@ export class Writer {
 
   note(index: number, after = 0): this {
     this.moments.push({ at: this.clock + after, sound: { kind: 'count', index } });
+    return this;
+  }
+
+  /** One stroke of an instrument, at this moment. It takes no time: wait for as long as it should ring. */
+  tone(timbre: Timbre, pitch: string | number): this {
+    this.moments.push({ at: this.clock, sound: { kind: 'tone', timbre, pitch } });
+    return this;
+  }
+
+  /** What this script shows is the question itself: see `Script.essential`. */
+  essential(): this {
+    this.needed = true;
     return this;
   }
 
@@ -134,7 +157,7 @@ export class Writer {
       JSON.stringify(last.beat) === JSON.stringify(settled);
     if (!already) this.moments.push({ at: this.clock, beat: settled });
     const moments = [...this.moments].sort((a, b) => a.at - b.at);
-    return { moments, settled, length: this.clock };
+    return { moments, settled, length: this.clock, ...(this.needed ? { essential: true } : {}) };
   }
 }
 

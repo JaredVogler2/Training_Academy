@@ -19,6 +19,7 @@ const PACK_LOADERS: Partial<Record<WorldId, () => Promise<{ default: unknown }>>
   'memory-forest': () => import('./packs/memory-forest.v1.json'),
   'inventor-island': () => import('./packs/inventor-island.v1.json'),
   'explorer-harbor': () => import('./packs/explorer-harbor.v1.json'),
+  'music-lab': () => import('./packs/music-lab.v1.json'),
 };
 
 const loaded = new Map<WorldId, Promise<ContentPack>>();

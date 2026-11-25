@@ -128,9 +128,24 @@ export function useChoosing({ state, module, paused, calm }: BoardProps) {
   );
   const unseen = glance && !answered && willLook && !glanced;
   const turnedAway = glance && (looking || unseen);
+  // A question that is heard (two notes: which was the high one?) is one thing from beginning to end, as an
+  // order being shown is: until the last of it has sounded, nothing can be answered. (A tap after the first
+  // note would be a guess at a question not yet put.)
+  const lastHeard = useMemo(() => {
+    let beats = 0;
+    let last = 0;
+    for (const moment of script.moments) {
+      if (!moment.beat) continue;
+      beats += 1;
+      if (moment.beat.show === 'name') last = beats;
+    }
+    return last;
+  }, [script]);
+  const hearing =
+    script.essential === true && !demo && !answered && lastHeard > 0 && turn <= lastHeard;
   // Asked to be told again while the look is still to come, or in the middle of it: the look is still owed, so
   // the question starts over with it. Asked once it has been seen through, only the words are said again.
-  const again = () => ask(!turnedAway);
+  const again = () => ask(!(turnedAway || hearing));
 
   const standingOf = (choice: Choice, available: boolean): ChoiceStanding => {
     const isAnswer = shown === choice.id && reached;
@@ -141,7 +156,7 @@ export function useChoosing({ state, module, paused, calm }: BoardProps) {
       isTried,
       held,
       look: isAnswer ? 'same' : available ? 'open' : held ? 'tried' : 'away',
-      waiting: !available || answered || demo || turnedAway,
+      waiting: !available || answered || demo || turnedAway || hearing,
     };
   };
 

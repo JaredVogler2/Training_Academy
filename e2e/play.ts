@@ -2,6 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 import type { Challenge, ContentPack } from '../src/engine/schema';
 import explorerHarbor from '../src/content/packs/explorer-harbor.v1.json' with { type: 'json' };
 import memoryForest from '../src/content/packs/memory-forest.v1.json' with { type: 'json' };
+import musicLab from '../src/content/packs/music-lab.v1.json' with { type: 'json' };
 import numberGarden from '../src/content/packs/number-garden.v2.json' with { type: 'json' };
 import readingCove from '../src/content/packs/reading-cove.v1.json' with { type: 'json' };
 
@@ -21,6 +22,7 @@ export const PACKS: Record<string, ContentPack> = {
   'reading-cove': readingCove as unknown as ContentPack,
   'memory-forest': memoryForest as unknown as ContentPack,
   'explorer-harbor': explorerHarbor as unknown as ContentPack,
+  'music-lab': musicLab as unknown as ContentPack,
 };
 
 export interface Activity {
@@ -55,6 +57,9 @@ export async function challengeOnScreen(page: Page): Promise<Challenge> {
 }
 
 const done = (page: Page) => page.getByRole('button', { name: 'Done' });
+
+/** About how long a press takes to arrive once it has been asked for, in milliseconds. */
+const PRESS_TAKES = 45;
 
 /** Wait until nothing on the board is being shown off: every card and the foot can be pressed. */
 async function settled(page: Page): Promise<void> {
@@ -148,6 +153,37 @@ export async function answer(page: Page, press: Press, right = true): Promise<vo
       }
       return;
     }
+    case 'beat': {
+      // The beat is kept the way a person keeps it: from the first beats heard, the rest are known, and each tap
+      // is begun a little ahead of its beat so that it lands on it. (Waiting to see each light come on and then
+      // pressing lands every tap late by however long this machine takes to press, which is not steady.)
+      const drum = page.getByRole('button', { name: /^The drum/ });
+      const period = 60_000 / task.tempo;
+      const seen = await page.waitForFunction(
+        () =>
+          document.querySelector('[data-beat="0"][data-now="true"]')
+            ? performance.timeOrigin + performance.now()
+            : null,
+        undefined,
+        { polling: 'raf' },
+      );
+      const first = (await seen.jsonValue()) ?? Date.now();
+      for (let beat = task.lead; beat < task.lead + task.beats; beat++) {
+        const wait = first + beat * period - PRESS_TAKES - Date.now();
+        if (wait > 0) await page.waitForTimeout(wait);
+        await press(drum);
+      }
+      return;
+    }
+    case 'tune': {
+      const placed = page.locator('[data-testid="tune-board"] [data-column]');
+      for (const [index, note] of task.solution.entries()) {
+        if ((await placed.count()) > index) continue;
+        await press(page.locator(`button[data-note="${note}"]`));
+      }
+      await press(done(page));
+      return;
+    }
     case 'program':
     case 'design':
       throw new Error(`These helpers do not know how to do a "${task.type}" task.`);
@@ -178,6 +214,8 @@ export async function playToTheEnd(page: Page, press: Press): Promise<number> {
             document.querySelector('[data-testid="lesson"]')?.getAttribute('data-challenge') !== id,
           before,
         ),
+        // A beat that was not kept has been looked at, and is there to be tapped again.
+        page.locator('[data-testid="beat-board"] [data-judged="true"]').waitFor(),
       ]);
     }
     await page.waitForTimeout(100);

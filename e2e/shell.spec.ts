@@ -1,5 +1,6 @@
 import {
   CLOSED_WORLD,
+  LIGHTHOUSE_SHARE,
   OPEN_WORLDS,
   WORLD_NAMES,
   expect,
@@ -9,7 +10,7 @@ import {
 } from './fixtures';
 
 test.describe('the home shell', () => {
-  test('shows the brand, the two toggles and all six worlds, laid out for this screen @layout @smoke', async ({
+  test('shows the brand, the two toggles and all seven worlds, laid out for this screen @layout @smoke', async ({
     page,
   }) => {
     await page.goto('/');
@@ -20,9 +21,10 @@ test.describe('the home shell', () => {
     await expect(page.getByRole('link', { name: 'Grown-ups' })).toBeVisible();
 
     const worlds = page.getByRole('navigation', { name: 'Worlds' }).getByRole('link');
-    await expect(worlds).toHaveCount(6);
+    await expect(worlds).toHaveCount(7);
     for (const name of WORLD_NAMES) {
-      await expect(worlds.filter({ hasText: name })).toBeVisible();
+      // (By its name as a link has one: on a very flat screen the lighthouse's is not written under it.)
+      await expect(page.getByRole('link', { name: new RegExp(`^${name}`) })).toBeVisible();
     }
     await expect(page.getByTestId('hub-stage')).toHaveAttribute('data-hub-mode', 'picture');
 
@@ -37,8 +39,10 @@ test.describe('the home shell', () => {
     for (const world of await worlds.all()) {
       const box = await world.boundingBox();
       if (!box) throw new Error('A world is not on screen.');
-      // The whole island is the button: far larger than the 48 to 64 pixels a small finger needs.
-      expect(box.width).toBeGreaterThanOrEqual(96);
+      // The whole island is the button: far larger than the 48 to 64 pixels a small finger needs. (The
+      // lighthouse's island is a little smaller than the others, and so is its button.)
+      const lighthouse = (await world.getAttribute('data-place')) === 'academy';
+      expect(box.width).toBeGreaterThanOrEqual(lighthouse ? 96 * LIGHTHOUSE_SHARE - 0.5 : 96);
       expect(box.height).toBeGreaterThanOrEqual(96);
       expect(box.x).toBeGreaterThanOrEqual(0);
       expect(box.y).toBeGreaterThanOrEqual(0);

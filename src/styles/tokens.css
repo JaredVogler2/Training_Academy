@@ -40,6 +40,9 @@
   --explorer: #4fcfc4;
   --explorer-deep: #17807d;
   --explorer-tint: #dbf7f3;
+  --music: #f58fc2;
+  --music-deep: #a8327a;
+  --music-tint: #ffe3f1;
 
   /* Feedback: warm and calm. There is deliberately no "wrong" red. */
   --yes: #ffcf4a;

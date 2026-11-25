@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { hushVoice, playCount, playCue, sayLine } from '@/audio';
+import { hushVoice, playCount, playCue, playTone, sayLine } from '@/audio';
 import { REST, type Beat, type Script } from './script';
 
 export interface Playing {
@@ -21,7 +21,8 @@ export interface Playing {
  * whole). With `calm` set nothing moves and nothing is counted: the board goes straight to where the script comes
  * to rest, which shows the same thing standing still. The lines are still spoken, in their order: someone who has
  * asked for less movement has not asked for silence. A script that is `essential` — one where what is shown *is*
- * the task, like a group to be taken in at a glance — plays even then.
+ * the task, like a group to be taken in at a glance, or a tune to listen to — plays even then: the board says so,
+ * or the script does.
  */
 export function useScript(
   script: Script,
@@ -36,7 +37,7 @@ export function useScript(
     turn: 0,
     glanced: false,
   });
-  const still = calm && !essential;
+  const still = calm && !(essential || script.essential === true);
 
   useEffect(() => {
     if (!active) return;
@@ -49,6 +50,7 @@ export function useScript(
         else if (still) return;
         else if (sound?.kind === 'count') playCount(sound.index);
         else if (sound?.kind === 'cue') playCue(sound.cue);
+        else if (sound?.kind === 'tone') playTone(sound.timbre, sound.pitch);
         if (beat && !still) {
           turn += 1;
           glanced ||= beat.show === 'glance';

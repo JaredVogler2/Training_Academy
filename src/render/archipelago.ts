@@ -1,5 +1,4 @@
-import type { WorldId } from '@/engine';
-import { EXTENTS, PITCH, PLACES, type PlaceId } from './extents';
+import { EXTENTS, PITCH, PLACES, type IslandId, type PlaceId } from './extents';
 
 /**
  * Where everything in the harbour is, for any shape of screen — in plain arithmetic, with no graphics library.
@@ -16,7 +15,15 @@ import { EXTENTS, PITCH, PLACES, type PlaceId } from './extents';
  * and a very flat one, so the islands are as large as the screen allows and never hide one another.
  */
 
-export { EXTENTS, PITCH, PLACES, type Extent, type PlaceId } from './extents';
+export {
+  EXTENTS,
+  PITCH,
+  PLACES,
+  placeOf,
+  type Extent,
+  type IslandId,
+  type PlaceId,
+} from './extents';
 
 const RISE = Math.cos(PITCH);
 const DEPTH = Math.sin(PITCH);
@@ -61,7 +68,7 @@ function tall(): Omit<Layout, 'arrangement'> {
   const column = 2.95;
   const step = 4.7;
   const firstStep = 5.3;
-  const order: readonly WorldId[] = [
+  const order: readonly IslandId[] = [
     'reading-cove',
     'number-garden',
     'robot-ridge',
@@ -77,18 +84,17 @@ function tall(): Omit<Layout, 'arrangement'> {
     };
   }
   const far = -(firstStep + (order.length - 2) * step) - 6.8;
-  spots.academy = { x: 0, z: far };
+  // The last stone of the zig-zag: a little to the left, so that its name has open water under it, clear of the
+  // landmark of the island in front and to the right.
+  spots.academy = { x: -1.5, z: far };
   return {
     spots: spots as Layout['spots'],
     extras: {
       // Beside the first island and level with its name, under the second island's.
       guide: { x: 3.0, z: 3.05 },
       boats: [{ x: 3.75, z: far - 0.4 }],
-      rocks: [{ x: -4.3, z: far + 1.2 }],
-      clouds: [
-        { x: -3.8, z: far - 3.6 },
-        { x: 4.0, z: far - 4.4 },
-      ],
+      rocks: [{ x: -4.5, z: far - 2.6 }],
+      clouds: [{ x: 4.0, z: far - 4.4 }],
     },
   };
 }
@@ -111,10 +117,8 @@ function upright(aspect: number): Omit<Layout, 'arrangement'> {
     extras: {
       guide: { x: 0, z: rows - 0.4 },
       boats: [{ x: 0.9, z: -rows + 0.6 }],
-      rocks: [
-        { x: -1.2, z: -7.0 },
-        { x: 0.5, z: 3.57 },
-      ],
+      // (There was a second rock in front of the lighthouse, where its name is written now.)
+      rocks: [{ x: -1.2, z: -7.0 }],
       clouds: [{ x: -0.2, z: -rows - 3.4 }],
     },
   };
@@ -125,15 +129,15 @@ function ring(): Omit<Layout, 'arrangement'> {
   return {
     spots: {
       academy: { x: 0, z: 0 },
-      'inventor-island': { x: -4.1, z: -7.0 },
-      'explorer-harbor': { x: 4.1, z: -7.0 },
-      'robot-ridge': { x: -8.9, z: 0 },
-      'memory-forest': { x: 8.9, z: 0 },
-      'reading-cove': { x: -4.1, z: 7.0 },
-      'number-garden': { x: 4.1, z: 7.0 },
+      'inventor-island': { x: -4.36, z: -7.0 },
+      'explorer-harbor': { x: 4.36, z: -7.0 },
+      'robot-ridge': { x: -9.16, z: 0 },
+      'memory-forest': { x: 9.16, z: 0 },
+      'reading-cove': { x: -4.36, z: 7.0 },
+      'number-garden': { x: 4.36, z: 7.0 },
     },
     extras: {
-      guide: { x: 0, z: 6.3 },
+      guide: { x: 0, z: 6.8 },
       boats: [
         { x: -4.6, z: 0.9 },
         { x: 0.2, z: -7.4 },
@@ -159,7 +163,10 @@ function wide(): Omit<Layout, 'arrangement'> {
   const front = 4.7;
   return {
     spots: {
-      academy: { x: 0, z: -0.2 },
+      // Set back a little between the two far islands, so that its name has water under it before the guide's
+      // mooring; and not so far back that its name is level with theirs, which would leave none of the three
+      // names room to be wider than its island.
+      academy: { x: 0, z: -2.2 },
       'inventor-island': { x: -4.5, z: back },
       'explorer-harbor': { x: 4.5, z: back },
       'robot-ridge': { x: -9.4, z: -0.2 },
@@ -168,11 +175,8 @@ function wide(): Omit<Layout, 'arrangement'> {
       'number-garden': { x: 4.5, z: front },
     },
     extras: {
-      guide: { x: 0, z: front + 1.08 },
-      boats: [
-        { x: 9.6, z: 6.65 },
-        { x: 0.3, z: -7.5 },
-      ],
+      guide: { x: 0, z: front + 1.44 },
+      boats: [{ x: 9.6, z: 6.65 }],
       rocks: [
         { x: -9.6, z: 5.95 },
         { x: -9.9, z: -6.1 },
@@ -181,7 +185,6 @@ function wide(): Omit<Layout, 'arrangement'> {
       clouds: [
         { x: -9.6, z: back - 3.1 },
         { x: 9.9, z: back - 2.5 },
-        { x: -0.6, z: -10.5 },
       ],
     },
   };
@@ -274,7 +277,7 @@ export function labelWidth(frame: Frame, place: PlaceId): number {
   const name = labelBox(frame, place);
   let toNeighbour = Infinity;
   for (const other of PLACES) {
-    if (other === place || other === 'academy') continue;
+    if (other === place || !hasName(frame.layout.arrangement, other)) continue;
     const theirs = labelBox(frame, other);
     const level = theirs.top < name.top + name.height && name.top < theirs.top + theirs.height;
     if (!level) continue;
@@ -285,6 +288,15 @@ export function labelWidth(frame: Frame, place: PlaceId): number {
     toNeighbour = Math.min(toNeighbour, apart / 2);
   }
   return box.width + 2 * clamp(Math.min(toEdge, toNeighbour) - 1, 0, box.width * 0.16);
+}
+
+/**
+ * Whether a place has its name written under it. Every place has, but one: where the places stand in one row, the
+ * guide is moored directly in front of the lighthouse, where its name would be, and there is no height to spare
+ * for both. There the lighthouse is still the whole of its own button; it is only not labelled.
+ */
+export function hasName(arrangement: Arrangement, place: PlaceId): boolean {
+  return place !== 'academy' || arrangement !== 'strip';
 }
 
 /** Height in CSS pixels kept under each island for its name, at a given number of pixels to the world unit. */
@@ -392,7 +404,7 @@ export function project(frame: Frame, x: number, y: number, z: number): { x: num
 
 export interface Hotspot {
   place: PlaceId;
-  /** The whole tappable area: the island, its landmark and its name. */
+  /** The whole tappable area: the island, its landmark and (where it has one written under it) its name. */
   box: Box;
   /** The middle of the island at water level. */
   anchor: { x: number; y: number };
@@ -405,7 +417,8 @@ export function hotspotFor(frame: Frame, place: PlaceId): Hotspot {
   const extent = EXTENTS[place];
   const anchor = project(frame, spot.x, 0, spot.z);
   const up = Math.max(extent.radius * DEPTH, extent.height * RISE) * frame.scale;
-  const down = extent.radius * DEPTH * frame.scale + labelRoom(frame.scale);
+  const named = hasName(frame.layout.arrangement, place);
+  const down = extent.radius * DEPTH * frame.scale + (named ? labelRoom(frame.scale) : 0);
   const half = extent.radius * frame.scale;
   return {
     place,

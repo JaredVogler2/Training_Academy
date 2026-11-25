@@ -37,6 +37,26 @@ export {
   type Judgement,
 } from './tasks';
 export {
+  BEAT_MARKS,
+  IN_TIME,
+  OCTAVE,
+  STEADY_LAG_MOST,
+  TUNE_SHAPES,
+  comparePitch,
+  extraAllowed,
+  fitsShape,
+  frequencyOf,
+  isNote,
+  keepTime,
+  pitchOf,
+  readTimeKept,
+  writeTimeKept,
+  type BeatMark,
+  type ShapeVerdict,
+  type TimeKept,
+  type TuneShape,
+} from './music';
+export {
   fitsTask,
   parseProgram,
   runProgram,

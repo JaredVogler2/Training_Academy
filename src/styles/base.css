@@ -284,6 +284,12 @@ main:focus-visible {
   --deep: var(--explorer-deep);
 }
 
+[data-role='music'] {
+  --tint: var(--music-tint);
+  --mid: var(--music);
+  --deep: var(--music-deep);
+}
+
 /* The first paint, before any script has run (see index.html). */
 .boot {
   display: grid;

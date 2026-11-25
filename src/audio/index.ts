@@ -1,8 +1,15 @@
 import { settingsStore } from '@/app/settings';
-import { AudioEngine, browserAudioContext, type Cue } from './audioEngine';
+import { frequencyOf } from '@/engine/music';
+import { AudioEngine, browserAudioContext, type Cue, type Timbre } from './audioEngine';
 import { Narrator, type VoiceBank } from './voice';
 
-export { AudioEngine, type AudioState, type Cue } from './audioEngine';
+export {
+  AudioEngine,
+  type AudioClock,
+  type AudioState,
+  type Cue,
+  type Timbre,
+} from './audioEngine';
 export { Narrator, type Heard, type VoiceBank } from './voice';
 
 let engine: AudioEngine | null = null;
@@ -62,6 +69,23 @@ export function playCue(cue: Cue): void {
 /** The note for the `index`-th thing being counted (0 is the first). */
 export function playCount(index: number): void {
   audio().count(index);
+}
+
+/** What a drum and the click of a beat are tuned to, in hertz. They have no note: they are only low, or sharp. */
+export const DRUM_HZ = 150;
+export const TICK_HZ = 1150;
+
+/**
+ * One stroke of an instrument: a note by its name ("c4"), or a pitch in hertz. `at` is a moment on the audio's own
+ * clock, for a sound that has to fall on a beat. Never throws; says whether it was scheduled.
+ */
+export function playTone(
+  timbre: Timbre,
+  pitch: string | number,
+  options: { at?: number; level?: number } = {},
+): boolean {
+  const frequency = typeof pitch === 'number' ? pitch : frequencyOf(pitch);
+  return frequency === null ? false : audio().tone(timbre, frequency, options);
 }
 
 /**

@@ -1,0 +1,466 @@
+/*
+ * The Music Lab's drawings and its two boards: a beat to tap, and a tune to make. Nothing here moves unless a sound
+ * is being made, and what moves then is small: the page's own setting for less motion stills all of it, and what
+ * is left is lights that go on and off.
+ */
+
+.bar,
+.player,
+.sign {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.barBody {
+  transition: filter var(--quick) linear;
+}
+
+.bar[data-sounding='true'] .barBody {
+  filter: brightness(1.18) drop-shadow(0 0 6px rgb(255 211 92 / 90%));
+}
+
+.bar[data-sounding='true'] {
+  animation: struck 0.32s var(--ease-out);
+}
+
+.player[data-sounding='true'] {
+  animation: sing 0.5s var(--ease-spring);
+}
+
+.ringing {
+  animation: ring 0.5s var(--ease-out) infinite alternate;
+}
+
+.sticks {
+  transform-origin: 0 -8px;
+  transition: transform 90ms var(--ease-out);
+}
+
+.sticks[data-down='true'] {
+  transform: translateY(5px) scale(1.04);
+}
+
+/* Two who play one after the other, side by side. */
+.pair {
+  display: grid;
+  grid-template: minmax(0, 1fr) / repeat(2, minmax(0, 1fr));
+  gap: clamp(8px, 3vw, 28px);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.one {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  border: 4px solid transparent;
+  border-radius: 22px;
+  background: rgb(255 255 255 / 55%);
+  transition:
+    border-color var(--gentle) linear,
+    background-color var(--gentle) linear,
+    transform var(--quick) var(--ease-out);
+}
+
+.one[data-sounding='true'] {
+  border-color: var(--yes);
+  background: #fff6d2;
+  transform: translateY(-4px);
+}
+
+/* ------------------------------------------------------------------------------------------------------------------ */
+/* A beat to tap                                                                                                       */
+/* ------------------------------------------------------------------------------------------------------------------ */
+
+.beat {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(10px, 2.4vh, 22px);
+  justify-items: center;
+  min-height: 0;
+}
+
+/* The beat, drawn: small lights for the beats that are only listened to, then a round light for each to tap. */
+.strip {
+  display: flex;
+  gap: clamp(4px, 1.4vw, 10px);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px clamp(8px, 2vw, 16px);
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 70%);
+}
+
+.light {
+  flex: 1 1 0;
+  max-width: 30px;
+  aspect-ratio: 1;
+  border: 3px solid var(--mid);
+  border-radius: 50%;
+  background: var(--white);
+  transition:
+    background-color 90ms linear,
+    border-color 90ms linear,
+    transform 90ms var(--ease-out);
+}
+
+.light[data-kind='listen'] {
+  max-width: 18px;
+  border-style: dotted;
+  border-color: var(--ink-faint);
+}
+
+.light[data-past='true'] {
+  background: var(--tint);
+}
+
+.light[data-now='true'] {
+  border-color: var(--yes-deep);
+  background: var(--yes);
+  transform: scale(1.22);
+}
+
+/* A tap heard near this beat: a dot in the middle of it. */
+.light[data-tapped='true'] {
+  box-shadow:
+    inset 0 0 0 5px var(--white),
+    inset 0 0 0 30px var(--deep);
+}
+
+/* After the beat: the ones that were met. Nothing marks the others as wrong; they are simply not lit. */
+.light[data-met='true'] {
+  border-color: var(--yes-deep);
+  background: var(--yes);
+  box-shadow: none;
+}
+
+/* The room the drum has: everything under the strip. The drum is the largest circle that fits in it. */
+.drumRoom {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 0;
+  container-type: size;
+}
+
+.drum {
+  position: relative;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  /* Where the room cannot be measured (a browser from before 2023), a size that fits every screen there is. */
+  width: min(46vmin, 340px);
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@supports (width: 1cqw) {
+  .drum {
+    width: min(100cqw, 100cqh, 340px);
+  }
+}
+
+.drum[aria-disabled='true'] {
+  cursor: default;
+}
+
+.drum > svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 var(--lip) 0 rgb(34 48 79 / 16%));
+}
+
+.drum:active:not([aria-disabled='true']) > svg {
+  transform: scale(0.97);
+}
+
+.drum[data-same='true'] > svg {
+  filter: drop-shadow(0 0 0 var(--yes)) drop-shadow(0 0 12px var(--yes));
+}
+
+.pulse,
+.ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* The beat on the drum's rim. Where nothing moves it is a ring that is there for the beat and then is not. */
+.pulse {
+  border: 6px solid var(--yes);
+  opacity: 0;
+  animation: pulse 0.32s var(--ease-out);
+}
+
+.ripple {
+  inset: 22%;
+  background: rgb(168 50 122 / 22%);
+  opacity: 0;
+  animation: ripple 0.3s var(--ease-out);
+}
+
+.hand {
+  animation: knock 0.34s var(--ease-out);
+}
+
+/* ------------------------------------------------------------------------------------------------------------------ */
+/* A tune to make                                                                                                      */
+/* ------------------------------------------------------------------------------------------------------------------ */
+
+.tune {
+  display: grid;
+  grid-template:
+    'asked plot' minmax(0, 0.9fr)
+    'tools tools' auto
+    'keys keys' minmax(0, 1.1fr) / minmax(56px, 0.26fr) minmax(0, 1fr);
+  gap: clamp(8px, 1.6vh, 14px);
+  min-height: 0;
+}
+
+/* What shape the tune is to have. */
+.asked {
+  display: grid;
+  grid-area: asked;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  min-height: 0;
+  padding: 6px;
+  border: 4px dashed var(--mid);
+  border-radius: var(--radius-m);
+  background: var(--tint);
+}
+
+.asked[data-same='true'] {
+  border-style: solid;
+  border-color: var(--yes);
+  background: #fff6d2;
+}
+
+.plot {
+  grid-area: plot;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 4px solid var(--white);
+  border-radius: var(--radius-m);
+  background: var(--white);
+  box-shadow: 0 var(--lip) 0 rgb(34 48 79 / 14%);
+}
+
+.plot[data-same='true'] {
+  border-color: var(--yes);
+}
+
+.column {
+  fill: rgb(34 48 79 / 4%);
+}
+
+.column[data-next='true'] {
+  fill: var(--tint);
+  stroke: var(--mid);
+  stroke-width: 2;
+  stroke-dasharray: 5 5;
+}
+
+.line {
+  fill: none;
+  stroke: var(--mid);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dot {
+  transition: r var(--quick) var(--ease-out);
+}
+
+.dot[data-sounding='true'] {
+  r: 11px;
+  filter: drop-shadow(0 0 4px var(--yes));
+}
+
+.ghost {
+  fill: none;
+  stroke: var(--ink-faint);
+  stroke-width: 3;
+  stroke-dasharray: 4 4;
+}
+
+.tools {
+  display: flex;
+  grid-area: tools;
+  gap: 14px;
+  justify-content: center;
+}
+
+.tool {
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 3px solid var(--white);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--deep);
+  box-shadow: 0 var(--lip) 0 rgb(34 48 79 / 16%);
+  cursor: pointer;
+}
+
+.tool[aria-disabled='true'] {
+  color: var(--ink-faint);
+  box-shadow: 0 2px 0 rgb(34 48 79 / 10%);
+  cursor: default;
+}
+
+.tool[data-playing='true'] {
+  border-color: var(--yes);
+  background: #fff6d2;
+}
+
+.keys {
+  display: grid;
+  grid-area: keys;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: clamp(2px, 1vw, 10px);
+  min-height: 0;
+}
+
+.keys > li {
+  min-width: 0;
+  min-height: 0;
+}
+
+.key {
+  position: relative;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 84px;
+  padding: 2px;
+  border: 3px solid transparent;
+  border-radius: 18px;
+  background: rgb(255 255 255 / 45%);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    transform var(--quick) var(--ease-out),
+    border-color var(--gentle) linear,
+    background-color var(--gentle) linear;
+}
+
+.key[aria-disabled='true'] {
+  cursor: default;
+}
+
+.key[data-lit='true'] {
+  border-color: var(--yes);
+  background: #fff6d2;
+  transform: translateY(-6px);
+}
+
+.key:active:not([aria-disabled='true']) {
+  transform: translateY(2px);
+}
+
+/* A phone on its side: the tune and its tools on the left, the bars on the right. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .tune {
+    grid-template:
+      'asked plot keys' minmax(0, 1fr)
+      'tools tools keys' auto / minmax(48px, 0.18fr) minmax(0, 0.9fr) minmax(0, 1.2fr);
+  }
+
+  .tool {
+    width: var(--tap-small);
+    height: var(--tap-small);
+  }
+
+  .key {
+    min-height: 64px;
+  }
+
+  .beat {
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .strip {
+    padding: 6px 12px;
+  }
+
+  .light {
+    max-width: 22px;
+  }
+
+  .light[data-kind='listen'] {
+    max-width: 14px;
+  }
+}
+
+@keyframes struck {
+  40% {
+    transform: translateY(3px);
+  }
+}
+
+@keyframes sing {
+  40% {
+    transform: translateY(-4px) scale(1.04);
+  }
+}
+
+@keyframes ring {
+  from {
+    opacity: 0.35;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.95;
+    transform: scale(0.94);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes ripple {
+  from {
+    opacity: 1;
+    transform: scale(0.6);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes knock {
+  40% {
+    transform: translateY(8px);
+  }
+}

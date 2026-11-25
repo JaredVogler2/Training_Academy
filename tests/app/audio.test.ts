@@ -303,3 +303,145 @@ describe("the iPhone's silent switch", () => {
     expect(() => preferMediaPlayback(refusing, true)).not.toThrow();
   });
 });
+
+describe('the instruments', () => {
+  /** A running context that writes down what every oscillator and gain was told. */
+  function listening() {
+    const fake = fakeContext('running');
+    const pitches: { value: number; at: number; slide: boolean }[] = [];
+    const levels: { level: number; at: number }[] = [];
+    const ends: number[] = [];
+    fake.context.createOscillator = vi.fn(() => {
+      const oscillator = {
+        type: 'sine',
+        frequency: {
+          setValueAtTime: vi.fn((value: number, at: number) =>
+            pitches.push({ value, at, slide: false }),
+          ),
+          linearRampToValueAtTime: vi.fn(),
+          exponentialRampToValueAtTime: vi.fn((value: number, at: number) =>
+            pitches.push({ value, at, slide: true }),
+          ),
+        },
+        connect: vi.fn(),
+        start: vi.fn(),
+        stop: vi.fn(),
+      };
+      fake.oscillators.push(oscillator);
+      return oscillator;
+    });
+    fake.context.createGain = vi.fn(() => ({
+      gain: {
+        setValueAtTime: vi.fn(),
+        linearRampToValueAtTime: vi.fn((level: number, at: number) => levels.push({ level, at })),
+        exponentialRampToValueAtTime: vi.fn((_level: number, at: number) => ends.push(at)),
+      },
+      connect: vi.fn(),
+    }));
+    const engine = new AudioEngine(() => fake.context, true);
+    engine.unlock();
+    return { ...fake, engine, pitches, levels, ends };
+  }
+
+  it('are made here, from oscillators: a chime bar is its note and a bright ring above it', () => {
+    const { engine, oscillators, pitches } = listening();
+    expect(engine.tone('bar', 440)).toBe(true);
+    expect(oscillators.length).toBeGreaterThanOrEqual(2);
+    expect(pitches.map((pitch) => pitch.value)).toContain(440);
+    // Two octaves up: what makes a struck bar sound like one.
+    expect(pitches.map((pitch) => pitch.value)).toContain(1760);
+    for (const oscillator of oscillators) {
+      expect(oscillator.start).toHaveBeenCalledTimes(1);
+      expect(oscillator.stop).toHaveBeenCalledTimes(1);
+    }
+  });
+
+  it('give a drum a thump that drops to its pitch, and a click almost no length at all', () => {
+    const drum = listening();
+    expect(drum.engine.tone('drum', 96)).toBe(true);
+    const thump = drum.pitches.filter((pitch) => pitch.slide);
+    expect(thump.map((pitch) => pitch.value)).toContain(96);
+    expect(Math.max(...drum.pitches.map((pitch) => pitch.value))).toBeGreaterThan(96 * 2);
+
+    const tick = listening();
+    expect(tick.engine.tone('tick', 1150)).toBe(true);
+    expect(Math.max(...tick.ends) - tick.context.currentTime).toBeLessThan(0.15);
+  });
+
+  it('are never loud, whatever is played', () => {
+    for (const timbre of ['bar', 'pipe', 'drum', 'tick'] as const) {
+      const { engine, levels } = listening();
+      engine.tone(timbre, 523.25);
+      expect(Math.max(...levels.map((each) => each.level)), timbre).toBeLessThanOrEqual(0.31);
+      expect(Math.min(...levels.map((each) => each.level)), timbre).toBeGreaterThan(0);
+    }
+  });
+
+  it('can be put at a moment on the audio’s own clock, so that a click falls exactly on its beat', () => {
+    const { engine, oscillators, context } = listening();
+    expect(engine.tone('tick', 1150, { at: context.currentTime + 0.75 })).toBe(true);
+    expect(oscillators[0]?.start.mock.calls[0]?.[0]).toBeCloseTo(3.75, 6);
+    // A moment that has already gone is played now, never in the past.
+    const late = listening();
+    late.engine.tone('tick', 1150, { at: 1 });
+    expect(late.oscillators[0]?.start.mock.calls[0]?.[0]).toBeGreaterThan(3);
+  });
+
+  it('tell the time by the audio’s clock, and how late a sound is heard, where the browser says', () => {
+    const { engine, context } = listening();
+    expect(engine.clock).toEqual({ now: 3, latency: 0 });
+    Object.assign(context, { outputLatency: 0.12, baseLatency: 0.01 });
+    expect(engine.clock?.latency).toBeCloseTo(0.13, 6);
+    // A figure that cannot be believed is not used.
+    Object.assign(context, { outputLatency: Number.NaN });
+    expect(engine.clock?.latency).toBe(0);
+    Object.assign(context, { outputLatency: 4, baseLatency: 0 });
+    expect(engine.clock?.latency).toBe(0.5);
+  });
+
+  it('have no clock, and play nothing, while sound is off or the audio is asleep', () => {
+    const { engine, context, oscillators } = listening();
+    engine.setEnabled(false);
+    expect(engine.clock).toBeNull();
+    expect(engine.tone('bar', 440)).toBe(false);
+    engine.setEnabled(true);
+    context.state = 'suspended';
+    expect(engine.clock).toBeNull();
+    expect(engine.tone('bar', 440, { at: 5 })).toBe(false);
+    expect(oscillators).toHaveLength(0);
+  });
+
+  it('refuse a pitch that is not one, without throwing', () => {
+    const { engine } = listening();
+    for (const pitch of [0, -5, Number.NaN, Number.POSITIVE_INFINITY]) {
+      expect(engine.tone('bar', pitch), String(pitch)).toBe(false);
+    }
+  });
+
+  it('play the note of the very tap that woke the audio, but not a click whose beat was on a clock not yet running', async () => {
+    const fake = fakeContext();
+    let wake: () => void = () => undefined;
+    fake.context.resume = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          wake = () => {
+            fake.context.state = 'running';
+            resolve();
+          };
+        }),
+    );
+    const engine = new AudioEngine(() => fake.context, true);
+    engine.unlock();
+    expect(engine.tone('tick', 1150, { at: 9 })).toBe(false);
+    wake();
+    await settle();
+    expect(fake.oscillators).toHaveLength(0);
+
+    fake.context.state = 'suspended';
+    engine.unlock();
+    expect(engine.tone('bar', 440)).toBe(false);
+    wake();
+    await settle();
+    expect(fake.oscillators.length).toBeGreaterThan(0);
+  });
+});

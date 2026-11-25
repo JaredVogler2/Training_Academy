@@ -5,8 +5,8 @@ import { ACTIVITIES, playToTheEnd } from './play';
 const PLAYED_BY_THEIR_OWN_TESTS = ['robot-ridge', 'inventor-island'];
 
 /**
- * Every activity of Reading Cove, Number Garden, Memory Forest and Explorer Harbor, played from its first screen to
- * its last by giving the answers its content says are right. (Robot Ridge and Inventor Island are played to the
+ * Every activity of Reading Cove, Number Garden, Memory Forest, Explorer Harbor and the Music Lab, played from its
+ * first screen to its last by giving the answers its content says are right. (Robot Ridge and Inventor Island are played to the
  * end by their own tests, e2e/robot.spec.ts and e2e/inventor.spec.ts, which work out what to do from what is on
  * the screen; the first test here fails if a world is played by neither.) If a lesson cannot be finished — a board that does not take its own answer, a step that never offers the
  * way on, a line that throws — it fails here by name.
@@ -31,7 +31,8 @@ test.describe('every activity can be played to the end', () => {
   for (const activity of ACTIVITIES) {
     test(`${activity.world}: ${activity.title}`, async ({ page, press }, testInfo) => {
       test.skip(testInfo.project.name !== 'desktop', 'played once, on the desktop project');
-      test.setTimeout(150_000);
+      // A question that is played to be listened to takes as long as it takes to hear.
+      test.setTimeout(activity.world === 'music-lab' ? 300_000 : 150_000);
       // In by a tap, as a child comes in: an activity for listening will not start until the audio is awake.
       await page.goto(`/world/${activity.world}`);
       await press(page.locator(`[data-lesson="${activity.id}"]`));

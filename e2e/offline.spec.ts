@@ -72,7 +72,7 @@ test.describe('offline', () => {
 
     // The hub and the world's front door open too.
     await page.goto('/');
-    await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(6);
+    await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(7);
     await page.goto('/world/number-garden');
     await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
   });

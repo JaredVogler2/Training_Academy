@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import musicLab from '@/content/packs/music-lab.v1.json';
+import musicLab from '@/content/packs/music-lab.v2.json';
 import { lintPack } from '@/content/lint';
 import { parseContentPack, pitchOf, type Challenge, type ContentPack } from '@/engine';
 import { breaking, challengeIn, codes, rulesIn, type Loose } from '../helpers/lint';

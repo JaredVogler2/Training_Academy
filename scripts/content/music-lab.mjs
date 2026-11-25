@@ -42,10 +42,21 @@ const playedWords = (voice, played) =>
     ? played.map((step) => (step === 1 ? 'short' : 'long')).join(', ')
     : played.map(noteWord).join(', ');
 
-function lesson({ id, title, summary, minutes = 3, needsSound, demo, guided, pool, count }) {
+function lesson({
+  id,
+  version = 1,
+  title,
+  summary,
+  minutes = 3,
+  needsSound,
+  demo,
+  guided,
+  pool,
+  count,
+}) {
   return {
     id,
-    version: 1,
+    version,
     world: 'music-lab',
     title,
     summary,
@@ -452,6 +463,9 @@ function tuneLesson() {
   });
   return lesson({
     id,
+    // The second version: three of its tunes were first written for six bars, which are too narrow to be a fair
+    // target on a small phone, and went live that way before they were changed to five.
+    version: 2,
     title: 'Make a tune',
     summary:
       'Chime bars, and a tune to make up with a shape to it: going up, coming down, over a hill and back, the same thing twice, or home to the biggest bar. There are many right tunes, and your child’s own is as right as any. It can be played back and changed before saying it is done.',
@@ -587,7 +601,7 @@ export function buildMusicLabPack() {
     schemaVersion: 1,
     id: 'music-lab',
     world: 'music-lab',
-    contentVersion: 1,
+    contentVersion: 2,
     strings: { en: STRINGS },
     skills: SKILLS,
     lessons: [

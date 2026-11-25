@@ -92,6 +92,11 @@ Things worth knowing:
   shown, to be followed.
 - **A lesson can end with a question of its own** (`plan.closing`): one or two challenges asked last of all, after
   any re-probe. Memory Forest uses it to ask about the very start of a sitting.
+- **A place is kept by the lesson's version.** A sitting left unfinished is taken up where it was left if the
+  lesson is still the version it was begun in and has every challenge the sitting still needs; the world's
+  content may have grown meanwhile, and what is answered afterwards is recorded against the content as it then
+  is. A lesson cannot change without a new version: each is written down with a mark made from the whole of it
+  (`src/content/lessons.lock.json`), and the content build and a test refuse one that differs.
 - **Double taps are harmless.** Each presentation has a key (`session/step/try`); a second submission with the same key
   is rejected as `stale`.
 - **Re-probing.** An independent challenge that needed help is followed, at the end of the lesson, by a _different_

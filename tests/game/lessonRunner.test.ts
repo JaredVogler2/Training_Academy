@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { getSkillEvidence, isIndependentSuccess, type Lesson } from '@/engine';
-import { LessonRunner, type RunnerDeps, type RunnerState } from '@/game/lessonRunner';
+import { LessonRunner, resumable, type RunnerDeps, type RunnerState } from '@/game/lessonRunner';
 import { MemoryDriver, Repository, StorageError, migrate, type WriteOp } from '@/storage';
 import { T0, answerTo, numberGardenPack, sampleLesson } from '../helpers/content';
 
@@ -218,6 +218,51 @@ describe('LessonRunner', () => {
     expect(sessions[0]?.lessonVersion).toBe(revised.version);
     // What was answered in the old sitting is still part of the record.
     expect(await w.repository.listAttempts(PROFILE)).toHaveLength(1);
+  });
+
+  it('takes a sitting up where it was left when the world has gained activities since, and records what follows against the content as it now is', async () => {
+    const first = await LessonRunner.start(w.deps());
+    await first.next();
+    await first.answer(answerTo(playing(first).view));
+    await first.next();
+    const before = playing(first);
+    const begun = (await w.repository.findActiveSession(PROFILE, lesson.id))!;
+    expect(begun.contentVersion).toBe(pack.contentVersion);
+
+    // The same lesson, in a pack that has had lessons added to it: a new content version, the lesson untouched.
+    const grown = { ...pack, contentVersion: pack.contentVersion + 1 };
+    const second = await LessonRunner.start(w.deps({ pack: grown }));
+    const after = playing(second);
+    // The same sitting, at the same step: not back at Glim's showing.
+    expect(after.view).toEqual(before.view);
+    expect(after.view.stage).not.toBe('demo');
+    const sessions = await w.repository.listSessions(PROFILE);
+    expect(sessions.map((s) => s.id)).toEqual([begun.id]);
+    expect(sessions[0]?.contentVersion).toBe(grown.contentVersion);
+
+    // What was answered before the update keeps the version it was answered in; what comes after has the new.
+    await finish(second);
+    const attempts = await w.repository.listAttempts(PROFILE);
+    expect(new Set(attempts.map((a) => a.sessionId))).toEqual(new Set([begun.id]));
+    expect(attempts[0]?.contentVersion).toBe(pack.contentVersion);
+    expect(attempts.at(-1)?.contentVersion).toBe(grown.contentVersion);
+  });
+
+  it('does not take up a sitting whose challenges the lesson no longer has', async () => {
+    const first = await LessonRunner.start(w.deps());
+    await first.next();
+    const begun = (await w.repository.findActiveSession(PROFILE, lesson.id))!;
+    // A lesson that lost a challenge without being given a new version: the build refuses that, and the runner
+    // does not rely on it.
+    const gone = begun.steps.at(-1)?.challengeId;
+    const cut: Lesson = {
+      ...lesson,
+      challenges: lesson.challenges.filter((challenge) => challenge.id !== gone),
+    };
+    expect(resumable(begun, lesson)).toBe(true);
+    expect(resumable(begun, cut)).toBe(false);
+    expect(resumable(begun, { ...lesson, version: lesson.version + 1 })).toBe(false);
+    expect(resumable(begun, { ...lesson, id: 'ng-other-01' })).toBe(false);
   });
 
   it('starts over with a new sitting and a new seed', async () => {

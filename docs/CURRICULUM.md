@@ -108,8 +108,13 @@ with a tune to sing) and which that world's rules check.
 | String key | dotted                       | `ng.same-amount.instruction`    |
 | Card       | letters and digits only      | `egg2`                          |
 
-IDs are permanent once content ships: the learner's record refers to them. To change what a lesson teaches, bump its
-`version` (unfinished sittings of the old version are then not resumed; their answers stay in the record).
+IDs are permanent once content ships: the learner's record refers to them. To change anything in a lesson — a
+challenge, a choice, the plan, a word of its summary — bump its `version`: an unfinished sitting is taken up
+again only in the version of the lesson it was begun in (its answers stay in the record either way). This is
+enforced. Every lesson is written down in `src/content/lessons.lock.json` by id and version, with a mark made
+from the whole of it, and `npm run content` refuses a lesson that differs from its mark. Adding lessons to a
+world changes the world's `contentVersion` and nobody's place: a place is kept by the lesson's version, not the
+world's.
 
 ### What refuses a pack (`npm test`)
 
@@ -133,7 +138,8 @@ reads each rules file and fails if a rule has no such case.
 1. Change the tables in `scripts/content/<world>.mjs`; add or reuse a skill and list its prerequisites.
 2. Plan it: at least one demonstration, at least one guided step, an independent pool larger than `count` with
    more than one variant.
-3. Bump `contentVersion` (the file is named after it). `npm run content`.
+3. Bump `contentVersion` (the file is named after it), and the `version` of any lesson that already existed
+   and has changed. `npm run content`: it says so if a lesson changed and its version did not.
 4. Record the new lines (`scripts/voice/README.md`); reword any the recogniser hears differently.
 5. `npm test`: the schema, the lint, the world's rules, "the pack is what its generator writes", "every line has a
    recording", and "playable to the end under arbitrary play".
@@ -487,7 +493,7 @@ progression):
 All of this is exercised in a browser by `e2e/journey.spec.ts` and `e2e/lesson.spec.ts`, and at the level of the
 engine and the runner by `tests/engine/`, `tests/game/lessonRunner.test.ts` and `tests/game/lessonScript.test.ts`.
 
-### The Music Lab — `music-lab.v1.json` (contentVersion 1)
+### The Music Lab — `music-lab.v2.json` (contentVersion 2)
 
 6 activities, 68 challenges, 6 skills, 51 spoken lines. Written by `scripts/content/music-lab.mjs`. It is in the
 lighthouse, and beside its activities it has a room to play in freely, where nothing is asked and nothing is

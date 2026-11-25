@@ -28,7 +28,7 @@ Result of the last local run: **passed.**
 | `npm run format:check` | clean                                                                                                                    |
 | `npm run lint`         | no errors, no warnings                                                                                                   |
 | `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                           |
-| `npm test`             | **1703 tests in 59 files, all passed**                                                                                   |
+| `npm test`             | **1711 tests in 59 files, all passed**                                                                                   |
 | `npm run build`        | built; 572 files in `dist/`, 484 of them the voice's recordings                                                          |
 | `npm run verify:dist`  | **1270 checks, all passed** (sizes below)                                                                                |
 | `npm run test:e2e`     | **986 browser tests: 853 passed, 133 skipped by design, 0 failed (Chromium, seven screen shapes, 34.1 minutes)**; see on |
@@ -41,7 +41,7 @@ things were changed because of them: the layout of the Music Lab's room, the dia
 54 browser tests were added (the room at three more screen sizes, a dialog asked for again at once, and a
 fourth screen in the sweep of what a child presses). After those changes the specs they touch were run again
 on all seven screens — the grown-ups' area, the Music Lab, the sweep, and everything that pauses an activity
-(the journey, the sample activity, the voice, the phones): two runs, 282 tests passed and none failed (97 more skipped themselves, as below). **The whole
+(the journey, the sample activity, the voice, the phones): two runs, 282 tests passed and none failed (97 more skipped themselves, as below). And after the change to how a saved place is kept (_An update, rehearsed_, below), the Music Lab, the journey, the sample activity, and the tests of lost storage and of no connection, with the Music Lab's activities played to their ends: 131 passed, none failed. **The whole
 suite, now 1040 tests, has not been run in one go on the final tree here: that run is CI's.**
 
 The 133 that were skipped skip themselves, and say why. On the desktop: the 69 measurements of what a child
@@ -551,7 +551,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 1702)
+## What the unit tests cover (Vitest, 1711)
 
 | Area                                                              | Files                                                                                                                                                   | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -886,6 +886,8 @@ same address, as a deployment puts one build in the place of another, and eighte
 | ------------------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `334e0e8`, the build before the six worlds: what a phone had | `0e836eb`, the build that went live | **16 of 18.** The two that failed: a world's page opened by its address did not show what was finished, and Play went back to the first activity |
 | `0e836eb`, what is live                                      | this tree                           | **18 of 18**                                                                                                                                     |
+| `765be14`, what is live now (the Music Lab's six activities) | pull request #9 as first written    | **16 of 18.** The activity left at its third step was begun again at its first, and its stored place was gone                                    |
+| `765be14`, what is live now                                  | this tree                           | **18 of 18**                                                                                                                                     |
 
 What held both times:
 
@@ -901,6 +903,23 @@ What held both times:
 - after that the map, the world and the activity that had been opened all opened with no connection;
 - no page of the new build put anything on the console. (The old tab did, as it must: a 404 for a file that is
   no longer there.)
+
+**The third row is the update this pull request would have been**, and it is the second time rehearsing one
+has found something no other test could. Number Garden gained eleven activities, so its content has a new
+version. The game took up an unfinished activity only if the whole world's content was the version it had been
+begun in: so a child who had left "Which has fewer?" half-way would have been sent back to the start of it, for
+the sake of activities that had nothing to do with it. A place is now kept by the lesson's own version, which
+is what that version is for (`resumable`, in `src/game/lessonRunner.ts`), and what is answered after the update
+is recorded against the content as it now is.
+
+Looking for why also showed the opposite fault, which no rehearsal would have caught. "Make a tune" in the
+Music Lab had been changed after it went live — three of its tunes from six bars to five — **and its version
+had not been changed**: an activity left half-way there would have been taken up in a lesson that was no
+longer the one it was begun in. It has its second version now. And it cannot happen silently again: every
+lesson is written down by id and version with a mark made from the whole of it
+(`src/content/lessons.lock.json`), and both the content build and a test refuse a lesson that differs from its
+mark. The file was first written from the content that is live, and the build refused this tree at once, on
+that lesson.
 
 The first row is the update the six worlds were, done again with the same two builds: the service worker of its
 second build is, byte for byte, the one the live site serves. It is still not the owner's phone. It is

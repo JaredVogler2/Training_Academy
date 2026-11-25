@@ -58,7 +58,7 @@ answer is right. Everything is saved on the device.
 
 ## Verified
 
-- Locally: format, lint, typecheck, **1703 unit tests**, the production build and its **1270 build checks**.
+- Locally: format, lint, typecheck, **1711 unit tests**, the production build and its **1270 build checks**.
   The whole browser suite in Chromium on seven screen shapes was run on the tree with Number Garden's numerals
   in it: **986 tests, 853 passed, 133 skipped by design, none failed, none run twice** (34 minutes). Three
   fixes came after that run, from what CI said of the push before (below), with 54 more browser tests; the
@@ -79,8 +79,9 @@ answer is right. Everything is saved on the device.
   shown to fire (`tests/content/`): 32 of them are the Music Lab's.
 - Every browser test also fails on any console error or warning, failed request, or request to another origin.
 - **The live site**, as above: `main` after pull request #8. `docs/DEPLOYMENT.md` has the check.
-- **An update was rehearsed** before pull request #7 (`npm run rehearse:update`), in Chromium. Pull request #8
-  was merged without one. It should be rehearsed before pull request #9 is merged.
+- **The update from what is live to this tree was rehearsed** (`npm run rehearse:update -- origin/main`), in
+  Chromium: 18 of 18, after it had found a fault at 16 of 18 and that was fixed. Rehearse it again after any
+  later change to content or to what is stored.
 
 ## Not verified — read this before relying on anything
 
@@ -248,6 +249,11 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
   with their fault put back: one looked before the board had settled, one waited for an ending that the fault
   also reached. Put every fault back (`scratch` tools do it: break one line, run one test, restore) and read
   the result, each time.
+- **Rehearse the update before every push that changes content**, not only before a release: the owner
+  merged the last pull request without warning. `npm run rehearse:update -- origin/main` found that adding
+  activities to a world sent a child back to the start of an unfinished one. A place is now kept by the
+  lesson's own version, and a lesson cannot change without one: `npm run content` refuses it
+  (`src/content/lessons.lock.json`). To change a lesson that is live, give it a new version in its generator.
 - **The game's size and the content's size are budgeted apart** (`scripts/verify-dist.mjs`). Content is meant
   to grow; the game's own code is not meant to jump.
 - **The first screen's script is 105 kB of the 110 it is allowed**, and what each world offers

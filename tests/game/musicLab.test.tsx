@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { cleanup, render } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import musicLabPack from '@/content/packs/music-lab.v1.json';
+import musicLabPack from '@/content/packs/music-lab.v2.json';
 import {
   parseContentPack,
   pitchOf,

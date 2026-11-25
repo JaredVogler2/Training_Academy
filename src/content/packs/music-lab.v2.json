@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "id": "music-lab",
   "world": "music-lab",
-  "contentVersion": 1,
+  "contentVersion": 2,
   "strings": {
     "en": {
       "ml.hint.not-this": "Not this one.",
@@ -2204,7 +2204,7 @@
     },
     {
       "id": "ml-tune-01",
-      "version": 1,
+      "version": 2,
       "world": "music-lab",
       "title": "Make a tune",
       "summary": "Chime bars, and a tune to make up with a shape to it: going up, coming down, over a hill and back, the same thing twice, or home to the biggest bar. There are many right tunes, and your child’s own is as right as any. It can be played back and changed before saying it is done.",

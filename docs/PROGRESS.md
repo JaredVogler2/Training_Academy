@@ -391,7 +391,12 @@ to put it on a phone.
   Lab's six activities went live that day; the live site was checked afterwards (`docs/DEPLOYMENT.md`), the
   branch was started again from `main`, and what had been pushed after that commit — the Music Lab's room, the
   fix for phones held sideways, and this — is on pull request #9. Two of the new browser tests were found to
-  pass with their fault put back, and were rewritten. None of it has been heard or seen by anyone but me.
+  pass with their fault put back, and were rewritten. CI then found two faults in the game, one of them as old
+  as the first phase (a dialog asked for again the instant it was cancelled shut itself), and rehearsing the
+  update found a third: adding activities to a world would have sent a child who had left another of its
+  activities half-way back to the start of it. All three are fixed, each with a test that fails on the code as
+  it was, and a lesson can no longer change without a new version. None of it has been heard or seen by anyone
+  but me.
 
 - **2026-11-25** — Phase 11: the Music Lab. Asked to build everything that was left, in the order recommended,
   with one review of all of it at the end. First the pull request before this one (#7) was merged by the owner

@@ -56,9 +56,12 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   "Things that go together", on the narrowest phones, the cards to pick out are 49 pixels high. Both can still
   be played. To see that the fix has arrived: open "Which has more?" on a phone held sideways — the two groups
   should fill the height of the screen.
-- **What is on pull request #9 is not live**: those fixes, the Music Lab's room, and whatever else that pull
-  request has gained since. Its own description says how far it has got. Before it is merged, the update should
-  be rehearsed (_Before a release_, below).
+- **What is on pull request #9 is not live**: those fixes, the Music Lab's room, Number Garden's numerals, and
+  whatever else that pull request has gained since. Its own description says how far it has got. **The update
+  from what is live to it was rehearsed on 2026-11-25** and passed, 18 of 18, after it had first found a fault
+  that would have reached children: an activity left half-way in Number Garden would have begun again from its
+  first step (`docs/TEST_RESULTS.md` → _An update, rehearsed_). It should be rehearsed again after anything
+  more is added (_Before a release_, below).
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The

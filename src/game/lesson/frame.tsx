@@ -106,16 +106,43 @@ export function useStepState<T>(
   ];
 }
 
-/** How many times the child has asked to be shown again. Asking is free: it is not help, and nothing records it. */
-export function useAgain(): [number, () => void] {
-  const [asked, setAsked] = useState(0);
-  return [
-    asked,
-    () => {
+export interface Asking {
+  /** How many times the child has asked in this step. Each asking plays the step's script from the top. */
+  asked: number;
+  /**
+   * This asking is only for the words: whatever the step shows first (a group to glance at, an order to follow)
+   * has been seen through, and the script may leave it out.
+   */
+  again: boolean;
+  /**
+   * The child asks. Say `false` if what the step shows first is still to come or is under way: then the step
+   * starts over, showing and all, and the asking is not counted as "again".
+   */
+  ask: (seenThrough?: boolean) => void;
+}
+
+/**
+ * Asking to be told again. Asking is free: it is not help, and nothing records it.
+ *
+ * It belongs to one step. (It used to belong to the board, which stays on the screen from step to step: after one
+ * tap on Glim, every later step was taken for a second telling, and nothing was shown first for the rest of the
+ * activity — no look at a group, no order to follow.) And an asking that comes before the showing is over does
+ * not take the showing away: it used to, leaving a covered group and choices to guess from.
+ */
+export function useAgain(step: number): Asking {
+  const [held, setHeld] = useStepState(step, { asked: 0, early: 0 });
+  return {
+    asked: held.asked,
+    again: held.asked > held.early,
+    ask: (seenThrough) => {
       playCue('tap');
-      setAsked((times) => times + 1);
+      setHeld((was) => ({
+        asked: was.asked + 1,
+        // Only a plain `false` is "not yet": a tap hands its own event to whatever it calls.
+        early: seenThrough === false ? was.asked + 1 : was.early,
+      }));
     },
-  ];
+  };
 }
 
 /**
@@ -212,7 +239,7 @@ export function Foot({
         data-tip={lessonText.sayAgain}
         data-tip-side="top"
         data-tip-align="start"
-        onClick={onAgain}
+        onClick={() => onAgain()}
       >
         <Guide state={mood} aim={aim} className={styles.guide} />
         <span className={styles.againBadge} aria-hidden="true">

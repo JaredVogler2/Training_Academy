@@ -68,7 +68,7 @@ export function SelectBoard({ state, runner, pack, module, paused, calm }: Board
   const { Picture } = module;
   const demo = view.stage === 'demo';
   const revealed = !demo && view.shownAnswer !== null;
-  const [asked, again] = useAgain();
+  const { asked, again, ask } = useAgain(view.stepIndex);
   const seconds = useSeconds();
   usePreparedLines(state);
 
@@ -92,7 +92,7 @@ export function SelectBoard({ state, runner, pack, module, paused, calm }: Board
         {
           stage: view.stage,
           event,
-          again: asked > 0,
+          again,
           parts: solution.length,
           sequence: [],
           lines: linesOf(state),
@@ -231,7 +231,7 @@ export function SelectBoard({ state, runner, pack, module, paused, calm }: Board
         mood={mood}
         aim={aim}
         after={calm ? 0 : script.length}
-        onAgain={again}
+        onAgain={ask}
         done={
           studying
             ? undefined

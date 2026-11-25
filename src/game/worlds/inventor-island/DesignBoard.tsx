@@ -40,7 +40,7 @@ export function DesignBoard({ state, runner, pack, paused, calm }: BoardProps) {
   }
   const { task } = challenge;
   const demo = view.stage === 'demo';
-  const [asked, again] = useAgain();
+  const { asked, again, ask } = useAgain(view.stepIndex);
   const seconds = useSeconds();
   usePreparedLines(state);
 
@@ -67,7 +67,7 @@ export function DesignBoard({ state, runner, pack, paused, calm }: BoardProps) {
       mendScript({
         stage: view.stage,
         event,
-        again: asked > 0,
+        again,
         untouched,
         parts: task.controls.length,
         changes: (answer ?? []).flatMap((option, index) =>
@@ -207,7 +207,7 @@ export function DesignBoard({ state, runner, pack, paused, calm }: BoardProps) {
         mood={mood}
         aim={aim}
         after={calm ? 0 : script.length}
-        onAgain={again}
+        onAgain={ask}
       >
         {!demo && !answered && (
           <ActionButton

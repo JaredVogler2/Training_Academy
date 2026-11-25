@@ -3,22 +3,45 @@
 **Status: the owner has deployed it.** The repository is connected to a Vercel project, `training-academy`, by its
 owner. Production is the `main` branch, at `https://training-academy-dun.vercel.app`.
 
-- **What is live** is what `main` has: the map, the voice, and Number Garden with all seven of its activities.
-  The other five worlds say they are not open. Checked on 2026-11-23, after the owner merged pull request #5:
-  the sixteen smoke tests passed against that address in Chromium as a desktop and as a phone
-  (`BASE_URL=https://training-academy-dun.vercel.app npx playwright test`) — the security headers, addresses at
-  any depth, caching, the installable-app files, a missing file answered with a 404, and the game starting with
-  no error, no warning and no request to anywhere else — and Number Garden's first activity, opened by a tap,
-  fetched its six recordings from the site itself.
-- **The other five worlds are not live.** They are on pull request
-  [#6](https://github.com/JaredVogler2/Training_Academy/pull/6). Merging it publishes them, and that is
-  the owner's decision: nothing was promoted, merged or changed in the Vercel project from a session like this
-  one.
-- **A preview of the pull request is built by Vercel**, at an address of its own behind Vercel's sign-in. The
-  build of the pull request's first commit there reached "Ready" in about half a minute. It was not opened from
-  a session like this one: reaching a protected preview from outside means putting a share link
-  on the deployment, and that is the owner's to ask for. _If the preview is protected_, below, says how to run
-  the smoke tests against it with a bypass secret.
+- **What is live** is what `main` has, and since 2026-11-23 that is all six worlds: the owner merged pull
+  request #5 (the map, the voice, Number Garden's seven activities) and then pull request
+  [#6](https://github.com/JaredVogler2/Training_Academy/pull/6) (the other five worlds). Nothing was promoted,
+  merged or changed in the Vercel project from a session like this one: a merge is the owner's decision, and
+  Vercel deploys `main` when there is one.
+- **What was checked on the live site**, a few minutes after the second merge, from the container this was
+  built in, in Chromium:
+  - Vercel's own record: the production deployment of the merge commit `0e836eb` is "Ready".
+  - The service worker the site serves is, byte for byte, the one a local build of that commit makes. It names
+    every file of the build by a hash of its contents, so what is live is the build that was tested.
+  - Every world's page, opened by its address as a phone: 10, 7, 4, 6, 4 and 8 activities offered, 39 in all,
+    each page with Play, and none saying it is not open.
+  - The first activity of each of the five new worlds, opened by a tap as a phone: each started, and fetched
+    its recordings from the site itself (each a 200 and `audio/mpeg`), with no error, no warning and no request
+    to anywhere else.
+  - 52 browser tests against the address (`BASE_URL=https://training-academy-dun.vercel.app npx playwright test
+--project=desktop --project=phone --project=android`): the sixteen smoke tests as a desktop and as a phone —
+    the security headers, addresses at any depth, caching, the installable-app files, a missing file answered
+    with a 404, and the game starting with no error, no warning and no request to anywhere else — and the 36
+    tests of the Pixel 7 screen, which play something in every world.
+- **What that does not show.** It was a browser on a desk. Nobody has listened to a recording there, Safari's
+  engine has never been pointed at the live address, and the whole suite runs against a local build of the same
+  commit, not against the site.
+- **Three faults were on the live site when this was written**, found after the six worlds went live and fixed
+  in the pull request that carries this note; they are live until that is merged. One tap on Glim took the
+  first showing away from every later step of an activity; a tap before a showing was over took that showing
+  away, and an order being shown could be tapped in its pauses; and a world's page opened by its own address
+  showed nothing as finished. `docs/CONTINUE_HERE.md` has them in full. To see that a fix has arrived: in
+  Number Garden, finish the first activity, then load the world's page again — the tick should still be on it.
+- **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
+  `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
+  recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The
+  project never built, and it put a failed check on every commit, `main`'s included, without touching the
+  game. The owner deleted it on 2026-11-25. Its failed check stays on the commits it was put on. If
+  that folder is ever offered as a project again, it is one to decline.
+- **A preview of each pull request is built by Vercel**, at an address of its own behind Vercel's sign-in. None
+  has been opened from a session like this one: reaching a protected preview from outside means putting a share
+  link on the deployment, and that is the owner's to ask for. _If the preview is protected_, below, says how to
+  run the smoke tests against it with a bypass secret.
 
 **The requirement, since Phase 03: it must work on Android and iOS devices when deployed on Vercel.** The owner has
 opened the live site on an iPhone, which is the first time this project has been seen on a real device. Nothing
@@ -81,6 +104,9 @@ Chrome as they come. Each line is something this phase did that only a device ca
 | 19  | In Explorer Harbor, open "Which flag is on the water?" upright and sideways, and tap a flag                                                                            | Answer the flag that was tapped, every time, however small the map                                                                                      | A tap answers a different flag, or none: note the phone and which way up                                                                                                                                                         |
 | 20  | In Robot Ridge, Memory Forest and Inventor Island, play one activity each to the end                                                                                   | Reach the end with nothing cut off, nothing too small to press, and nothing that needs reading                                                          | Note the activity, the step and the screen                                                                                                                                                                                       |
 | 21  | Hold "Grown-ups", open "The voice: listen to every recording", and play some                                                                                           | Play each, and keep a mark of "sounds right" or "sounds wrong" after the page is closed and opened again                                                | This list is how the voice gets reviewed: the wrong ones are listed at the foot of it to send on                                                                                                                                 |
+| 22  | In Number Garden's "How many, at a glance", tap Glim once, answer, and go on                                                                                           | Uncover the next group for a look, as it did the first: a tap on Glim says the words again and takes nothing away                                       | The next group stays covered: the fix for it has not reached this device. Load the page again                                                                                                                                    |
+| 23  | Finish an activity, then load its world's page again with the browser's own button                                                                                     | Still show the tick on it, and send Play to the next one                                                                                                | No tick, and Play at the first activity again: likewise                                                                                                                                                                          |
+| 24  | In Memory Forest's "The same order", tap a card while the order is still being shown                                                                                   | Do nothing: no mark fills below the cards until the last light has gone out                                                                             | A mark fills, or the answer is taken early: note the phone                                                                                                                                                                       |
 
 Anything that does not do what the middle column says is a fault to fix, and the notes above are what makes it
 quick to find.
@@ -177,6 +203,37 @@ For the workflow, add it to the GitHub repository as the secret `VERCEL_AUTOMATI
 (`repository_dispatch`). For that to fire: the repository must be connected to the Vercel project through the Vercel
 GitHub integration, and the workflow file must be on the default branch (so it starts working after this pull request
 is merged).
+
+## Before a release: rehearse the update
+
+Every browser test starts from an empty browser and one build. A phone that already has the game does not: it
+has the old build's service worker, what the child has done, perhaps an activity left half-way, perhaps a tab
+left open. What happens when the next build arrives at the same address is rehearsed with:
+
+```bash
+npm run rehearse:update -- origin/main
+```
+
+Give it the commit that is live. It builds that commit in a scratch checkout and this tree beside it, serves
+the old one, plays on it as a phone, leaves one activity half-way and two more tabs open, then serves the new
+one at the same address, as a deployment does, and checks eighteen things: the open tabs carry on; a tab that
+asks for a part it never fetched says so and offers to load the page again; the site opened again is the new
+build at once; a world's page still shows what was finished and Play goes on from there; the half-finished
+activity is taken up where it was left; nothing stored has gone; with the old tabs closed the new worker takes
+over and clears the old build out; and what was opened then opens with no connection.
+
+It rebuilds `dist/`, so do not run it while the browser tests are running. It runs in Chromium, the one engine
+in which a service worker and the network can be driven together: it shows that the update is sound, not how
+Safari on a phone times it. The first time it was run, from the build before the six worlds to the six worlds,
+it found a fault that had been live since Phase 03 (`docs/TEST_RESULTS.md` → _An update, rehearsed_).
+
+**What a phone that has the old version does, and what to tell someone who still sees it.** A page that is
+loaded gets the new build at once, if the phone is online: pages are fetched from the network first. A tab
+that was simply left open is still the old build until it is loaded again, and so is a copy on the home screen
+that the phone kept in memory. Nothing in the game says "there is a new version" yet (`docs/PROGRESS.md` →
+_Known gaps_), and pulling the page down does not reload it, on purpose. So: reload the tab, or close the
+home-screen copy from the app switcher and open it again. An old tab that asks for something the new build no
+longer has says "This part could not be loaded" and offers to load the page again, which brings the new build.
 
 ## The service worker: updates, rollback, and how to remove it
 

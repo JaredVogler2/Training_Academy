@@ -1,16 +1,18 @@
 import {
   expect,
   finished,
+  holdClock,
   myTurn,
   next,
   screenFit,
   stepNumber,
   test,
+  watchFor,
   type Locator,
   type Page,
   arrived,
 } from './fixtures';
-import { answer } from './play';
+import { answer, playToTheEnd } from './play';
 
 /**
  * Number Garden's activities beyond the first: seeing a small amount at a glance, giving one to each, which has
@@ -118,6 +120,27 @@ test.describe('the world page', () => {
       play('ng-same-amount-01'),
     );
   });
+
+  test('knows what has been finished when its page is opened by its own address', async ({
+    page,
+    press,
+  }) => {
+    await page.goto(play('ng-same-amount-01'));
+    await playToTheEnd(page, press);
+    await expect(finished(page)).toBeVisible();
+
+    // Not by way of the map: a phone that brings a tab back loads the address it was at, and nothing before it.
+    await page.goto('/world/number-garden');
+    const card = page.locator('[data-lesson="ng-same-amount-01"]');
+    await expect(card).toHaveAttribute('data-done', 'true');
+    const playNext = page.getByRole('link', { name: 'Play', exact: true });
+    await expect(playNext).toHaveAttribute('href', play('ng-glance-01'));
+
+    // And after the page is loaded again where it stands.
+    await page.reload();
+    await expect(card).toHaveAttribute('data-done', 'true');
+    await expect(playNext).toHaveAttribute('href', play('ng-glance-01'));
+  });
 });
 
 test.describe('one for each', () => {
@@ -198,6 +221,29 @@ test.describe('one for each', () => {
     await expect(finished(page)).toContainText('3 of 4 right at the first try, with no help.');
   });
 
+  test('keeps the button to take one back where it is while it counts', async ({ page, press }) => {
+    await page.clock.install();
+    await page.goto(play('ng-give-01'));
+    await press(myTurn(page));
+    const takeBack = page.getByRole('button', { name: /Take one back/ });
+    // Hold on to the button itself, not to a way of finding it.
+    const button = await takeBack.elementHandle();
+    await give(page, press, 1);
+    await holdClock(page);
+    await press(done(page));
+
+    // Not one for each: the friends are counted, then what was given.
+    const counted = await watchFor(
+      page,
+      9000,
+      async () => (await takeBack.getAttribute('data-counting')) ?? 'still',
+    );
+    expect(counted).toEqual(['still', 'friends', 'given', 'still']);
+    // It is the same button all the way through. (A new one used to be put in its place each time a count
+    // began or ended: a press under way on it was dropped, and so was a screen reader's place on it.)
+    expect(await button.evaluate((element) => element.isConnected)).toBe(true);
+  });
+
   test('gives some to start with when help is asked for, and then shows where the rest go', async ({
     page,
     press,
@@ -265,6 +311,76 @@ test.describe('how many, at a glance', () => {
     await expect(group).toHaveAttribute('data-covered', 'false');
     await expect(lesson(page).locator('[data-same="true"]')).toBeVisible();
     await expect(caption(page)).toHaveText('Yes. The same amount.');
+  });
+
+  test('asking to be told again in one step takes nothing from the next', async ({
+    page,
+    press,
+  }) => {
+    await page.goto(play('ng-glance-01'));
+    await press(myTurn(page));
+    const group = lesson(page).locator('[data-same]');
+    await expect(group).toHaveAttribute('data-covered', 'false');
+    await expect(group).toHaveAttribute('data-covered', 'true');
+    // Asked once, which is free. Then the answer, and on to the next group.
+    await press(page.getByRole('button', { name: 'Show me again' }));
+    await answer(page, press);
+    await press(next(page));
+    expect(await stepNumber(page)).toBe(3);
+
+    // A new group is looked at like any other. (Having asked once used to count against every step after it:
+    // nothing was uncovered again for the rest of the activity, and "how many?" was asked of a cover.)
+    await expect(group).toHaveAttribute('data-covered', 'false');
+    await expect(lesson(page).locator('[data-choice]').first()).toHaveAttribute(
+      'data-turned-away',
+      'true',
+    );
+    await expect(group).toHaveAttribute('data-covered', 'true');
+    await answer(page, press);
+    await expect(caption(page)).toHaveText('Yes. The same amount.');
+  });
+
+  test('asked to be told again before the look is over, starts over with the look still to come', async ({
+    page,
+    press,
+  }) => {
+    // With the clock held, "before the look" is a place to stand, not a moment to catch.
+    await page.clock.install();
+    await page.goto(play('ng-glance-01'));
+    await expect(myTurn(page)).toBeVisible();
+    await holdClock(page);
+    await press(myTurn(page));
+    const group = lesson(page).locator('[data-same]');
+    const choice = lesson(page).locator('[data-choice]').first();
+    const sayAgain = page.getByRole('button', { name: 'Show me again' });
+    const state = async () =>
+      `${(await group.getAttribute('data-covered')) === 'true' ? 'covered' : 'in view'}, choices ${
+        (await choice.getAttribute('data-turned-away')) === 'true' ? 'turned away' : 'offered'
+      }`;
+    const theLook = [
+      'covered, choices turned away',
+      'in view, choices turned away',
+      'covered, choices offered',
+    ];
+
+    // Nothing has been said yet and nothing uncovered. A tap on Glim now used to drop the look for good: the
+    // group stayed covered, and the choices were offered with nothing to go on.
+    await press(sayAgain);
+    expect(await watchFor(page, 9000, state)).toEqual(theLook);
+
+    // Seen through, asking again is the words and no more.
+    await press(sayAgain);
+    expect(await watchFor(page, 6000, state)).toEqual(['covered, choices offered']);
+
+    // The same in the middle of a look: asked for then, it is given again from the top.
+    await page.clock.resume();
+    await answer(page, press);
+    await press(next(page));
+    expect(await stepNumber(page)).toBe(3);
+    await expect(group).toHaveAttribute('data-covered', 'false');
+    await holdClock(page);
+    await press(sayAgain);
+    expect(await watchFor(page, 9000, state)).toEqual(theLook);
   });
 
   test('still covers and uncovers when the device asks for less motion', async ({

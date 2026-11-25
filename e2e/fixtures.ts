@@ -1,5 +1,6 @@
 import { test as base, expect, type Locator, type Page } from '@playwright/test';
 import { WORLDS, isOpen } from '../src/game/worlds';
+import { fetchNotLoaded, pagesServed } from './diagnosis';
 
 /**
  * What every browser test gets:
@@ -7,8 +8,11 @@ import { WORLDS, isOpen } from '../src/game/worlds';
  *   - a guard that fails the test on any console error or warning, uncaught exception, failed request, or request to
  *     another origin (the game talks to nobody) — unless the test says a specific one is expected. The one thing it
  *     lets pass on its own is a download the browser cancelled because the page had moved on to another document;
- *   - a note of what it was still waiting for, if it runs out of time: twice in CI a page load in WebKit has waited
- *     a whole minute and then passed at once on the second attempt, and a silence explains nothing;
+ *   - a note of what it was still waiting for, if it runs out of time: four times in CI a test's first page in
+ *     WebKit has waited a whole minute and then arrived at once on the second attempt, and a silence explains
+ *     nothing. The note says how far the page had got, what had not been answered and whether the browser had so
+ *     much as the start of an answer, what the server made of it, where the page stood, and which test had the
+ *     browser before;
  *   - the graphics setting chosen up front (the hub as a picture by default, so only the 3D specs pay for software
  *     rendering);
  *   - `press`, which taps on a touch device and clicks otherwise, so one spec exercises both;
@@ -66,6 +70,13 @@ const WEBKIT_ALLOWED = [
 const REMOTE_ALLOWED =
   (process.env.BASE_URL ?? process.env.PLAYWRIGHT_BASE_URL) ? [/vercel\.live/] : [];
 
+/**
+ * The test that had this worker's browser before the one now running: a browser is kept from test to test, so a
+ * test can be late or stuck because of what the one before it left behind. (A worker that has had a failure starts
+ * again with a new browser, and with nothing here.)
+ */
+let ranBefore: string | null = null;
+
 export const test = base.extend<Fixtures>({
   graphics: ['pictures', { option: true }],
   frontDoor: [false, { option: true }],
@@ -86,11 +97,13 @@ export const test = base.extend<Fixtures>({
           problems.push(`console ${message.type()}: ${message.text()}`);
         }
       });
-      page.on('pageerror', (error) => problems.push(`uncaught: ${error.message}`));
 
       // What has been asked for and not yet answered, and how far the last page load got: said only if the test
       // runs out of time (below).
-      const unanswered = new Map<object, { path: string; kind: string; since: number }>();
+      const unanswered = new Map<
+        object,
+        { path: string; kind: string; since: number; begunAt?: number }
+      >();
       const loading = { parsed: false, finished: false };
       page.on('requestfinished', (request) => unanswered.delete(request));
       page.on('domcontentloaded', () => {
@@ -106,6 +119,17 @@ export const test = base.extend<Fixtures>({
       let documents = 0;
       const startedIn = new WeakMap<object, number>();
       const cancelled: { line: string; document: number }[] = [];
+      // WebKit says the same of a download begun by `fetch()` a second time, as an uncaught error. It is the same
+      // cancelled download, and is judged by the same rule: found by its address among what was asked for.
+      const begun: { url: string; document: number }[] = [];
+      page.on('pageerror', (error) => {
+        const line = `uncaught: ${error.message}`;
+        const address = browserName === 'webkit' ? fetchNotLoaded(error.message) : null;
+        const download =
+          address === null ? undefined : begun.filter((each) => each.url.endsWith(address)).at(-1);
+        if (download) cancelled.push({ line, document: download.document });
+        else problems.push(line);
+      });
       page.on('requestfailed', (request) => {
         unanswered.delete(request);
         const reason = request.failure()?.errorText ?? 'unknown';
@@ -124,6 +148,7 @@ export const test = base.extend<Fixtures>({
           loading.finished = false;
         }
         startedIn.set(request, documents);
+        begun.push({ url: request.url(), document: documents });
         const url = new URL(request.url());
         if (url.protocol === 'data:' || url.protocol === 'blob:') return;
         unanswered.set(request, {
@@ -135,6 +160,9 @@ export const test = base.extend<Fixtures>({
         else problems.push(`request to another origin: ${request.url()}`);
       });
       page.on('response', (response) => {
+        // The start of an answer: its status and headers. The rest may still be on its way.
+        const waited = unanswered.get(response.request());
+        if (waited) waited.begunAt = Date.now();
         const url = new URL(response.url());
         if (url.origin === origin && response.status() >= 400) {
           problems.push(`HTTP ${response.status()}: ${url.pathname}`);
@@ -152,10 +180,30 @@ export const test = base.extend<Fixtures>({
       // A test that ran out of time has failed already; this adds what it was waiting for to what is reported.
       if (testInfo.status === 'timedOut') {
         const now = Date.now();
+        // Tests against a deployment have no server of their own to ask.
+        const port =
+          (process.env.BASE_URL ?? process.env.PLAYWRIGHT_BASE_URL) ? null : new URL(origin).port;
         const waiting = [...unanswered.values()].map(
-          ({ path, kind, since }) =>
-            `${kind} ${path} (asked for ${((now - since) / 1000).toFixed(1)} s before)`,
+          ({ path, kind, since, begunAt }) =>
+            `${kind} ${path} (asked for ${((now - since) / 1000).toFixed(1)} s before; ` +
+            // The browser's side of it: nothing at all, or the start of an answer and then no more.
+            (begunAt === undefined
+              ? 'the browser reported no answer at all'
+              : `the browser reported the start of an answer after ${((begunAt - since) / 1000).toFixed(1)} s and never its end`) +
+            // For a page itself, the server's side of it.
+            (kind === 'document' && port !== null
+              ? `; ${pagesServed(Number(port), path, since)}`
+              : '') +
+            ')',
         );
+        // Where the page was when time ran out: still at the address before, if the new one was never taken up.
+        let stoodAt = 'an address that could not be read';
+        try {
+          const at = new URL(page.url());
+          stoodAt = at.origin === origin ? at.pathname : page.url();
+        } catch {
+          // The page is gone, or its address is not one.
+        }
         const reached = loading.finished
           ? 'had finished loading'
           : loading.parsed
@@ -165,9 +213,14 @@ export const test = base.extend<Fixtures>({
           `out of time: the last page asked for ${reached}; ` +
             (waiting.length === 0
               ? 'no request was unanswered'
-              : `${String(waiting.length)} unanswered: ${waiting.join('; ')}`),
+              : `${String(waiting.length)} unanswered: ${waiting.join('; ')}`) +
+            `; the page stood at ${stoodAt}` +
+            (ranBefore === null
+              ? '; this was the first test in its browser'
+              : `; the test that had the browser before this one: ${ranBefore}`),
         );
       }
+      ranBefore = `[${testInfo.project.name}] ${testInfo.titlePath.slice(1).join(' › ')}`;
       const unexpected = problems.filter(
         (problem) => !allowed.some((pattern) => pattern.test(problem)),
       );
@@ -402,6 +455,35 @@ async function amountIn(picture: Locator): Promise<string | null> {
 }
 
 /** Tap a choice that shows the same amount as the group to match (`right`), or one that does not. */
+/**
+ * Hold the page's clock where it is. From here nothing timed happens in the page (no line is said, nothing is lit
+ * or covered) until the test moves the clock on, so "before the look" and "between two lights" are places a test
+ * can stand in, not moments it has to be quick enough to catch. Needs `page.clock.install()` before the page is
+ * opened; a tap, and what a tap changes at once, work as usual.
+ */
+export async function holdClock(page: Page): Promise<void> {
+  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 20);
+}
+
+/**
+ * Move a held clock on by `milliseconds`, a little at a time, and say what was seen on the way: `look` is asked
+ * before each move, and each answer that differs from the one before it is kept, in order.
+ */
+export async function watchFor(
+  page: Page,
+  milliseconds: number,
+  look: () => Promise<string>,
+  every = 100,
+): Promise<string[]> {
+  const seen: string[] = [];
+  for (let passed = 0; passed <= milliseconds; passed += every) {
+    const now = await look();
+    if (seen.at(-1) !== now) seen.push(now);
+    await page.clock.runFor(every);
+  }
+  return seen;
+}
+
 export async function choose(page: Page, press: Fixtures['press'], right: boolean): Promise<void> {
   const lesson = page.getByTestId('lesson');
   const target = await amountIn(lesson.locator('[data-same]'));

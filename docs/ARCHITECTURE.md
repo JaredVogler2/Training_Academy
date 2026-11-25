@@ -402,11 +402,28 @@ Three things the frame does that are easy to undo by accident:
   answer with while those are on show, a missing picture: none is rendered until the engine shows it.
 - **Asking again is not help; another look is.** Glim says the words again and shows nothing that the question
   hides. Uncovering a thing a second time is a hint, asked for and recorded as one.
+- **What a step keeps belongs to the step.** A board stays on the screen from one step to the next, so that Glim
+  does not blink out and in between them. Anything it remembers therefore has to be kept by step
+  (`useStepState`), or it is remembered into the next one. Asking again was not, at first: one tap on Glim and
+  every later step was taken for a second telling, with nothing shown first (`useAgain` is now by step).
+- **A first showing is owed until it has been seen through.** Asking again while a look or an order is still to
+  come, or under way, starts the step over with the showing in it; only an asking that comes afterwards is "the
+  words and no more" (`ask(seenThrough)`). And from the moment such a question arrives until its showing is
+  over, nothing on the board takes a tap: not while the words are said, and not in the pauses between one light
+  and the next.
+- **A button is never put in the place of another.** Where a count has to start from the first thing, what hops
+  is made afresh inside a button that stays: a button that is replaced drops a press that is under way, and
+  whatever was focused on it.
 
 A world's page (`game/world/WorldView.tsx`) shows the island with the world's emblem pinned to it; one large
 Play button that goes to the next lesson not yet finished; and every lesson as a card with a picture built from
 that lesson's own demonstration challenge — so a card cannot show something the activity does not do. Below, for
 the grown-up, is what each activity is and something to try together away from the screen.
+
+What has been finished is the player's own, so whatever shows it has to know who is playing
+(`game/progress.ts`). The map finds that out as it opens, and so do an activity and the grown-ups' area; a
+world's page can be the first thing opened — a page loaded again, a tab a phone has brought back — and asks for
+itself if nobody has. (It did not, at first: such a page showed nothing as finished.)
 
 ### The voice
 
@@ -477,6 +494,11 @@ in `vercel.json` it does not model is an error, never silently ignored. The brow
 production policy. This is a faithful model, not Vercel itself: see `docs/DEPLOYMENT.md` for what only a real
 deployment can confirm.
 
+For the browser tests the same plugin keeps a note of each page it is asked for, as the request arrives and
+again when its answer has been sent (only when `PREVIEW_PAGE_LOG` names a file, which the tests' configuration
+does). It is there for a test that runs out of time waiting for a page: the browser's side of that is known, and
+this is the server's (`e2e/diagnosis.ts`).
+
 ## Service worker
 
 Generated at build time (`scripts/vite/service-worker.ts` writes `dist/sw.js` from `scripts/vite/sw-source.js` plus a
@@ -492,6 +514,13 @@ A new worker never calls `skipWaiting`: it waits until the old version's tabs ha
 and every kept file the new build does not contain. What is kept is therefore bounded by the size of one build.
 Lookups ignore `Vary`, because browsers send `Origin` with module-script requests and a host that answers
 `Vary: Origin` would otherwise make every pre-fetched file unmatchable (found by the offline browser test).
+
+What that means for a device that already has the game, when a new build is deployed, is not something a test
+that starts from an empty browser can show. `scripts/rehearse-update.mjs` (`npm run rehearse:update -- <the commit
+that is live>`) does it with two real builds and one browser that keeps what it has: tabs left open carry on, a
+part the old build never fetched says so and offers to load the page again, the site opened again is the new
+build at once, a sitting left half-way is taken up, nothing stored is lost, and the old build is cleared out
+once its tabs have closed.
 
 When narration and other media arrive (Phase 04), they will need their own explicit, budgeted policy; this one
 deliberately stores nothing outside `/immutable/`.

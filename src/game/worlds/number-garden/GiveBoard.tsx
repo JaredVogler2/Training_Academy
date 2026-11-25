@@ -36,7 +36,7 @@ export function GiveBoard({ state, runner, pack, module, paused, calm }: BoardPr
   const wanted = task.want.count;
   const demo = view.stage === 'demo';
   const revealed = !demo && view.shownAnswer !== null;
-  const [asked, again] = useAgain();
+  const { asked, again, ask } = useAgain(view.stepIndex);
   const seconds = useSeconds();
   usePreparedLines(state);
 
@@ -60,7 +60,7 @@ export function GiveBoard({ state, runner, pack, module, paused, calm }: BoardPr
       giveScript({
         stage: view.stage,
         event,
-        again: asked > 0,
+        again,
         wanted,
         given: tried,
         lines: linesOf(state),
@@ -134,10 +134,14 @@ export function GiveBoard({ state, runner, pack, module, paused, calm }: BoardPr
 
   const friends = describeAmount(wanted, task.want.item);
   const givenSoFar = `${describeAmount(given.length, task.item)} given`;
-  const gift = (index: number) => (
+  // What hops when it is counted is made afresh whenever a count starts, so that the hopping starts from the
+  // first one. The button it is in stays as it is: a button put in the place of another drops a press that is
+  // under way, and whatever was focused on it.
+  const count = countingFriends || countingGiven ? `count-${String(turn)}` : 'still';
+  const gift = (index: number, afresh = '') => (
     <span
       // Keyed by where it came from, so that one put back and given again arrives afresh.
-      key={given[index]}
+      key={`${afresh}/${String(given[index])}`}
       className={styles.gift}
       style={{ '--order': index } as CSSProperties}
       data-fixed={index < floor && !demo}
@@ -165,13 +169,11 @@ export function GiveBoard({ state, runner, pack, module, paused, calm }: BoardPr
             data-given={given.length}
             aria-label={`${friends}, each with a place. ${givenSoFar}. Take one back.`}
             aria-disabled={busy || held.length <= floor}
-            // Re-keyed whenever the counting starts, so that it starts from the first one.
-            key={countingFriends || countingGiven ? `count-${String(turn)}` : 'still'}
             onClick={takeBack}
           >
             {Array.from({ length: wanted }, (_, index) => (
               <span
-                key={index}
+                key={`${count}/${String(index)}`}
                 className={styles.cell}
                 style={{ '--order': index } as CSSProperties}
               >
@@ -203,14 +205,13 @@ export function GiveBoard({ state, runner, pack, module, paused, calm }: BoardPr
               data-given={given.length}
               aria-label={`${givenSoFar}. Take one back.`}
               aria-disabled={busy || held.length <= floor}
-              key={countingGiven ? `count-${String(turn)}` : 'still'}
               onClick={takeBack}
             >
               {revealed &&
                 Array.from({ length: wanted - given.length }, (_, index) => (
                   <span key={`place-${String(index)}`} className={styles.ghost} />
                 ))}
-              {given.map((_, index) => gift(index))}
+              {given.map((_, index) => gift(index, countingGiven ? count : 'still'))}
             </button>
           </>
         )}
@@ -244,7 +245,7 @@ export function GiveBoard({ state, runner, pack, module, paused, calm }: BoardPr
         mood={mood}
         aim={aim}
         after={calm ? 0 : script.length}
-        onAgain={again}
+        onAgain={ask}
         done={{
           ready: held.length > 0,
           submit: () => void runner.answer(String(held.length)),

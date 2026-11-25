@@ -1,4 +1,14 @@
-import { expect, myTurn, next, screenFit, test, type Page, arrived } from './fixtures';
+import {
+  expect,
+  holdClock,
+  myTurn,
+  next,
+  screenFit,
+  stepNumber,
+  test,
+  type Page,
+  arrived,
+} from './fixtures';
 import { answer, challengeOnScreen } from './play';
 
 /**
@@ -249,5 +259,115 @@ test.describe('the same order', () => {
     await expect(board.locator('[data-lit="true"]')).toHaveCount(1);
     await answer(page, press);
     await expect(caption(page)).toHaveText('Yes. The same order.');
+  });
+
+  test('takes no tap until the whole order has been shown', async ({ page, press }) => {
+    // With the clock held, the pause between one light and the next is a place to stand and tap in.
+    await page.clock.install();
+    await page.goto(play('mf-order-01'));
+    const board = page.getByTestId('echo-board');
+    await expect(myTurn(page)).toBeVisible();
+    await holdClock(page);
+    await press(myTurn(page));
+    const challenge = await challengeOnScreen(page);
+    if (challenge.kind !== 'make' || challenge.task.type !== 'echo')
+      throw new Error('Not an order.');
+    const { solution } = challenge.task;
+
+    // Go through the showing a little at a time. At each moment: what is lit, and can anything be tapped? And
+    // a card is tapped regardless, as a finger might be in the pause between two lights. (Those taps used to
+    // count: the cards were open from the moment the question arrived, and again in every pause.)
+    const shown: string[] = [];
+    let before: string | null = null;
+    let openAfter = -1;
+    for (let slice = 0; slice < 400 && openAfter < 0; slice++) {
+      const now = await board.evaluate((element) => {
+        const cards = [...element.querySelectorAll<HTMLElement>('[data-card]')];
+        const lit = cards.find((card) => card.dataset.lit === 'true');
+        const open = cards.some((card) => card.getAttribute('aria-disabled') !== 'true');
+        // A tap that does not ask whether it may.
+        if (!open) cards[0]?.click();
+        return { lit: lit?.dataset.card ?? null, open };
+      });
+      if (now.lit !== null && now.lit !== before) shown.push(now.lit);
+      before = now.lit;
+      if (now.open) openAfter = shown.length;
+      else await page.clock.runFor(40);
+    }
+    // The order that was shown is the order that is asked for, and all of it came first.
+    expect(shown).toEqual(solution);
+    expect(openAfter).toBe(solution.length);
+    // None of those taps was taken as the start of an answer.
+    await expect(board.locator('ol > li[data-done="true"]')).toHaveCount(0);
+
+    // From here it is played as usual.
+    await page.clock.resume();
+    await answer(page, press);
+    await expect(caption(page)).toHaveText('Yes. The same order.');
+  });
+
+  test('asking to be told again takes no order away: not the next one, and not one half shown', async ({
+    page,
+    press,
+  }) => {
+    await page.clock.install();
+    await page.goto(play('mf-order-01'));
+    const board = page.getByTestId('echo-board');
+    const cards = board.locator('[data-card]');
+    const sayAgain = page.getByRole('button', { name: 'Show me again' });
+    await expect(myTurn(page)).toBeVisible();
+    await holdClock(page);
+    await press(myTurn(page));
+    /** Move the clock on until a card can be tapped, and say which were lit on the way, in order. */
+    const showing = async (): Promise<string[]> => {
+      const shown: string[] = [];
+      let before: string | null = null;
+      for (let slice = 0; slice < 400; slice++) {
+        const now = await board.evaluate((element) => {
+          const all = [...element.querySelectorAll<HTMLElement>('[data-card]')];
+          return {
+            lit: all.find((card) => card.dataset.lit === 'true')?.dataset.card ?? null,
+            open: all.some((card) => card.getAttribute('aria-disabled') !== 'true'),
+          };
+        });
+        if (now.lit !== null && now.lit !== before) shown.push(now.lit);
+        before = now.lit;
+        if (now.open) return shown;
+        await page.clock.runFor(40);
+      }
+      throw new Error('The cards never opened.');
+    };
+    const orderOf = async (): Promise<string[]> => {
+      const challenge = await challengeOnScreen(page);
+      if (challenge.kind !== 'make' || challenge.task.type !== 'echo')
+        throw new Error('Not an order.');
+      return challenge.task.solution;
+    };
+
+    // Asked while the first thing is lit: the showing starts over, and is given whole. (It used to stop there,
+    // with the words said again and the rest of the order never shown.)
+    const first = await orderOf();
+    for (let slice = 0; slice < 400; slice++) {
+      if ((await board.locator('[data-lit="true"]').count()) > 0) break;
+      await page.clock.runFor(40);
+    }
+    await expect(board.locator('[data-lit="true"]')).toHaveCount(1);
+    await press(sayAgain);
+    expect(await showing()).toEqual(first);
+
+    // Asked once it has all been shown: the words, and nothing lit.
+    await press(sayAgain);
+    await page.clock.runFor(6000);
+    await expect(board.locator('[data-lit="true"]')).toHaveCount(0);
+    await expect(cards.first()).toHaveAttribute('aria-disabled', 'false');
+
+    // And the next order is shown like any other. (Having asked once used to count against every step after
+    // it: no order was shown again for the rest of the activity.)
+    await page.clock.resume();
+    await answer(page, press);
+    await press(next(page));
+    expect(await stepNumber(page)).toBe(3);
+    await holdClock(page);
+    expect(await showing()).toEqual(await orderOf());
   });
 });

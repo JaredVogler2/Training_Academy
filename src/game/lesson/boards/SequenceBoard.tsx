@@ -102,7 +102,7 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
   const demo = view.stage === 'demo';
   const revealed = !demo && view.shownAnswer !== null;
   const shownAnswer = view.shownAnswer ? view.shownAnswer.split('-') : [];
-  const [asked, again] = useAgain();
+  const { asked, again: toldBefore, ask } = useAgain(view.stepIndex);
   const seconds = useSeconds();
   usePreparedLines(state, module);
 
@@ -133,7 +133,7 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
     (): MakeSituation => ({
       stage: view.stage,
       event,
-      again: asked > 0,
+      again: toldBefore,
       parts: length,
       sequence: echo ? task.solution : [],
       lines: linesOf(state),
@@ -141,7 +141,7 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
     }),
     // `state` changes with every tap; the script depends only on what is listed.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [view.key, view.hintsUsed, event, asked, seconds],
+    [view.key, view.hintsUsed, event, asked, toldBefore, seconds],
   );
   const script = useMemo(
     () =>
@@ -151,9 +151,26 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
   );
   const run = `${view.key}/${String(view.hintsUsed)}/${event}/${String(asked)}`;
   // An echo's showing is the question itself: it plays even where nothing else moves.
-  const { beat } = useScript(script, run, !paused, calm, echo);
+  const { beat, turn } = useScript(script, run, !paused, calm, echo);
 
   const showing = echo && beat.show === 'name';
+  // The showing is one thing from beginning to end: from the moment the question arrives until the last of it
+  // has been lit and gone dark again. (The cards used to be open while the words were still being said, and
+  // again in each pause between one light and the next, and a tap there was taken as the start of an answer.)
+  const lastShown = useMemo(() => {
+    let beats = 0;
+    let last = 0;
+    for (const moment of script.moments) {
+      if (!moment.beat) continue;
+      beats += 1;
+      if (moment.beat.show === 'name') last = beats;
+    }
+    return last;
+  }, [script]);
+  const watching = echo && !demo && !answered && lastShown > 0 && turn <= lastShown;
+  // Asked to be told again before it has all been shown, the showing is still owed and starts over; asked once
+  // it has been seen through, only the words are said again.
+  const again = () => ask(!watching);
   // In an order that has been got right, the story is told back: the card whose turn it is, and its words.
   const telling = !echo && beat.show === 'name' ? beat.which : null;
   const lit = showing ? beat.which : null;
@@ -169,7 +186,7 @@ export function SequenceBoard({ state, runner, pack, module, paused, calm }: Boa
     return () => window.clearTimeout(timer);
   }, [flash]);
 
-  const busy = demo || answered || showing;
+  const busy = demo || answered || showing || watching;
   const cardOf = (id: string) => task.cards.find((card) => card.id === id);
 
   if (echo) {

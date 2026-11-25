@@ -59,7 +59,7 @@ export function GuessBoard({ state, runner, pack, paused, calm }: BoardProps) {
   const { scene, of } = challenge.prompt.stimulus;
   const setup = useMemo(() => setupOf(of), [of]);
   const demo = view.stage === 'demo';
-  const [asked, again] = useAgain();
+  const { asked, again, ask } = useAgain(view.stepIndex);
   const seconds = useSeconds();
   usePreparedLines(state);
 
@@ -81,7 +81,7 @@ export function GuessBoard({ state, runner, pack, paused, calm }: BoardProps) {
       guessScript({
         stage: view.stage,
         event,
-        again: asked > 0,
+        again,
         seen: seenBefore,
         answer: demo ? shown : null,
         lines: { ...linesOf(state), outcome: challenge.feedback.correct },
@@ -228,7 +228,7 @@ export function GuessBoard({ state, runner, pack, paused, calm }: BoardProps) {
         mood={mood}
         aim={aim}
         after={calm ? 0 : script.length}
-        onAgain={again}
+        onAgain={ask}
       />
     </>
   );

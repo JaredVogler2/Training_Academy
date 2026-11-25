@@ -4,15 +4,29 @@
 10 are each partly done, and `docs/PROGRESS.md` says item by item what is missing. Phase 11 has not been
 started.**
 
-- **Date:** 2026-11-23
-- **Where it is:** on `main`: phases 01 to 03, the engine for every kind of game, the voice, and Number Garden's
-  seven activities (pull request #5, which the owner merged on 2026-11-23 while the rest was being built). On
-  pull request [#6](https://github.com/JaredVogler2/Training_Academy/pull/6), from
-  `claude/zealous-carson-qyiipa`: the other five worlds, and these documents.
+- **Date:** 2026-11-25
+- **Where it is:** all of it is on `main`. The owner merged pull request #5 (the engine for every kind of game,
+  the voice, Number Garden's seven activities) and then pull request
+  [#6](https://github.com/JaredVogler2/Training_Academy/pull/6) (the other five worlds), both on 2026-11-23.
+  This document came with the pull request after those: fixes for what was found once the six worlds were
+  live (below), and a rehearsal for the next release.
 - **Deployed:** the owner connected the repository to Vercel. Production is `main`, at
-  `https://training-academy-dun.vercel.app`: Number Garden with all seven activities and its voice is live
-  there, and the other five worlds say they are not open (checked on 2026-11-23). **The other five worlds are
-  not deployed.** They go live when their pull request is merged, which is the owner's decision.
+  `https://training-academy-dun.vercel.app`, and **all six worlds are live there.** Checked on 2026-11-23, a
+  few minutes after the second merge: every world's page offers its activities, 39 in all, and none says it is
+  not open; the first activity of each of the five new worlds starts and fetches its recordings from the site
+  itself; and 52 browser tests passed against the address. That was a browser on a desk, not a phone:
+  `docs/DEPLOYMENT.md` says exactly what was run.
+- **Three faults were live when this was written, and are fixed in the pull request that carries it.** They
+  reach the live site when that pull request is merged; whether it has been is for `git log` to say.
+  1. **One tap on Glim, and nothing was shown first for the rest of the activity.** Asking to be told again
+     was remembered from step to step. In every game that begins by showing something — a group to glance at,
+     things to remember, an order to follow, a pattern of sounds — every step after that tap skipped the
+     showing: the group stayed covered, the order was never lit, and the question was asked anyway.
+  2. **A tap on Glim before a showing was over took that showing away**, and **while an order was being shown,
+     the cards could be tapped** in the pauses between one light and the next, and before the first.
+  3. **A world's page opened by its own address forgot who was playing**: a page loaded again, or a tab a phone
+     had brought back, showed nothing as finished and sent Play back to the first activity. Nothing was lost;
+     going by way of the map showed it all again.
 
 ## The one thing that matters most now
 
@@ -45,15 +59,28 @@ the device.
 
 ## Verified
 
-- `npm run verify:release` passes locally: format, lint, typecheck, **1375 unit tests**, production build,
-  **1066 build checks**, and **654 browser tests: 607 passed, 47 skipped by design, none failed**, in headless
-  Chromium on seven screen shapes, two of them a Pixel 7 upright and sideways. One change was made after that
-  run (nothing can be answered before a look: below), and the eight specs it touches were run again on three
-  screens: 218 passed.
-- **CI passed on the pull request in Chromium and in WebKit**, every job, on the commit before that change;
-  one WebKit test passed at its second attempt, and the reason was found and is that change. The run on the
-  commit with it, and on these documents, is on the pull request. `docs/TEST_RESULTS.md` → _Continuous
-  integration_.
+- `npm run verify:release` passes locally: format, lint, typecheck, **1393 unit tests**, production build,
+  **1066 build checks**, and **668 browser tests: 621 passed, 47 skipped by design, none failed**, in
+  headless Chromium on seven screen shapes, two of them a Pixel 7 upright and sideways.
+- **CI passed in Chromium and in WebKit**, every job, four times running: on the last commit of pull request
+  #6 with no test needing a second attempt; on `main` after the merge, where four tests in one WebKit job
+  passed only at their second attempt; and twice on the pull request this came with, where that job retried
+  none either time and the second run retried nothing anywhere.
+  Each of the four was looked into. One led to the first two faults above; one to a button that was being
+  replaced under the finger; one was the tests misreading WebKit.
+- **One thing in CI is not explained, and has now happened four times**: in WebKit, a test's first page waits a
+  whole minute and then arrives at once at the second attempt. The fourth time, on this pull request, the
+  test could say what the server saw: the request arrived at once and was answered in under a millisecond.
+  So the page was sent and the browser never read it. That clears the server and the game, neither of which
+  had got a word in; it does not say what in WebKit, as CI drives it, does this. `docs/TEST_RESULTS.md` →
+  _Continuous integration_.
+- **An update was rehearsed** (`npm run rehearse:update`): a browser that had the build before the six worlds,
+  with an activity finished, one left half-way and two tabs left open, met the build that replaced it at the
+  same address. The open tabs carried on; the site opened again was the new build at once; the half-finished
+  activity was taken up where it was left; nothing stored was lost; the new service worker cleared the old
+  build out; and it all opened with no connection. The one thing wrong was the third fault above, which is how
+  it was found. From the build that is live to this one, all 18 checks pass. `docs/TEST_RESULTS.md` → _An
+  update, rehearsed_.
 - **Every activity is played to its end by a browser test**, with the answers its content says are right
   (`e2e/everything.spec.ts`; Robot Ridge and Inventor Island in their own specs, which work out what to do from
   what is on the screen).
@@ -62,9 +89,13 @@ the device.
 - Every content pack is exactly what its generator writes, and every rule that can refuse a challenge has been
   shown to fire (`tests/content/`).
 - Every browser test also fails on any console error or warning, failed request, or request to another origin.
-- Against the live site, as `main` has it (Number Garden complete, with its voice): the sixteen smoke tests
-  passed on 2026-11-23, in Chromium as a desktop and as a phone, and Number Garden's first activity fetched its
-  recordings from the site itself. `docs/TEST_RESULTS.md` → _The live site_.
+- **Against the live site, with all six worlds on it** (2026-11-23, after the owner merged pull request #6):
+  every world's page offers its activities and Play, and none says it is not open; the first activity of each
+  of the five new worlds, opened by a tap as a phone, fetched its recordings from the site itself, with no
+  error, no warning and no request to anywhere else; and 52 browser tests passed against the address — the
+  sixteen smoke tests as a desktop and as a phone, and the 36 tests of the Pixel 7 screen, which play
+  something in every world. All in Chromium, from the container this was built in. `docs/TEST_RESULTS.md` →
+  _The live site_.
 
 Details, including every command and count: `docs/TEST_RESULTS.md`. How it looks, rated honestly, and what the
 review found: `docs/QUALITY_REPORT.md`.
@@ -80,20 +111,25 @@ review found: `docs/QUALITY_REPORT.md`.
   ratio, touch and user agent on desktop engines.
 - **Sound on a phone.** That the first tap is heard, that an iPhone on silent still plays, that a recording
   starts on time over a slow connection: reasoned and unit-tested, none heard.
-- **Five of the six worlds on Vercel's production.** Not deployed, so not tested there. Vercel built a
-  preview of the pull request, which is behind its sign-in; it was not opened.
+- **The live site, beyond what is listed above.** The whole suite runs against a local build of the same
+  commit, here and in CI; against the live address only the tests named above were run. Safari's engine has
+  never been pointed at it, and nothing there has been heard.
 - **WebKit, here.** Safari's engine runs only in CI.
 - **No real graphics hardware.** The 3D hub has only ever been drawn by a software renderer.
 - No Firefox. No screenshot-comparison tests.
 
 ## What the owner can do now
 
-1. **Listen to the voice** (above), on the phone the game is for. Mark what sounds wrong.
-2. **Play one activity in each world with a child**, and say what happened.
-3. **Review and merge pull request #6**, if the other five worlds should go live. Merging publishes them.
-4. **Decide what comes next.** Each world's brief asks for more than its page did (`docs/PROGRESS.md`); the
+1. **Open the live site on the phone again.** All six islands are open now. A phone that is online gets the new
+   pages straight away; a copy added to the home screen may show the old one until it has been closed and
+   opened again (`docs/DEPLOYMENT.md` → _The service worker_).
+2. **Listen to the voice** (above), on the phone the game is for. Mark what sounds wrong.
+3. **Play one activity in each world with a child**, and say what happened.
+4. **Merge the pull request this came with**, if it has not been: it is what puts the three fixes above on
+   the live site.
+5. **Decide what comes next.** Each world's brief asks for more than its page did (`docs/PROGRESS.md`); the
    largest gaps are sentences to read, numerals, and a real map. Or Phase 11, music.
-5. **Decide the guide's name.** "Glim" is provisional and unchecked; it is one string in `src/app/strings.ts`.
+6. **Decide the guide's name.** "Glim" is provisional and unchecked; it is one string in `src/app/strings.ts`.
 
 ## The next action
 
@@ -171,6 +207,31 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
   apart (`APART` in `src/content/explorer-harbor/maps.ts`).
 - **A copy of the repository inside it slows the linter.** Agents work in `.claude/worktrees/`; remove a
   worktree when its work has been merged.
+
+**Learned after the six worlds went live**
+
+- **What a step keeps belongs to the step.** A board stays on the screen from one step to the next, so anything
+  it remembers with plain `useState` is remembered into the next step. Use `useStepState(view.stepIndex, …)`.
+  `useAgain` did not, and one tap on Glim changed every step after it.
+- **Asking again is "again" only once the first showing has been seen through.** `useAgain(step)` gives
+  `ask(seenThrough)`: a board that shows something first (a look, an order) says `false` while that is still to
+  come or under way, and the script then plays from the top, showing and all.
+- **Nothing can be answered until what is asked about has been shown.** A board that shows first takes no tap
+  from the moment the question arrives until the showing is over: not while the words are said, and not in the
+  pauses.
+- **A button is not put in the place of another to restart an animation.** Make afresh what moves inside it. A
+  replaced button drops a press that is under way and whatever was focused on it, and a test holding it is left
+  holding nothing.
+- **Whoever shows progress finds out who is playing.** `useFinishedLessons` asks if nobody has: any page can be
+  the first thing opened.
+- **A test that depends on a moment holds the clock.** `page.clock.install()` before the page is opened, then
+  `holdClock(page)` and `watchFor(page, …)` (`e2e/fixtures.ts`): "before the look" and "between two lights"
+  become places to stand in. A test that has to be quick enough will one day be too slow.
+- **Before a release, rehearse the update**: `npm run rehearse:update -- origin/main`. It rebuilds `dist/`, so
+  not while the browser tests are running.
+- **A test that needed a second attempt in a green CI run is read, not shrugged at.** Four did, after the merge
+  of the six worlds, and two of them were faults in the game. CI keeps a trace of a second attempt, so an
+  artifact of tens of megabytes is the sign that there was one.
 
 **New in Phase 03**
 

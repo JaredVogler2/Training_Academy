@@ -59,15 +59,20 @@ the device.
 
 ## Verified
 
-- `npm run verify:release` passes locally: format, lint, typecheck, **1392 unit tests**, production build,
+- `npm run verify:release` passes locally: format, lint, typecheck, **1393 unit tests**, production build,
   **1066 build checks**, and **668 browser tests: 621 passed, 47 skipped by design, none failed**, in
   headless Chromium on seven screen shapes, two of them a Pixel 7 upright and sideways.
-- **CI passed on the six worlds in Chromium and in WebKit**, every job: on the last commit of pull request #6
-  with no test needing a second attempt, and again on `main` after the merge, where four tests in one WebKit
-  job passed only at their second attempt. Each of the four was looked into. One led to the first two faults
-  above; one to a button that was being replaced under the finger; one was the tests misreading WebKit; and
-  one, a page that waited a minute to load, is still not explained, for the third time, and now says more for
-  itself when it happens. `docs/TEST_RESULTS.md` → _Continuous integration_.
+- **CI passed in Chromium and in WebKit**, every job, three times running: on the last commit of pull request
+  #6 with no test needing a second attempt; on `main` after the merge, where four tests in one WebKit job
+  passed only at their second attempt; and on the pull request this came with, where that job retried none.
+  Each of the four was looked into. One led to the first two faults above; one to a button that was being
+  replaced under the finger; one was the tests misreading WebKit.
+- **One thing in CI is not explained, and has now happened four times**: in WebKit, a test's first page waits a
+  whole minute and then arrives at once at the second attempt. The fourth time, on this pull request, the
+  test could say what the server saw: the request arrived at once and was answered in under a millisecond.
+  So the page was sent and the browser never read it. That clears the server and the game, neither of which
+  had got a word in; it does not say what in WebKit, as CI drives it, does this. `docs/TEST_RESULTS.md` →
+  _Continuous integration_.
 - **An update was rehearsed** (`npm run rehearse:update`): a browser that had the build before the six worlds,
   with an activity finished, one left half-way and two tabs left open, met the build that replaced it at the
   same address. The open tabs carried on; the site opened again was the new build at once; the half-finished

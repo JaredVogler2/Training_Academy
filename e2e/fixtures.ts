@@ -8,10 +8,11 @@ import { fetchNotLoaded, pagesServed } from './diagnosis';
  *   - a guard that fails the test on any console error or warning, uncaught exception, failed request, or request to
  *     another origin (the game talks to nobody) — unless the test says a specific one is expected. The one thing it
  *     lets pass on its own is a download the browser cancelled because the page had moved on to another document;
- *   - a note of what it was still waiting for, if it runs out of time: three times in CI a page load in WebKit has
- *     waited a whole minute and then passed at once on the second attempt, and a silence explains nothing. The note
- *     says how far the page had got, what had not been answered, what the server made of it, and which test had
- *     the browser before;
+ *   - a note of what it was still waiting for, if it runs out of time: four times in CI a test's first page in
+ *     WebKit has waited a whole minute and then arrived at once on the second attempt, and a silence explains
+ *     nothing. The note says how far the page had got, what had not been answered and whether the browser had so
+ *     much as the start of an answer, what the server made of it, where the page stood, and which test had the
+ *     browser before;
  *   - the graphics setting chosen up front (the hub as a picture by default, so only the 3D specs pay for software
  *     rendering);
  *   - `press`, which taps on a touch device and clicks otherwise, so one spec exercises both;
@@ -99,7 +100,10 @@ export const test = base.extend<Fixtures>({
 
       // What has been asked for and not yet answered, and how far the last page load got: said only if the test
       // runs out of time (below).
-      const unanswered = new Map<object, { path: string; kind: string; since: number }>();
+      const unanswered = new Map<
+        object,
+        { path: string; kind: string; since: number; begunAt?: number }
+      >();
       const loading = { parsed: false, finished: false };
       page.on('requestfinished', (request) => unanswered.delete(request));
       page.on('domcontentloaded', () => {
@@ -156,6 +160,9 @@ export const test = base.extend<Fixtures>({
         else problems.push(`request to another origin: ${request.url()}`);
       });
       page.on('response', (response) => {
+        // The start of an answer: its status and headers. The rest may still be on its way.
+        const waited = unanswered.get(response.request());
+        if (waited) waited.begunAt = Date.now();
         const url = new URL(response.url());
         if (url.origin === origin && response.status() >= 400) {
           problems.push(`HTTP ${response.status()}: ${url.pathname}`);
@@ -177,14 +184,26 @@ export const test = base.extend<Fixtures>({
         const port =
           (process.env.BASE_URL ?? process.env.PLAYWRIGHT_BASE_URL) ? null : new URL(origin).port;
         const waiting = [...unanswered.values()].map(
-          ({ path, kind, since }) =>
-            `${kind} ${path} (asked for ${((now - since) / 1000).toFixed(1)} s before` +
+          ({ path, kind, since, begunAt }) =>
+            `${kind} ${path} (asked for ${((now - since) / 1000).toFixed(1)} s before; ` +
+            // The browser's side of it: nothing at all, or the start of an answer and then no more.
+            (begunAt === undefined
+              ? 'the browser reported no answer at all'
+              : `the browser reported the start of an answer after ${((begunAt - since) / 1000).toFixed(1)} s and never its end`) +
             // For a page itself, the server's side of it.
             (kind === 'document' && port !== null
               ? `; ${pagesServed(Number(port), path, since)}`
               : '') +
             ')',
         );
+        // Where the page was when time ran out: still at the address before, if the new one was never taken up.
+        let stoodAt = 'an address that could not be read';
+        try {
+          const at = new URL(page.url());
+          stoodAt = at.origin === origin ? at.pathname : page.url();
+        } catch {
+          // The page is gone, or its address is not one.
+        }
         const reached = loading.finished
           ? 'had finished loading'
           : loading.parsed
@@ -195,6 +214,7 @@ export const test = base.extend<Fixtures>({
             (waiting.length === 0
               ? 'no request was unanswered'
               : `${String(waiting.length)} unanswered: ${waiting.join('; ')}`) +
+            `; the page stood at ${stoodAt}` +
             (ranBefore === null
               ? '; this was the first test in its browser'
               : `; the test that had the browser before this one: ${ranBefore}`),

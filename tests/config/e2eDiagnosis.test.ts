@@ -80,6 +80,16 @@ describe('what the server noted of its pages', () => {
     );
   });
 
+  it('calls a request that seems to arrive a moment before it was made "at once"', () => {
+    // Word for word what CI printed the first time this was used: "at +-0.0 s".
+    write([{ id: 3, path: '/', arrived: SINCE - 40, answered: SINCE - 40, agent: iPad }]);
+    expect(pagesServed(PORT, '/', SINCE)).toBe(
+      'requests for / that reached the server after that: at +0.0 s from iPad, answered in 0 ms',
+    );
+    write([{ id: 3, path: '/', arrived: SINCE - 300, answered: SINCE - 299, agent: iPad }]);
+    expect(pagesServed(PORT, '/', SINCE)).toContain('at −0.3 s from iPad, answered in 1 ms');
+  });
+
   it('reads past a line that was half written', () => {
     writeFileSync(
       file,

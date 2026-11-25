@@ -48,15 +48,20 @@ jobs:
       matrix:
         # Each engine's screens are shared between two jobs. With six worlds the suite is twice what it was, and
         # one job for an engine would run close to the time limit on a machine that runs two tests at a time.
+        #
+        # The desktop screen has every test and is two thirds of Chromium's work by itself, so it shares a job
+        # with the tablet only. (With the two small phones as well, that job reached 31.7 of its 40 minutes once
+        # an activity that shows something first could no longer be answered early.)
         include:
-          - name: chromium, desktop and tablets
+          - name: chromium, desktop and tablet
             engine: chromium
             projects: >-
-              --project=desktop --project=tablet --project=small-phone --project=phone-landscape
+              --project=desktop --project=tablet
           - name: chromium, phones
             engine: chromium
             projects: >-
-              --project=phone --project=android --project=android-landscape
+              --project=phone --project=small-phone --project=phone-landscape
+              --project=android --project=android-landscape
           - name: webkit, desktop and tablet
             engine: webkit
             projects: >-

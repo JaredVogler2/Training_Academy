@@ -23,10 +23,11 @@ export function fetchNotLoaded(message: string): string | null {
  * The preview server's own note of each page it was asked for and when it answered, kept only while the browser
  * tests run (scripts/vite/vercel-parity.ts writes it when PREVIEW_PAGE_LOG names a file).
  *
- * It exists for one question. Three times in CI a page load in WebKit has waited a whole minute for the page
- * itself and then passed at once on a second attempt, while the other worker's pages were being served as usual.
- * The browser's side of that is known (the request was made and nothing came back). This is the server's side:
- * whether that request ever arrived, and whether it was answered.
+ * It exists for one question. Now and then in CI a test's first page in WebKit waits a whole minute and then
+ * arrives at once on a second attempt, while the other worker's pages are being served as usual. The browser's
+ * side of that was known (the request was made and nothing came back). This is the server's side, and the first
+ * time it was read it said that the request had arrived at once and been answered in under a millisecond: the
+ * page was sent, and the browser never read it.
  */
 export const pageLogPath = (port: number): string =>
   join(tmpdir(), `training-academy-preview-${String(port)}.pages.log`);
@@ -67,15 +68,20 @@ export function pagesServed(port: number, path: string, since: number): string {
     (note) => note.path === path && note.arrived >= since - 500,
   );
   if (asked.length === 0) return `no request for ${path} reached the server after that`;
-  const seconds = (at: number) => ((at - since) / 1000).toFixed(1);
+  // To a tenth of a second, with its sign: the two clocks are read at slightly different moments, so a request can
+  // seem to arrive a few hundredths before it was made.
+  const seconds = (at: number) => {
+    const tenths = Math.round((at - since) / 100);
+    return `${tenths < 0 ? '−' : '+'}${(Math.abs(tenths) / 10).toFixed(1)}`;
+  };
   return (
     `requests for ${path} that reached the server after that: ` +
     asked
       .slice(0, 6)
       .map((note) =>
         note.answered === undefined
-          ? `at +${seconds(note.arrived)} s from ${short(note.agent)}, not answered`
-          : `at +${seconds(note.arrived)} s from ${short(note.agent)}, answered in ${String(note.answered - note.arrived)} ms`,
+          ? `at ${seconds(note.arrived)} s from ${short(note.agent)}, not answered`
+          : `at ${seconds(note.arrived)} s from ${short(note.agent)}, answered in ${String(note.answered - note.arrived)} ms`,
       )
       .join('; ') +
     (asked.length > 6 ? `; and ${String(asked.length - 6)} more` : '')

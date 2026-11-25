@@ -28,16 +28,21 @@ Result of the last local run: **passed.**
 | `npm run format:check` | clean                                                                                                           |
 | `npm run lint`         | no errors, no warnings                                                                                          |
 | `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                  |
-| `npm test`             | **1392 tests in 49 files, all passed**                                                                          |
+| `npm test`             | **1393 tests in 49 files, all passed**                                                                          |
 | `npm run build`        | built; 476 files in `dist/`, 395 of them the voice's recordings                                                 |
 | `npm run verify:dist`  | **1066 checks, all passed** (sizes below)                                                                       |
 | `npm run test:e2e`     | **668 browser tests: 621 passed, 47 skipped by design, 0 failed (Chromium, seven screen shapes, 26.6 minutes)** |
 
-That run was of the tree this document is committed with. It has 12 browser tests (six, on the desktop and on the
-phone) and 17 unit tests that the six worlds did not have. Each of the browser tests was run against the code as
-it was and failed there; so were the three unit tests about a page that is the first thing opened. The other unit
-tests are of things that are new, and had nothing older to fail against. _What was found after the six worlds
-went live_, below, says what each is for.
+The browser tests in that table were run on the tree as it was one change before this document was last
+committed. The change after it was to the tests' own reporting and to how CI shares its screens: what a test that
+runs out of time says for itself, after CI's run on this pull request had shown a use for more (below). With
+it, the unit tests were run again, and the smoke, shell and voice specs on the desktop and the phone: 1393, and
+48 passed. The whole suite on the final tree is CI's.
+
+The tree has 12 browser tests (six, on the desktop and on the phone) and 18 unit tests that the six worlds did
+not have. Each of the browser tests was run against the code as it was and failed there; so were the three unit
+tests about a page that is the first thing opened. The other unit tests are of things that are new, and had
+nothing older to fail against. _What was found after the six worlds went live_, below, says what each is for.
 
 It also takes longer than it did, and that is a finding more than a cost. In the games that show something
 first, playing an activity to its end takes several times as long: "How many, at a glance" 34 seconds where it
@@ -169,7 +174,7 @@ of the four was put down to chance before it had been looked at.
    own text).
 4. **As an iPad, a page that never came.** "The page does not bounce, reload when pulled down, or zoom on two
    quick taps" asked for the home page at its first line and waited the whole minute; at its second attempt
-   the page came in two seconds. This is the third time (the first two are under Phase 03, below), and the
+   the page came in two seconds. This was the third time (the first two are under Phase 03, below), and the
    first since tests began to say what they were waiting for: "the last page asked for had not been read yet; 1
    unanswered: document / (asked for 60.0 s before)". So it was the page itself, asked for and never answered.
    In that same minute the other worker's tests loaded pages from the same server as usual. By the order of the
@@ -180,8 +185,50 @@ of the four was put down to chance before it had been looked at.
    /never (asked for 10.9 s before; no request for /never reached the server after that); the test that had the
    browser before this one: [desktop] the one before".
 
-On `main` the Chromium job for the desktop and tablets took 26.7 of the 40 minutes it is allowed. The fixes
-above add about two more, because an activity that shows something first can no longer be answered early.
+**On the pull request with the fixes** (run 31, `fe0773b`, 2026-11-25): all five jobs passed.
+
+| Job                            | Result                                                   | Time for the tests |
+| ------------------------------ | -------------------------------------------------------- | ------------------ |
+| Lint, types, unit tests, build | passed                                                   | 1.3 minutes in all |
+| Chromium, desktop and tablets  | 337 passed, 9 skipped                                    | 31.7 minutes       |
+| Chromium, phones               | 284 passed, 38 skipped                                   | 20.1 minutes       |
+| WebKit, desktop and tablet     | 233 passed, 53 skipped                                   | 14.9 minutes       |
+| WebKit, phones                 | 269 passed, 52 skipped, **1 more at its second attempt** | 18.2 minutes       |
+
+It was the first time the fixes had run in WebKit. The WebKit job that had retried four tests on `main` retried
+none. One run cannot prove that a fault which depended on timing is gone, and that is not what is claimed. What
+can be said is that two of the four no longer depend on timing at all: the order game's cards stay closed until
+the showing is over, so a test's taps wait for it; and the button to take one back is the same button
+throughout. Whether the third arose in this run — WebKit's second report of a cancelled download — is not
+known, because the rule lets it pass without a word when it does.
+
+**The one that needed a second attempt was the page that never comes, for the fourth time**, and this time with
+the server's side of it. As the plain WebKit phone, "Memory Forest: its front door" asked for the world's page
+at its first line and waited the whole minute:
+
+```text
+out of time: the last page asked for had not been read yet; 1 unanswered: document /world/memory-forest
+(asked for 59.8 s before; requests for /world/memory-forest that reached the server after that: at +-0.0 s
+from Macintosh, answered in 0 ms; at +45.6 s from Macintosh, answered in 1 ms; at +47.8 s …; and 1 more);
+the test that had the browser before this one: [webkit-phone] accessibility, world by world › Reading Cove:
+its front door
+```
+
+**The request reached the server at once, and the server answered it in under a millisecond.** (The six later
+requests are the other worker's six tests of Memory Forest's activities, which began 45 seconds on; the first
+is this page's own.) The page was sent, and the browser never read it: not its beginning, and none of its
+files was asked for. That puts the fault on the browser's side of the connection — WebKit as Playwright drives
+it on Linux — before any of the game has been taken in, and it clears the preview server, which the first
+three occurrences could not. It does not say why. The four have nothing in common that can be seen but WebKit
+and being a test's first page: four tests, four screens, each after a different test. CI's second attempt, in
+a new browser, has passed every time. A test it happens to will now also say whether the browser had so much
+as the start of an answer, and what address the page stood at when time ran out.
+
+**The time.** The Chromium job for the desktop and tablets took 31.7 of the 40 minutes it is allowed, five more
+than on `main`: on every screen, an activity that shows something first can no longer be answered early. The
+desktop screen is two thirds of that job by itself, so the two small phones were moved to the other Chromium
+job (`.github/workflows/ci.yml`). By the times of run 30 that should leave the two at about 25 and 27 minutes;
+the run on the commit that moved them is the first to show whether it does.
 
 **Phase 03** is pull request [#4](https://github.com/JaredVogler2/Training_Academy/pull/4). The first run with
 the whole phase in it to pass was [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45093042202)
@@ -311,7 +358,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 1392)
+## What the unit tests cover (Vitest, 1393)
 
 | Area                                                              | Files                                                                                                                                                   | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -651,8 +698,9 @@ an update is not shown.
 - The whole suite has not been run against the live site, only what _The live site_ lists; and WebKit has never
   been pointed at it.
 - The update rehearsal is run by hand before a release, in Chromium only. CI does not run it.
-- The tests' new rule for WebKit's second report of a cancelled download (run 30, above) has been tested with
-  WebKit's words but not yet in WebKit, which runs only in CI.
+- The tests' new rule for WebKit's second report of a cancelled download (run 30, above) has run in WebKit once,
+  in run 31, with no failure. Whether the case it is for arose in that run is not known.
+- Why WebKit, as CI drives it, now and then does not read a page the server has sent (run 31, above).
 - No performance measurement on real hardware (`docs/QUALITY_REPORT.md`).
 - No screenshot-comparison tests; screenshots were reviewed by eye.
 - No person has listened to any recording.

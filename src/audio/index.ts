@@ -69,6 +69,17 @@ export function sayLine(key: string): void {
     .catch(() => undefined);
 }
 
+/**
+ * Say a line only if nothing is being said: for something that is worth saying but not worth cutting another
+ * line short for (a reminder of what can be pressed, while the question is still being put). Says whether it
+ * was asked for: `false` means something else had the floor.
+ */
+export function sayLineIfQuiet(key: string): boolean {
+  if (voice().speaking) return false;
+  sayLine(key);
+  return true;
+}
+
 export function hushVoice(): void {
   narrator?.hush();
 }

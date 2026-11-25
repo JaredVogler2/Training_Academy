@@ -4,6 +4,8 @@ import { loadChunk } from '@/app/chunks';
 import { recordError } from '@/app/diagnostics';
 import { hasPack, loadPack } from '@/content';
 import type { Challenge, Lesson, Stimulus, WorldId } from '@/engine';
+import { startOf } from '@/game/placement';
+import { activeProfile, useProfiles } from '@/game/profiles';
 import { nextLessonIn, useFinishedLessons } from '@/game/progress';
 import { isOpen, lessonsOf, worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds/modules';
@@ -120,9 +122,11 @@ export default function WorldView({ world }: { world: WorldId }) {
   const info = worldById(world);
   const open = isOpen(info);
   const { lessons, module, done } = useWorld(world);
-  // What "Play" goes to: the first lesson not yet finished; once they all are, the first again.
+  // What "Play" goes to: the first lesson not yet finished; once they all are, the first again. Where a grown-up
+  // has chosen where this player begins here, the first not yet finished from there on.
   const order = lessonsOf(info);
-  const nextId = nextLessonIn(info, done) ?? undefined;
+  const startAt = startOf(activeProfile(useProfiles()), world);
+  const nextId = nextLessonIn(info, done, startAt) ?? undefined;
   const next = lessons.find((lesson) => lesson.id === nextId) ?? null;
   const allDone = order.length > 0 && order.every((id) => done.has(id));
   const unbuilt = info.activities.some((activity) => activity.lessons.length === 0);

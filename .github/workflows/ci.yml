@@ -81,10 +81,16 @@ jobs:
             engine: webkit
             projects: >-
               --project=webkit-desktop --project=ipad
-          - name: webkit, phones
+          # WebKit's phones are in two halves too. As one job they took 28.8 of the 40 minutes with Reading
+          # Cove's later activities in, and "how to play" is shown in real time on every one of these screens.
+          - name: webkit, phones, first half
             engine: webkit
             projects: >-
-              --project=webkit-phone --project=iphone --project=iphone-landscape
+              --project=webkit-phone --project=iphone --project=iphone-landscape --shard=1/2
+          - name: webkit, phones, second half
+            engine: webkit
+            projects: >-
+              --project=webkit-phone --project=iphone --project=iphone-landscape --shard=2/2
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7

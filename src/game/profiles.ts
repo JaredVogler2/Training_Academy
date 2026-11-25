@@ -94,6 +94,16 @@ export async function resetEverything(): Promise<void> {
   await refreshProfiles();
 }
 
+/**
+ * Whether Glim should show this player how to play before anything else: they have not been shown, and they
+ * have never begun an activity. (A child who was playing before "how to play" existed has no need of it.)
+ */
+export async function isNewToTheGame(profile: Profile): Promise<boolean> {
+  if (profile.settings.howTo === 'seen') return false;
+  const repo = await getRepository();
+  return (await repo.listSessions(profile.id)).length === 0;
+}
+
 /** The player who is playing; creates the default one on a device that has none yet. */
 export async function ensureActiveProfile(): Promise<Profile> {
   const repo = await getRepository();

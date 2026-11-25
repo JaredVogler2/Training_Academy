@@ -236,6 +236,55 @@
   accent-color: var(--ink);
 }
 
+/* Where to begin: what a grown-up has seen, and where Play begins in each world */
+.part {
+  margin: 6px 0 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.observations,
+.starts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.observation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  justify-items: start;
+  padding: 14px 16px;
+  border-radius: var(--radius-m);
+  background: var(--white);
+}
+
+.observation label {
+  font-weight: 800;
+}
+
+/* Said, one way or the other: a heavier edge as well as the word in the box. */
+.observation[data-seen] {
+  box-shadow: inset 6px 0 0 var(--ink-faint);
+}
+
+.observation[data-seen='seen'] {
+  box-shadow: inset 6px 0 0 var(--number-deep);
+}
+
+.suggestion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  justify-items: start;
+  padding: 12px 16px;
+  border-left: 6px solid var(--sun);
+  border-radius: var(--radius-s);
+  background: var(--paper-warm);
+}
+
 /* What the player has shown: world by world */
 .world {
   display: grid;

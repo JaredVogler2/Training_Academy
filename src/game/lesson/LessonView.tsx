@@ -6,6 +6,7 @@ import { settingsStore, useReducedMotion } from '@/app/settings';
 import { addVoice, audio, hushVoice, playCue } from '@/audio';
 import { findLesson, hasPack, loadPack } from '@/content';
 import type { ContentPack, Lesson, WorldId } from '@/engine';
+import { isHelping, setHelping, useHelping } from '@/game/helping';
 import { LessonRunner, type RunnerState } from '@/game/lessonRunner';
 import { ensureActiveProfile } from '@/game/profiles';
 import { getRepository, localDay, newId, newSeed, now } from '@/game/services';
@@ -15,11 +16,13 @@ import { IslandPicture } from '@/render/IslandPicture';
 import { placeOf } from '@/render/extents';
 import { Guide } from '@/ui/Guide';
 import { ActionButton, ActionLink } from '@/ui/controls';
-import { IconHint, IconHome, IconPause, IconReplay, IconSoundOn } from '@/ui/icons';
+import { IconGrownUps, IconHint, IconHome, IconPause, IconReplay, IconSoundOn } from '@/ui/icons';
 import { commonVoice } from '@/voice/common';
 import { PauseSheet } from './PauseSheet';
 import { Stage } from './Stage';
+import { NudgeWords } from './frame';
 import { lessonText } from './text';
+import { useNudge } from './useNudge';
 import styles from './Lesson.module.css';
 
 /**
@@ -73,6 +76,7 @@ function openLesson(world: WorldId, lessonId: string): Promise<Loaded | null> {
       localDay,
       elapsed: () => performance.now(),
       onSaveError: (error) => recordError('storage', error),
+      adultHelping: isHelping,
     });
     return { runner, pack, lesson, module };
   })();
@@ -201,6 +205,8 @@ function Player({ runner, pack, lesson, module, world }: Loaded & { world: World
   const audible = useSyncExternalStore(audio().subscribe, () => audio().canPlayClips);
   const silenced = lesson.needsSound === true && !audible && state.phase === 'playing';
   const [paused, setPaused] = useState(false);
+  // A grown-up has said they are helping: for this visit, until they say otherwise.
+  const helping = useHelping();
   const calm = useReducedMotion();
   const outcome = state.phase === 'playing' ? state.feedback?.outcome : undefined;
   const key = state.phase === 'playing' ? state.view.key : 'finished';
@@ -228,6 +234,13 @@ function Player({ runner, pack, lesson, module, world }: Loaded & { world: World
   }, [inPlay]);
 
   const playing = state.phase === 'playing' ? state : null;
+  // Help with the screen, when taps have been landing on nothing: what can be pressed is pointed out.
+  const { nudge, onPointerDownCapture } = useNudge(
+    key,
+    playing?.view.stage,
+    playing?.answered ?? false,
+    playing !== null && !paused && !silenced,
+  );
   const canHint =
     playing !== null &&
     !silenced &&
@@ -244,6 +257,9 @@ function Player({ runner, pack, lesson, module, world }: Loaded & { world: World
       // Which challenge is on the screen: for the grown-up who reports a fault, and for the tests.
       data-challenge={playing?.view.challenge.id}
       data-stage={playing?.view.stage}
+      data-nudge={nudge ?? undefined}
+      data-helping={helping || undefined}
+      onPointerDownCapture={onPointerDownCapture}
     >
       <div className={styles.bar} inert={paused}>
         <ActionLink
@@ -275,11 +291,14 @@ function Player({ runner, pack, lesson, module, world }: Loaded & { world: World
                   void runner.hint();
                 }}
               />
+              {/* While a grown-up is helping, the pause button says so: it is where that is switched off. */}
               <ActionButton
                 round
                 className={styles.barButton}
-                icon={<IconPause />}
-                aria-label={lessonText.pause}
+                icon={helping ? <IconGrownUps /> : <IconPause />}
+                aria-label={
+                  helping ? `${lessonText.pause}. ${lessonText.helping}` : lessonText.pause
+                }
                 data-tip={lessonText.pause}
                 data-tip-align="end"
                 onClick={() => {
@@ -294,19 +313,28 @@ function Player({ runner, pack, lesson, module, world }: Loaded & { world: World
       {silenced ? (
         <SoundGate />
       ) : playing ? (
-        <Stage
-          state={playing}
-          runner={runner}
-          pack={pack}
-          module={module}
-          paused={paused}
-          calm={calm}
-        />
+        // What is pointed out about the screen is said aloud where nothing else is being said, and written at
+        // the foot, where Glim's words are, for the grown-up and for a screen reader.
+        <NudgeWords value={nudge ? lessonText.nudge[nudge] : null}>
+          <Stage
+            state={playing}
+            runner={runner}
+            pack={pack}
+            module={module}
+            paused={paused}
+            calm={calm}
+          />
+        </NudgeWords>
       ) : (
         state.phase === 'finished' && <Finished state={state} runner={runner} world={world} />
       )}
       {playing && !playing.saved && <p className={styles.unsaved}>{lessonText.notSaved}</p>}
-      <PauseSheet open={paused && playing !== null} onResume={() => setPaused(false)} />
+      <PauseSheet
+        open={paused && playing !== null}
+        onResume={() => setPaused(false)}
+        helping={helping}
+        onHelping={setHelping}
+      />
     </div>
   );
 }

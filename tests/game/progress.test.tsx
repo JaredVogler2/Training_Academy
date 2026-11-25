@@ -105,6 +105,34 @@ describe('the next thing to do', () => {
     expect(nextLessonIn(world, new Set(order))).toBe(order[0]);
   });
 
+  it('begins where a grown-up has chosen, and comes back to what was passed over only at the end', async () => {
+    const { nextLessonIn } = await import('@/game/progress');
+    const world = worldById('number-garden');
+    const order = lessonsOf(world);
+    const start = order[3] ?? '';
+    const done = (...ids: (string | undefined)[]) => new Set(ids.map((id) => id ?? ''));
+    expect(nextLessonIn(world, new Set(), start)).toBe(start);
+    // From there on it goes as it always does: the first not yet finished.
+    expect(nextLessonIn(world, done(order[3]), start)).toBe(order[4]);
+    expect(nextLessonIn(world, done(order[3], order[5]), start)).toBe(order[4]);
+    // What comes before the beginning is not offered while anything after it is left…
+    expect(nextLessonIn(world, done(order[0]), start)).toBe(start);
+    // …and is, once nothing is: nothing is passed over for good.
+    expect(nextLessonIn(world, new Set(order.slice(3)), start)).toBe(order[0]);
+    expect(nextLessonIn(world, new Set([...order.slice(3), order[0] ?? '']), start)).toBe(order[1]);
+    // Everything finished: the beginning that was chosen, again.
+    expect(nextLessonIn(world, new Set(order), start)).toBe(start);
+  });
+
+  it('begins at the beginning where the place chosen is not an activity of that world', async () => {
+    const { nextLessonIn } = await import('@/game/progress');
+    const world = worldById('number-garden');
+    const order = lessonsOf(world);
+    expect(nextLessonIn(world, new Set(), 'rc-letters-01')).toBe(order[0]);
+    expect(nextLessonIn(world, new Set(), '')).toBe(order[0]);
+    expect(nextLessonIn(world, new Set([order[0] ?? '']), 'no-such-activity')).toBe(order[1]);
+  });
+
   it('on the map is the first world with something unfinished, and the first again once none has', async () => {
     const { nextWorld } = await import('@/game/progress');
     const open = WORLDS.filter(isOpen);
@@ -114,5 +142,38 @@ describe('the next thing to do', () => {
     expect(nextWorld(new Set())?.id).toBe(first.id);
     expect(nextWorld(new Set(lessonsOf(first)))?.id).toBe(second.id);
     expect(nextWorld(new Set(open.flatMap((world) => lessonsOf(world))))?.id).toBe(first.id);
+  });
+});
+
+describe('someone who is new to the game', () => {
+  it('is a player who has not been shown how to play and has never begun an activity', async () => {
+    const { isNewToTheGame } = await import('@/game/profiles');
+    const profile = await repository.createProfile({ name: 'Mina', avatar: 'moon' });
+    expect(await isNewToTheGame(profile)).toBe(true);
+  });
+
+  it('is not one who has been shown, or has passed it by', async () => {
+    const { isNewToTheGame } = await import('@/game/profiles');
+    const profile = await repository.createProfile({ name: 'Mina', avatar: 'moon' });
+    const shown = await repository.updateProfile(profile.id, {
+      settings: { ...profile.settings, howTo: 'seen' },
+    });
+    expect(await isNewToTheGame(shown)).toBe(false);
+  });
+
+  it('is not one who was playing before there was anything to be shown', async () => {
+    const { isNewToTheGame } = await import('@/game/profiles');
+    const id = await someoneHasPlayed();
+    const profile = await repository.getProfile(id);
+    if (!profile) throw new Error('The player was not kept.');
+    expect(profile.settings.howTo).toBeUndefined();
+    expect(await isNewToTheGame(profile)).toBe(false);
+  });
+
+  it('is not one who has only begun an activity and left it', async () => {
+    const { isNewToTheGame } = await import('@/game/profiles');
+    const profile = await repository.createProfile({ name: 'Mina', avatar: 'moon' });
+    await repository.saveProgress({ ...newSession(lesson), profileId: profile.id });
+    expect(await isNewToTheGame(profile)).toBe(false);
   });
 });

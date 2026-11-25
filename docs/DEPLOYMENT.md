@@ -64,13 +64,28 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   measured on the live site after the merge they are 317 by 241 at 844×390 and 237 by 107 at 640×256. The
   other, Memory Forest's "Things that go together" with cards 49 pixels high on the narrowest phones, was
   fixed by the same change and was not measured on the site.
-- **What is on pull request [#10](https://github.com/JaredVogler2/Training_Academy/pull/10) is not live**:
-  Reading Cove's six later activities, and whatever else that pull request gains. Its own description says how
-  far it has got. The update from what is live to it was rehearsed on 2026-11-25 and passed, 18 of 18. It
-  should be rehearsed again after anything more is added (_Before a release_, below).
-- **When Reading Cove's later activities go live, 25 recordings that are live now are replaced**: the words
-  said slowly, made again so that each says where its sounds begin. They are the same words, and each was heard
-  by the recogniser as it was before; a phone that has the old ones keeps them until it has the new build.
+- **Reading Cove's six later activities went live on 2026-11-25**, when the owner merged pull request
+  [#10](https://github.com/JaredVogler2/Training_Academy/pull/10), thirteen minutes after the last of its
+  checks went green: rhyme, the beats of a word, building a word, sh ch th, words with those in them, and a
+  sentence. With them, 25 recordings that had been live were replaced: the words said slowly, made again so
+  that each says where its sounds begin. They are the same words, and each was heard by the recogniser as it
+  was before; a phone that has the old ones keeps them until it has the new build. **The update had been
+  rehearsed before that push** and passed, 18 of 18. **Checked on the live site two and a half hours after
+  the merge:** Vercel's record of the production deployment of the merge commit `8288833` said "Ready"; of 65
+  browser tests run against the address as a desktop, a phone and a Pixel 7 (that commit's own tests: the
+  smoke tests, and the Pixel's tests that play something in every world), 65 passed, with the five that answer
+  a rhyme, clap a word, build one, meet sh ch th and read a sentence among them; Reading Cove's page offers 16
+  activities; "Read the sentence" is set on two lines on a phone held upright, its shortest word 18 pixels
+  high on a phone 320 wide; and CI's run on `main` was green in all seven jobs with no test run twice.
+- **What is on pull request [#11](https://github.com/JaredVogler2/Training_Academy/pull/11) is not live**: the
+  help for a first visit ("how to play", help when taps land on nothing, the switch a grown-up holds, and
+  "where to begin"), and whatever else that pull request gains. Its own description says how far it has got.
+  The update from what is live to it was rehearsed on 2026-11-25 and passed, 18 of 18. It should be rehearsed
+  again after anything more is added (_Before a release_, below). On the live site today a new player goes
+  from the front door straight to the islands.
+- **When the first-visit help goes live, some children are shown "how to play" at their next visit and some
+  are not.** A player who has begun any activity is not: they know how. A player who has only ever chosen a
+  picture, and anyone new, is, once; the house at the top left passes it by. Nothing is asked of the owner.
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The
@@ -153,6 +168,11 @@ Chrome as they come. Each line is something this phase did that only a device ca
 | 29  | Play _High and low_ to the end                                                                                                                                         | Play each note while the bar or bird that makes it is lifted, take no tap until both have sounded, and play it all again when Glim is tapped                                                                           | Three of the Music Lab's activities are nothing but listening                                                                                                                                                                    |
 | 30  | With the sound switch off, open the Music Lab's _Tapping with the beat_, then _High and low_                                                                           | Let the beat be played by eye, by its lights; and show one button, "Turn the sound on", for the other                                                                                                                  | A beat that is lit needs no sound; a question that is only heard does                                                                                                                                                            |
 | 31  | On a phone held sideways, open Number Garden's "Which has more?"                                                                                                       | Show the two groups filling the height of the screen                                                                                                                                                                   | They were a strip a finger's width high until pull request #9 (not merged when this was written)                                                                                                                                 |
+| 32  | In a private window, so that nobody has played: open the address and tap a picture                                                                                     | Go to "how to play". Glim says "Let me show you how to play", a hand taps the sun that is the same, and then it is the child's turn. **Listen for one line running into the next**: none should                        |
+| 33  | In "how to play": tap a picture while Glim is still showing; and tap the tick before both pictures are in their places                                                 | Do nothing, both times                                                                                                                                                                                                 |
+| 34  | In any activity, tap the picture that is asked about three times quickly, instead of an answer                                                                         | Ring every answer in yellow for a few seconds, write "Tap one of these." where Glim's words are, and say it once                                                                                                       |
+| 35  | Pause an activity. Tap the grown-up's mark; then hold a finger on it for a second and a half                                                                           | Do nothing at the tap. Switch on at the hold, say so in words, and show the mark on the pause button afterwards                                                                                                        |
+| 36  | Hold "Grown-ups", find "Where … begins", say that five things have been counted, take what is suggested, and open Number Garden                                        | Offer "Counting to five, then ten" (its second part) on Play, with every activity still on the page and none ticked                                                                                                    |
 
 Anything that does not do what the middle column says is a fault to fix, and the notes above are what makes it
 quick to find.

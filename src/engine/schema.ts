@@ -529,6 +529,25 @@ export const SESSION_MINUTE_OPTIONS = [10, 15, 20] as const;
 /**
  * A local player. A nickname and a picture: no real name is asked for, no birth date, nothing that leaves the device.
  */
+/**
+ * Things a grown-up may have seen a child do, away from the game or in it, that bear on where to begin: tapping
+ * what they mean to, listening to the voice, counting five things, hearing the first sound of a word, knowing a
+ * letter by its shape, and knowing a letter's sound (which is not the same thing).
+ */
+export const OBSERVATIONS = [
+  'taps',
+  'listens',
+  'counts-to-five',
+  'first-sounds',
+  'letter-shapes',
+  'letter-sounds',
+] as const;
+export type Observation = (typeof OBSERVATIONS)[number];
+
+/** What the grown-up saw. A thing that is not written down at all has not been observed, which is where each begins. */
+export const SEEN = ['seen', 'not-yet'] as const;
+export type Seen = (typeof SEEN)[number];
+
 export const ProfileSchema = v.object({
   schemaVersion: v.literal(RECORD_SCHEMA_VERSION),
   id: recordId,
@@ -539,6 +558,18 @@ export const ProfileSchema = v.object({
   settings: v.object({
     /** A suggested session length the grown-up may choose; `null` means no suggestion. */
     sessionMinutes: v.nullable(v.picklist(SESSION_MINUTE_OPTIONS)),
+    /**
+     * What a grown-up has said they have seen this child do. It is their word, not the game's evidence: nothing
+     * here is ever counted as something the child has shown.
+     */
+    observed: v.optional(v.record(v.picklist(OBSERVATIONS), v.picklist(SEEN))),
+    /**
+     * Where "Play" begins in a world, where a grown-up has chosen: a lesson's id. It is only where to begin.
+     * Nothing before it is marked as done, nothing is locked, and every activity is still on the world's page.
+     */
+    startAt: v.optional(v.record(WorldIdSchema, LessonIdSchema)),
+    /** This player has been shown how to play, or has passed it by: it is not shown unasked again. */
+    howTo: v.optional(v.literal('seen')),
   }),
 });
 export type Profile = v.InferOutput<typeof ProfileSchema>;

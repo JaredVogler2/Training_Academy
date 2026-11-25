@@ -4,8 +4,11 @@ import {
   choose,
   expect,
   finished,
+  howTo,
   myTurn,
   next,
+  passHowTo,
+  playHowTo,
   stepNumber,
   test,
   type Page,
@@ -59,7 +62,12 @@ test.describe('a brand-new child', () => {
     await press(frontDoor(page).locator('button[data-avatar="shell"]'));
     await expect(frontDoor(page)).toHaveCount(0);
 
-    // The map: Glim, having said hello, points at the island to go to, and it has something to play.
+    // Someone who has never played is shown how, before anything else: three things, each done after Glim.
+    // (What is shown, and what each tap does, is e2e/howto.spec.ts; here it is one part of the way in.)
+    await expect(howTo(page)).toBeVisible();
+    await playHowTo(page, press);
+
+    // The map: Glim points at the island to go to, and it has something to play.
     const worlds = page.getByRole('navigation', { name: 'Worlds' });
     await expect(worlds.getByRole('link')).toHaveCount(7);
     const open = worlds.locator('a[data-next="true"]');
@@ -116,6 +124,8 @@ test.describe('a brand-new child', () => {
     await page.goto('/');
     await press(frontDoor(page).locator('button[data-avatar="leaf"]'));
     await expect(frontDoor(page)).toHaveCount(0);
+    await passHowTo(page, press);
+    await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(7);
 
     // A refresh in the same visit goes straight to the map.
     await page.reload();
@@ -133,7 +143,10 @@ test.describe('a brand-new child', () => {
     await expect(mine).toHaveAccessibleName('Play as Leaf');
     await press(mine);
     await expect(frontDoor(page)).toHaveCount(0);
+    // Known by their picture, and not shown again what they have been shown (or passed by).
     await expect(page.getByText('Leaf', { exact: true })).toBeVisible();
+    await expect(howTo(page)).toHaveCount(0);
+    await expect(page).toHaveURL(/\/$/);
   });
 });
 

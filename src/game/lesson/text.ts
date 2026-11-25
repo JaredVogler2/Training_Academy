@@ -26,4 +26,16 @@ export const lessonText = {
   report: (independent: number, probes: number) =>
     `For grown-ups: ${independent} of ${probes} right at the first try, with no help.`,
   notSaved: 'This device is not saving progress right now.',
+  /** What is said, and written, when taps have been landing on nothing: the same words as the recordings. */
+  nudge: {
+    answers: 'Tap one of these.',
+    done: 'Have you finished? Tap the tick.',
+    next: 'Tap the arrow to go on.',
+    'my-turn': 'Tap the arrow, and then it is your turn.',
+    wait: 'Watch and listen first.',
+  },
+  helping: 'A grown-up is helping',
+  helpingOn: 'On: what is answered now is not counted as done alone. Hold to switch off.',
+  helpingOff: 'Off. Hold to switch on.',
+  helpingNote: 'A grown-up is helping: this is not counted as done alone.',
 } as const;

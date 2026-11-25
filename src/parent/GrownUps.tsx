@@ -55,6 +55,7 @@ import {
   IconTrash,
   IconUpload,
 } from '@/ui/icons';
+import { WhereToBegin } from './WhereToBegin';
 import { describeEvidence, grownUpText as text } from './text';
 import styles from './GrownUps.module.css';
 
@@ -576,6 +577,7 @@ function Area() {
       <p className={styles.lead}>{text.privacy}</p>
 
       <Players onDialog={setDialog} />
+      <WhereToBegin key={`begin-${playing?.id ?? 'nobody'}`} profile={playing} />
       <Evidence key={playing?.id ?? 'nobody'} profile={playing} />
       <Data profile={playing} onDialog={setDialog} />
       <DeviceSettings />

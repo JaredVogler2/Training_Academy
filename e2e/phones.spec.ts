@@ -9,9 +9,12 @@ import {
   finishCorrectly,
   finished,
   giveNotch,
+  howTo,
+  howToAt,
   hubPicturesLoaded,
   myTurn,
   next,
+  passHowTo,
   screenFit,
   test,
   underTheNotch,
@@ -75,6 +78,13 @@ test.describe('on a phone with a notch', () => {
 
     await press(door.getByRole('button', { name: 'The star picture' }));
     await expect(door).toHaveCount(0);
+    // A first visit goes on to "how to play": nothing of it is under the notch either, shown or tried.
+    await expect(howTo(page)).toBeVisible();
+    await clear('how to play, while Glim shows');
+    await expect(howToAt(page, 'choose', 'turn')).toBeVisible({ timeout: 20_000 });
+    await clear('how to play, at the child’s turn');
+    expect(await screenFit(page)).toEqual({ sideways: [], taller: 0 });
+    await passHowTo(page, press);
     await hubPicturesLoaded(page);
     await clear('the map');
     // The notch takes room from the map, and the islands still do not touch.

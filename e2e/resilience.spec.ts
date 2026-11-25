@@ -9,6 +9,7 @@ import {
   myTurn,
   next,
   openGrownUps,
+  passHowTo,
   stepNumber,
   test,
   type Page,
@@ -128,6 +129,9 @@ test.describe('when the browser will not let the game save', () => {
     // choosing a picture still opens the game.
     await press(page.getByRole('button', { name: 'The star picture' }));
     await expect(page.getByTestId('front-door')).toHaveCount(0);
+    // Someone new is still shown how to play, and passing it by still leads to the islands, though the game
+    // cannot write down that it was shown.
+    await passHowTo(page, press);
     await expect(page.getByRole('navigation', { name: 'Worlds' }).getByRole('link')).toHaveCount(7);
     // Settings still work for this visit.
     await press(page.getByRole('button', { name: 'Calm motion' }));

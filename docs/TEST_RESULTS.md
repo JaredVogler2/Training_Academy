@@ -3,10 +3,10 @@
 Everything in this file was actually run. Where something was not run, it says so.
 
 - **Date:** 2026-11-25
-- **Code under test:** `main` as the owner merged it on 2026-11-25 (pull request #9: the Music Lab's room,
-  Number Garden's eleven later activities, and the fixes that CI's runs led to), with the pull request this
-  document came with (#10): Reading Cove's six later activities. The release check below was run on that tree,
-  in the parts it says. What was run on the live site was run on what was live, and says so.
+- **Code under test:** `main` as the owner merged it on 2026-11-25 (pull request #10: Reading Cove's six
+  later activities), with the pull request this document came with (#11): the help for a first visit. The
+  release check below was run on that tree, in the parts it says. What was run on the live site was run on
+  what was live, and says so.
 - **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright 1.63.0
   with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
 - **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium and WebKit builds that Playwright 1.63.0 installs.
@@ -23,34 +23,42 @@ npm run verify:release
 
 Result of the last local run: **passed.**
 
-| Step                   | Result                                                                                                                    |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `npm run format:check` | clean                                                                                                                     |
-| `npm run lint`         | no errors, no warnings                                                                                                    |
-| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                            |
-| `npm test`             | **1837 tests in 61 files, all passed**                                                                                    |
-| `npm run build`        | built; 640 files in `dist/`, 552 of them the voice's recordings                                                           |
-| `npm run verify:dist`  | **1406 checks, all passed** (sizes below)                                                                                 |
-| `npm run test:e2e`     | **1147 browser tests: 962 passed, 185 skipped by design, 0 failed (Chromium, seven screen shapes, 38.0 minutes)**; see on |
+| Step                   | Result                                                                                                                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run format:check` | clean                                                                                                                                                                              |
+| `npm run lint`         | no errors, no warnings                                                                                                                                                             |
+| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                                                                     |
+| `npm test`             | **1971 tests in 67 files, all passed**                                                                                                                                             |
+| `npm run build`        | built; 659 files in `dist/`, 564 of them the voice's recordings                                                                                                                    |
+| `npm run verify:dist`  | **1459 checks, all passed** (sizes below)                                                                                                                                          |
+| `npm run test:e2e`     | **1212 browser tests in one go: 1025 passed, 186 skipped by design, 1 failed** (Chromium, seven screen shapes, 42.5 minutes). The one was a fault in the game, since fixed; see on |
 
-**What the browser tests were run on, exactly.** The whole suite was run in one go on the tree with Reading
-Cove's later activities in it: 1147 tests, 962 passed, 185 skipped by design, none failed and none run a second
-time, in 38.0 minutes. By screen: desktop 333 passed, phone 396, the sideways phone, the tablet and the small
-phone 45 each, the two Android shapes 49 each. One change came after that run: measuring the print showed a
-sentence's small letters 10 pixels high on the narrowest phone, so on a phone held upright a sentence is now
-set on two lines with its pictures side by side. After it, Reading Cove's own tests, the sweep of what a child
-presses, the accessibility checks and its sixteen activities played to their ends were run again on all seven
-screens: 139 passed and none failed, once a test that had measured a lifted card where it meant the place the
-card stands in was put right. The unit tests, the build and its checks in the table are of the final tree.
-**WebKit is CI's**, as always.
+**What the browser tests were run on, exactly.** The whole suite was run in one go on the tree with the
+first-visit help in it: 1212 tests, 1025 passed, 186 skipped by design and **one failed**, in 42.5 minutes. By
+screen: desktop 358 passed, phone 420, the tablet and the small phone 48 each, the two Android shapes 52 each,
+and the phone held sideways 47 with the one failure. That one was "how to play" played through at 844×390: at
+its last step the page was a pixel taller than the screen. It was a fault in the game and not in the test.
+Glim's hand, where it stands on Glim, hung two pixels below the foot of the screen, and how far it hung at the
+moment of measuring depended on where it was in its bobbing; on six screens, and on this one in the run
+before, it had been caught at a moment when it did not. The hand now stands inside whatever it points at when
+that is at the foot of the screen. Looking for it on every screen, with the hand held still at its lowest,
+found a second fault the same way: on a phone 360 wide the bell's swing reached 16 pixels past the side of the
+screen for most of a second.
 
-The 185 that were skipped skip themselves, and say why. On the desktop, 124: the 112 measurements of what a
+After those fixes the tests that touch the first-visit help (`howto`, `help`, `begin`, `journey`, `phones`,
+`a11y`, `resilience`) were run again on all seven screens: **133 passed, 3 skipped by design, none failed**
+(7.5 minutes). The suite is now 1221 tests: the test that watches "how to play" with the clock held is run on
+every screen shape, where it was on two, and there are two more, at 640×256 and 320×568. The unit tests, the
+build and its checks in the table are of the final tree. **WebKit is CI's**, as always.
+
+The 186 that were skipped skip themselves, and say why. On the desktop, 124: the 112 measurements of what a
 child presses (28 boards on four screens), which are made once, as a touch phone, at screen sizes of their own;
 three of the Music Lab's room at sizes of their own, likewise; eight of Robot Ridge's, which are for a touch
 screen too small to be a desktop's; and one about a world that is not open, which none is now. On the phone,
-61: the 54 activities played to their ends by their content's answers, which are played once, on the desktop
+62: the 54 activities played to their ends by their content's answers, which are played once, on the desktop
 (the other eight are played by working out what is on the screen, in `robot.spec.ts` and `inventor.spec.ts`,
-on every screen); six keyboard journeys; and the same one about a world that is not open.
+on every screen); seven keyboard journeys, "how to play" from the keyboard among them; and the same one about
+a world that is not open.
 
 The tree has 12 browser tests (six, on the desktop and on the phone) and 18 unit tests that the six worlds did
 not have. Each of the browser tests was run against the code as it was and failed there; so were the three unit
@@ -315,6 +323,134 @@ second, and the word had been cut there. Words are now cut in the silence before
 sentence that leaves one. All 32 slow words were made again that way: 31 heard as themselves, as before, and
 "lip" heard as "lep" in its carrier sentence only, as before.
 
+### What the first-visit help added to the tests, and what the tests found
+
+- **"How to play" is tested without a screen first** (`tests/game/howto.test.ts`, 33 tests): what a move does,
+  and that a move which does not belong to the moment changes nothing — a tap on the board while Glim is
+  showing, the tick before everything is in its place, the arrow before the thing is done, Glim's hand making
+  the child's move. Each showing is played through as data: it ends with the child's turn and nothing done for
+  them; it says hello only the first time; it says only lines that have been recorded; no line begins before
+  the one before it is over; it takes a few seconds with the sound or without; and what is written at the foot
+  is what the recording says, word for word.
+- **And then on a screen, with the voice and the clock in the test's hands** (`tests/game/howtoView.test.tsx`,
+  8 tests): each line is said when the one before it is over, **including when the voice wakes a moment after
+  the page has opened**; where nothing can be heard each line still gets its second and a half; a reminder is
+  said once; leaving writes down that the player has been shown and keeps everything else about them, and
+  writes nothing for a player who had been shown, or where nobody is playing.
+- **Help with the screen** (`tests/game/nudge.test.tsx`, 28 tests): where a tap landed (on something that can be
+  pressed, on something waiting its turn, on nothing), read from a page with the things a lesson has on it;
+  what is pointed out for each state of a lesson, and never one answer; that misses are counted in a row and
+  within a time; and the hook itself with the clock held: three taps bring it, a press ends it and starts the
+  count again, it goes after five seconds, it is not carried to the next step, nothing is watched while the
+  lesson is paused, the tick is pointed out once, the line is said once for a step, and a line kept back while
+  Glim was talking is owed the next time.
+- **Where to begin** (`tests/game/placement.test.ts`, 17 tests; `tests/parent/whereToBegin.test.tsx`, 10;
+  `tests/game/progress.test.tsx`, 6 more): what is suggested for each thing seen and that nothing is suggested
+  for what was looked for and not seen, or for knowing a letter's shape; that the furthest on is taken
+  whichever was said first; that every activity a suggestion or a "watch them try" names exists; that what is
+  unsaid is not written down at all; and that Play goes from the chosen beginning, comes back to what was
+  passed over only when the rest is finished, and begins at the beginning where the place chosen is not an
+  activity of that world. The card is rendered over a real repository: what is chosen is kept, a suggestion
+  moves nothing until it is taken, **no attempt and no sitting is written whatever is said**, and a save that
+  fails is said.
+- **A grown-up is helping** (`tests/game/helping.test.ts`, 6; `tests/game/lessonRunner.test.ts`, 2 more;
+  `tests/app/components.test.tsx`, 4 more; `tests/ui/modal.test.tsx`, 1 more): off until said, kept when the
+  page is loaded again, off in a new visit; every answer given while it is on is written down as helped and
+  none counted as the child's own, and the lesson asks at each answer, so it can be switched half-way; the
+  switch does nothing on a tap, a click or a hold let go early, and is held to switch off as well.
+- **What is kept about a player** (`tests/storage/repository.test.ts`, 6 more, on each of the three ways of
+  storing): what was seen, where Play begins and that "how to play" was shown are kept and can be taken away;
+  a thing seen that is not on the list, a word that is not one of the two, a world there is not, and "how to
+  play" in any state but shown are each refused, and the player is left as they were.
+- **In a browser, "how to play"** (`e2e/howto.spec.ts`, 10 tests): a new player is taken there from the front
+  door and does each of the three things, with everything they press measured on every screen shape and the
+  lines Glim says listened to in order; with the clock held, each showing is watched one moment after another
+  (the hand on a thing before the thing happens), nothing answers a tap before Glim has shown it, and the hand
+  comes to what there is to tap after a while of nothing; it is passed by with the house and not shown again;
+  it **is** shown again to a child whose first visit ended in the middle of it; it is not shown to a child who
+  was already playing; it is done with the sound off, with nothing said; and from the keyboard.
+- **In a browser, help** (`e2e/help.spec.ts`, 8 tests): three taps on the picture, in a demonstration, in a
+  question and after an answer; every answer wears the ring and the button for a hint does not; the words are
+  in Glim's bubble; the line is said once nothing else is being said, and once only; **the activity is then
+  played to its end and the record is three independent successes**, as if nothing had been pointed out. With
+  the clock held: taps a long look apart are not three in a row, a nudge is gone after a few seconds, taps on
+  choices that are turned away say to watch, and a thing finished and left has its tick pointed out once. And
+  the switch: a tap does nothing, a hold changes it, every answer is then written down as helped (0 right at
+  the first try with no help, and "right after a hint, another try or help" in the grown-ups' area), answers
+  before and after it was on are still the child's own, it is still on when the page is loaded again and off
+  at the next visit, and it can be set on "how to play".
+- **In a browser, where to begin** (`e2e/begin.spec.ts`, 4 tests): saying what was seen offers a beginning and
+  moves nothing; taking it makes Play the chosen activity; every activity is still on the world's page, none
+  marked as done, and the first one still opens; nothing has been written into what the child has shown;
+  another world is as it was; it is kept at the next visit; it belongs to one player, and another child on the
+  same device begins at the beginning.
+- **Accessibility** (`e2e/a11y.spec.ts`, 3 more tests): "how to play" at nine moments, an activity while
+  something is pointed out and while a grown-up is helping, the pause sheet with the switch on, and the
+  grown-ups' area with a suggestion showing. No violations.
+- **Older tests that go in by the front door** were changed to go through "how to play" (the brand-new child's
+  journey plays it; the others pass it by), and the notch test now has it too, shown and at the child's turn.
+
+**Each test that passed the first time it was run was made to fail**: eighty-six faults, one at a time, each
+written so that the game still builds. Seventy-nine were caught at once by the test meant for them.
+
+| Where                             | Put back (some of them)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The test meant for it             |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------- |
+| how to play, rules (12)           | a tap counts while Glim is showing; the other picture ends the turn; the tick counts early; Glim makes the child's move; hello said again; a line begun on top of another; an unheard line given no time; the board not cleared for the child's turn                                                                                                                                                                                                                                                                                                                                 | failed, all; **one hung** (below) |
+| how to play, screen (7)           | every line's length asked once, as the page opens; leaving writes nothing, or forgets the player's other settings; the reminder said again and again; "shown" written down only on leaving                                                                                                                                                                                                                                                                                                                                                                                           | failed, all                       |
+| the nudge (13)                    | a thing waiting its turn counts as pressed; answers pointed out while none can be pressed; misses add up for ever; watched while paused; the nudge stays; the tick pointed out again and again; its line said every time                                                                                                                                                                                                                                                                                                                                                             | failed, all but one (below)       |
+| where to begin (11)               | the suggestion is whichever was said last; "not yet" counted as seen; what is unsaid written down; Play ignores the choice; what was passed over never offered; saying it was seen moves the beginning                                                                                                                                                                                                                                                                                                                                                                               | failed, all                       |
+| who is new, helping, storage (10) | a child who was already playing is new; one who has been shown is new; the lesson never asks whether a grown-up is helping; helping not kept for the visit; the switch changes at a tap; any word kept for what was seen                                                                                                                                                                                                                                                                                                                                                             | failed, all                       |
+| in a browser (33)                 | the front door does not lead to "how to play"; it is shown to a child who was already playing, or written down as shown the moment it opens; Glim's hand is not drawn, or never comes; Glim tapped does not show it again; the nudge picks out one answer; its words are not written; the switch changes at a tap; the lesson is not told; Play ignores the grown-up's choice; where to begin is one player's for everyone; the first activity cannot be entered once Play begins further on; Glim's hand hanging below the foot of the screen; the bell's swing not kept in its box | failed, all but five (below)      |
+
+**The seven that were not caught at once were each a fault in a test**, and each is a way a test can be wrong
+that is worth knowing:
+
+1. **A helper that could not give up.** "The board is not cleared for the child's turn" did not fail the unit
+   tests: it hung them. A helper played "how to play" forward with `for (;;)` until it reached a step, and with
+   the fault it never got anywhere. It now walks the three steps once and says where it stopped; with the fault
+   in, eighteen tests fail.
+2. **A test that could not tell a press from no press.** "A press does not start the count again" passed: the
+   test pressed something only after three misses, when the count had been emptied by the nudge in any case.
+   It now presses after two.
+3. **A look that came too soon.** "Shown again to someone who passed it by" passed, sometimes. The test looked
+   for seven islands and no "how to play" straight after the tap on the front door; the islands are in the page
+   behind the door all along, and "how to play" is not in it until a moment after. Every such check now waits
+   for the door to have gone and reads the address (`atTheIslands`).
+4. **Waiting for something to be absent.** "One tap on nothing is enough" passed. `not.toHaveAttribute` waits
+   until it is true, and a nudge goes away by itself after five seconds: the test waited five seconds and was
+   satisfied. It now asks once, at the next frame (`nudgeNow`).
+5. **A second check in the code.** "A tap counts while Glim is showing" passed in a browser because the board
+   also declined to ask. The rules were right and tested; nothing that taps a screen could have shown them
+   wrong. The boards now ask whatever the moment and the rules alone decide, and the same fault fails.
+6. **Counting what was said before it could be said.** "The nudge's line is said every time" passed: the test
+   counted the sayings the instant after the taps, while the first saying was still under way (and a line is
+   kept back while anything is being said). It now waits until the first is well over, asks again, and gives a
+   second saying time to begin before it counts. Nothing can be waited _for_ there: it is something not
+   happening.
+7. **Measured at the wrong end of a swing.** "The bell's swing is not kept inside its box" passed. The test
+   stopped the bell at the widest of its swing one way and measured the page; but that way is to the left,
+   and what reaches past the left of a page does not make the page wider. It now measures at both ends.
+
+**What running the tests found in the game.** The clock-held test of "how to play" passed on the desktop and
+failed on the phone's screen: the hand that comes "after a while of nothing" came inside the showing's own
+twelve seconds. The showing had been short. It took how long each line lasts as the page opened, which for a
+new player is a moment after the tap that wakes the voice, and before the voice is awake; so every line was
+given the second and a half of a line nobody hears, and the next line began on top of its last word. Each
+beat's wait is now worked out when the beat before it has happened. The test no longer watches for a fixed
+time either: a showing is as long as its lines.
+
+Three more came from running everything on every screen, and are told above and here. **Glim's hand hung
+below the foot of the screen** on a phone held sideways, by two pixels, so that a page which is one screen
+and never scrolls could be scrolled by that much. **The bell's swing reached past the side of a small
+phone.** And **"shown" was written down as the page was left**: a test that finished "how to play" and at
+once began a new visit found itself shown it all again, because the page had gone before the writing was
+done. It is written now as soon as the last of the three things is done, while the page is certainly open.
+
+**What looking found.** The words of a nudge were first drawn as a note over the foot of the screen, and on a
+phone the note lay across the very arrow it was pointing at. They are written in Glim's bubble now. And the
+recogniser heard "Tap the arrow when you want a turn" as "…when you want to turn"; the line is "Tap the arrow,
+and then it is your turn."
+
 ## Continuous integration
 
 Every push to a pull request, and to `main`, runs five jobs (`.github/workflows/ci.yml`): lint, types, unit tests
@@ -511,8 +647,9 @@ met 47-point bars. The dialog is live, as it has been all along.
 | --- | ------------------------------------------------------------- | ------------------------------- | -------------------------------- | ------------------------------------------ | -------------- |
 | 38  | pull request #9, Number Garden's numerals (`30d47ae`)         | cancelled by the next push      | cancelled                        | cancelled                                  | cancelled      |
 | 39  | pull request #9, the place kept through an update (`0afde1b`) | 17.9 and 8.6 for the two halves | 12.3 and 18.5 for the two halves | 15.3 minutes, after 12.8 installing WebKit | 22.1 minutes   |
-
-| 40 | `main` after the owner merged pull request #9 (`dbbdbc3`) | passed, both halves | passed, both halves | passed | passed |
+| 40  | `main` after the owner merged pull request #9 (`dbbdbc3`)     | passed, both halves             | passed, both halves              | passed                                     | passed         |
+| 41  | pull request #10, Reading Cove's later activities (`563f46c`) | 17.1 and 10.8                   | 17.4 and 21.2                    | 22.6 minutes                               | 28.8 minutes   |
+| 42  | `main` after the owner merged pull request #10 (`8288833`)    | passed, both halves             | passed, both halves              | passed                                     | passed         |
 
 Run 39 is the first to have Number Garden's numerals, the room at its three sizes and the dialog test in
 Safari's engine, and all of them passed there. No test in any job needed a second attempt: the six artifacts
@@ -524,6 +661,19 @@ taken half a minute in other runs, and is worth a look if it happens again, sinc
 The owner merged the pull request seventeen seconds after run 39's last job finished. Run 40 is the same tree
 on `main`: green in all seven jobs in 26 minutes, and again no artifact over 1.0 MB, so no test in it needed a
 second attempt either.
+
+**Run 41** is pull request #10's first: Reading Cove's six later activities, the tests that listen to what the
+voice says, and a sentence set on two lines on an upright phone, in Safari's engine for the first time. **Green
+in all seven jobs, and no test needed a second attempt**: the six artifacts are between 0.56 and 1.14 MB, and
+the largest, WebKit's phones, ends "365 passed, 190 skipped" with no test marked as retried. The times in the
+table are whole jobs, by their start and end. **WebKit's phones took 28.8 of the 40 minutes they are allowed**,
+which is the finding: that job has every test on one phone and the layout and journey tests on two more, and
+it grows with every activity. "How to play" is shown in real time on each of those screens. From the push
+after run 41 that job is two halves, as Chromium's phones already were, and CI has eight jobs.
+
+The owner merged pull request #10 thirteen minutes after run 41's last job finished. **Run 42** is the same
+tree on `main`: green in all seven jobs in 25.5 minutes, the six artifacts between 0.54 and 1.10 MB, so no test
+in it needed a second attempt either.
 
 **And the time, a third time.** The two halves of the desktop took 15.5 and 11.3 minutes, where the one job
 had taken 29.2: that worked. But the phones took 32.5 of their 40: the phone is the screen everything pressed
@@ -657,7 +807,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 1837)
+## What the unit tests cover (Vitest, 1970)
 
 | Area                                                              | Files                                                                                                                                                   | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -687,6 +837,10 @@ failures were the useful part:
 | **Numbers** (Phase 06, second half)                               | `tests/engine/numbers.test.ts`, `tests/content/numberGardenRules.test.ts`, `tests/game/numberScripts.test.ts`, `numberPictures.test.tsx`                | What each of Number Garden's number pictures stands for, and which are refused; every rule for the later questions, with a case that breaks it; what is counted, named and lifted, in order, for a right answer and a wrong one; that a numeral shows no dots, a gap no tower and a bare stone no number until each is found; that nobody in a story overlaps anybody                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **When a script's beats arrive** (Phase 06, second half)          | `tests/game/useScript.test.tsx`                                                                                                                         | A script that opens with something shows it from the first frame; nothing moves for someone who has asked for less movement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | **A dialog** (after the Music Lab)                                | `tests/ui/modal.test.tsx`                                                                                                                               | A late "closed" from before a dialog was opened again does not close it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **How to play** (Phase 04, the rest)                              | `tests/game/howto.test.ts`, `howtoView.test.tsx`                                                                                                        | What a move does, and that one which does not belong to the moment changes nothing; each showing as data (ends in the child's turn, says only recorded lines, no line on top of another, short with the sound or without); on a screen with the clock held, each line said when the one before is over even where the voice wakes late; leaving writes down that the player was shown and keeps their other settings                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Help with the screen** (Phase 04, the rest)                     | `tests/game/nudge.test.tsx`                                                                                                                             | Where a tap landed; what is pointed out in each state, and never one answer; three in a row within a time; a press ends it and starts the count again; it goes by itself; the tick once; the line once for a step, and owed if Glim was talking                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Where to begin** (Phase 04, the rest)                           | `tests/game/placement.test.ts`, `tests/parent/whereToBegin.test.tsx`, `tests/game/progress.test.tsx`                                                    | What is suggested for what was seen, and nothing for what was not; what is unsaid is not written; Play begins where chosen and comes back to what was passed over at the end; the card keeps what is chosen, moves nothing until a suggestion is taken, and **writes no attempt and no sitting**; who counts as new to the game                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **A grown-up is helping** (Phase 04, the rest)                    | `tests/game/helping.test.ts`, `tests/game/lessonRunner.test.ts`, `tests/app/components.test.tsx`, `tests/ui/modal.test.tsx`                             | Off until said; kept for the visit and not beyond; every answer while it is on written down as helped and none counted as the child's own; asked at each answer; the switch is held to change, either way                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ## What the browser tests cover (Playwright, against the production build)
 
@@ -701,12 +855,12 @@ it.) Exceptions are named one by one in `e2e/fixtures.ts`
 
 | Project (engine)                                                          | Screen                     | Tests                                                                                                         |
 | ------------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `desktop` (Chromium)                                                      | 1366×768                   | all 416 (the measurements of what is pressed, and eight tests for a small touch screen, skip themselves here) |
-| `phone` (Chromium, touch)                                                 | 390×844                    | all 416 (keyboard journeys, and the activities played to their ends, skip themselves here)                    |
-| `phone-landscape`, `tablet`, `small-phone` (Chromium, touch)              | 844×390, 768×1024, 360×740 | the 40 layout tests each                                                                                      |
-| `android`, `android-landscape` (Chromium as a Pixel 7)                    | 412×839, 863×360           | the 40 layout tests and the 4 journeys each                                                                   |
-| `webkit-desktop`, `webkit-phone` (WebKit)                                 | 1366×768, 390×844          | all 416 each, in CI only (what needs the 3D scene or the service worker skips itself)                         |
-| `iphone`, `iphone-landscape`, `ipad` (WebKit as an iPhone 13 and an iPad) | 390×664, 750×342, 810×1080 | the 40 layout tests and the 4 journeys each, in CI only                                                       |
+| `desktop` (Chromium)                                                      | 1366×768                   | all 482 (the measurements of what is pressed, and eight tests for a small touch screen, skip themselves here) |
+| `phone` (Chromium, touch)                                                 | 390×844                    | all 482 (keyboard journeys, and the activities played to their ends, skip themselves here)                    |
+| `phone-landscape`, `tablet`, `small-phone` (Chromium, touch)              | 844×390, 768×1024, 360×740 | the 48 layout tests each                                                                                      |
+| `android`, `android-landscape` (Chromium as a Pixel 7)                    | 412×839, 863×360           | the 48 layout tests and the 4 journeys each                                                                   |
+| `webkit-desktop`, `webkit-phone` (WebKit)                                 | 1366×768, 390×844          | all 482 each, in CI only (what needs the 3D scene or the service worker skips itself)                         |
+| `iphone`, `iphone-landscape`, `ipad` (WebKit as an iPhone 13 and an iPad) | 390×664, 750×342, 810×1080 | the 48 layout tests and the 4 journeys each, in CI only                                                       |
 
 The named devices are Playwright's descriptions of them: the screen the device's browser leaves a page with its
 bars showing, its pixel ratio, touch, and its user agent, on a desktop build of the engine. They are not the
@@ -738,29 +892,34 @@ phone 360 pixels wide leaves a page about 264 to 280. `phones.spec.ts` tests bot
 | `robot.spec.ts`                              | Robot Ridge: each of four activities played rightly and wrongly by reading the ground from the screen and solving it; a run pauses and goes on; help; the keyboard; with less motion the way is marked instead of walked; axe on every board; the largest boards on 360×740 and 640×256                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `inventor.spec.ts`                           | Inventor Island: a guess is tested there and then, and one that did not come true is kept beside what happened; a mend tests a change only when something has changed; help; every activity played to the end; standing still where nothing should move; sideways with a notch; axe                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `voice.spec.ts`                              | The lines of an activity are fetched from the game's own files when wanted, and said; nothing is fetched with the sound off; a recording that cannot be fetched is done without; the voice stops on pause; every recording is listed for a grown-up, plays, and keeps its mark                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `howto.spec.ts` (the first-visit help)       | **A new player is shown how to play, once.** From the front door; each of the three things done; everything pressed measured on every screen shape; Glim's lines listened to in order. With the clock held, each showing watched one moment after another, nothing answering a tap before it is shown, and the hand coming to what there is to tap. Passed by with the house; shown again after a visit that ended in the middle of it; not shown to a child who was already playing; done with the sound off, and from the keyboard                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `help.spec.ts` (the first-visit help)        | **Taps that land on nothing** bring the ring to every answer alike (or to the one way on) and the words to Glim's bubble; the line is said once; the activity then played to its end records three independent successes. With the clock held: not across a pause in the tapping, gone in a few seconds, "watch first" while choices are turned away, a tick pointed out once. **A grown-up is helping**: held to change, never tapped; answers then recorded as helped; before and after are the child's own; kept for the visit only; can be set on "how to play"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `begin.spec.ts` (the first-visit help)       | **Where to begin**: a suggestion moves nothing until it is taken; Play is then the chosen activity; every activity is still there, none marked done, the first still opens; nothing is written into what the child has shown; kept at the next visit; one player's, not the device's                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ## Sizes (`npm run verify:dist`)
 
 | What                                                    | Size (gzip) | Budget  |
 | ------------------------------------------------------- | ----------- | ------- |
-| Script for the first screen                             | 105.1 kB    | 110 kB  |
+| Script for the first screen                             | 105.8 kB    | 110 kB  |
 | Styles for the first screen                             | 7.4 kB      | 12 kB   |
 | Fonts                                                   | 67.2 kB     | 80 kB   |
 | The hub's pictures (WebP, not gzipped)                  | 284.0 kB    | 330 kB  |
-| 3D hub (on demand)                                      | 260.0 kB    | 290 kB  |
+| 3D hub (on demand)                                      | 260.1 kB    | 290 kB  |
 | Largest other on-demand part (Number Garden's content)  | 12.4 kB     | 30 kB   |
-| The game: everything but the voice and the content, raw | 2498.7 kB   | 2700 kB |
+| The game: everything but the voice and the content, raw | 2532.4 kB   | 2700 kB |
 | The content: seven packs, raw                           | 573.9 kB    | 900 kB  |
-| The voice: 552 recordings (MP3, not gzipped)            | 6108 kB     | 9000 kB |
+| The voice: 564 recordings (MP3, not gzipped)            | 6246 kB     | 9000 kB |
 | The largest recording                                   | 32.8 kB     | 60 kB   |
 
 A world's code is 2.5 to 12.2 kB and its content 3.5 to 12.4 kB, each fetched on entering that world (Reading
 Cove's are 11.0 and 11.2); the lesson frame is 8.5 kB and the part of the engine that judges answers 5.6 kB,
 fetched with the first activity; and a recording is fetched when the step that may say it arrives.
 
-**Two of these are worth watching.** The script for the first screen is 105 kB of the 110 it is allowed, and
+**Two of these are worth watching.** The script for the first screen is 105.8 kB of the 110 it is allowed, and
 it has grown with every activity: what each world offers, with the grown-ups' words about it, is in it. (Six
-more activities in Reading Cove added a tenth of a kilobyte.) A larger batch of activities will need those
+more activities in Reading Cove added a tenth of a kilobyte; the first-visit help added seven tenths, for
+what a player's settings may now hold and for the front door's knowing who is new. "How to play" itself is a
+part of its own, 3.9 kB, fetched only by someone who is shown it.) A larger batch of activities will need those
 words moved out of the first load. And the budget for the whole build
 is now two budgets, because one had stopped meaning anything: it had been raised twice to let content in, and
 Number Garden's numerals went over it again (2942 kB of 2900). Content is meant to grow and has a limit of its
@@ -991,8 +1150,18 @@ tests as a desktop and as a phone and 44 as a Pixel 7, which play something in e
 room and four of Number Garden's new activities among them. A probe opened "Which has more?" on a phone held
 sideways and measured the two groups to choose between: 317 by 241 pixels at 844×390 and 237 by 107 at
 640×256, where the build before drew a strip 48 high and 20 high. It counted 18 activities on Number Garden's
-page, six and a way to the room on the Music Lab's, and ten on Reading Cove's, which is right: its six new ones
-are not live.
+page, six and a way to the room on the Music Lab's, and ten on Reading Cove's, which was right then: its six new
+ones were not live.
+
+**After the owner merged pull request #10** (2026-11-25, `8288833`), two and a half hours after the merge:
+Vercel's own record of the production deployment said "Ready". The tests of that commit, not of this tree,
+were run against the address (the tests here go in by "how to play", which is not live): 65 passed of 65, eight
+smoke tests as a desktop and as a phone and 49 as a Pixel 7, which play something in every world. Five of
+those are Reading Cove's new ones: a rhyme answered wrongly and then rightly, a word clapped one clap at a
+time, a word built with each place lit in turn, sh ch th met a pair at a time, and a sentence read with a
+finger under each word. A probe counted 16 activities on Reading Cove's page; found "Read the sentence" set on
+two lines on a phone held upright, with its shortest word 18 pixels high at 320×568 and 26 at 390×844; and
+found that a new player goes from the front door to the islands, as they must: "how to play" is not live.
 
 That is evidence that Vercel serves what was built, with the headers and routing the tests expect, and that the
 voice's files arrive. It is not a phone, and nobody has heard those recordings play. Nor is it evidence that
@@ -1006,14 +1175,15 @@ Chromium as a phone. The build of the commit is served. On it an activity is fin
 third step, a tab is left in the middle of a third, and another on the map. Then the other build is served at the
 same address, as a deployment puts one build in the place of another, and eighteen things are checked.
 
-| From                                                         | To                                  | Result                                                                                                                                           |
-| ------------------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `334e0e8`, the build before the six worlds: what a phone had | `0e836eb`, the build that went live | **16 of 18.** The two that failed: a world's page opened by its address did not show what was finished, and Play went back to the first activity |
-| `0e836eb`, what is live                                      | this tree                           | **18 of 18**                                                                                                                                     |
-| `765be14`, what was live then (the Music Lab's activities)   | pull request #9 as first written    | **16 of 18.** The activity left at its third step was begun again at its first, and its stored place was gone                                    |
-| `765be14`, what was live then                                | pull request #9 with the fix        | **18 of 18**                                                                                                                                     |
-| `765be14`, what was live then                                | this tree, with Reading Cove's six  | **18 of 18**, twice: before the last change to how a sentence is laid out, and after it                                                          |
-| `dbbdbc3`, what is live now (pull request #9 merged)         | this tree, with Reading Cove's six  | **18 of 18**                                                                                                                                     |
+| From                                                         | To                                   | Result                                                                                                                                           |
+| ------------------------------------------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `334e0e8`, the build before the six worlds: what a phone had | `0e836eb`, the build that went live  | **16 of 18.** The two that failed: a world's page opened by its address did not show what was finished, and Play went back to the first activity |
+| `0e836eb`, what is live                                      | this tree                            | **18 of 18**                                                                                                                                     |
+| `765be14`, what was live then (the Music Lab's activities)   | pull request #9 as first written     | **16 of 18.** The activity left at its third step was begun again at its first, and its stored place was gone                                    |
+| `765be14`, what was live then                                | pull request #9 with the fix         | **18 of 18**                                                                                                                                     |
+| `765be14`, what was live then                                | this tree, with Reading Cove's six   | **18 of 18**, twice: before the last change to how a sentence is laid out, and after it                                                          |
+| `dbbdbc3`, what was live then (pull request #9 merged)       | this tree, with Reading Cove's six   | **18 of 18**                                                                                                                                     |
+| `8288833`, what is live now (pull request #10 merged)        | this tree, with the first-visit help | **18 of 18**: a player's settings may now hold three more things, and a player stored by the build before has none of them                       |
 
 What held both times:
 

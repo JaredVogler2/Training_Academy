@@ -1,4 +1,5 @@
 import { test as base, expect, type Locator, type Page } from '@playwright/test';
+import { CHOOSE, PLACE, type Phase, type Step } from '../src/game/howto/steps';
 import { WORLDS, isOpen } from '../src/game/worlds';
 import { fetchNotLoaded, pagesServed } from './diagnosis';
 
@@ -529,6 +530,43 @@ export async function listenIn(page: Page): Promise<() => Promise<string[]>> {
 export const myTurn = (page: Page) => page.getByRole('button', { name: 'My turn' });
 export const next = (page: Page) => page.getByRole('button', { name: 'Next' });
 export const finished = (page: Page) => page.getByTestId('lesson-finished');
+
+/** "How to play": where someone who has never played is taken from the front door. */
+export const howTo = (page: Page) => page.getByTestId('how-to');
+/** "How to play" at one of its three things, while Glim shows it, in the child's turn, or once it is done. */
+export const howToAt = (page: Page, step: Step, phase: Phase) =>
+  page.locator(`[data-testid="how-to"][data-step="${step}"][data-phase="${phase}"]`);
+/** The way out of "how to play": the house, top left. */
+export const skipHowTo = (page: Page) =>
+  page.getByRole('link', { name: 'Skip: go to the islands' });
+
+/** Pass "how to play" by, as a child who taps the house does. */
+export async function passHowTo(page: Page, press: Fixtures['press']): Promise<void> {
+  await expect(howTo(page)).toBeVisible();
+  await press(skipHowTo(page));
+  await expect(howTo(page)).toHaveCount(0);
+}
+
+/** Do each of the three things Glim shows in "how to play", and go on to the islands. */
+export async function playHowTo(page: Page, press: Fixtures['press']): Promise<void> {
+  // A showing takes a few seconds, and nothing can be tapped until it is over.
+  const reached = (step: Step, phase: Phase) =>
+    expect(howToAt(page, step, phase)).toBeVisible({ timeout: 20_000 });
+  await reached('choose', 'turn');
+  await press(howTo(page).locator(`[data-choice="${CHOOSE.turn.same}"]`));
+  await reached('choose', 'done');
+  await press(next(page));
+  await reached('place', 'turn');
+  for (const card of PLACE.cards) await press(howTo(page).locator(`[data-card="${card}"]`));
+  await press(howTo(page).getByRole('button', { name: 'Done' }));
+  await reached('place', 'done');
+  await press(next(page));
+  await reached('again', 'turn');
+  await press(howTo(page).getByRole('button', { name: 'Show me again' }));
+  await reached('again', 'done');
+  await press(next(page));
+  await expect(howTo(page)).toHaveCount(0);
+}
 
 /** Which step of the activity is showing, from the progress dots' label: "Step 2 of 6" → 2. */
 export async function stepNumber(page: Page): Promise<number> {

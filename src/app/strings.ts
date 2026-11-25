@@ -18,6 +18,7 @@ export const ui = {
   motionCalm: 'Motion is calm',
   motionFull: 'Motion is on',
   grownUps: 'Grown-ups',
+  howToPlay: 'How to play',
   notOpenYet: 'Not open yet',
   tryIt: 'Something to try',
   loading: 'Loading…',

@@ -66,12 +66,23 @@ export const WORLDS: readonly WorldInfo[] = [
     name: 'Number Garden',
     focus: 'Amounts first, numerals later',
     about:
-      'Number sense grows from real amounts. Children match, compare and count things they can see before any numeral appears, so a written 3 later means something.',
+      'Number sense grows from real amounts. Children match, compare and count things they can see before any numeral appears, so that a written 3 means something when it comes. Then the numerals, the numbers in order, and adding and taking away as little stories.',
     activities: [
       { title: 'Same amount and different amount', lessons: ['ng-same-amount-01'] },
       { title: 'Seeing small amounts at a glance', lessons: ['ng-glance-01'] },
       { title: 'Counting to five, then ten', lessons: ['ng-give-01', 'ng-give-02'] },
       { title: 'More, fewer and equal', lessons: ['ng-more-01', 'ng-fewer-01', 'ng-equal-01'] },
+      { title: 'Amounts in order: one more each time', lessons: ['ng-stairs-01'] },
+      { title: 'Making five, then ten', lessons: ['ng-frame-01', 'ng-frame-02'] },
+      {
+        title: 'Numerals for amounts, zero to ten',
+        lessons: ['ng-numerals-01', 'ng-numerals-02', 'ng-numerals-03'],
+      },
+      { title: 'The numbers in order', lessons: ['ng-line-01'] },
+      {
+        title: 'Adding and taking away, as stories',
+        lessons: ['ng-add-01', 'ng-take-01', 'ng-add-02', 'ng-take-02'],
+      },
     ],
     role: 'number',
   },

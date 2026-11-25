@@ -6,18 +6,21 @@ hosted on Vercel. There is no account, no server, no advertising and no tracking
 
 ## Where it stands
 
-**Seven places have something to do: 45 short activities, 497 challenges, a voice, and music.** Six islands, and
+**Seven places have something to do: 56 short activities, 639 challenges, a voice, and music.** Six islands, and
 a music room in the lighthouse between them. Phases 01 to 03 of 17 are done (the foundation, the look, the
-journey in); phases 04 to 10 are each partly done, which here means that every activity the six islands' pages
-promised is built and tested, and that each phase's brief asks for more than that; phase 11, the Music Lab, is
-built. [`docs/PROGRESS.md`](docs/PROGRESS.md) sets each brief against what exists. It is built from the plan in
+journey in); phases 04, 05 and 07 to 10 are each partly done, which here means that every activity the islands'
+pages promised is built and tested, and that each phase's brief asks for more than that; phase 06, Number
+Garden, is built as far as adding and taking away within ten; and phase 11, the Music Lab, is built.
+[`docs/PROGRESS.md`](docs/PROGRESS.md) sets each brief against what exists. It is built from the plan in
 [`prompt-series/`](prompt-series/README.md).
 
-**Three things to know before relying on it.** No person has listened to any of it: the voice's 446 recordings
+**Three things to know before relying on it.** No person has listened to any of it: the voice's 484 recordings
 were made by a speech synthesiser and checked by a speech recogniser, and the Music Lab's notes are made by
 arithmetic as they are played and have been checked by nothing with ears. No child and no teacher has seen any
 of it. And only some of it is live: the owner's Vercel deployment serves `main`, which has had the six islands
-since 2026-11-23; the Music Lab is on an open pull request and reaches the site only when that is merged.
+since 2026-11-23 and the Music Lab's six activities since 2026-11-25; Number Garden's numerals, the Music Lab's
+room to play in and a fix for phones held sideways are on an open pull request and reach the site only when
+that is merged.
 [`docs/CONTINUE_HERE.md`](docs/CONTINUE_HERE.md) says exactly what was and was not verified.
 
 ![The home screen: a lighthouse and six small islands in a turquoise sea, each with its name under it, and a small glowing guide in a rowing boat pointing at the one that is open](docs/review/phase-02/hub-3d-1366x768.jpg)
@@ -31,8 +34,9 @@ What works today:
   recorded voice, and says and shows it again when tapped;
 - **Reading Cove**: what made that sound, play it back, the first sound of a word, fifteen letters and their
   sounds, a word said slowly, a printed word to read. It needs sound, and says so;
-- **Number Garden**: the same amount, how many at a glance, one for each up to ten, more, fewer, equal. No numeral
-  appears;
+- **Number Garden**: the same amount, how many at a glance, one for each up to ten, more, fewer, equal, with no
+  numeral anywhere; then amounts in order, the pairs that make five and ten, the numerals from zero to ten, the
+  numbers in order, and adding and taking away as little stories;
 - **Robot Ridge**: one arrow one move, a row of steps, do it again, find the step that went wrong;
 - **Memory Forest**: pairs, which one was there, the same order, and three ways to remember;
 - **Inventor Island**: a guess that is tested, and a thing to mend: bridges, ramps, balancing, float or sink;

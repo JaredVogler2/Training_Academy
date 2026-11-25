@@ -106,8 +106,12 @@
   grid-template-rows: minmax(0, 0.6fr) minmax(0, 1.4fr);
 }
 
-/* A question that is only a sign ("which has more?") needs little room; the groups it asks about need the rest. */
-.board[data-prompt='sign'] {
+/*
+ * A question that is only a sign ("which has more?") needs little room; the groups it asks about need the rest.
+ * So does one that is only a numeral: one mark, answered with groups or frames of things to count.
+ */
+.board[data-prompt='sign'],
+.board[data-asks-about='numeral'] {
   grid-template-rows: minmax(0, 0.42fr) minmax(0, 1.58fr);
 }
 
@@ -208,6 +212,15 @@
   grid-auto-rows: minmax(0, 1fr);
   gap: clamp(10px, 1.6vh, 14px);
   min-height: 0;
+}
+
+/*
+ * Towers of blocks are tall and narrow, and are told apart by standing them side by side on the same ground: so
+ * they stand in a row on every screen, where other choices are stacked on a narrow one.
+ */
+.board[data-asks-about='stairs'] .choices {
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-auto-flow: column;
 }
 
 /* On a narrow screen the choices stack, full width, so every picture is as large as it can be. */
@@ -647,15 +660,33 @@
    * finger's width high.)
    */
   .board[data-prompt='sign'],
-  .board[data-prompt='sign'][data-count='3'] {
+  .board[data-prompt='sign'][data-count='3'],
+  .board[data-asks-about='numeral'],
+  .board[data-asks-about='numeral'][data-count='3'] {
     grid-template-rows: minmax(0, 1fr);
     grid-template-columns: minmax(0, 0.42fr) minmax(0, 1.9fr);
   }
 
-  /* Three pictures in a row need as much room as the three they are answered with. */
+  /*
+   * Three pictures in a row need as much room as the three they are answered with. So does anything else that
+   * is wide and is counted or read from left to right: a staircase of towers, a frame of five or ten, a path of
+   * numbered stones, a story with those who stay on one side and those who come or go on the other.
+   */
   .board[data-asks-about='strip'],
-  .board[data-asks-about='strip'][data-count='3'] {
+  .board[data-asks-about='strip'][data-count='3'],
+  .board[data-asks-about='stairs'],
+  .board[data-asks-about='stairs'][data-count='3'],
+  .board[data-asks-about='path'],
+  .board[data-asks-about='path'][data-count='3'] {
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.3fr);
+  }
+
+  /* A little less for the two that are answered with groups of things, which need their room as well. */
+  .board[data-asks-about='frame'],
+  .board[data-asks-about='frame'][data-count='3'],
+  .board[data-asks-about='story'],
+  .board[data-asks-about='story'][data-count='3'] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
   }
 
   .choices {

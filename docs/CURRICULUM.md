@@ -2,15 +2,15 @@
 
 **Status: seven worlds, a first pass through each.** Every activity the six islands' pages promised is authored
 and playable, and so are the Music Lab's six. Counts in this document are of real content in the repository,
-and the tests pin the ones quoted most. (The Music Lab is on a pull request that is not merged: it is not live.)
+and the tests pin the ones quoted most. (Number Garden's eleven later activities are on a pull request that is not merged: they are not live.)
 
 |                              | Authored and tested |
 | ---------------------------- | ------------------- |
 | Worlds with playable content | 7 of 7              |
-| Activities (lessons)         | 45                  |
-| Challenges                   | 497                 |
-| Skills                       | 50                  |
-| Spoken lines and words       | 446 recordings      |
+| Activities (lessons)         | 56                  |
+| Challenges                   | 639                 |
+| Skills                       | 61                  |
+| Spoken lines and words       | 484 recordings      |
 
 **Nothing here has been reviewed by an early-years teacher or tried with a child, and no person has listened to
 the recordings.** All three are required before any claim about what the game teaches. Each world's brief in
@@ -210,39 +210,91 @@ here needs sound and says so.
 | `phonics.blending.hear-slow-word`         | Blend a slow word by ear                 | Hears a short word said slowly, sound running into sound, and knows which word it is, told apart from a word one sound different.                                     |
 | `phonics.decoding.read-short-word`        | Read a short word                        | Reads a three-letter word made of letters already taught, with nothing said aloud, and finds its picture among words that are nearly the same.                        |
 
-### Number Garden — `number-garden.v2.json` (contentVersion 2)
+### Number Garden — `number-garden.v3.json` (contentVersion 3)
 
-7 activities, 77 challenges, 7 skills, 29 spoken lines. Written by `scripts/content/number-garden.mjs`.
+18 activities, 219 challenges, 18 skills, 66 spoken lines. Written by `scripts/content/number-garden.mjs`, with
+the eleven later activities in `scripts/content/number-garden-numbers.mjs`.
 
-**How it teaches.** Amounts before numerals: no numeral appears anywhere. The things in a group are counted aloud by
-the voice with a climbing note for each. A group to be seen at a glance is uncovered and covered again, so that it
-cannot be counted by pointing. Giving "one for each" is done one thing at a time and handed in; a wrong amount is
-counted back, never just marked. More, fewer and equal each have an activity of their own, so that the pictures
-alone say what is asked.
+**How it teaches.** Amounts before numerals. In the first seven activities no numeral appears anywhere. The
+things in a group are counted with a climbing note for each. A group to be seen at a glance is uncovered and
+covered again, so that it cannot be counted by pointing. Giving "one for each" is done one thing at a time and
+handed in; a wrong amount is counted back, never just marked. More, fewer and equal each have an activity of
+their own, so that the pictures alone say what is asked.
 
-**What the rules check** (`src/content/rules/numberGarden.ts`): one choice has the amount asked for and it is the one
-marked; no two choices show the same amount; the answer is never simply the same picture; bigger things are never
-the larger amount by default, so size is not a clue.
+Then, still with no numeral, amounts in order — a staircase of towers, each one block taller, with one missing —
+and the pairs that make five and ten, on a frame with some places full. Only then the numerals, and each is
+brought in as another way of showing an amount a child already knows: a group and its numeral, both ways about;
+zero as an empty frame; a number that is said; the numbers in order on a path of stones. Last, adding and
+taking away as things that happen: some more come, some go away, and how many are there now.
 
-| Activity            | Title                    | Challenges | A sitting                        | The child's part |
-| ------------------- | ------------------------ | ---------- | -------------------------------- | ---------------- |
-| `ng-same-amount-01` | Same amount, up to three | 8          | 1 shown, 2 guided, 3 of 5 alone  | a choice         |
-| `ng-glance-01`      | How many, at a glance    | 11         | 1 shown, 2 guided, 4 of 8 alone  | a choice         |
-| `ng-give-01`        | One for each, up to five | 10         | 1 shown, 2 guided, 3 of 7 alone  | give an amount   |
-| `ng-give-02`        | One for each, up to ten  | 11         | 1 shown, 2 guided, 3 of 8 alone  | give an amount   |
-| `ng-more-01`        | Which has more?          | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice         |
-| `ng-fewer-01`       | Which has fewer?         | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice         |
-| `ng-equal-01`       | Two that are equal       | 11         | 1 shown, 2 guided, 3 of 8 alone  | pick out         |
+**What a wrong answer is answered with.** Never just the right one. A wrong numeral shows its own amount as
+dots, which are counted — four notes, where three were wanted — and its name is said. A tower that does not fit
+is played where the gap is, and the scale it should complete is heard to stumble. A group that does not fill
+the frame is counted against the empty places. In a story everyone who is there at the end is counted. What is
+counted is always named: the last number counted is how many there are.
 
-| Skill                           | For grown-ups                  | What it means                                                                                                                                                                |
-| ------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `math.quantity.match-sets-to-3` | Match small groups by amount   | Sees that two groups of up to three things have the same amount, even when the things and how they are laid out are different. No numerals and no counting words are needed. |
-| `math.quantity.subitize-to-4`   | See small amounts at a glance  | Sees how many are in a group of up to four when it is shown only for a moment, without counting one by one, and matches it to a group of the same amount.                    |
-| `math.counting.give-to-5`       | Give one for each, up to five  | Gives out exactly as many things as there are friends, up to five, one for each, and stops there without places to fill.                                                     |
-| `math.counting.give-to-10`      | Give one for each, up to ten   | Gives out exactly as many things as there are friends, from six to ten, keeping count of how many have been given.                                                           |
-| `math.comparison.more-to-6`     | Find which group has more      | Picks the group with more out of two or three groups of up to six, including when the smaller group is made of bigger things.                                                |
-| `math.comparison.fewer-to-6`    | Find which group has fewer     | Picks the group with fewer out of two or three groups of up to six, including when the larger group is made of smaller things.                                               |
-| `math.comparison.equal-to-6`    | Find two groups that are equal | Out of three or four groups of up to six, finds the two that have the same amount, whatever they are made of and however they are laid out.                                  |
+**What is kept apart.** A numeral shows no dots except while it is being counted, so it has to be read. The
+missing tower, the bare stone and the number that is said are nowhere on the page until they are found. Adding
+and taking away up to five are answered with groups, not numerals, so that a child who cannot yet read a 4 can
+still show that two and two make four; up to ten they are answered with numerals, and those activities name
+the numerals to ten as what they build on.
+
+**What the rules check** (`src/content/rules/numberGarden.ts`, `numberGardenNumbers.ts`): one choice has the
+amount asked for and it is the one marked; no two choices show the same amount; the answer is never simply the
+same picture; bigger things are never the larger amount by default, so size is not a clue. For the later
+questions the amount each picture stands for is worked out from the picture by the engine
+(`src/engine/numbers.ts`) and not taken from the content: a staircase really goes up by one, a path really is
+in order, a story really leaves that many; a numeral is answered with amounts and an amount with numerals;
+nothing is shown beyond what the activity's skill says it goes up to; and an activity is marked as needing
+sound exactly when its questions are said.
+
+| Activity            | Title                        | Challenges | A sitting                        | The child's part       |
+| ------------------- | ---------------------------- | ---------- | -------------------------------- | ---------------------- |
+| `ng-same-amount-01` | Same amount, up to three     | 8          | 1 shown, 2 guided, 3 of 5 alone  | a choice               |
+| `ng-glance-01`      | How many, at a glance        | 11         | 1 shown, 2 guided, 4 of 8 alone  | a choice               |
+| `ng-give-01`        | One for each, up to five     | 10         | 1 shown, 2 guided, 3 of 7 alone  | give an amount         |
+| `ng-give-02`        | One for each, up to ten      | 11         | 1 shown, 2 guided, 3 of 8 alone  | give an amount         |
+| `ng-more-01`        | Which has more?              | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice               |
+| `ng-fewer-01`       | Which has fewer?             | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice               |
+| `ng-equal-01`       | Two that are equal           | 11         | 1 shown, 2 guided, 3 of 8 alone  | pick out               |
+| `ng-stairs-01`      | One more each time           | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice               |
+| `ng-frame-01`       | Fill the five                | 12         | 1 shown, 2 guided, 4 of 9 alone  | a choice               |
+| `ng-frame-02`       | Fill the ten                 | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice               |
+| `ng-numerals-01`    | Numbers one to five          | 13         | 1 shown, 2 guided, 5 of 10 alone | a choice               |
+| `ng-numerals-02`    | Zero, and six to ten         | 14         | 1 shown, 2 guided, 5 of 11 alone | a choice               |
+| `ng-numerals-03`    | Hear a number                | 13         | 1 shown, 2 guided, 5 of 10 alone | a choice (needs sound) |
+| `ng-line-01`        | The number path              | 13         | 1 shown, 2 guided, 5 of 10 alone | a choice               |
+| `ng-add-01`         | Some more come               | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice               |
+| `ng-take-01`        | Some go away                 | 12         | 1 shown, 2 guided, 4 of 9 alone  | a choice               |
+| `ng-add-02`         | More come, up to ten         | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice               |
+| `ng-take-02`        | Some go away, from up to ten | 13         | 1 shown, 2 guided, 4 of 10 alone | a choice               |
+
+| Skill                           | For grown-ups                                 | What it means                                                                                                                                                                                        |
+| ------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `math.quantity.match-sets-to-3` | Match small groups by amount                  | Sees that two groups of up to three things have the same amount, even when the things and how they are laid out are different. No numerals and no counting words are needed.                         |
+| `math.quantity.subitize-to-4`   | See small amounts at a glance                 | Sees how many are in a group of up to four when it is shown only for a moment, without counting one by one, and matches it to a group of the same amount.                                            |
+| `math.counting.give-to-5`       | Give one for each, up to five                 | Gives out exactly as many things as there are friends, up to five, one for each, and stops there without places to fill.                                                                             |
+| `math.counting.give-to-10`      | Give one for each, up to ten                  | Gives out exactly as many things as there are friends, from six to ten, keeping count of how many have been given.                                                                                   |
+| `math.comparison.more-to-6`     | Find which group has more                     | Picks the group with more out of two or three groups of up to six, including when the smaller group is made of bigger things.                                                                        |
+| `math.comparison.fewer-to-6`    | Find which group has fewer                    | Picks the group with fewer out of two or three groups of up to six, including when the larger group is made of smaller things.                                                                       |
+| `math.comparison.equal-to-6`    | Find two groups that are equal                | Out of three or four groups of up to six, finds the two that have the same amount, whatever they are made of and however they are laid out.                                                          |
+| `math.order.one-more-to-6`      | Put amounts in order, one more each time      | Sees that amounts in order go up by one each time, and finds the amount that is missing from a row of towers of up to six blocks: the next, one in between, the first, and going down as well as up. |
+| `math.bonds.to-5`               | See how many more make five                   | Given part of five on a frame of five places, finds the group that fills the rest, wherever the full places are.                                                                                     |
+| `math.bonds.to-10`              | See how many more make ten                    | Given part of ten on a frame of ten places, finds the group that fills the rest, wherever the full places are.                                                                                       |
+| `math.numerals.read-to-5`       | Match the numerals 1 to 5 with amounts        | Finds the numeral for a group of one to five things, and the group for a numeral, however the group is laid out.                                                                                     |
+| `math.numerals.read-to-10`      | Match the numerals 0 and 6 to 10 with amounts | Finds the numeral for an amount from six to ten shown on a frame of ten, and the amount for a numeral; knows that an empty frame is zero.                                                            |
+| `math.numerals.hear-to-10`      | Find the numeral for a number that is said    | Hears a number from zero to ten and picks out its numeral from three, including numerals that look or sound alike.                                                                                   |
+| `math.numerals.order-to-10`     | Know the order of the numbers 0 to 10         | Finds the number missing from a run of three to five numbers in order: the next, one in between, the first, and counting back as well as on.                                                         |
+| `math.adding.within-5`          | Add within five, as a story                   | When some more come to a group, finds how many there are now, up to five, and shows it with a group of the same amount.                                                                              |
+| `math.taking-away.within-5`     | Take away within five, as a story             | When some of a group of up to five go away, finds how many are left and shows it with a group of the same amount.                                                                                    |
+| `math.adding.within-10`         | Add within ten, as a story                    | When some more come to a group, finds how many there are now, up to ten, and picks the numeral for it.                                                                                               |
+| `math.taking-away.within-10`    | Take away within ten, as a story              | When some of a group of up to ten go away, finds how many are left, including none, and picks the numeral for it.                                                                                    |
+
+**Why a wrong choice is tempting** is written on every wrong choice of the later questions, for the grown-ups'
+report and for the mastery engine to come. Most are how far off the choice is (`one-more`, `one-fewer`,
+`many-more`, `many-fewer`). Four are ideas of their own: `counted-what-was-there-first` and
+`counted-those-that-came` or `-left` in a story; `counted-the-full-places` where the empty ones were asked for;
+and `looks-alike`, a 6 taken for a 9 or a 9 for a 6.
 
 ### Robot Ridge — `robot-ridge.v1.json` (contentVersion 1)
 
@@ -382,7 +434,7 @@ generator. What follows is what is in the build, by id; the voice now says each 
 
 | Id                                 | What it is                                                        |
 | ---------------------------------- | ----------------------------------------------------------------- |
-| `number-garden` (contentVersion 2) | the pack: `src/content/packs/number-garden.v2.json`               |
+| `number-garden` (contentVersion 3) | the pack: `src/content/packs/number-garden.v3.json`               |
 | `math.quantity.match-sets-to-3`    | the skill                                                         |
 | `ng-same-amount-01` (version 1)    | the lesson; address `/world/number-garden/play/ng-same-amount-01` |
 | `ng-same-amount-01.demo-two`       | step 1, the demonstration: 2 snails ↔ **2 leaves**, 1 leaf        |
@@ -502,15 +554,15 @@ heard says it needs sound.
 
 From the briefs in `prompt-series/`; `docs/PROGRESS.md` has each brief set against what exists.
 
-| World           | Not built                                                                                                              | Brief |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------- | ----- |
-| Reading Cove    | rhyme and syllables; a sound on its own; segmenting; digraphs; sentences; words not met before; capitals; letter names | 05    |
-| Number Garden   | a number line; numerals; zero; number bonds; adding and taking away                                                    | 06    |
-| Robot Ridge     | plans of four to ten steps; conditions ("if the bridge is up")                                                         | 07    |
-| Memory Forest   | a choice of strategy; recall in a later sitting; more than four things                                                 | 08    |
-| Inventor Island | a wind shelter; a record that the away-from-screen challenge was done; a portfolio card                                | 09    |
-| Explorer Harbor | making up a story; stories that branch; a globe, continents, countries, flags, people and places                       | 10    |
-| The Music Lab   | tapping a rhythm back; black keys; keeping a tune a child has made; the five other rooms its brief describes           | 11    |
+| World           | Not built                                                                                                                                                                                | Brief |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| Reading Cove    | rhyme and syllables; a sound on its own; segmenting; digraphs; sentences; words not met before; capitals; letter names                                                                   | 05    |
+| Number Garden   | giving out a number that is written (the giving games stop before numerals); patterns, shapes, measuring, estimating and coins (the brief's optional M7); counting in twos or beyond ten | 06    |
+| Robot Ridge     | plans of four to ten steps; conditions ("if the bridge is up")                                                                                                                           | 07    |
+| Memory Forest   | a choice of strategy; recall in a later sitting; more than four things                                                                                                                   | 08    |
+| Inventor Island | a wind shelter; a record that the away-from-screen challenge was done; a portfolio card                                                                                                  | 09    |
+| Explorer Harbor | making up a story; stories that branch; a globe, continents, countries, flags, people and places                                                                                         | 10    |
+| The Music Lab   | tapping a rhythm back; black keys; keeping a tune a child has made; the five other rooms its brief describes                                                                             | 11    |
 
 Open questions: who reviews the phonics content and the audio; whether a person should record the voice; how
 prerequisites that cross worlds are shown on the map (nothing is locked, and Glim simply points at the next

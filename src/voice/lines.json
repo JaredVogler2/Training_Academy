@@ -9,6 +9,7 @@
         "door.hello": "Hello! Who is playing today?"
       },
       "words": {
+        "count.0": "zero",
         "count.1": "one",
         "count.2": "two",
         "count.3": "three",

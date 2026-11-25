@@ -1,4 +1,4 @@
-import numberGarden from '@/content/packs/number-garden.v2.json';
+import numberGarden from '@/content/packs/number-garden.v3.json';
 import {
   advanceDemo,
   createSession,

@@ -3,9 +3,10 @@ import { arrived, expect, myTurn, test, type Page } from './fixtures';
 /**
  * What a child presses must be large enough to press, on the screens where there is least room.
  *
- * Each kind of board is tried once, in an activity that uses it, on three screens: a phone held sideways; the
- * little a browser leaves the narrowest such phone (640 by 256); and the narrowest phone upright. Every button and
- * link inside the activity is measured while a question is being asked.
+ * Each kind of board is tried once, in an activity that uses it, on four screens: a phone held sideways, as a
+ * page that has the whole screen and as Safari leaves it; the little a browser leaves the narrowest such phone
+ * (640 by 256); and the narrowest phone upright. Every button and link inside the activity is measured while a
+ * question is being asked.
  *
  * This is here because of a fault no other test saw. A question that is only a sign — "which has more?" — kept,
  * on a phone held sideways, both the rows it has upright and the columns it has sideways, and the two groups to
@@ -25,6 +26,10 @@ const KNOWN_NARROW: Readonly<Record<string, number>> = {};
 
 const SCREENS = [
   ['a phone held sideways (844 by 390)', 844, 390],
+  // What Safari leaves a page on an iPhone 13 held sideways. It is wider than the screens where a layout changes
+  // for want of width and narrower than the one above: the Music Lab's room had bars 47 points wide here, and
+  // nowhere else that was being measured.
+  ['an iPhone 13 held sideways, in Safari (750 by 342)', 750, 342],
   ['the narrowest phone held sideways, in its browser (640 by 256)', 640, 256],
   ['the narrowest phone upright (320 by 568)', 320, 568],
 ] as const;
@@ -35,6 +40,11 @@ const BOARDS: readonly (readonly [world: string, lesson: string, what: string])[
   ['number-garden', 'ng-more-01', 'a sign, and two groups'],
   ['number-garden', 'ng-glance-01', 'a group seen for a moment'],
   ['number-garden', 'ng-give-01', 'things to give out'],
+  ['number-garden', 'ng-stairs-01', 'a staircase, and towers side by side'],
+  ['number-garden', 'ng-frame-02', 'a frame of ten, and groups'],
+  ['number-garden', 'ng-numerals-03', 'a number to listen to, and numerals'],
+  ['number-garden', 'ng-line-01', 'a path of numbered stones, and numerals'],
+  ['number-garden', 'ng-add-01', 'a story, and groups'],
   ['memory-forest', 'mf-hidden-01', 'things looked at and hidden'],
   ['memory-forest', 'mf-pairs-01', 'pairs to find'],
   ['memory-forest', 'mf-order-01', 'an order to repeat'],

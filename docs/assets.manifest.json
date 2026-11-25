@@ -63,10 +63,11 @@
       "id": "counting-pictures",
       "kind": "vector",
       "origin": "original",
-      "what": "Number Garden: apple, leaf, snail, acorn, bird, mouse, frog, and the friends things are given to",
+      "what": "Number Garden: apple, leaf, snail, acorn, bird, mouse, frog, and the friends things are given to; towers of blocks, frames of five and ten, numbered stones, stories of things that come and go, and a bell",
       "paths": [
         "src/game/worlds/number-garden/things.tsx",
-        "src/game/worlds/number-garden/GiveBoard.tsx"
+        "src/game/worlds/number-garden/GiveBoard.tsx",
+        "src/game/worlds/number-garden/numbers.tsx"
       ],
       "licence": "Project",
       "madeWith": "Hand-written SVG"
@@ -75,8 +76,8 @@
       "id": "picture-kit",
       "kind": "vector",
       "origin": "original",
-      "what": "The picture kit: 57 plain drawings of things (a sun, a sock, a hen) and 15 drawn lower-case letters",
-      "paths": ["src/art/pictures.tsx", "src/art/letters.tsx"],
+      "what": "The picture kit: 57 plain drawings of things (a sun, a sock, a hen), 15 drawn lower-case letters and the numerals 0 to 9",
+      "paths": ["src/art/pictures.tsx", "src/art/letters.tsx", "src/art/numerals.tsx"],
       "licence": "Project",
       "madeWith": "Hand-written SVG"
     },

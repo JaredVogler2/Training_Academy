@@ -3,7 +3,8 @@
 **Status: the owner has deployed it.** The repository is connected to a Vercel project, `training-academy`, by its
 owner. Production is the `main` branch, at `https://training-academy-dun.vercel.app`.
 
-- **What is live** is what `main` has, and since 2026-11-23 that is all six worlds: the owner merged pull
+- **What is live** is what `main` has: since 2026-11-23 all six worlds, and since 2026-11-25 the Music Lab as
+  well (below). The six worlds went live when the owner merged pull
   request #5 (the map, the voice, Number Garden's seven activities) and then pull request
   [#6](https://github.com/JaredVogler2/Training_Academy/pull/6) (the other five worlds). Nothing was promoted,
   merged or changed in the Vercel project from a session like this one: a merge is the owner's decision, and
@@ -35,16 +36,29 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   activity finished there showed as finished on its world's page opened by its address; after one tap on Glim
   in "How many, at a glance" the next two steps still uncovered their groups; and the same 52 browser tests
   passed against the address.
-- **Two faults are on the live site now, and are fixed on pull request #8**, which is not merged. Both are on
+- **The Music Lab went live on 2026-11-25**, when the owner merged pull request
+  [#8](https://github.com/JaredVogler2/Training_Academy/pull/8) as it stood at its first commit: the seventh
+  world and its six activities. What was pushed to that pull request afterwards was not in the merge, and is on
+  pull request [#9](https://github.com/JaredVogler2/Training_Academy/pull/9): the room to play in, the documents,
+  and the fix below. **Checked on the live site half an hour after the merge:** Vercel's record of the
+  production deployment of the merge commit `765be14` said "Ready"; and of 56 browser tests run against the
+  address as a desktop, a phone and a Pixel 7 (the smoke tests, and the Pixel's tests that play something in
+  every world, the Music Lab's among them), 55 passed. The one that did not is the test of the Music Lab's room,
+  which is not live yet: the test was ahead of the site, not the site at fault. (By accident the same was first
+  run with no screens named, which runs every layout test on five more screen shapes against the site: 114
+  passed and two failed before I stopped it at seven minutes, and both were that same test.) The update itself
+  was **not rehearsed before this merge**; a new visit was checked afterwards, as above, and a returning
+  player's update was not.
+- **Two faults are on the live site now, and are fixed on pull request #9**, which is not merged. Both are on
   phones held sideways and both have been there since the six worlds went live. In Number Garden's "Which has
   more?", "Which has fewer?" and "Are they equal?", the two groups to choose between are drawn as a strip 48
   pixels high (20 on the narrowest phones), with most of the screen empty under them. And in Memory Forest's
   "Things that go together", on the narrowest phones, the cards to pick out are 49 pixels high. Both can still
   be played. To see that the fix has arrived: open "Which has more?" on a phone held sideways — the two groups
   should fill the height of the screen.
-- **What is on pull request #8 is not live**: the Music Lab, and whatever else that pull request has gained
-  since. Its own description says how far it has got. It should not be merged until it says it is finished,
-  and before it is, the update should be rehearsed (_Before a release_, below).
+- **What is on pull request #9 is not live**: those fixes, the Music Lab's room, and whatever else that pull
+  request has gained since. Its own description says how far it has got. Before it is merged, the update should
+  be rehearsed (_Before a release_, below).
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The
@@ -126,7 +140,7 @@ Chrome as they come. Each line is something this phase did that only a device ca
 | 28  | Play _Tapping with the beat_, tapping as steadily in time as you can; then again, tapping at random                                                                    | Say "Yes. You kept the beat." the first time, on every phone, and not the second                                                                                                                                       | The allowance for a late speaker and a late screen is worked out from the taps themselves. Whether it is right for a real phone, and for a child, has not been tried                                                             |
 | 29  | Play _High and low_ to the end                                                                                                                                         | Play each note while the bar or bird that makes it is lifted, take no tap until both have sounded, and play it all again when Glim is tapped                                                                           | Three of the Music Lab's activities are nothing but listening                                                                                                                                                                    |
 | 30  | With the sound switch off, open the Music Lab's _Tapping with the beat_, then _High and low_                                                                           | Let the beat be played by eye, by its lights; and show one button, "Turn the sound on", for the other                                                                                                                  | A beat that is lit needs no sound; a question that is only heard does                                                                                                                                                            |
-| 31  | On a phone held sideways, open Number Garden's "Which has more?"                                                                                                       | Show the two groups filling the height of the screen                                                                                                                                                                   | They were a strip a finger's width high until pull request #8 (not merged when this was written)                                                                                                                                 |
+| 31  | On a phone held sideways, open Number Garden's "Which has more?"                                                                                                       | Show the two groups filling the height of the screen                                                                                                                                                                   | They were a strip a finger's width high until pull request #9 (not merged when this was written)                                                                                                                                 |
 
 Anything that does not do what the middle column says is a fault to fix, and the notes above are what makes it
 quick to find.
@@ -188,11 +202,13 @@ model of the documented behaviour, not Vercel's edge network.
 Run the smoke tests against the preview URL:
 
 ```bash
-BASE_URL=https://<your-preview>.vercel.app npx playwright test
+BASE_URL=https://<your-preview>.vercel.app npx playwright test --project=desktop --project=phone
 ```
 
-(In that mode only the specs tagged `@smoke` run, and no local server is started.) Or run the **Preview smoke test**
-workflow from the Actions tab with the URL. They check:
+(With an address given, no local server is started, and those two screens run only the specs tagged `@smoke`.
+Name the screens: the others keep their own choice of tests whatever the address, so the command without
+`--project` runs some two hundred layout tests against the deployment as well, and takes ten minutes.) Or run the
+**Preview smoke test** workflow from the Actions tab with the URL. They check:
 
 | Check                                                                   | Why it needs the real thing                                                                         |
 | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |

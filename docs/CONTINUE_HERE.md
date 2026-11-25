@@ -6,14 +6,15 @@ pull request, [#8](https://github.com/JaredVogler2/Training_Academy/pull/8), whi
 merged until it says it is finished.**
 
 - **Date:** 2026-11-25
-- **What is live:** `main`, at `https://training-academy-dun.vercel.app`: the six islands, 39 activities. The
-  owner merged pull request #7 on 2026-11-25, and the live site was checked a few minutes later: Vercel's
-  deployment of `71d66e0` was ready; its service worker was byte for byte the one a local build of that commit
-  makes; a finished activity showed as finished on a world's page opened by its own address; after one tap on
-  Glim in "How many, at a glance" the next steps still uncovered their groups; and 52 browser tests passed
-  against the address. The three faults that had been live (asking again remembered from step to step, a
-  showing cut short or tapped into, a world's page forgetting who was playing) are gone from it.
-- **What is not live:** everything on pull request #8. So far that is the Music Lab.
+- **What is live:** `main`, at `https://training-academy-dun.vercel.app`: the six islands and the Music Lab,
+  45 activities. The owner merged pull request #8 on 2026-11-25 as it stood at its first commit, which was the
+  Music Lab and its six activities. The live site was checked half an hour later: Vercel's production
+  deployment of `765be14` was ready, and 55 of 56 browser tests passed against the address as a desktop, a
+  phone and a Pixel 7. The one that failed is the test of the Music Lab's room, which is not live: the test was
+  ahead of the site. That update was not rehearsed before the merge.
+- **What is not live:** everything on pull request #9, which is open: the Music Lab's room to play in, the fix
+  for the sideways layout of "Which has more?", and Number Garden's eleven new activities (numerals, the
+  numbers in order, adding and taking away).
 - **The owner's instruction for this stretch of work** (2026-11-25): build all that is left, in the order
   recommended, and the owner will review all of it at once, sounds included, when it is complete. The order:
   the Music Lab; numerals and the number line in Number Garden; rhyme, syllables, letter pairs and sentences in
@@ -22,7 +23,7 @@ merged until it says it is finished.**
 
 ## The one thing that matters most now
 
-**Nobody has listened to anything, and nobody has played.** The game talks — 446 recordings, made by a speech
+**Nobody has listened to anything, and nobody has played.** The game talks — 484 recordings, made by a speech
 synthesiser ahead of time and shipped with it, each checked by a speech recogniser, which is a machine's
 opinion of the words and nothing more — and now it also plays notes, which are made by arithmetic at the moment
 they sound and which no ear has checked at all. The briefs call the accuracy of the audio a release gate. That
@@ -44,8 +45,9 @@ and no child has seen one.
 A static React and TypeScript app builds to `dist/` and runs under the same headers and routing that `vercel.json`
 gives it. A visit opens on a front door; behind it is the map, six islands round a lighthouse, and all seven
 places are open. A place's page offers the next thing to play as one large button and every activity as a
-picture. There are **45 activities and 497 challenges**: sounds, letters and blending in Reading Cove; amounts,
-counting and comparing in Number Garden; a robot to steer and a row of steps to mend in Robot Ridge; pairs,
+picture. There are **56 activities and 639 challenges**: sounds, letters and blending in Reading Cove; amounts,
+counting and comparing, then numerals, the numbers in order and adding and taking away in Number Garden; a
+robot to steer and a row of steps to mend in Robot Ridge; pairs,
 hidden things, orders and three ways to remember in Memory Forest; guesses that are tested and things to mend
 in Inventor Island; stories to put in order, why things happen and a map to answer on in Explorer Harbor; and in
 the Music Lab high and low, the same or different, a beat to tap, notes to play back, a tune to know again and a
@@ -56,12 +58,16 @@ answer is right. Everything is saved on the device.
 
 ## Verified
 
-- Locally: format, lint, typecheck, **1547 unit tests**, the production build and its **1192 build checks**,
-  and the whole browser suite in Chromium on seven screen shapes: **868 tests, 761 passed, 107 skipped by
-  design, none failed, none run twice** (32 minutes). That includes the Music Lab's 22 browser tests on a
-  desktop and a touch phone, its layout tests on six screens, every activity of every world played to its end,
-  and the automated accessibility checks on every page, room and activity. WebKit runs only in CI:
-  `docs/TEST_RESULTS.md` says what CI made of it.
+- Locally: format, lint, typecheck, **1703 unit tests**, the production build and its **1270 build checks**.
+  The whole browser suite in Chromium on seven screen shapes was run on the tree with Number Garden's numerals
+  in it: **986 tests, 853 passed, 133 skipped by design, none failed, none run twice** (34 minutes). Three
+  fixes came after that run, from what CI said of the push before (below), with 54 more browser tests; the
+  specs they touch were run again on every screen and passed. The whole suite on the final tree, and WebKit
+  at all, are CI's: `docs/TEST_RESULTS.md` says what CI made of it.
+- **CI's last two runs each found a fault in the game, and both are fixed here.** A run that was green had
+  one test that needed a second go: a dialog asked for again the instant it was cancelled shut itself, and the
+  pause sheet was written the same way. And the run on this pull request's first push failed: on an iPhone 13
+  held sideways the chime bars in the Music Lab's room were 47 points wide.
 - **The tests that passed first time were made to fail.** The hold on answers while a question is still being
   played, the row the bars stand in, the allowance for a steady lateness, the count of taps too many, the
   second answer to one tap: each was taken out of the code and its test seen to fail. `docs/TEST_RESULTS.md`
@@ -72,9 +78,9 @@ answer is right. Everything is saved on the device.
 - Every content pack is exactly what its generator writes, and every rule that can refuse a challenge has been
   shown to fire (`tests/content/`): 32 of them are the Music Lab's.
 - Every browser test also fails on any console error or warning, failed request, or request to another origin.
-- **The live site**, as above: `main` after pull request #7. `docs/TEST_RESULTS.md` → _The live site_.
-- **An update was rehearsed** before pull request #7 (`npm run rehearse:update`), in Chromium. It has not been
-  rehearsed again for pull request #8, and should be before that is merged.
+- **The live site**, as above: `main` after pull request #8. `docs/DEPLOYMENT.md` has the check.
+- **An update was rehearsed** before pull request #7 (`npm run rehearse:update`), in Chromium. Pull request #8
+  was merged without one. It should be rehearsed before pull request #9 is merged.
 
 ## Not verified — read this before relying on anything
 
@@ -85,6 +91,10 @@ answer is right. Everything is saved on the device.
 - **Keeping the beat, by a child.** The allowance was chosen from what is written about young children's
   tapping and from arithmetic. Whether a four-year-old who is keeping the beat passes, and one who is not does
   not, is not known.
+- **The numerals' shapes, and whether a wrong answer counted out is a help.** The numerals are drawn here, in
+  one school's hand (an open 4, a 7 with no bar, a 9 with a straight stick); a child taught another will meet
+  two. And every wrong answer in the new Number Garden activities is answered by counting it, which takes
+  time, and which no child has sat through.
 - **No child, no teacher, no speech or music specialist** has seen any of it.
 - **No real device, by this project's own testing.** The owner has opened the live site on an iPhone. The named
   devices in the tests are the right screen, pixel ratio, touch and user agent on desktop engines. How late a
@@ -104,21 +114,27 @@ or sooner if there is a moment:
    and the Music Lab stands or falls by it.
 2. **Listen to the voice**, on the phone the game is for. Mark what sounds wrong.
 3. **Play one activity in each world with a child**, and say what happened. In the Music Lab, _Tapping with the
-   beat_ is the one to watch: does a child who is plainly in time get "Yes. You kept the beat."?
-4. **Decide the guide's name.** "Glim" is provisional and unchecked; it is one string in `src/app/strings.ts`.
+   beat_ is the one to watch: does a child who is plainly in time get "Yes. You kept the beat."? In Number
+   Garden, _Numbers one to five_: give a wrong answer on purpose and watch whether the counting that follows is
+   watched.
+4. **Look at the numerals** (any of Number Garden's activities from _Numbers one to five_ on) and say whether
+   they are the shapes your child is being taught. They are one small file.
+5. **Decide the guide's name.** "Glim" is provisional and unchecked; it is one string in `src/app/strings.ts`.
 
-Pull request #8 has a preview on Vercel (behind the owner's Vercel login) for looking at any of this before it
+Pull request #9 has a preview on Vercel (behind the owner's Vercel login) for looking at any of this before it
 is merged.
 
 ## The next action
 
-If this session is the one still building: carry on down the order above. `docs/PROGRESS.md` → the table at the
-top says which phases are done; its _Known gaps_ table says what each world still lacks.
+If this session is the one still building: carry on down the order above. The Music Lab and Number Garden's
+numerals are done; **next is Reading Cove** (rhyme, syllables, segmenting, letter pairs, sentences), then the
+first-visit help of phase 04, the gaps in the other four worlds, and phases 12 to 17. `docs/PROGRESS.md` → the
+table at the top says which phases are done; its _Known gaps_ table says what each world still lacks.
 
 If it is a new session:
 
 > Read prompt-series/README.md and prompt-series/00_MASTER_BRIEF.md, then docs/CONTINUE_HERE.md,
-> docs/PROGRESS.md, docs/CURRICULUM.md and docs/ARCHITECTURE.md. Pull request #8 is open: carry on with what
+> docs/PROGRESS.md, docs/CURRICULUM.md and docs/ARCHITECTURE.md. Pull request #9 is open: carry on with what
 > docs/CONTINUE_HERE.md says is next, on the same branch. It must work on Android and iOS devices on a Vercel
 > deployment.
 
@@ -212,6 +228,33 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
   fail: a forced click proves nothing.
 - **A test of where things are must be on the screen where it could go wrong.** Four bars stand in a row on a
   desktop whatever is done with them; the test of the row is the one on a phone.
+
+**New with Number Garden's numerals**
+
+- **A new kind of picture needs no change to the engine.** A `scene` stimulus carries anything a world can
+  draw. What it _means_ is read in one place (`src/engine/numbers.ts` for Number Garden's), and the rules, the
+  scripts and the drawing all ask there. Write that reader first, and its tests; the rest follows from it.
+- **An answer worked out twice is an answer checked.** The generator works each answer out from its table row;
+  the rules work it out again from the finished picture, by other code. They have to agree for a pack to be
+  built.
+- **A picture is cut to what is in it.** A drawing sized for the most it can ever hold shows two frogs at a
+  third of the size the screen allows. Give the picture a box that fits its contents (`storyPlaces` returns
+  one) and let the screen scale it.
+- **A wide picture needs the width** when a phone is held sideways: `data-asks-about` on the board, and a rule
+  in `Lesson.module.css`. Look at every new kind of question at 844×390 and 640×256 before calling it done.
+- **A script may open with something** (a beat at its very first moment), and the board shows it from the first
+  frame. Anything that must not be seen "already over" opens that way.
+- **A test that waits for a state can pass on the way to it, or after it.** Two of the new browser tests passed
+  with their fault put back: one looked before the board had settled, one waited for an ending that the fault
+  also reached. Put every fault back (`scratch` tools do it: break one line, run one test, restore) and read
+  the result, each time.
+- **The game's size and the content's size are budgeted apart** (`scripts/verify-dist.mjs`). Content is meant
+  to grow; the game's own code is not meant to jump.
+- **The first screen's script is 105 kB of the 110 it is allowed**, and what each world offers
+  (`src/game/worlds.ts`) is in it, grown-ups' text and all. More activities will need that text moved out of
+  the first load.
+- **Testing a deployment, name the screens**: `BASE_URL=… npx playwright test --project=desktop
+--project=phone`. Without them the layout tests of five more screens run against the site as well.
 
 **Learned after the six worlds went live**
 
@@ -318,17 +361,17 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
 
 ## Where things are
 
-| For                                    | Look in                                                                           |
-| -------------------------------------- | --------------------------------------------------------------------------------- |
-| How it should look, move and sound     | `docs/ART_DIRECTION.md`                                                           |
-| How it is built, and why               | `docs/ARCHITECTURE.md`                                                            |
-| What was run and what was found        | `docs/TEST_RESULTS.md`                                                            |
-| How it looks now, and what is weak     | `docs/QUALITY_REPORT.md`                                                          |
-| Phase status and gaps carried forward  | `docs/PROGRESS.md`                                                                |
-| Assets, licences, how assets are made  | `docs/ASSETS.md`, `docs/assets.manifest.json`                                     |
-| Authoring content                      | `docs/CURRICULUM.md`                                                              |
-| Making and checking the voice          | `scripts/voice/README.md`                                                         |
-| Deploying                              | `docs/DEPLOYMENT.md`                                                              |
-| Screenshots of the running build       | `docs/review/phase-03/` (hub: `phase-02/`); the six worlds: `docs/review/worlds/` |
-| Getting it onto a phone; what to check | `docs/DEPLOYMENT.md`                                                              |
-| One island close up; the guide's sheet | `/studio/<island>`, `/studio/guide` in the build                                  |
+| For                                    | Look in                                                                                                                   |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| How it should look, move and sound     | `docs/ART_DIRECTION.md`                                                                                                   |
+| How it is built, and why               | `docs/ARCHITECTURE.md`                                                                                                    |
+| What was run and what was found        | `docs/TEST_RESULTS.md`                                                                                                    |
+| How it looks now, and what is weak     | `docs/QUALITY_REPORT.md`                                                                                                  |
+| Phase status and gaps carried forward  | `docs/PROGRESS.md`                                                                                                        |
+| Assets, licences, how assets are made  | `docs/ASSETS.md`, `docs/assets.manifest.json`                                                                             |
+| Authoring content                      | `docs/CURRICULUM.md`                                                                                                      |
+| Making and checking the voice          | `scripts/voice/README.md`                                                                                                 |
+| Deploying                              | `docs/DEPLOYMENT.md`                                                                                                      |
+| Screenshots of the running build       | `docs/review/phase-03/` (hub: `phase-02/`); the six worlds: `docs/review/worlds/`; then `music-lab/` and `number-garden/` |
+| Getting it onto a phone; what to check | `docs/DEPLOYMENT.md`                                                                                                      |
+| One island close up; the guide's sheet | `/studio/<island>`, `/studio/guide` in the build                                                                          |

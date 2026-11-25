@@ -327,6 +327,15 @@ counted, named, remembered or put in order, and anything in them that is not the
   instead, with ground under it and sky over it, so that a story's pictures can be told from things to choose.
 - **A picture never holds its own answer.** The picture of what became of a snowman has no sun in it; a flag on
   a map is the same flag on land and on water.
+- **A numeral is drawn, not typed**, like a letter (`src/art/numerals.tsx`): a few round-ended strokes, the
+  shape a child is taught to write, the same on every device. It stands alone on its card, and shows its amount
+  as dots only while it is being counted: at any other time it has to be read.
+- **Sun yellow means "the answer put this here".** The tower that was missing, the number on the bare stone,
+  the apples that filled the frame. Nothing else in a number picture is that colour.
+- **Someone who has gone is still in the picture**, faded and standing apart, with three short lines in the air
+  behind them. What happened can be seen as well as what is left; what is left is what is counted.
+- **A picture is cut to what is in it.** Two frogs fill their place on the screen as ten birds do: everyone is
+  drawn one size on the page they are drawn on, and the page is as large as they need.
 - **Who sings is not what is sung.** In the Music Lab every bird that is not the leader is the same bird,
   whatever its tune: a question about what was heard must not be answerable by looking. A chime bar is the
   other way about, on purpose — a low bar is a long bar, as on a real instrument, because that is true and worth

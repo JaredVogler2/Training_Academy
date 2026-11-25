@@ -29,8 +29,16 @@ const BUDGET_KB = {
   hubPictures: 330,
   /** Any other on-demand chunk (a world, the lesson frame, the grown-ups area, a content pack). */
   lazyChunk: 30,
-  /** Everything in dist but the voice, uncompressed. */
-  totalRaw: 2900,
+  /**
+   * Everything in dist but the voice and the content, uncompressed: the game itself. It grows when code or
+   * pictures are added, and a jump in it is a library or a picture that was not meant to be there.
+   */
+  totalRaw: 2700,
+  /**
+   * The content packs together, uncompressed: every challenge of every world, written out. This is meant to
+   * grow, an activity at a time; each pack is fetched only on entering its world, and has to fit `lazyChunk`.
+   */
+  contentRaw: 900,
   /** One clip of the voice (MP3, measured as it is): a sentence or a word, never a recording of any length. */
   voiceClip: 60,
   /** Every clip of the voice together. Each is fetched only when it is first wanted, and kept after that. */
@@ -165,10 +173,13 @@ const hubFiles = allScripts.filter((file) =>
 );
 const hub3d = sum(hubFiles, gzipSize);
 const clips = relativeFiles.filter((file) => /^immutable\/.*\.mp3$/.test(file));
+// A content pack is built as a chunk named after its file: number-garden.v3-<hash>.js.
+const packs = relativeFiles.filter((file) => /^immutable\/[a-z-]+\.v\d+-[\w-]+\.js$/.test(file));
 const totalRaw = sum(
-  relativeFiles.filter((file) => !clips.includes(file)),
+  relativeFiles.filter((file) => !clips.includes(file) && !packs.includes(file)),
   (file) => statSync(file).size,
 );
+const contentRaw = sum(packs, (file) => statSync(file).size);
 const voiceTotal = sum(clips, (file) => statSync(file).size);
 
 const within = (label, bytes, budget) =>
@@ -184,7 +195,13 @@ within(
   sum(pictures, (file) => statSync(file).size),
   BUDGET_KB.hubPictures,
 );
-within('whole build without the voice (uncompressed)', totalRaw, BUDGET_KB.totalRaw);
+within(
+  'whole build without the voice and the content (uncompressed)',
+  totalRaw,
+  BUDGET_KB.totalRaw,
+);
+check(packs.length >= 7, `the build has a content pack for each world (${packs.length} of them)`);
+within(`the content, ${packs.length} packs (uncompressed)`, contentRaw, BUDGET_KB.contentRaw);
 within(`the voice, ${clips.length} clips`, voiceTotal, BUDGET_KB.voiceTotal);
 const largestClip = clips.reduce(
   (largest, file) => Math.max(largest, statSync(join(dist, file)).size),
@@ -310,8 +327,9 @@ for (const file of allScripts.sort()) {
 }
 console.log(
   `\nFirst load: ${kb(initialScript)} kB script + ${kb(initialStyles)} kB styles (gzip), ${kb(fonts)} kB fonts.` +
-    `\n3D hub: ${kb(hub3d)} kB (gzip), on demand. Whole build: ${kb(totalRaw)} kB uncompressed without the voice, ` +
-    `${relativeFiles.length} files. The voice: ${clips.length} clips, ${kb(voiceTotal)} kB.\n`,
+    `\n3D hub: ${kb(hub3d)} kB (gzip), on demand. The game: ${kb(totalRaw)} kB uncompressed; its content, ` +
+    `${packs.length} packs: ${kb(contentRaw)} kB. ${relativeFiles.length} files in all. ` +
+    `The voice: ${clips.length} clips, ${kb(voiceTotal)} kB.\n`,
 );
 console.log(notes.join('\n'));
 

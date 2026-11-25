@@ -67,10 +67,10 @@ test.describe('the world page', () => {
   }) => {
     await page.goto('/world/number-garden');
     const cards = page.locator('[data-lesson]');
-    await expect(cards).toHaveCount(7);
+    await expect(cards).toHaveCount(18);
     // Every card has its picture: what the activity is, from its own demonstration.
     await expect(cards.locator('svg').first()).toBeVisible();
-    for (let index = 0; index < 7; index++) {
+    for (let index = 0; index < 18; index++) {
       await expect(cards.nth(index).locator('svg').first()).toBeVisible();
       const box = await cards.nth(index).boundingBox();
       expect(Math.min(box?.width ?? 0, box?.height ?? 0)).toBeGreaterThanOrEqual(56);
@@ -81,10 +81,10 @@ test.describe('the world page', () => {
     );
     await expect(cards.first()).toHaveAttribute('data-next', 'true');
 
-    // The grown-up's list says plainly which activities are ready: here, all four.
+    // The grown-up's list says plainly which activities are ready: here, all nine.
     const list = page.getByRole('region', { name: 'For grown-ups' }).getByRole('listitem');
-    await expect(list).toHaveCount(4);
-    await expect(list.filter({ hasText: 'Ready' })).toHaveCount(4);
+    await expect(list).toHaveCount(9);
+    await expect(list.filter({ hasText: 'Ready' })).toHaveCount(9);
 
     // A card is a way in to its own activity, whatever Play would have chosen.
     await press(cards.nth(4));

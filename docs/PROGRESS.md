@@ -10,7 +10,7 @@ have been run and passed; the evidence is linked. `docs/CONTINUE_HERE.md` has th
 | 03    | World and player journey, first vertical slice | **Done** (2026-11-23) — see below                                      |
 | 04    | Audio and pre-reader onboarding                | **Partly done** (2026-11-23): the voice is built; onboarding is not    |
 | 05    | Phonics                                        | **Partly done**: Reading Cove's four activities; no sentences          |
-| 06    | Math                                           | **Partly done**: Number Garden's four activities; no numerals          |
+| 06    | Math                                           | **Built** (2026-11-25) to adding within ten; the optional M7 is not    |
 | 07    | Robots (visual programming)                    | **Partly done**: Robot Ridge's four activities; no conditionals        |
 | 08    | Memory                                         | **Partly done**: Memory Forest's four activities; no second-day recall |
 | 09    | Inventors' lab                                 | **Partly done**: Inventor Island's four activities; no wind shelter    |
@@ -28,11 +28,13 @@ tested and playable, and the brief asked for more than that. The tables below sa
 
 ## Phase 11 — the Music Lab: what was asked, and what there is
 
-Built on 2026-11-25, on pull request [#8](https://github.com/JaredVogler2/Training_Academy/pull/8), which is
-not merged: **none of this is live.** Its acceptance list is met as far as a machine can meet it. The one thing
-on that list a machine cannot say is whether the audio "works" to an ear: every sound here is made by arithmetic
-at the moment it is played, the browser accepted all of it without complaint, and **no person has heard a note
-of it.**
+Built on 2026-11-25. The owner merged pull request
+[#8](https://github.com/JaredVogler2/Training_Academy/pull/8) the same day as it stood at its first commit, so
+**the six activities are live**; the room to play in and the list of rooms not built came after that commit and
+are on pull request [#9](https://github.com/JaredVogler2/Training_Academy/pull/9), which is not merged. Its
+acceptance list is met as far as a machine can meet it. The one thing on that list a machine cannot say is
+whether the audio "works" to an ear: every sound here is made by arithmetic at the moment it is played, the
+browser accepted all of it without complaint, and **no person has heard a note of it.**
 
 | Asked for                                                                | What there is                                                                                                                                                                                                                                                                                                                                                                                               |
 | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -105,14 +107,28 @@ and **no person has listened to any of the recordings**.
 
 ### Phase 06 — Number Garden
 
-| Asked for                                                     | What there is                                                                                                      |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| M0: same and different sets, one-to-one                       | Same amount, up to three (Phase 03's activity)                                                                     |
-| M1: seeing 1 to 3 at a glance, apart from size                | How many, at a glance: a group shown and covered; big and small things in the choices                              |
-| M2: counting to 5, then 10; no advancing by random tapping    | One for each, to five and to ten: things are given one at a time and handed in; a wrong amount is counted back     |
-| M3: frames, comparing, more, fewer, equal, rearrangement      | Which has more, which has fewer, two that are equal; rows, clusters, scatters and frames. **No number line**       |
-| M4 to M7: numerals, bonds, adding and taking away, and beyond | **Not built.** No numeral appears anywhere                                                                         |
-| At least 50 varied trials                                     | 77 challenges, written out from tables by a generator and checked by rules that every answer is the only right one |
+Seven activities were built with the six worlds. Eleven more were built on 2026-11-25, on pull request
+[#9](https://github.com/JaredVogler2/Training_Academy/pull/9), which is not merged: **those eleven are not live.**
+
+| Asked for                                                                 | What there is                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| M0: same and different sets, one-to-one                                   | Same amount, up to three (Phase 03's activity)                                                                                                                                                                                                                                                    |
+| M1: seeing 1 to 3 at a glance, apart from size; a spoken number           | How many, at a glance: a group shown and covered; big and small things in the choices. A number is said after anything is counted in the later activities, and _Hear a number_ asks for the numeral of a number that is said. Finding a **group** for a number that is said is not an activity    |
+| M2: counting to 5, then 10; the last word is how many; no random tapping  | One for each, to five and to ten: things are given one at a time and handed in; a wrong amount is counted back. From the numerals on, whatever is counted is then named: "three". What a child says aloud is not heard: there is no microphone                                                    |
+| M3: five-frame, ten-frame, number line, more, fewer, equal, rearrangement | Which has more, which has fewer, two that are equal; _Fill the five_ and _Fill the ten_ on frames; _One more each time_, a staircase of towers with one missing, which is the number line before numerals. Rearrangement has no activity of its own: every match is made across different layouts |
+| M4: numerals as another way to show an amount, with 0                     | _Numbers one to five_ and _Zero, and six to ten_: a group and its numeral, both ways about, zero as an empty frame. _Hear a number_: a number said, and its numeral. _The number path_: numbered stones in order with one bare, counting on and back                                              |
+| M5: bonds to 5, then 10; concrete, then pictures                          | The two frame activities, in pictures: which group fills the rest. **Splitting a set into two by hand is not built**                                                                                                                                                                              |
+| M6: adding and taking away to 5 and 10, as stories, without hurry         | _Some more come_ and _Some go away_, answered with a group up to five and with a numeral up to ten. The story happens in the picture as it is said; those who went stay in it, faded. Nothing is timed. **No sum is written**: no +, − or =                                                       |
+| M7, optional: patterns, shapes, measuring, estimating, coins              | **Not built**                                                                                                                                                                                                                                                                                     |
+| The five minigames named                                                  | Feed the Friends is _One for each_ (taps, not drags). Garden Harvest is _Which has more?_. Ten-frame Constellations is _Fill the ten_, by choosing the group, not by placing each thing. **Toy Shop and Build a Bridge are not built**                                                            |
+| Things stay countable on small screens                                    | Nothing overlaps, by test. A story is cut to who is in it, so that two frogs are drawn large and ten birds still fit; on a 320-pixel phone a thing in the fullest story is 30 pixels across. On the flattest phones held sideways (640 by 256) it is about 20: there is not the height            |
+| M0 to M3 usable without reading a numeral                                 | A test reads every picture of every activity: no numeral is shown anywhere before _Numbers one to five_, nor in the two story activities that are answered with groups                                                                                                                            |
+| A wrong answer shows why                                                  | A wrong numeral shows its own amount as dots, counted, and is named; a tower that does not fit is played where the gap is; a group that does not fill the frame is counted against the empty places. Never only the right answer lit                                                              |
+| Separate evidence for counting, comparing, symbols and arithmetic         | Eighteen skills, one to an activity. Adding to five is answered with groups, so that it does not wait on numerals; adding to ten is answered with numerals and says that it builds on them                                                                                                        |
+| Answers and distractors tested "across many seeds"                        | There are no seeds: every challenge is written out in the pack. Each is checked by rules that work the answer out from the picture, and the order the choices are shown in is shuffled by the engine at play                                                                                      |
+| Touch-drag tests                                                          | Nothing is dragged: every answer is a tap. The browser tests tap, as a touch phone                                                                                                                                                                                                                |
+| A parent playtest script                                                  | **Not written**                                                                                                                                                                                                                                                                                   |
+| At least 50 varied trials over the early levels                           | 219 challenges, written out from tables by a generator and checked by rules that every answer is the only right one                                                                                                                                                                               |
 
 ### Phase 07 — Robot Ridge
 
@@ -347,7 +363,7 @@ to put it on a phone.
 | Going to an island is a fade, not a journey; nothing on an island answers a tap except by rising                                                                                                                                                                                                                                                                                                                   | 17          |
 | The hub's picture has still islands                                                                                                                                                                                                                                                                                                                                                                                | 17          |
 | The voice is synthesised and unheard: no person has listened to any recording, and no single letter-sound is recorded                                                                                                                                                                                                                                                                                              | 04, 05      |
-| 45 activities and 497 challenges that no early-years teacher has reviewed and no child has played                                                                                                                                                                                                                                                                                                                  | 05–11       |
+| 56 activities and 639 challenges that no early-years teacher has reviewed and no child has played                                                                                                                                                                                                                                                                                                                  | 05–11       |
 | **Nobody has heard the Music Lab**: its notes are made by arithmetic as they are played, and whether they sound like chime bars, a pipe and a drum, or sound pleasant at all, is not known                                                                                                                                                                                                                         | owner       |
 | The lighthouse has no name written under it where the places stand in one row (very flat screens): the guide is moored there                                                                                                                                                                                                                                                                                       | 17          |
 | Evidence thresholds are product heuristics; no spaced review, no difficulty adjustment                                                                                                                                                                                                                                                                                                                             | 12          |
@@ -364,6 +380,18 @@ to put it on a phone.
 | CI's Chromium job for the desktop took 31.7 of the 40 minutes it is allowed before its two small phones were moved to the other Chromium job. The two now take 20 and 25 minutes; as activities are added, the desktop screen will need a job of its own                                                                                                                                                           | 15          |
 
 ## Log
+
+- **2026-11-25** — Number Garden: numerals, the numbers in order, adding and taking away. Eleven activities
+  after the seven that were there, 142 challenges, and the world's brief is met as far as adding and taking
+  away within ten (its optional last part, and two of its five named games, are not built). No change was
+  needed to the engine's idea of a challenge: the new questions are asked with pictures only Number Garden
+  draws, and one small part of the engine reads what each picture stands for, so that the rules, the scripts
+  and the drawings cannot disagree about an answer. A wrong answer is answered by counting it. While this was
+  being built the owner merged the pull request before it (#8) as it stood at its first commit, so the Music
+  Lab's six activities went live that day; the live site was checked afterwards (`docs/DEPLOYMENT.md`), the
+  branch was started again from `main`, and what had been pushed after that commit — the Music Lab's room, the
+  fix for phones held sideways, and this — is on pull request #9. Two of the new browser tests were found to
+  pass with their fault put back, and were rewritten. None of it has been heard or seen by anyone but me.
 
 - **2026-11-25** — Phase 11: the Music Lab. Asked to build everything that was left, in the order recommended,
   with one review of all of it at the end. First the pull request before this one (#7) was merged by the owner

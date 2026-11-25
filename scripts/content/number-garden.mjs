@@ -1,4 +1,4 @@
-// Number Garden's content pack: the first activity as it was written by hand, and six more written from tables.
+// Number Garden's content pack: the first activity as it was written by hand, and the rest written from tables.
 //
 //   same amount, up to three      (by hand: scripts/content/authored/number-garden.same-amount.json)
 //   how many, at a glance         a group shown for a moment, matched by amount
@@ -8,6 +8,9 @@
 //   which has fewer?
 //   two that are equal            finding the two groups with the same amount
 //
+// and then, in number-garden-numbers.mjs, the eleven that bring numerals in: amounts in order, the pairs that make
+// five and ten, numerals for amounts, the numbers in order, and adding and taking away as stories.
+//
 // Each table row is one challenge: what is shown, and against what. The builders below turn a row into the full
 // challenge — choices, the answer, why each wrong choice is tempting, the ladder of hints — so that the row cannot
 // disagree with itself. Nothing here is random: the tables are the content.
@@ -15,6 +18,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { NUMBER_WORDS, root } from './lib.mjs';
+import { NUMBER_SKILLS, NUMBER_STRINGS, numberLessons } from './number-garden-numbers.mjs';
 
 const authored = JSON.parse(
   readFileSync(join(root, 'scripts/content/authored/number-garden.same-amount.json'), 'utf8'),
@@ -556,6 +560,7 @@ const SKILLS = [
       'Out of three or four groups of up to six, finds the two that have the same amount, whatever they are made of and however they are laid out.',
     prerequisites: [FIRST],
   },
+  ...NUMBER_SKILLS,
 ];
 
 const STRINGS = {
@@ -583,6 +588,7 @@ const STRINGS = {
   'ng.equal.incorrect': 'Those are not equal. Look again.',
   'ng.equal.hint.step': 'This is one of them.',
   'ng.equal.hint.reveal': 'These two are equal.',
+  ...NUMBER_STRINGS,
 };
 
 export function buildNumberGardenPack() {
@@ -591,7 +597,7 @@ export function buildNumberGardenPack() {
     schemaVersion: 1,
     id: 'number-garden',
     world: 'number-garden',
-    contentVersion: 2,
+    contentVersion: 3,
     strings: { en: STRINGS },
     skills: SKILLS,
     lessons: [
@@ -602,6 +608,7 @@ export function buildNumberGardenPack() {
       more(),
       fewer(),
       equalLesson(),
+      ...numberLessons(),
     ],
   };
 }

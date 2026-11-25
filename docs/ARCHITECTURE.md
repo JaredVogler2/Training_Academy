@@ -79,6 +79,13 @@ Things worth knowing:
   `keepTime` as numbers on the page's clock beside the beats' own numbers, and what comes back — a mark for
   each beat, and how many taps belonged to none — is the answer the engine is given. `keepTime` is pure, and
   its tests are sums.
+- **What a picture of a number stands for is worked out, not written down.** Number Garden's later questions
+  are asked with pictures only that world draws — a numeral, a staircase of towers with one missing, a frame of
+  five or ten places, a path of numbered stones, a story in which some come or go — and the engine carries each
+  as a `scene` it never looks inside. `src/engine/numbers.ts` reads one into something that can be reasoned
+  about, refuses one that is not well made (stairs that do not go up by one, more leaving than were there),
+  and says the one amount it stands for: how many it shows, or how many it asks for. The content rules, the
+  scripts and the drawings all ask it, so the three cannot disagree about what the answer to a picture is.
 - **A wrong answer is never a dead end.** A choice just tried is taken away and the child tries again; when only
   the right choice is left it is revealed, and tapping it completes the challenge as an assisted solve. A made
   thing keeps what was right in it; after three wrong tries (unless the challenge says otherwise) the answer is
@@ -436,6 +443,15 @@ Three things the frame does that are easy to undo by accident:
   words and no more" (`ask(seenThrough)`). And from the moment such a question arrives until its showing is
   over, nothing on the board takes a tap: not while the words are said, and not in the pauses between one light
   and the next.
+- **A script can open with something.** Until a script's first moment arrives the board is at rest — except
+  where the script shows something at its very start, and then that is shown from the first frame
+  (`useScript`). A story in Number Garden opens as it stood before anyone moved; at rest it would have been
+  drawn, for a frame, already over.
+- **A wide picture gets the room.** On a phone held sideways what is asked about stands beside what it is
+  answered with, and is given the narrower part. A board says what kind of scene it asks about
+  (`data-asks-about`), and the kinds that are wide and are read from left to right — three pictures of a story,
+  a staircase, a frame, a path of stones, those who stay and those who go — are given about half. Towers of
+  blocks to choose from stand side by side on every screen, since that is how two towers are compared.
 - **A button is never put in the place of another.** Where a count has to start from the first thing, what hops
   is made afresh inside a button that stays: a button that is replaced drops a press that is under way, and
   whatever was focused on it.

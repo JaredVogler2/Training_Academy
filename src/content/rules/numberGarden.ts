@@ -1,4 +1,5 @@
 import { quantityMisconception, type ChooseOneChallenge, type MakeChallenge } from '@/engine';
+import { isNumberQuestion, lintNumberQuestion } from './numberGardenNumbers';
 import type { Report, WorldRules } from './types';
 
 /**
@@ -8,6 +9,9 @@ import type { Report, WorldRules } from './types';
  *   "which has more?"    one choice has more than every other; likewise "fewer"
  *   so many to give      there are always more to give from than are wanted
  *   two that are equal   exactly two of the groups have the same amount
+ *
+ * The questions that bring numerals in — a numeral, a staircase, a frame, a path, a story, a number said aloud —
+ * have rules of their own, in numberGardenNumbers.ts.
  */
 
 type Quantity = Extract<ChooseOneChallenge['prompt']['stimulus'], { type: 'quantity' }>;
@@ -178,7 +182,7 @@ function groupsOf(challenge: ChooseOneChallenge | MakeChallenge): Quantity[] {
   return shown.filter((stimulus): stimulus is Quantity => stimulus.type === 'quantity');
 }
 
-export const numberGardenRules: WorldRules = (challenge, _lesson, report) => {
+export const numberGardenRules: WorldRules = (challenge, lesson, report) => {
   // Things drawn bigger than usual need the room: there is only room for three of them, in a line.
   for (const group of groupsOf(challenge)) {
     if (group.size === 'big' && (group.count > 3 || group.arrangement !== 'row')) {
@@ -190,7 +194,8 @@ export const numberGardenRules: WorldRules = (challenge, _lesson, report) => {
     return;
   }
   const { stimulus } = challenge.prompt;
-  if (stimulus.type === 'quantity') lintMatch(challenge, stimulus, report);
+  if (isNumberQuestion(challenge)) lintNumberQuestion(challenge, lesson, report);
+  else if (stimulus.type === 'quantity') lintMatch(challenge, stimulus, report);
   else if (stimulus.type === 'sign' && (stimulus.id === 'more' || stimulus.id === 'fewer')) {
     lintCompare(challenge, stimulus.id, report);
   } else {

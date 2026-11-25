@@ -3,7 +3,7 @@ import type { Challenge, ContentPack } from '../src/engine/schema';
 import explorerHarbor from '../src/content/packs/explorer-harbor.v1.json' with { type: 'json' };
 import memoryForest from '../src/content/packs/memory-forest.v1.json' with { type: 'json' };
 import musicLab from '../src/content/packs/music-lab.v1.json' with { type: 'json' };
-import numberGarden from '../src/content/packs/number-garden.v2.json' with { type: 'json' };
+import numberGarden from '../src/content/packs/number-garden.v3.json' with { type: 'json' };
 import readingCove from '../src/content/packs/reading-cove.v1.json' with { type: 'json' };
 
 /**

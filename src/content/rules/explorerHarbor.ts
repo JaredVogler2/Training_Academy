@@ -10,6 +10,19 @@ import {
   standing,
   type Point,
 } from '../explorer-harbor/maps';
+import atlasFile from '../explorer-harbor/atlas.json';
+import {
+  FACING_LEAST,
+  PINS_APART,
+  TIP_MOST,
+  WANTED_FACING,
+  apartOnDisc,
+  awayFrom,
+  inside,
+  seen,
+  type LonLat,
+} from '../explorer-harbor/globe';
+import placesFile from '../explorer-harbor/places.json';
 import storybookFile from '../explorer-harbor/storybook.json';
 import type { Report, WorldRules } from './types';
 
@@ -23,6 +36,9 @@ import type { Report, WorldRules } from './types';
  *   what happens next           the same, for how it turns out; and the thing as it was is never offered
  *   a flag on water, or land    one flag stands plainly on what is asked for, the others plainly on the other
  *   the nearest, the farthest   one island is so by a good deal
+ *   a land on the globe         each pin stands on the land it is for, faces us, and has room round it; the
+ *                               land asked for is there to be known by; what is said is about that land; and
+ *                               a famous place is on the continent it is said to be on
  */
 
 interface Story {
@@ -278,7 +294,184 @@ function lintMap(
   }
 }
 
-export const explorerHarborRules: WorldRules = (challenge, _lesson, report) => {
+interface Landmark {
+  name: string;
+  country: string;
+  continent: string;
+  at: number[];
+  article: string;
+}
+
+const LANDS: Readonly<Record<string, { name: string; at: number[] }>> = placesFile.continents;
+const LANDMARKS: Readonly<Record<string, Landmark>> = placesFile.landmarks;
+const OUTLINES = atlasFile.continents as unknown as Readonly<Record<string, LonLat[][]>>;
+
+/** A place, as content writes it: degrees east, then degrees north. */
+const placeOf = (value: unknown): LonLat | null => {
+  if (!Array.isArray(value) || value.length !== 2) return null;
+  const [lon, lat] = value as unknown[];
+  if (typeof lon !== 'number' || typeof lat !== 'number') return null;
+  return Math.abs(lon) <= 180 && Math.abs(lat) <= 90 ? [lon, lat] : null;
+};
+
+/** How far a famous place may be from the outline of its continent, in degrees: outlines are coarse. */
+export const SHORE_ALLOWANCE = 3;
+
+/** The continent a place is on, going by the outlines: the one it is inside, or plainly nearest to. */
+export function landAt(place: LonLat): string | null {
+  let nearest: string | null = null;
+  let least = SHORE_ALLOWANCE;
+  for (const [continent, rings] of Object.entries(OUTLINES)) {
+    const away = awayFrom(place, rings);
+    if (away < least || (away === 0 && nearest === null)) {
+      least = away;
+      nearest = continent;
+    }
+  }
+  return nearest;
+}
+
+function lintGlobe(
+  challenge: ChooseOneChallenge,
+  of: Extract<Stimulus, { type: 'scene' }>['of'],
+  needsSound: boolean,
+  report: Report,
+): void {
+  const { ask, want } = of;
+  if (ask !== 'shape' && ask !== 'name' && ask !== 'place') {
+    report('globe-ask', 'a globe asks for a land by its shape, by its name, or by a place in it');
+    return;
+  }
+  if (typeof want !== 'string' || !Object.hasOwn(LANDS, want)) {
+    report('globe-want', 'the land asked for is not one of the seven');
+    return;
+  }
+  const view = placeOf(of.view);
+  if (view === null || Math.abs(view[1]) > TIP_MOST) {
+    report('globe-view', 'a globe is looked at from somewhere, tipped no further than it may be');
+    return;
+  }
+  const looking = { lon: view[0], lat: view[1] };
+
+  // What is said is about the land asked for, and so is what is said of the right answer.
+  const landmark = typeof of.landmark === 'string' ? of.landmark : null;
+  if (ask === 'place') {
+    const place = landmark === null ? undefined : LANDMARKS[landmark];
+    if (landmark === null || place === undefined) {
+      report('globe-place', 'a question about a famous place names one of the places there are');
+      return;
+    }
+    if (place.continent !== want) {
+      report(
+        'globe-place-land',
+        `"${landmark}" is in ${place.continent}, and ${want} is asked for`,
+      );
+    }
+    // Where the place is put on the globe is where it is, and that is on the continent asked for.
+    const stands = placeOf(of.at);
+    const [lon, lat] = place.at;
+    if (stands === null || stands[0] !== lon || stands[1] !== lat || landAt(stands) !== want) {
+      report('globe-place-where', `"${landmark}" is not put where it is, on ${want}`);
+    }
+    if (
+      challenge.prompt.instruction !== `eh.place.ask.${landmark}` ||
+      challenge.feedback.correct !== `eh.place.yes.${landmark}`
+    ) {
+      report(
+        'globe-line',
+        `the question and its answer are not the lines written for "${landmark}"`,
+      );
+    }
+  } else {
+    if (landmark !== null) report('globe-place', 'only a question about a place shows a place');
+    if (
+      challenge.prompt.instruction !== `eh.globe.${ask}.${want}` ||
+      challenge.feedback.correct !== `eh.globe.yes.${want}`
+    ) {
+      report('globe-line', `the question and its answer are not the lines written for ${want}`);
+    }
+  }
+  // A name with nothing to match it by can only be heard.
+  if (ask === 'name' && !needsSound) {
+    report(
+      'globe-sound',
+      'a land asked for by name alone is in an activity that says it needs sound',
+    );
+  }
+
+  const pins: { id: string; continent: string; at: LonLat; label: string }[] = [];
+  for (const choice of challenge.choices) {
+    const { stimulus } = choice;
+    const continent =
+      stimulus.type === 'scene' && stimulus.scene === 'land' ? stimulus.of.continent : null;
+    const at = stimulus.type === 'scene' ? placeOf(stimulus.of.at) : null;
+    if (typeof continent !== 'string' || !Object.hasOwn(LANDS, continent) || at === null) {
+      report('globe-land', `choice "${choice.id}" is not a pin on one of the seven lands`);
+      return;
+    }
+    pins.push({ id: choice.id, continent, at, label: choice.label });
+  }
+  if (pins.length < 2 || pins.length > 3) {
+    report('globe-count', 'a land is found among two or three');
+  }
+  if (new Set(pins.map((pin) => pin.continent)).size !== pins.length) {
+    report('globe-land-twice', 'a land is offered twice');
+  }
+  for (const pin of pins) {
+    if (!(OUTLINES[pin.continent] ?? []).some((ring) => inside(pin.at, ring))) {
+      report('globe-pin-off', `the pin for ${pin.continent} does not stand on it`);
+    }
+    if (seen(looking, pin.at).facing < FACING_LEAST) {
+      report('globe-pin-edge', `the pin for ${pin.continent} is too near the edge of the globe`);
+    }
+    // What a pin is called says where it is, never what it is: the name is what is being asked.
+    const called = pin.label.toLowerCase();
+    if (Object.values(LANDS).some((land) => called.includes(land.name.toLowerCase()))) {
+      report('globe-label', `choice "${pin.id}" is called by a land's name, which gives it away`);
+    }
+    for (const other of pins) {
+      if (other.id < pin.id && apartOnDisc(looking, other.at, pin.at) < PINS_APART) {
+        report('globe-crowded', `pins "${other.id}" and "${pin.id}" are too close to press apart`);
+      }
+    }
+  }
+  if (new Set(pins.map((pin) => pin.label)).size !== pins.length) {
+    report('globe-label', 'two pins are called the same');
+  }
+
+  const right = pins.filter((pin) => pin.continent === want);
+  if (right.length !== 1) {
+    report(
+      'globe-answer-count',
+      `${String(right.length)} pins are on ${want}; exactly one must be`,
+    );
+    return;
+  }
+  if (right[0]?.id !== challenge.answer) {
+    report(
+      'globe-answer-wrong',
+      `"${challenge.answer}" is marked correct but "${right[0]?.id ?? ''}" is`,
+    );
+  }
+  // The land asked for is there to be known by: pinned at its middle, and its middle faces. (Antarctica is
+  // only ever the land at the foot of the globe, and is let off.)
+  if (want !== 'antarctica') {
+    const middle = placeOf(LANDS[want]?.at);
+    const pinned = right[0]?.at;
+    if (
+      middle === null ||
+      pinned === undefined ||
+      pinned[0] !== middle[0] ||
+      pinned[1] !== middle[1]
+    ) {
+      report('globe-wanted-pin', `${want} is not pinned at its middle`);
+    } else if (seen(looking, middle).facing < WANTED_FACING) {
+      report('globe-wanted-hidden', `too little of ${want} faces us to know it by`);
+    }
+  }
+}
+
+export const explorerHarborRules: WorldRules = (challenge, lesson, report) => {
   if (challenge.kind === 'make') {
     lintStory(challenge, report);
     return;
@@ -288,6 +481,8 @@ export const explorerHarborRules: WorldRules = (challenge, _lesson, report) => {
     lintStrip(challenge, stimulus.of, report);
   } else if (stimulus.type === 'scene' && stimulus.scene === 'map') {
     lintMap(challenge, stimulus.of, report);
+  } else if (stimulus.type === 'scene' && stimulus.scene === 'globe') {
+    lintGlobe(challenge, stimulus.of, lesson.needsSound === true, report);
   } else {
     report('explorer-harbor-question', 'Explorer Harbor has no rule for this kind of question');
   }

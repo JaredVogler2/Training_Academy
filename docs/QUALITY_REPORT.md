@@ -1,20 +1,146 @@
 # Quality report
 
-This file has ten parts. The first is the review of Inventor Island's shelter, of the record a grown-up keeps
-and of the portfolio (the rest of phase 09). The second is the review of Memory Forest's two later activities
-(the rest of phase 08). The third is the review of Robot Ridge's three later activities (the rest of phase
-07). The fourth is the review of the help for a first visit (the rest of phase 04). The fifth is the review
-of Reading Cove's later activities, from rhyme to a sentence (the second half of phase 05). The sixth is the
-review of Number Garden's later activities, the ones that bring numerals in (the second half of phase 06).
-The seventh is the review of the Music Lab (phase 11). The eighth is the review of the six worlds and the
-voice (phases 04 to 10). The ninth is Phase 03's review of what Phase 03 built. The tenth is Phase 02's
-report on the home screen, kept as it was written, because it is still the assessment of the hub.
+This file has eleven parts. The first is the review of Explorer Harbor's globe: the seven big lands and
+fifteen famous places (the first half of the rest of phase 10). The second is the review of Inventor Island's
+shelter, of the record a grown-up keeps and of the portfolio (the rest of phase 09). The third is the review
+of Memory Forest's two later activities (the rest of phase 08). The fourth is the review of Robot Ridge's
+three later activities (the rest of phase 07). The fifth is the review of the help for a first visit (the
+rest of phase 04). The sixth is the review of Reading Cove's later activities, from rhyme to a sentence (the
+second half of phase 05). The seventh is the review of Number Garden's later activities, the ones that bring
+numerals in (the second half of phase 06). The eighth is the review of the Music Lab (phase 11). The ninth is
+the review of the six worlds and the voice (phases 04 to 10). The tenth is Phase 03's review of what Phase 03
+built. The eleventh is Phase 02's report on the home screen, kept as it was written, because it is still the
+assessment of the hub.
 
 All are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
 reading of screenshots and of the running game in headless Chromium. Nobody else has reviewed it, no child has
 played it, **no person has listened to the voice**, and it has never run on a real graphics card. The owner has
 opened the live site (Phase 03) on an iPhone; nothing in this file comes from a device. The standard it is rated
 against is `docs/ART_DIRECTION.md`.
+
+## Phase 10, the rest, first half (2026-11-26): a globe, the seven big lands, and fifteen famous places
+
+### Summary
+
+Two more activities at Explorer Harbor, in three lessons, on a globe of the real world. In "The seven big
+lands" a child is shown the shape of a continent and told its name, and finds it among three pins on the
+globe; then is told the name only. In "Famous places" a child is shown a drawing of a famous place with the
+shape of the continent it is in, is told both, finds the continent, and sees the place put where it is. The
+globe turns under a finger, by two buttons and by the arrow keys. It has no word on it and no border: seven
+lands and the sea. Twenty-eight pictures are in `docs/review/explorer-harbor-globe/`.
+
+**My reading: it looks like a globe, and it can be answered on at every size that was tried.** The lands are
+the real ones, known at a glance on anything from a small phone up; the pins are plain, large and alike; what
+is asked for stands beside the globe and is the same picture a child is told the name of. **What I do not
+know is what a child of four or five takes from it.** Matching a shape to a land on a ball is a real thing to
+do. But "Famous places" tells the answer in its question ("The Eiffel Tower is in Europe. Find Europe."), so
+what it asks is to find Europe, and what it gives is a first meeting with a place; it is recorded as a skill
+like any other, and it should not be read as knowing where anything is. And the second lesson, with a name
+and nothing to match, can be got right by the colour of a land once the colours are familiar: the lands are
+kept near one another in colour for that reason, and are not the same.
+
+### How it was made, which bears on how far to trust it
+
+The outlines are Natural Earth's small-scale map of the world's countries, which is in the public domain,
+made into seven continents by a script that is in the repository (`scripts/atlas/make_atlas.mjs`): countries
+melted together so that no border is left, Russia divided at 60 degrees east, three small moves between
+continents, and the outlines made coarser. Nothing trusts the script: 51 places a great many people could
+point to must be on their own continent and no other, and 21 stretches of sea in none. That list did not
+have Russia's far end in it, and the script had put it in Europe; it was found by looking at Europe's shape,
+and the list has it now.
+
+The arithmetic of the globe was written first and tested without a screen, then the content's rules, then
+the drawings, then the screen. The fifteen places were drawn by hand, from no photograph and no other
+drawing. Where each is was written down by hand and then compared with the coordinates on its Wikipedia
+article, by a script that reads only the numbers: thirteen agreed to a hundredth of a degree; the Great Wall
+is a long wall and the article's point is another stretch of it, and the article's point is now used; and
+the article for Mount Kilimanjaro gave no coordinates to the script, so **its place stands unchecked**
+(37.35 east, 3.07 south: written down as it was known, and compared with nothing). UNESCO's list, which would have been the better source for
+most of them, could not be reached from where this was built.
+
+Fifty-eight faults were put back in this work: thirty-one in the arithmetic, the rules, the generator and
+the drawings, the outlines as they had been, twenty-three in a browser, and three in the tests' own tools.
+Fifty-three were caught at once by the test meant for them. Four were not faults, or not the fault they
+were meant to be, and were written again and caught; one of them is worth knowing: a pin on a ball falls
+behind the finger that pulls it, so that after a long pull the finger is no longer on the pin it started
+on. And one was caught by nothing, because the guard it took away guarded nothing; the guard is gone.
+`docs/TEST_RESULTS.md` has each.
+
+The pictures were looked at and then measured, on nine sizes, and the measuring found two things the
+looking had passed: a turning button and a pin sharing a few pixels, and a pin's place 48 pixels across on
+the narrowest phone held sideways. The browser tests found two more that neither had: a press lost for a
+fifth of a second after a flick, and a keyboard left with nothing.
+
+Nothing here was tried by a child, and **no person has heard the 56 new lines**. The names in them are the
+ones a synthetic voice is likeliest to say wrongly: Kilimanjaro, Chichen Itza, Machu Picchu, Uluru, Fuji,
+Taj Mahal, Oceania. A recogniser heard each of them as written, which says they are recognisable and not
+that they are right; one of them, Uluru, it heard as written only after the synthesiser was given another
+spelling.
+
+### The review
+
+Looked at on a phone upright (390 by 844), on its side (844 by 390, 750 by 342 and 640 by 256), on a tablet
+both ways and on a desk; measured on nine sizes.
+
+| What                     | How it is                                                                                                                                                                                                                                                                                |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The globe                | A blue ball with a darker far edge and a glint where the light falls, faint lines of latitude and longitude every thirty degrees, and the lands in seven near colours: greens and yellow-greens, and white for Antarctica. Nothing is written on it. 366 pixels across on a phone        |
+| The pins                 | Three, on three lands: a white button with a red dot, the same on each. The one on the land asked for is at the middle of that land; the others are on their lands, where they are at least 1.1 of the ball's radius from every other pin                                                |
+| What is asked for        | Beside the globe: the land's shape in one plain colour on a white card; or a drawing of the place and the shape; or, where the name alone is given, a dashed frame with a sound in it until help is asked for                                                                            |
+| A shape                  | The land as it looks from above its own middle. Not all of a land is in it: the far small islands are left to the globe (Svalbard, Hawaii), so that the part a land is known by fills its card                                                                                           |
+| The famous places        | Fifteen small scenes with sky over them and ground under them, in the manner of the story pictures: three in Africa, three in Europe, three in Asia, two in North America, two in South America, two in Oceania. Ten are built and five are not. None has a person in it or a word on it |
+| Turning it               | A finger pulls it and the land goes with the finger. Two round buttons turn it a step of forty degrees; so do the left and right arrow keys, and up and down tip it. It cannot be tipped past forty degrees: beyond that the lands are too squashed to know                              |
+| Turned too far           | A pin that has gone round the back is not there to be pressed. A moment later the globe turns back by itself to where the question can be answered                                                                                                                                       |
+| A wrong land             | Its pin goes grey inside a dashed ring. "Not that one. Look at its shape again." The land is not named: a child is not told what they found instead                                                                                                                                      |
+| Help                     | First the shape is pointed at (or, where only the name was given, shown); then one wrong pin is taken away; then the right one is pointed at                                                                                                                                             |
+| The land that is found   | A white edge all round it, a tick by its pin, and the globe turns until it is in the middle. A famous place is put on the globe where it is, as its drawing                                                                                                                              |
+| Where nothing is to move | The globe is simply where it should be: at each question, after each press of a button, and at the land that is found                                                                                                                                                                    |
+
+### Seen — cause — fix
+
+| Seen                                                                                              | Cause                                                                                                         | Fix                                                                                                           |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| A pale patch on the sea that could be taken for a land or a cloud                                 | The light on the ball was drawn as a large faint ellipse over the middle of it                                | A glint along the edge where the light falls, and a darker far edge                                           |
+| Europe's shape small in a corner of its card                                                      | Far northern islands set the size of the picture                                                              | A shape is sized by the parts that are each a hundredth of the land or more                                   |
+| A strip of Europe's colour at the far end of Asia                                                 | Russia past 180 degrees is numbered from -180 in the source, and fell west of the line the Urals are taken as | It is Asia; two places there are in the list the outlines are held to                                         |
+| A turning button and a pin's place sharing up to 3.9 pixels                                       | The buttons stood in the lower corners of the globe's square                                                  | They are never over the globe: at each end of the row under it, or at each side of it                         |
+| A pin's place 48 pixels across on the narrowest phone held sideways                               | Pins could be 0.9 of the radius apart, which there is 46 pixels                                               | They are 1.1 apart, which there is 56; the 35 questions were made again                                       |
+| A land found at the very edge of the globe, where a child had turned it                           | The globe stayed where it had been turned to                                                                  | When the land is found the globe turns to look at it                                                          |
+| A tap on a pin straight after a flick: nothing                                                    | Chromium makes no click of a tap that follows a flick by less than a fifth of a second                        | A press is taken as the finger comes up on the pin it went down on                                            |
+| An arrow key that turned nothing, after one that had turned the focused pin out of sight          | A pin that is out of sight cannot hold the keyboard, and the browser gave it to nothing                       | The keyboard is handed to the button that turns the globe that way                                            |
+| "Tap one of these" ringing the two turning buttons with the pins                                  | The ring went round every button on a board                                                                   | A button that is not an answer says so, and is not ringed                                                     |
+| The harbour's part of the game too large for the limit every such part is held to (33.5 kB of 30) | 31 kB of outlines in with the code that draws them                                                            | The outlines are a file of their own, 12.1 kB compressed, counted with the content as a pack of challenges is |
+
+### What is not right yet, or not known
+
+- **No child has tried it, and nobody has heard it.** As everywhere here.
+- **"Famous places" is a first meeting, and is recorded as a skill.** Its questions give their own answers.
+  What a grown-up reads says so twice, in the activity's summary ("a first meeting with the places, not a
+  test of where they are") and in the skill's own words ("nothing here shows that a child knows where the
+  place is"); but it is counted as practised and as done like any other skill. Phase 12 should know the
+  difference.
+- **Europe is never asked together with the two lands it joins.** With pins 1.1 of the radius apart, Europe
+  is never one of three with Africa or with Asia (and five other pairs that are far apart never meet either:
+  eight of the twenty-one pairs in all). A land is told from two others by its shape, and that is the whole
+  of what is asked; telling Europe from Asia where they join is not. That was the price of a pin's place
+  being 56 pixels on the narrowest phone held sideways.
+- **Where Europe ends is a line.** Europe and Asia are divided through Russia at 60 degrees east, which is
+  near the Urals and is not them, and elsewhere by which country a place is in; Europe's shape has a straight
+  eastern edge because of it. Turkey, Kazakhstan, Egypt and Indonesia are each in one continent, the one the
+  source gives them (but for the half of New Guinea that is Indonesia's, which is with the other half).
+- **"Oceania" is one name of several.** Schools and maps also say Australia, or Australasia; the note for
+  grown-ups says so. Both of Oceania's famous places are in Australia. Antarctica has none.
+- **A wrong land is not named.** A child who presses Asia for Africa is told it is not that one and to look
+  at the shape again, and is not told that what they pressed was Asia. Naming it would be a second thing to
+  learn in the moment of getting the first wrong; it may still be the better choice, and it was not tried.
+- **Mount Kilimanjaro's place was not checked against anything.** It is on the globe within a degree of
+  where it should be, by the land under it; no source was compared.
+- **On the narrowest phone held sideways the globe is 107 pixels across.** Everything on it can be pressed.
+  Whether a land can be known by its shape there is not known.
+- **The second lesson cannot be played without sound**, and says so before it starts. The first and the
+  third can.
+- **A screen reader is told where each pin is, and not which land it is on**, since that is the answer. It
+  can be answered by position only by someone who already knows the map. That is true of the island maps too.
 
 ## Phase 09, the rest (2026-11-26): a shelter from the wind, a grown-up's word, and "My inventions"
 

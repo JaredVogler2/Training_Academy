@@ -12,7 +12,7 @@ What is said comes from these places, and nowhere else:
 
 A clip is of one of seven kinds:
 
-  line    a sentence, said as it is written
+  line    a sentence, said as it is written (but see SAID_AS, for a word the synthesiser gets wrong)
   read    a sentence read aloud, a little slowly, as a grown-up reads to a child with a finger under the words.
           It is told where each word begins
   word    one word, cut from the end of a sentence (said alone, the synthesiser clips it)
@@ -131,6 +131,12 @@ RING = 0.08
 # A word can be cut out of its sentence where the sound before it falls below this part of the word's loudest.
 QUIET = 0.03
 
+# Words the synthesiser says wrongly as they are written, and how they are written for it instead. Only the
+# synthesiser is given the other spelling: what is shown is the word, and what is heard is held to the word.
+# Uluru, as written, came out as something the recogniser wrote down as "uru", "urul" or "bulru" in thirteen
+# takes of fifteen; written "Oolooroo" (or "Ooloo-roo"), as "uluru" in eight of nine.
+SAID_AS = {'Uluru': 'Oolooroo'}
+
 NUMBERS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']
 
 
@@ -162,6 +168,13 @@ def plain(text):
     """Words only, the way they are compared: no capitals, no punctuation, numerals spelt out."""
     words = re.sub(r"[^a-z0-9' ]+", ' ', text.lower().replace('’', "'")).split()
     return ' '.join(NUMBERS[int(word)] if word.isdigit() and int(word) < len(NUMBERS) else word for word in words)
+
+
+def for_the_voice(text):
+    """A sentence as the synthesiser is given it: as written, but for the words it says wrongly that way."""
+    for word, spelt in SAID_AS.items():
+        text = re.sub(rf'\b{re.escape(word)}\b', spelt, text)
+    return text
 
 
 def same_words(heard, wanted):
@@ -374,7 +387,7 @@ class Studio:
         """The first of a few takes that is heard right; failing that, the last one."""
         result = None
         for take in range(1, TAKES + 1):
-            audio = self.trimmed(self.say(text, SENTENCE))
+            audio = self.trimmed(self.say(for_the_voice(text), SENTENCE))
             heard = self.heard(audio)
             result = (audio, heard, 'matches' if same_words(heard, plain(text)) else 'differs', take)
             if result[2] == 'matches':

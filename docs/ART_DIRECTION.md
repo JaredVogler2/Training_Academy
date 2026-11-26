@@ -365,6 +365,18 @@ counted, named, remembered or put in order, and anything in them that is not the
 - **A map** is blue water with small waves and green land with a rim of sand, so that the two differ in more than
   colour; its places are far apart; and it keeps its own shape on every screen, so that a place is in the same
   spot of the picture everywhere.
+- **The globe** is the real world looked at from far away, and it is drawn and not photographed: the sea in
+  the map's own blue, a darker far edge and one glint where the light falls, faint lines every thirty degrees
+  so that a disc reads as a ball, and seven lands in seven near colours (greens and yellow-greens; white for
+  the ice), near enough that a land is known by its shape and by where it is, and different enough that Europe
+  can be told from Asia where they join. **Nothing is written on it and no border is drawn on it**, of any
+  country. What stands on it to be pressed is a plain pin, the same on every land; a land that has been found
+  gets a white edge all round, and its pin a tick. A land shown by itself, to be matched, is one plain colour
+  that is none of the seven. It is always a ball: it is never flattened into a map of the world, and it is
+  never tipped so far that a land is too squashed to know.
+- **A famous place** is a small scene of its own, in the manner of the story pictures: sky, ground, and the
+  place, flat colours, no lettering, **no person**. A place is drawn as itself and not as a sign for a country
+  or for the people who live there.
 - **Lit means "this one, now"**: a thing being named or counted lifts for as long as its word; the right answer
   gets a sun-coloured edge and a tick, never colour alone; a choice set aside goes quiet and hollow, with no
   cross and no red.

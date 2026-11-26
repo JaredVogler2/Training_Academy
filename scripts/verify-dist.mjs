@@ -35,8 +35,9 @@ const BUDGET_KB = {
    */
   totalRaw: 2700,
   /**
-   * The content packs together, uncompressed: every challenge of every world, written out. This is meant to
-   * grow, an activity at a time; each pack is fetched only on entering its world, and has to fit `lazyChunk`.
+   * The content together, uncompressed: every challenge of every world, written out, and the outlines of the
+   * continents for Explorer Harbor's globe. This is meant to grow, an activity at a time; each pack is fetched
+   * only on entering its world, and has to fit `lazyChunk`, as the outlines do.
    */
   contentRaw: 900,
   /** One clip of the voice (MP3, measured as it is): a sentence or a word, never a recording of any length. */
@@ -175,11 +176,15 @@ const hub3d = sum(hubFiles, gzipSize);
 const clips = relativeFiles.filter((file) => /^immutable\/.*\.mp3$/.test(file));
 // A content pack is built as a chunk named after its file: number-garden.v3-<hash>.js.
 const packs = relativeFiles.filter((file) => /^immutable\/[a-z-]+\.v\d+-[\w-]+\.js$/.test(file));
+// The outlines of the continents, for Explorer Harbor's globe, are content as the packs are: a chunk of their own
+// (vite.config.ts), fetched with that world.
+const atlas = relativeFiles.filter((file) => /^immutable\/atlas-[\w-]+\.js$/.test(file));
+const content = [...packs, ...atlas];
 const totalRaw = sum(
-  relativeFiles.filter((file) => !clips.includes(file) && !packs.includes(file)),
+  relativeFiles.filter((file) => !clips.includes(file) && !content.includes(file)),
   (file) => statSync(file).size,
 );
-const contentRaw = sum(packs, (file) => statSync(file).size);
+const contentRaw = sum(content, (file) => statSync(file).size);
 const voiceTotal = sum(clips, (file) => statSync(file).size);
 
 const within = (label, bytes, budget) =>
@@ -201,7 +206,15 @@ within(
   BUDGET_KB.totalRaw,
 );
 check(packs.length >= 7, `the build has a content pack for each world (${packs.length} of them)`);
-within(`the content, ${packs.length} packs (uncompressed)`, contentRaw, BUDGET_KB.contentRaw);
+check(
+  atlas.length === 1,
+  `the outlines of the continents are one file of their own (${atlas.length})`,
+);
+within(
+  `the content, ${packs.length} packs and the atlas (uncompressed)`,
+  contentRaw,
+  BUDGET_KB.contentRaw,
+);
 within(`the voice, ${clips.length} clips`, voiceTotal, BUDGET_KB.voiceTotal);
 const largestClip = clips.reduce(
   (largest, file) => Math.max(largest, statSync(join(dist, file)).size),
@@ -328,7 +341,7 @@ for (const file of allScripts.sort()) {
 console.log(
   `\nFirst load: ${kb(initialScript)} kB script + ${kb(initialStyles)} kB styles (gzip), ${kb(fonts)} kB fonts.` +
     `\n3D hub: ${kb(hub3d)} kB (gzip), on demand. The game: ${kb(totalRaw)} kB uncompressed; its content, ` +
-    `${packs.length} packs: ${kb(contentRaw)} kB. ${relativeFiles.length} files in all. ` +
+    `${packs.length} packs and the atlas: ${kb(contentRaw)} kB. ${relativeFiles.length} files in all. ` +
     `The voice: ${clips.length} clips, ${kb(voiceTotal)} kB.\n`,
 );
 console.log(notes.join('\n'));

@@ -92,7 +92,9 @@ describe('the asset manifest', () => {
   });
 
   it('gives a source, a holder and a licence for everything that came from elsewhere', () => {
-    const allowed = ['OFL-1.1', 'MIT', 'Apache-2.0', 'CC0-1.0', 'CC-BY-4.0'];
+    // "Public-Domain" is for what its makers have put in the public domain in their own words, where there is
+    // no licence to name: Natural Earth's map data, which the continents' outlines are made from.
+    const allowed = ['OFL-1.1', 'MIT', 'Apache-2.0', 'CC0-1.0', 'CC-BY-4.0', 'Public-Domain'];
     for (const asset of manifest.assets) {
       if (asset.origin === 'third-party') {
         expect(asset.source, asset.id).toBeTruthy();

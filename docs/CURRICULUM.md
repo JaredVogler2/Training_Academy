@@ -2,8 +2,8 @@
 
 **Status: seven worlds, a first pass through each.** Every activity the six islands' pages promised is authored
 and playable, and so are the Music Lab's six. Counts in this document are of real content in the repository,
-and the tests pin the ones quoted most. (Reading Cove's six later activities are on a pull request that is not
-merged: they are not live.)
+and the tests pin the ones quoted most. (All of it is live. The help for a first visit, which is described at
+the end of this document under _Where a child begins_, is on a pull request that is not merged, and is not.)
 
 |                              | Authored and tested |
 | ---------------------------- | ------------------- |
@@ -11,7 +11,7 @@ merged: they are not live.)
 | Activities (lessons)         | 62                  |
 | Challenges                   | 714                 |
 | Skills                       | 67                  |
-| Spoken lines and words       | 552 recordings      |
+| Spoken lines and words       | 564 recordings      |
 
 **Nothing here has been reviewed by an early-years teacher or tried with a child, and no person has listened to
 the recordings.** All three are required before any claim about what the game teaches. Each world's brief in
@@ -618,6 +618,44 @@ heard says it needs sound.
 | `music.memory.play-back`        | Play back a few notes in order           | Hears three or four notes played on chime bars and plays them back in the same order.                                                                                           |
 | `music.pattern.repeated-phrase` | Know a tune again when it comes back     | Hears a tune of three or four notes and then two or three more, and picks out the one that was the first tune again from others with the same notes in another order.           |
 | `music.making.shape-a-tune`     | Make up a tune with a shape              | Makes up a tune of three to six notes on chime bars that goes up, goes down, climbs and comes back, says the same thing twice, or comes home to the lowest bar, as asked.       |
+
+## Where a child begins
+
+Every world begins at its first activity, and every skill begins at "not yet observed". That is the right
+beginning for a child the game knows nothing about, and the wrong one for a five-year-old who counts to twenty:
+walked through "the same amount" for the sake of order, such a child learns that the game is dull.
+
+So a grown-up who knows the child may say what they have seen (**Grown-ups → Where _name_ begins**), and choose
+where the big Play button begins in each world. Six things can be said, each "not yet observed" until it is:
+
+| What a grown-up has seen                   | What the game then suggests                                | To find out, watch them try         |
+| ------------------------------------------ | ---------------------------------------------------------- | ----------------------------------- |
+| Taps the thing they mean to                | nothing; if not yet, "how to play" and a grown-up's help   | —                                   |
+| Listens to what the voice says             | nothing; if not yet, what can be played with the sound off | —                                   |
+| Counts five things, touching each one once | Number Garden begins at counting to ten (`ng-give-02`)     | counting to five (`ng-give-01`)     |
+| Hears the first sound of a word            | Reading Cove begins at the letters (`rc-letters-01`)       | the first sound (`rc-first-01`)     |
+| Knows some letters by their shape or name  | **nothing**: a letter's sound is another matter            | the first letters (`rc-letters-01`) |
+| Knows the sound some letters stand for     | Reading Cove begins at blending (`rc-blend-01`)            | the first letters (`rc-letters-01`) |
+
+Three rules hold it to what it is:
+
+1. **It is the grown-up's word, not evidence.** Nothing said here is written into the record of what the child
+   has done, which is the only place "what a child has shown" is read from. A skill that a grown-up has seen
+   and the game has not is still "not yet observed".
+2. **Nothing is closed.** Every activity stays on its world's page, the ones before the beginning as well as
+   the ones after it, and none is marked as done. Play goes to the first unfinished activity from the beginning
+   that was chosen, and, when those are all finished, to the first unfinished one before it.
+3. **A suggestion is only offered.** Saying that something was seen moves nothing; the grown-up takes the
+   suggestion, or chooses any activity of any world, or leaves things as they are.
+
+The suggestions are three rules written here, by nobody who teaches. They pass over what comes before a thing
+in the order of a world, not only what is about it: a child who counts five things is taken past "the same
+amount" and "at a glance" as well as past counting to five, until the rest is done. A teacher might order that
+otherwise.
+
+There is no test of sample questions, by decision. A handful of questions put to a four-year-old on a first
+visit would be a test, and what it measured would be how the child takes to a new screen. The real activity
+named beside each thing does the same work, teaches while it does it, and writes down what the child did.
 
 ## What each world does not have yet
 

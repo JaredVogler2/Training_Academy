@@ -283,6 +283,34 @@ test.describe('the grown-ups area', () => {
     expect((await screenFit(page)).sideways).toEqual([]);
     await addPlayer(page, 'W'.repeat(24), 'Shell');
     expect((await screenFit(page)).sideways).toEqual([]);
+    // A list's own words may be longer than the screen is wide, and Safari lays them out at their full length
+    // beneath the control: the page was 440 px wide on an iPhone's 390 (found in CI, where the test above failed).
+    // That cannot be seen in every browser, so what prevents it is looked at as well: each list is in a box that
+    // cuts off what runs past it, fills that box, and the box is on the screen.
+    // (Found and measured in one go: the page draws the card again when the player changes, and lists found a
+    // moment before they are measured may no longer be on the page.)
+    await expect(page.getByTestId('where-to-begin')).toBeVisible();
+    const lists = await page.evaluate(() =>
+      [...document.querySelectorAll('select')].map((select) => {
+        const holder = select.parentElement;
+        const box = holder?.getBoundingClientRect();
+        return {
+          name: select.id,
+          cuts: holder ? getComputedStyle(holder).overflowX : 'no box',
+          fills: holder ? Math.abs(select.getBoundingClientRect().width - holder.clientWidth) : -1,
+          from: box?.left ?? -1,
+          to: box?.right ?? -1,
+        };
+      }),
+    );
+    expect(lists.length).toBeGreaterThan(8);
+    const screenWidth = page.viewportSize()?.width ?? 0;
+    for (const list of lists) {
+      expect(list.cuts, list.name).toBe('hidden');
+      expect(list.fills, list.name).toBeLessThan(1);
+      expect(list.from, list.name).toBeGreaterThanOrEqual(0);
+      expect(list.to, list.name).toBeLessThanOrEqual(screenWidth);
+    }
     // Every part of the page, opened.
     await page.getByTestId('diagnostics').getByText('Diagnostics', { exact: true }).click();
     await page.getByRole('button', { name: `Change ${'W'.repeat(24)}` }).click();

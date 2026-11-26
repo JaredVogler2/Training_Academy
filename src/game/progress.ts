@@ -51,10 +51,20 @@ export function useFinishedLessons(): ReadonlySet<string> {
   return found !== null && found.for === activeId ? found.done : NOTHING;
 }
 
-/** The lesson "Play" goes to in a world: the first not yet finished; once they all are, the first again. */
-export function nextLessonIn(world: WorldInfo, done: ReadonlySet<string>): string | null {
+/**
+ * The lesson "Play" goes to in a world: the first not yet finished; once they all are, the first again. Where a
+ * grown-up has chosen a place to begin (`startAt`), it is the first not yet finished from there on, and only
+ * when all of those are done, the first not yet finished before it. Nothing is skipped for good.
+ */
+export function nextLessonIn(
+  world: WorldInfo,
+  done: ReadonlySet<string>,
+  startAt?: string,
+): string | null {
   const order = lessonsOf(world);
-  return order.find((id) => !done.has(id)) ?? order[0] ?? null;
+  const from = Math.max(0, startAt === undefined ? 0 : order.indexOf(startAt));
+  const todo = (ids: readonly string[]) => ids.find((id) => !done.has(id));
+  return todo(order.slice(from)) ?? todo(order.slice(0, from)) ?? order[from] ?? null;
 }
 
 /**

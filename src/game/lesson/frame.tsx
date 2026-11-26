@@ -1,4 +1,11 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import { playCue, voice } from '@/audio';
 import { packText } from '@/content';
 import type { ContentPack } from '@/engine';
@@ -193,6 +200,13 @@ export function captionFor(state: Playing, pack: ContentPack): string {
 }
 
 /**
+ * What the lesson is pointing out about the screen itself just now, in words: "Tap one of these." (see
+ * `useNudge`). The foot writes them where Glim's words are written, in place of the question, for as long as
+ * they last: that is where a grown-up alongside is reading, and it covers nothing that is being pointed at.
+ */
+export const NudgeWords = createContext<string | null>(null);
+
+/**
  * The foot of the screen: Glim, who is also the "show me again" button; what Glim is saying; and the way on —
  * "my turn" after a demonstration, "next" after a right answer, or, while a thing is being made, "done".
  */
@@ -229,6 +243,7 @@ export function Foot({
 }) {
   const { view, feedback, answered } = state;
   const demo = view.stage === 'demo';
+  const nudge = useContext(NudgeWords);
   return (
     <div className={styles.foot} inert={paused}>
       {/* Glim is the "show me again" button: tapping the one who showed it is how a child asks. */}
@@ -246,8 +261,13 @@ export function Foot({
           <IconSayAgain size={22} />
         </span>
       </button>
-      <p className={styles.caption} role="status" aria-live="polite" data-tone={feedback?.outcome}>
-        {caption ?? captionFor(state, pack)}
+      <p
+        className={styles.caption}
+        role="status"
+        aria-live="polite"
+        data-tone={nudge === null ? feedback?.outcome : 'nudge'}
+      >
+        {nudge ?? caption ?? captionFor(state, pack)}
       </p>
       {children}
       {demo || answered ? (

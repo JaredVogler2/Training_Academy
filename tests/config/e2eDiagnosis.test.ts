@@ -3,7 +3,7 @@ import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSy
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fetchNotLoaded, pageLogPath, pagesServed } from '../../e2e/diagnosis';
+import { Pages, fetchNotLoaded, pageLogPath, pagesServed } from '../../e2e/diagnosis';
 import { vercelParity } from '../../scripts/vite/vercel-parity';
 
 /**
@@ -37,6 +37,72 @@ describe('a download WebKit says it could not load', () => {
     ]) {
       expect(fetchNotLoaded(message), message).toBeNull();
     }
+  });
+});
+
+describe('which page asked for what', () => {
+  const HUB = 'http://127.0.0.1:4173/';
+  const WORLD = 'http://127.0.0.1:4173/world/robot-ridge';
+
+  it('gives what a page asks for to that page, and holds a cancelled download against it while it is the last', () => {
+    const pages = new Pages();
+    const hub = pages.ask(HUB);
+    pages.arrive(HUB);
+    const clip = pages.current;
+    expect(clip).toBe(hub);
+    // Nothing has been asked for since: a download cancelled now was not cancelled by leaving.
+    expect(pages.left(clip)).toBe(false);
+    pages.ask(WORLD);
+    // The next page has been asked for: what the hub left unfinished was cancelled by leaving it.
+    expect(pages.left(clip)).toBe(true);
+  });
+
+  it('gives a download begun after the next page was asked for, and before it arrived, to the page being left', () => {
+    // The order it happened in CI: the next page is asked for; the page that is still there begins a clip; the
+    // next page arrives and the clip is cancelled.
+    const pages = new Pages();
+    pages.ask(HUB);
+    pages.arrive(HUB);
+    const world = pages.ask(WORLD);
+    const clip = pages.current;
+    expect(clip).not.toBe(world);
+    pages.arrive(WORLD);
+    expect(pages.left(clip)).toBe(true);
+    // And what the new page asks for is its own: cancelled with nothing after it, it counts.
+    expect(pages.current).toBe(world);
+    expect(pages.left(pages.current)).toBe(false);
+  });
+
+  it('does not take moving about inside a page for the arrival of the next one', () => {
+    const pages = new Pages();
+    pages.ask(HUB);
+    pages.arrive(HUB);
+    const world = pages.ask(WORLD);
+    // The page being left moves on by itself (a link inside the game) while the next is on its way.
+    pages.arrive('http://127.0.0.1:4173/grown-ups');
+    expect(pages.current).not.toBe(world);
+    pages.arrive(WORLD);
+    expect(pages.current).toBe(world);
+    // Once it has arrived, moving about inside it changes nothing.
+    pages.arrive('http://127.0.0.1:4173/world/robot-ridge/play/rr-move-01');
+    expect(pages.current).toBe(world);
+  });
+
+  it('follows a page that is sent on to another address, and takes no notice of what follows a #', () => {
+    const pages = new Pages();
+    pages.ask('http://127.0.0.1:4173/old');
+    const sentOn = pages.ask(`${WORLD}#top`);
+    pages.arrive(WORLD);
+    expect(pages.current).toBe(sentOn);
+  });
+
+  it('has nobody there before the first page has arrived', () => {
+    const pages = new Pages();
+    expect(pages.current).toBe(0);
+    const first = pages.ask(HUB);
+    expect(pages.current).toBe(0);
+    pages.arrive(HUB);
+    expect(pages.current).toBe(first);
   });
 });
 

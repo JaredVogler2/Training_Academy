@@ -5,6 +5,7 @@ import { WORLD_IDS } from '@/engine';
 const known: Route[] = [
   { name: 'home' },
   { name: 'grown-ups' },
+  { name: 'how-to' },
   ...WORLD_IDS.map((world): Route => ({ name: 'world', world })),
   ...WORLD_IDS.map((world): Route => ({ name: 'play', world, lessonId: 'ng-same-amount-01' })),
   ...ROOMS.map((world): Route => ({ name: 'room', world })),
@@ -18,6 +19,8 @@ describe('routes', () => {
   it('reads the addresses the game uses', () => {
     expect(parsePath('/')).toEqual({ name: 'home' });
     expect(parsePath('/grown-ups')).toEqual({ name: 'grown-ups' });
+    expect(parsePath('/how-to-play')).toEqual({ name: 'how-to' });
+    expect(parsePath('/how-to-play/more').name).toBe('not-found');
     expect(parsePath('/world/number-garden')).toEqual({ name: 'world', world: 'number-garden' });
     expect(parsePath('/world/number-garden/play/ng-same-amount-01')).toEqual({
       name: 'play',

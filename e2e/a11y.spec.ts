@@ -1,4 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
+import { CHOOSE, PLACE } from '../src/game/howto/steps';
 import {
   CLOSED_WORLD,
   LESSON_PATH,
@@ -7,8 +8,11 @@ import {
   expect,
   finishCorrectly,
   myTurn,
+  howTo,
+  howToAt,
   next,
   openGrownUps,
+  passHowTo,
   test,
   type Page,
 } from './fixtures';
@@ -113,12 +117,95 @@ test.describe('accessibility', () => {
 
       await press(door.getByRole('button', { name: 'The star picture' }));
       await expect(door).toHaveCount(0);
+      // (A first visit goes on to "how to play", which has its own check in e2e/howto.spec.ts.)
+      await passHowTo(page, press);
       await page.evaluate(() => window.sessionStorage.clear());
       await page.reload();
       await expect(door.getByRole('heading', { name: 'Who is playing?' })).toBeVisible();
       await expect(door.getByRole('button', { name: 'Play as Star' })).toBeVisible();
       await expectNoViolations(page, 'the front door, a player who has been before');
     });
+  });
+
+  test.describe('how to play', () => {
+    test.use({ frontDoor: true });
+
+    test('while Glim shows, at the child’s turn and once a thing is done, for each of the three', async ({
+      page,
+      press,
+    }) => {
+      test.setTimeout(120_000);
+      await page.goto('/');
+      await press(page.getByTestId('front-door').getByRole('button', { name: 'The star picture' }));
+      await expect(howToAt(page, 'choose', 'show')).toBeVisible();
+      await expectNoViolations(page, 'how to play: Glim shows choosing');
+      await expect(howToAt(page, 'choose', 'turn')).toBeVisible({ timeout: 20_000 });
+      await expectNoViolations(page, 'how to play: choosing, the child’s turn');
+      await press(howTo(page).locator(`[data-choice="${CHOOSE.turn.same}"]`));
+      await expect(howToAt(page, 'choose', 'done')).toBeVisible();
+      await expectNoViolations(page, 'how to play: choosing, done');
+      await press(next(page));
+
+      await expect(howToAt(page, 'place', 'show')).toBeVisible();
+      await expectNoViolations(page, 'how to play: Glim shows placing');
+      await expect(howToAt(page, 'place', 'turn')).toBeVisible({ timeout: 20_000 });
+      await expectNoViolations(page, 'how to play: placing, the child’s turn');
+      for (const card of PLACE.cards) await press(howTo(page).locator(`[data-card="${card}"]`));
+      await expectNoViolations(page, 'how to play: placing, everything in its place');
+      await press(howTo(page).getByRole('button', { name: 'Done' }));
+      await expect(howToAt(page, 'place', 'done')).toBeVisible();
+      await press(next(page));
+
+      await expect(howToAt(page, 'again', 'turn')).toBeVisible({ timeout: 20_000 });
+      await expectNoViolations(page, 'how to play: showing again, the child’s turn');
+      await press(howTo(page).getByRole('button', { name: 'Show me again' }));
+      await expect(howToAt(page, 'again', 'done')).toBeVisible();
+      await expectNoViolations(page, 'how to play: the end');
+    });
+  });
+
+  test('an activity while it points out what can be tapped, and while a grown-up is helping', async ({
+    page,
+    press,
+  }) => {
+    await page.goto(LESSON_PATH);
+    await expect(myTurn(page)).toBeVisible();
+    // Three taps on the picture: the way on is pointed out, and the words are in Glim's bubble.
+    const picture = page.getByTestId('lesson').locator('[data-same]').first();
+    for (let tap = 0; tap < 3; tap++) await press(picture);
+    await expect(page.getByTestId('lesson')).toHaveAttribute('data-nudge', 'my-turn');
+    await expectNoViolations(page, 'the demonstration, with the way on pointed out');
+
+    await press(myTurn(page));
+    await press(page.getByRole('button', { name: 'Pause' }));
+    const sheet = page.getByRole('dialog', { name: 'Paused' });
+    const helping = sheet.getByRole('button', { name: 'A grown-up is helping', exact: true });
+    const box = await helping.boundingBox();
+    if (!box) throw new Error('The switch is not on the screen.');
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await expect(helping).toHaveAttribute('aria-pressed', 'true', { timeout: 30_000 });
+    await page.mouse.up();
+    await expectNoViolations(page, 'the pause sheet, with a grown-up helping');
+    await press(sheet.getByRole('button', { name: 'Carry on' }));
+    await expect(page.getByTestId('lesson')).toHaveAttribute('data-helping', 'true');
+    await expectNoViolations(page, 'a question, with a grown-up helping');
+  });
+
+  test('the grown-ups area for a player: where to begin, with something seen and a suggestion', async ({
+    page,
+  }) => {
+    // A player, made as the first activity makes one.
+    await page.goto(LESSON_PATH);
+    await expect(myTurn(page)).toBeVisible();
+    await openGrownUps(page);
+    const card = page.getByTestId('where-to-begin');
+    await expect(card.getByRole('heading', { name: 'Where Explorer begins' })).toBeVisible();
+    await expectNoViolations(page, 'where to begin, as it starts');
+    await card.getByLabel('Counts five things, touching each one once').selectOption('seen');
+    await card.getByLabel('Taps the thing they mean to').selectOption('not-yet');
+    await expect(card.getByTestId('begin-suggestion')).toBeVisible();
+    await expectNoViolations(page, 'where to begin, with a suggestion and a note');
   });
 
   test('the grown-ups area: the gate, the area, a dialog', async ({ page }) => {

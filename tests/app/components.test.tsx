@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ErrorBoundary } from '@/app/ErrorBoundary';
 import { ChunkLoadError } from '@/app/chunks';
 import { getDiagnostics, resetDiagnosticsForTest } from '@/app/diagnostics';
-import { HoldButton, ToggleButton } from '@/ui/controls';
+import { HoldButton, HoldToggle, ToggleButton } from '@/ui/controls';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -165,6 +165,75 @@ describe('HoldButton', () => {
     fireEvent.blur(button);
     wait(3000);
     expect(onComplete).not.toHaveBeenCalled();
+  });
+});
+
+describe('HoldToggle: a switch that is a grown-up’s to set, on a screen a child is tapping', () => {
+  beforeEach(() => vi.useFakeTimers());
+
+  const setup = (pressed: boolean) => {
+    const onChange = vi.fn();
+    render(
+      <HoldToggle
+        pressed={pressed}
+        onChange={onChange}
+        label="A grown-up is helping"
+        stateText={pressed ? 'On. Hold to switch off.' : 'Off. Hold to switch on.'}
+        icon={<svg />}
+      />,
+    );
+    return { onChange, button: screen.getByRole('button', { name: 'A grown-up is helping' }) };
+  };
+  const wait = (ms: number): void => {
+    act(() => {
+      vi.advanceTimersByTime(ms);
+    });
+  };
+
+  it('does nothing on a tap, a click, or a hold that is let go early', () => {
+    const { onChange, button } = setup(false);
+    fireEvent.click(button);
+    fireEvent.pointerDown(button, { button: 0 });
+    wait(200);
+    fireEvent.pointerUp(button);
+    fireEvent.pointerDown(button, { button: 0 });
+    wait(1000);
+    fireEvent.pointerUp(button);
+    wait(5000);
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('switches on after being held', () => {
+    const { onChange, button } = setup(false);
+    fireEvent.pointerDown(button, { button: 0 });
+    wait(1100);
+    expect(onChange).not.toHaveBeenCalled();
+    expect(button.getAttribute('data-holding')).toBe('true');
+    wait(200);
+    expect(onChange).toHaveBeenCalledExactlyOnceWith(true);
+    expect(button.getAttribute('data-holding')).toBeNull();
+  });
+
+  it('is held to switch off, too: a small finger does not undo what a grown-up set', () => {
+    const { onChange, button } = setup(true);
+    fireEvent.click(button);
+    fireEvent.pointerDown(button, { button: 0 });
+    wait(300);
+    fireEvent.pointerLeave(button);
+    wait(3000);
+    expect(onChange).not.toHaveBeenCalled();
+    fireEvent.pointerDown(button, { button: 0 });
+    wait(1300);
+    expect(onChange).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it('says what it is and how it stands, and can be held with the keyboard', () => {
+    const { onChange, button } = setup(true);
+    expect(button.getAttribute('aria-pressed')).toBe('true');
+    expect(button.getAttribute('data-tip')).toBe('On. Hold to switch off.');
+    fireEvent.keyDown(button, { key: 'Enter' });
+    wait(1300);
+    expect(onChange).toHaveBeenCalledExactlyOnceWith(false);
   });
 });
 

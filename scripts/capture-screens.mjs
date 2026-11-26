@@ -278,6 +278,21 @@ async function session(screen, steps, { graphics = 'pictures', begun = true } = 
 }
 
 /** Hold the gate's button down until the grown-ups area opens (a busy machine can take longer than the two seconds). */
+/**
+ * Someone who has never played is shown how to play before the islands. Most of these pictures are of what
+ * comes after that: once the front door has gone, pass "how to play" by if it is there, as a child does who
+ * taps the house.
+ */
+async function pastHowTo(page, press) {
+  const arrived = page.locator(
+    '[data-testid="how-to"], [data-testid="guide"][data-state="point"], [data-testid="guide"][data-state="wave"]',
+  );
+  await arrived.first().waitFor({ timeout: 15_000 });
+  if ((await page.getByTestId('how-to').count()) === 0) return;
+  await press(page.getByRole('link', { name: 'Skip: go to the islands' }));
+  await page.getByTestId('how-to').waitFor({ state: 'detached' });
+}
+
 async function holdGateOpen(page) {
   const hold = page.getByRole('button', { name: 'Press and hold' });
   await hold.waitFor();
@@ -340,6 +355,7 @@ try {
           await page.goto(`${BASE}/`);
           await press(page.getByTestId('front-door').locator('button[data-avatar="star"]'));
           await page.getByTestId('front-door').waitFor({ state: 'detached' });
+          await pastHowTo(page, press);
           await page.goto(`${BASE}/grown-ups`);
           await holdGateOpen(page);
           await page.getByRole('button', { name: 'Add a player' }).click();
@@ -354,8 +370,9 @@ try {
           await hubPictures(page);
           await arrived();
           await shot('door-2-who-is-playing');
-          // And through it: the map, with Glim saying hello before pointing the way.
-          await press(page.getByTestId('front-door').getByRole('button', { name: 'Play as Mina' }));
+          // And through it, as the player who has been here before: the map, with Glim saying hello before
+          // pointing the way. (Mina, who has not, would be shown how to play first.)
+          await press(page.getByTestId('front-door').getByRole('button', { name: 'Play as Star' }));
           await page.getByTestId('front-door').waitFor({ state: 'detached' });
           await page.locator('[data-testid="guide"][data-state="wave"]').waitFor();
           await page.waitForTimeout(400);
@@ -583,6 +600,7 @@ try {
         await clickMap('1-front-door');
         await press(page.getByTestId('front-door').locator('button[data-avatar="drop"]'));
         await page.getByTestId('front-door').waitFor({ state: 'detached' });
+        await pastHowTo(page, press);
         await page
           .locator('[data-testid="guide"][data-state="point"]')
           .waitFor({ timeout: 15_000 });
@@ -746,6 +764,7 @@ try {
         await shot('phones-5-notch-front-door');
         await press(page.getByTestId('front-door').locator('button[data-avatar="star"]'));
         await page.getByTestId('front-door').waitFor({ state: 'detached' });
+        await pastHowTo(page, press);
         await page
           .locator('[data-testid="guide"][data-state="point"]')
           .waitFor({ timeout: 15_000 });

@@ -472,6 +472,45 @@
   font-size: var(--text-s);
 }
 
+/*
+ * Help with the screen (useNudge.ts). When taps have been landing on nothing, what can be pressed now wears a sun
+ * ring for a few seconds: every thing there is to answer with, alike, or the one button that goes on from here.
+ * The words are written where Glim's are, in the bubble at the foot, so that they cover nothing being pointed at.
+ */
+.caption[data-tone='nudge'] {
+  color: var(--ink);
+  background: var(--sun);
+  font-weight: 800;
+}
+
+.lesson[data-nudge='answers']
+  > :not(.bar, .foot, dialog)
+  :is(button, a[href]):not([aria-disabled='true'], :disabled),
+.lesson[data-nudge='done'] .done,
+.lesson[data-nudge='next'] .next,
+.lesson[data-nudge='my-turn'] .myTurn {
+  outline: 5px solid var(--sun);
+  outline-offset: 3px;
+  animation: nudge 0.9s var(--ease-out) 3;
+}
+
+/* The two that are arriving keep their own arrival, and are not held back by it. */
+.lesson[data-nudge='next'] .next,
+.lesson[data-nudge='my-turn'] .myTurn {
+  animation-delay: 0s;
+}
+
+@keyframes nudge {
+  0%,
+  100% {
+    outline-offset: 3px;
+  }
+
+  50% {
+    outline-offset: 10px;
+  }
+}
+
 /* An activity for listening, with nothing to be heard: one thing to press, and Glim pointing at it. */
 .gate {
   display: grid;

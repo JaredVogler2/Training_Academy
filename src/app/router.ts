@@ -11,6 +11,8 @@ export type Route =
   | { name: 'play'; world: WorldId; lessonId: string }
   /** A room to play in freely, where a world has one: nothing is asked there and nothing is kept. */
   | { name: 'room'; world: WorldId }
+  /** Glim shows how the game is played: what to tap, and what happens when it is. */
+  | { name: 'how-to' }
   | { name: 'grown-ups' }
   /** The art studio: one island, or one drawing, on its own. Not linked from the game. */
   | { name: 'studio'; view: string }
@@ -44,6 +46,7 @@ export function parsePath(pathname: string): Route {
   const [first, second, third, fourth, ...rest] = segments;
   if (first === undefined) return { name: 'home' };
   if (first === 'grown-ups' && second === undefined) return { name: 'grown-ups' };
+  if (first === 'how-to-play' && second === undefined) return { name: 'how-to' };
   if (
     first === 'studio' &&
     second !== undefined &&
@@ -74,6 +77,8 @@ export function toPath(route: Route): string {
       return `/world/${route.world}/play/${route.lessonId}`;
     case 'room':
       return `/world/${route.world}/room`;
+    case 'how-to':
+      return '/how-to-play';
     case 'grown-ups':
       return '/grown-ups';
     case 'studio':

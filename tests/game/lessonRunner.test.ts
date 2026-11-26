@@ -107,6 +107,40 @@ describe('LessonRunner', () => {
     );
   });
 
+  it('writes down every answer given while a grown-up is helping as helped, and counts none as the child’s own', async () => {
+    const runner = await LessonRunner.start(w.deps({ adultHelping: () => true }));
+    await finish(runner);
+    const attempts = await w.repository.listAttempts(PROFILE);
+    // (One more than the five of a lesson done alone: a check that was helped with is followed by another.)
+    expect(attempts.length).toBeGreaterThanOrEqual(5);
+    expect(attempts.map((attempt) => attempt.assistance)).toEqual(attempts.map(() => 'adult'));
+    expect(attempts.every((attempt) => attempt.outcome === 'correct')).toBe(true);
+    expect(attempts.filter(isIndependentSuccess)).toHaveLength(0);
+    // The activity is finished all the same; what it does not do is say the child did it alone.
+    expect(runner.getState()).toMatchObject({
+      phase: 'finished',
+      summary: { completed: true, independentFirstTryCorrect: 0, metSuccessCriteria: false },
+    });
+    const evidence = getSkillEvidence(attempts, 'math.quantity.match-sets-to-3');
+    expect(evidence.independentSuccesses).toBe(0);
+    expect(evidence.status).not.toMatch(/independent/);
+  });
+
+  it('asks whether a grown-up is helping at each answer, so that it can be switched on and off half-way', async () => {
+    let helping = false;
+    const runner = await LessonRunner.start(w.deps({ adultHelping: () => helping }));
+    await runner.next();
+    await runner.answer(answerTo(playing(runner).view));
+    await runner.next();
+    helping = true;
+    await runner.answer(answerTo(playing(runner).view));
+    await runner.next();
+    helping = false;
+    await runner.answer(answerTo(playing(runner).view));
+    const attempts = await w.repository.listAttempts(PROFILE);
+    expect(attempts.map((attempt) => attempt.assistance)).toEqual(['none', 'adult', 'none']);
+  });
+
   it('keeps a correctly answered challenge on screen until the child moves on', async () => {
     const runner = await LessonRunner.start(w.deps());
     await runner.next();

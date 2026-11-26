@@ -117,10 +117,26 @@ interface HoldButtonProps {
 }
 
 /**
- * A button that only acts after being held down: a small, honest deterrent for small fingers. It is not a lock.
- * Holding works with a finger, a mouse, or the Space or Enter key.
+ * Holding a button down: what a button needs so that it only acts after being held for `seconds`, with a finger, a
+ * mouse, or the Space or Enter key. Letting go, or sliding off, before then does nothing.
  */
-export function HoldButton({ seconds = 2, onComplete, children, icon }: HoldButtonProps) {
+function useHold(
+  seconds: number,
+  onComplete: () => void,
+): {
+  holding: boolean;
+  handlers: Pick<
+    ButtonHTMLAttributes<HTMLButtonElement>,
+    | 'onPointerDown'
+    | 'onPointerUp'
+    | 'onPointerLeave'
+    | 'onPointerCancel'
+    | 'onContextMenu'
+    | 'onKeyDown'
+    | 'onKeyUp'
+    | 'onBlur'
+  >;
+} {
   const [holding, setHolding] = useState(false);
   const timer = useRef<number | null>(null);
   const completeRef = useRef(onComplete);
@@ -150,34 +166,94 @@ export function HoldButton({ seconds = 2, onComplete, children, icon }: HoldButt
   );
 
   const isHoldKey = (key: string) => key === ' ' || key === 'Enter';
+  return {
+    holding,
+    handlers: {
+      onPointerDown: (event) => {
+        if (event.button === 0) start();
+      },
+      onPointerUp: stop,
+      onPointerLeave: stop,
+      onPointerCancel: stop,
+      onContextMenu: (event) => event.preventDefault(),
+      onKeyDown: (event) => {
+        if (isHoldKey(event.key)) {
+          event.preventDefault();
+          if (!event.repeat) start();
+        }
+      },
+      onKeyUp: (event) => {
+        if (isHoldKey(event.key)) stop();
+      },
+      onBlur: stop,
+    },
+  };
+}
+
+/**
+ * A button that only acts after being held down: a small, honest deterrent for small fingers. It is not a lock.
+ * Holding works with a finger, a mouse, or the Space or Enter key.
+ */
+export function HoldButton({ seconds = 2, onComplete, children, icon }: HoldButtonProps) {
+  const { holding, handlers } = useHold(seconds, onComplete);
   return (
     <button
       type="button"
       className={cx(styles.button, styles.sun, styles.big, styles.hold, holding && styles.holding)}
       style={{ '--hold-seconds': `${seconds}s` } as CSSProperties}
-      onPointerDown={(event) => {
-        if (event.button === 0) start();
-      }}
-      onPointerUp={stop}
-      onPointerLeave={stop}
-      onPointerCancel={stop}
-      onContextMenu={(event) => event.preventDefault()}
-      onKeyDown={(event) => {
-        if (isHoldKey(event.key)) {
-          event.preventDefault();
-          if (!event.repeat) start();
-        }
-      }}
-      onKeyUp={(event) => {
-        if (isHoldKey(event.key)) stop();
-      }}
-      onBlur={stop}
+      {...handlers}
     >
       <span className={styles.holdFill} aria-hidden="true" />
       <span className={styles.holdContent}>
         {icon}
         <span>{children}</span>
       </span>
+    </button>
+  );
+}
+
+interface HoldToggleProps extends ToggleButtonProps {
+  /** How long it must be held before it changes. */
+  seconds?: number;
+}
+
+/**
+ * An on/off switch that changes only after being held down, either way: for a switch that is a grown-up's to set,
+ * on a screen a child is tapping. A tap does nothing to it. It is not a lock.
+ */
+export function HoldToggle({
+  pressed,
+  onChange,
+  label,
+  stateText,
+  icon,
+  seconds = 1.2,
+}: HoldToggleProps) {
+  const { holding, handlers } = useHold(seconds, () => onChange(!pressed));
+  return (
+    <button
+      type="button"
+      className={cx(
+        styles.button,
+        styles.round,
+        styles.toggle,
+        styles.holdToggle,
+        pressed && styles.pressed,
+        holding && styles.holding,
+      )}
+      style={{ '--hold-seconds': `${seconds}s` } as CSSProperties}
+      aria-pressed={pressed}
+      aria-label={label}
+      data-tip={stateText}
+      data-tip-align="end"
+      data-holding={holding || undefined}
+      {...handlers}
+    >
+      {/* The fill is clipped to the button by a layer of its own, so that the words on hover are not. */}
+      <span className={styles.holdClip} aria-hidden="true">
+        <span className={styles.holdFill} />
+      </span>
+      {icon}
     </button>
   );
 }

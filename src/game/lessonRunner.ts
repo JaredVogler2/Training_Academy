@@ -50,6 +50,12 @@ export interface RunnerDeps {
   /** Milliseconds from a steady clock, for response times. */
   elapsed: () => number;
   onSaveError?: (error: unknown) => void;
+  /**
+   * Whether a grown-up has said they are helping, asked as each answer is given. While one is, the answer is
+   * written down as given with an adult's help, and so is never counted as something the child did alone. It is
+   * the grown-up's to say, and nothing here guesses it. Left out, nobody is.
+   */
+  adultHelping?: () => boolean;
 }
 
 /**
@@ -205,6 +211,7 @@ export class LessonRunner {
       now: at,
       day: this.deps.localDay(at),
       durationMs: this.deps.elapsed() - this.shownAt,
+      adultAssist: this.deps.adultHelping?.() === true,
     });
     if (!result.accepted) return;
 

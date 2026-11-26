@@ -155,6 +155,11 @@ export class Narrator {
     });
   }
 
+  /** Whether a line is being said at this moment. */
+  get speaking(): boolean {
+    return this.playing !== null;
+  }
+
   /** Stop talking: the activity was paused or left, or something new is about to be said. */
   hush(): void {
     this.turn += 1;

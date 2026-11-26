@@ -199,8 +199,9 @@ Two tabs are safe but not live-synchronised.
 ## The shell
 
 - **Routing** (`app/router.ts`, `app/navigation.tsx`): a ~100-line History-API router, no library. Routes: `/`,
-  `/world/:world`, `/world/:world/play/:lessonId`, `/grown-ups`, `/studio/:view` (a workbench, linked from
-  nowhere: one island close up, or the guide's character sheet) and a not-found page. Links are real anchors. After a
+  `/world/:world`, `/world/:world/play/:lessonId`, `/world/:world/room` (where a world has a room to play in),
+  `/how-to-play`, `/grown-ups`, `/studio/:view` (a workbench, linked from nowhere: one island close up, or the
+  guide's character sheet) and a not-found page. Links are real anchors. After a
   navigation the page title is set, focus moves to `<main>`, and a live region announces the page. Addresses never
   contain a dot, so a static host can tell a page from a file.
 - **Settings**: sound on/off; motion `system | full | reduced` (the toggle flips whatever is in effect and makes it
@@ -263,6 +264,11 @@ or, if it knows none, the six pictures to choose from, the tap creating the firs
 The door is only on the home address. A refresh or a deep link into an activity goes straight there, with the
 player last chosen. Where storage is refused altogether the door is simply met on every load, and choosing a
 picture still opens the game. More players are added in the grown-ups' area, not here.
+
+Someone who has never played goes from the door to "how to play" (below, under _First-visit help_) and from
+there to the islands; everyone else goes straight to the islands. "Never played" is two facts about the player
+(`isNewToTheGame` in `game/profiles.ts`): they have not been shown how to play, and they have never begun an
+activity. The second is there for the children who were playing before there was anything to show.
 
 `index.html` carries one more thing for a first paint: a notice, revealed by a CSS animation after eight seconds,
 that the browser may be too old. The game removes it when it starts; if the game's code cannot be parsed at all,
@@ -422,16 +428,17 @@ saves second; a failed save never interrupts a child (the lesson continues in me
 `game/lesson/` is the frame every world's activities are played in. On the `play` route it has the whole screen:
 the shell's top bar is not rendered there.
 
-| Part                | What it does                                                                                                                                                                                                                                                                    |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `LessonView.tsx`    | Draws what the runner says: a bar (home, steps, help, pause), a board, and the end of the sitting. Where a lesson needs sound and there is none, a gate with one button. It never decides what is right.                                                                        |
-| `Stage.ts`          | Chooses the board: the world's own for this kind of task or scene if it has one, otherwise the frame's.                                                                                                                                                                         |
-| `boards/`           | The frame's boards: a question with choices; things to pick out; an order to make or to repeat; pairs to find. `useChoosing` is everything a question with choices needs worked out, for any board that draws one (a map does).                                                 |
-| `frame.tsx`         | What every board shares: what a board is given, the foot (Glim, what Glim is saying, the way on or "Done"), and the small decisions that are the same whatever the game.                                                                                                        |
-| `script.ts`         | Pure. A script is beats (`rest`, `ask`, `count` a group, `name` one thing, `glance`, `do` a part, `same`) and sounds (a counting note, a cue, a stroke of an instrument, a line to say) on a clock, with where the board settles. A line waits for its recording only if heard. |
-| `useScript.ts`      | Plays a script with timers: the current beat, and the sounds as they fall due. A new run starts from the top; paused or out of sight, nothing plays and the voice stops; with calm motion the board goes straight to where it settles.                                          |
-| `PauseSheet.tsx`    | A modal `<dialog>`: one button to carry on, the way home, and the sound and calm-motion switches. Opened by the pause button, and by the page going out of sight — so the tap that carries on is also the touch that wakes a phone's audio.                                     |
-| `Lesson.module.css` | One screen, no scrolling, from 320 pixels wide to a desktop, and down to the 342 pixels of height Safari leaves on a phone held sideways.                                                                                                                                       |
+| Part                | What it does                                                                                                                                                                                                                                                                                          |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LessonView.tsx`    | Draws what the runner says: a bar (home, steps, help, pause), a board, and the end of the sitting. Where a lesson needs sound and there is none, a gate with one button. It never decides what is right.                                                                                              |
+| `Stage.ts`          | Chooses the board: the world's own for this kind of task or scene if it has one, otherwise the frame's.                                                                                                                                                                                               |
+| `boards/`           | The frame's boards: a question with choices; things to pick out; an order to make or to repeat; pairs to find. `useChoosing` is everything a question with choices needs worked out, for any board that draws one (a map does).                                                                       |
+| `frame.tsx`         | What every board shares: what a board is given, the foot (Glim, what Glim is saying, the way on or "Done"), and the small decisions that are the same whatever the game.                                                                                                                              |
+| `script.ts`         | Pure. A script is beats (`rest`, `ask`, `count` a group, `name` one thing, `glance`, `do` a part, `same`) and sounds (a counting note, a cue, a stroke of an instrument, a line to say) on a clock, with where the board settles. A line waits for its recording only if heard.                       |
+| `useScript.ts`      | Plays a script with timers: the current beat, and the sounds as they fall due. A new run starts from the top; paused or out of sight, nothing plays and the voice stops; with calm motion the board goes straight to where it settles.                                                                |
+| `PauseSheet.tsx`    | A modal `<dialog>`: one button to carry on, the way home, the sound and calm-motion switches, and the switch a grown-up holds down to say they are helping. Opened by the pause button, and by the page going out of sight — so the tap that carries on is also the touch that wakes a phone's audio. |
+| `useNudge.ts`       | Help with the screen: watches for taps that press nothing and says what there is to press (_First-visit help_, below).                                                                                                                                                                                |
+| `Lesson.module.css` | One screen, no scrolling, from 320 pixels wide to a desktop, and down to the 342 pixels of height Safari leaves on a phone held sideways.                                                                                                                                                             |
 
 Three things the frame does that are easy to undo by accident:
 
@@ -481,14 +488,84 @@ Three things the frame does that are easy to undo by accident:
   that: the picture of the word, three places, three tiles.
 
 A world's page (`game/world/WorldView.tsx`) shows the island with the world's emblem pinned to it; one large
-Play button that goes to the next lesson not yet finished; and every lesson as a card with a picture built from
-that lesson's own demonstration challenge — so a card cannot show something the activity does not do. Below, for
-the grown-up, is what each activity is and something to try together away from the screen.
+Play button that goes to the next lesson not yet finished (from where a grown-up has chosen that this player
+begins, if they have: _First-visit help_, below); and every lesson as a card with a picture built from that
+lesson's own demonstration challenge — so a card cannot show something the activity does not do. Below, for the
+grown-up, is what each activity is and something to try together away from the screen.
 
 What has been finished is the player's own, so whatever shows it has to know who is playing
 (`game/progress.ts`). The map finds that out as it opens, and so do an activity and the grown-ups' area; a
 world's page can be the first thing opened — a page loaded again, a tab a phone has brought back — and asks for
 itself if nobody has. (It did not, at first: such a page showed nothing as finished.)
+
+### First-visit help
+
+Four things that phase 04 asked for and that are about the child's first days with the game, not about any one
+world. None of them writes anything into what a child has shown.
+
+**How to play** (`game/howto/`, the `how-to` route, its own chunk). Glim shows three things and after each the
+child does it: tap the one that is asked for; tap a picture and it goes to its place, then the tick; tap Glim to
+have a thing shown again. Then the arrow, which is the way on everywhere.
+
+- `steps.ts` is all of it without a screen, and pure: the state (`HowTo`), what a move does (`move(state, by,
+action)`, where `by` is Glim or the child and a move that does not belong to the moment gives the same state
+  back), each showing as beats (`showingOf`: after so long, say a line and let Glim make a move), and where
+  Glim's hand goes when nothing is tapped (`nextTarget`). A showing keeps time with the voice where the voice
+  is heard and gives each line a second and a half where it is not, so the pictures do it all with the sound
+  off.
+- `HowToPlay.tsx` draws that with **the lesson's own parts**: the classes of `Lesson.module.css` and
+  `boards.module.css`, Glim as the "show me again" button, the same tick and the same arrow. It is not a lesson
+  and does not go through the engine: there is no question in it, no runner, and nothing to record. A tap on
+  the other picture is answered by Glim's hand on the one that is meant.
+- It has the whole screen, as an activity has. The house, top left, passes it by at any moment.
+- Leaving it, by any road inside the game, writes `howTo: 'seen'` into the player's settings; a tab closed in
+  the middle of it writes nothing, so that child is shown it once more. A grown-up can open it again from
+  their area.
+- Everything in the game is done with a tap. Nothing is dragged, so nothing here shows dragging: a tap is
+  within reach of a hand that cannot yet hold a thing down and move it.
+
+**Help with the screen** (`game/lesson/useNudge.ts`). A child who taps the picture that is asked about, or the
+words, or a card that is still being shown, has not got anything wrong: they do not know what to press. The
+lesson's own element hears every tap first (`onPointerDownCapture`) and sorts it: on something that can be
+pressed now; on something that is waiting its turn (`aria-disabled`, `disabled`, inside something `inert`); on
+nothing. Three in a row of the last two, within eight seconds, and the lesson points something out for five:
+
+| Where the lesson is                            | What is pointed out         | What is said and written                 |
+| ---------------------------------------------- | --------------------------- | ---------------------------------------- |
+| Glim is showing                                | The arrow                   | Tap the arrow, and then it is your turn. |
+| A question, and something can be answered with | **Every** answer, all alike | Tap one of these.                        |
+| Nothing can be pressed yet                     | Nothing                     | Watch and listen first.                  |
+| Everything is in its place                     | The tick                    | Have you finished? Tap the tick.         |
+| The step has been answered                     | The arrow                   | Tap the arrow to go on.                  |
+
+It never picks out the right answer, it is not a hint (the engine is told nothing, so an answer after it is
+still a first try with no help), and it is written down nowhere. The line is said only if nothing else is being
+said (`sayLineIfQuiet`): the question is never talked over. The words are written where Glim's are, in the
+bubble at the foot (`NudgeWords`, a context the foot reads), because a note drawn over the foot covered the very
+button it pointed at. A thing that is finished and left alone for eight seconds has its tick pointed out, once
+for that step.
+
+**A grown-up is helping** (`game/helping.ts`). One fact for the life of a tab, like the front door's: on, or
+off. It is switched in three places a grown-up looks — the pause screen of any activity, the bar of "how to
+play", and a tick box in the grown-ups' area — and in the two that a child can reach it is **held down to
+change, either way** (`HoldToggle` in `ui/controls.tsx`): a tap does nothing, so a small finger neither switches
+it on (and has every answer of the visit set aside) nor off (and has helped answers counted as the child's own).
+The lesson runner asks at each answer (`RunnerDeps.adultHelping`), the engine writes the attempt down with
+`assistance: 'adult'`, and nothing so written is ever counted as done alone. While it is on, the activity's
+pause button shows the grown-ups' mark and says so in its name.
+
+**Where to begin** (`game/placement.ts`, `parent/WhereToBegin.tsx`). For the grown-up who knows the child. A
+player's settings may hold two things: `observed`, what a grown-up says they have seen (six things, each
+`seen` or `not-yet`, and absent until they say: "not yet observed" is the absence of a word, never a word of
+its own), and `startAt`, where Play begins in a world (a lesson's id). The game suggests a beginning from what
+was seen (`suggestedStarts`: counting five things passes over "counting to five"; hearing first sounds begins
+the letters; knowing letters' sounds begins blending; knowing a letter by its shape suggests nothing, since its
+sound is another matter), and offers it only if it is further on than where Play begins now. The grown-up
+takes it or chooses any activity. `nextLessonIn(world, done, startAt)` is the whole of its effect: the first
+activity not yet finished from there on, and, once all of those are, the first not yet finished before it.
+Nothing is marked as done, no activity is closed, and nothing is written into the record of attempts — which
+is the only place "what a child has shown" is read from. There is no quiz: beside each thing is a link to the
+real activity in which to watch the child try it.
 
 ### Music
 

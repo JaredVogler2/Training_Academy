@@ -8,20 +8,20 @@ hosted on Vercel. There is no account, no server, no advertising and no tracking
 
 **Seven places have something to do: 62 short activities, 714 challenges, a voice, and music.** Six islands, and
 a music room in the lighthouse between them. Phases 01 to 03 of 17 are done (the foundation, the look, the
-journey in); phases 04 and 07 to 10 are each partly done, which here means that every activity the islands'
-pages promised is built and tested, and that each phase's brief asks for more than that; phase 05, Reading Cove,
-is built as far as a short sentence, and phase 06, Number Garden, as far as adding and taking away within ten;
-and phase 11, the Music Lab, is built.
+journey in); phase 04 is built (the voice, and help for a child's first visit); phases 07 to 10 are each partly
+done, which here means that every activity the islands' pages promised is built and tested, and that each
+phase's brief asks for more than that; phase 05, Reading Cove, is built as far as a short sentence, and phase
+06, Number Garden, as far as adding and taking away within ten; and phase 11, the Music Lab, is built.
 [`docs/PROGRESS.md`](docs/PROGRESS.md) sets each brief against what exists. It is built from the plan in
 [`prompt-series/`](prompt-series/README.md).
 
-**Three things to know before relying on it.** No person has listened to any of it: the voice's 552 recordings
+**Three things to know before relying on it.** No person has listened to any of it: the voice's 564 recordings
 were made by a speech synthesiser and checked by a speech recogniser, and the Music Lab's notes are made by
 arithmetic as they are played and have been checked by nothing with ears. No child and no teacher has seen any
 of it. And not all of it is live: the owner's Vercel deployment serves `main`, which has had the six islands
-since 2026-11-23 and, since 2026-11-25, the Music Lab with its room to play in and Number Garden's numerals;
-Reading Cove's six later activities (rhyme to a sentence) are on an open pull request and reach the site only
-when that is merged.
+since 2026-11-23 and, since 2026-11-25, the Music Lab with its room to play in, Number Garden's numerals and
+Reading Cove's six later activities (rhyme to a sentence); the help for a first visit is on an open pull
+request and reaches the site only when that is merged.
 [`docs/CONTINUE_HERE.md`](docs/CONTINUE_HERE.md) says exactly what was and was not verified.
 
 ![The home screen: a lighthouse and six small islands in a turquoise sea, each with its name under it, and a small glowing guide in a rowing boat pointing at the one that is open](docs/review/phase-02/hub-3d-1366x768.jpg)
@@ -29,6 +29,10 @@ when that is merged.
 What works today:
 
 - a visit opens on a front door: Glim waves, and the child says who is playing by tapping a picture;
+- someone who has never played is shown how, once, before the islands: Glim shows three things and the child
+  does each — tap the one that is asked for; tap a picture and it goes to its place, then the tick; tap Glim to
+  have it shown again. The house passes it by at any moment. (Everything in the game is a tap; nothing is
+  dragged);
 - the home screen is the map: a lighthouse and six modelled islands, each of the seven a button. It is drawn in
   real-time 3D where the device can, and as a picture rendered from the same models where it cannot;
 - Glim, the guide, who demonstrates, points, wonders, celebrates and waits patiently, says what is asked in a
@@ -51,9 +55,14 @@ What works today:
 - in every activity: Glim shows it first, some steps are done with help at hand and some alone; a wrong answer is
   taught, never marked wrong; help, pause and the way home are always there; and what was done unaided at the
   first try is recorded apart from everything else;
+- when a child's taps land on nothing — the picture that is asked about, the words — the activity shows what
+  can be pressed: every answer alike, never the right one. It is not a hint and nothing is recorded;
+- a grown-up who sits down to help says so by holding a switch (on the pause screen, or on "how to play"), and
+  what is answered while it is on is written down as helped, never as done alone;
 - players (a nickname and a picture), saving on the device, and resuming where a child left off;
-- a grown-ups area: players, what each has shown world by world, every recording to listen to and mark, save and
-  load a copy, erase, device settings, diagnostics;
+- a grown-ups area: players, where Play begins for each (a grown-up who has seen a child count five things can
+  have Number Garden begin past that; nothing is closed and nothing is counted by it), what each has shown world
+  by world, every recording to listen to and mark, save and load a copy, erase, device settings, diagnostics;
 - sound and calm-motion switches, keyboard use, names and announcements for screen readers (not yet tried with
   one), and offline use after the first visit.
 

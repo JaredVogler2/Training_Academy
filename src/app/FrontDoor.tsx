@@ -1,11 +1,18 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { playCue } from '@/audio';
 import { AVATAR_IDS, type AvatarId } from '@/engine/schema';
-import { createProfile, setActiveProfile, type ProfilesState } from '@/game/profiles';
+import type { Profile } from '@/engine/schema';
+import {
+  createProfile,
+  isNewToTheGame,
+  setActiveProfile,
+  type ProfilesState,
+} from '@/game/profiles';
 import { Guide } from '@/ui/Guide';
 import { AvatarPicture } from '@/ui/art';
 import { recordError } from './diagnostics';
 import { begin } from './journey';
+import { navigate } from './navigation';
 import { avatarNames, ui } from './strings';
 import styles from './FrontDoor.module.css';
 
@@ -19,6 +26,8 @@ const OPENING_MS = 700;
  * It is one tap, on a picture, with nothing to read. That tap is also the first touch the browser needs before it
  * will make any sound, so the game is heard from here on. Adding more players, renaming and removing them belong to
  * the grown-ups' area, behind its press-and-hold.
+ *
+ * Someone who has never played goes from here to "how to play", once; everyone else, to the islands.
  */
 export function FrontDoor({ profiles }: { profiles: ProfilesState }) {
   const [opening, setOpening] = useState(false);
@@ -31,15 +40,27 @@ export function FrontDoor({ profiles }: { profiles: ProfilesState }) {
     return () => window.clearTimeout(timer);
   }, [opening]);
 
-  const choose = (save: () => Promise<unknown>) => {
+  const choose = (save: () => Promise<Profile>) => {
     // One choice: a second finger, or a second tap while the first is being saved, changes nothing.
     if (chosen.current) return;
     chosen.current = true;
     playCue('hello');
     void save()
+      .then(isNewToTheGame)
       // A device that cannot save still plays; the grown-ups' area says plainly that it is not saving.
-      .catch((error: unknown) => recordError('storage', error))
-      .then(() => setOpening(true));
+      .catch((error: unknown) => {
+        recordError('storage', error);
+        return false;
+      })
+      .then((fresh) => {
+        if (!fresh) {
+          setOpening(true);
+          return;
+        }
+        // Someone who has not played before: Glim shows them how, before the islands.
+        begin();
+        navigate({ name: 'how-to' });
+      });
   };
 
   const ready = profiles.status === 'ready';
@@ -90,7 +111,7 @@ export function FrontDoor({ profiles }: { profiles: ProfilesState }) {
                       style={{ '--order': index } as CSSProperties}
                       aria-label={ui.playAs(player.name)}
                       data-avatar={player.avatar}
-                      onClick={() => choose(() => setActiveProfile(player.id))}
+                      onClick={() => choose(() => setActiveProfile(player.id).then(() => player))}
                     >
                       <span className={styles.face}>
                         <AvatarPicture avatar={player.avatar} />

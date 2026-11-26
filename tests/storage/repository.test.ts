@@ -146,6 +146,36 @@ describe.each(BACKEND_NAMES)('repository on %s', (name) => {
       expect(await repo.getProfile(profile.id)).toEqual(updated);
     });
 
+    it('keeps what a grown-up has said about where to begin, and that how to play has been shown', async () => {
+      const profile = await repo.createProfile({ name: 'Sam', avatar: 'sun' });
+      const settings = {
+        sessionMinutes: null,
+        observed: { 'counts-to-five': 'seen', 'letter-sounds': 'not-yet' },
+        startAt: { 'number-garden': 'ng-give-02' },
+        howTo: 'seen',
+      } as const;
+      const updated = await repo.updateProfile(profile.id, { settings });
+      expect(updated.settings).toEqual(settings);
+      expect((await repo.getProfile(profile.id))?.settings).toEqual(settings);
+      // They are settings like any other: taken away by saving the settings without them.
+      const cleared = await repo.updateProfile(profile.id, { settings: { sessionMinutes: null } });
+      expect(cleared.settings).toEqual({ sessionMinutes: null });
+    });
+
+    it.each([
+      ['something seen that is not on the list', { observed: { 'reads-novels': 'seen' } }],
+      ['something seen in a word that is not one of the two', { observed: { taps: 'mastered' } }],
+      ['a beginning in a world there is not', { startAt: { 'maths-mountain': 'ng-give-02' } }],
+      ['a beginning that is not the name of an activity', { startAt: { 'number-garden': 7 } }],
+      ['"how to play" in any state but shown', { howTo: 'skipped' }],
+    ])('refuses %s, and keeps the player as they were', async (_label, extra) => {
+      const profile = await repo.createProfile({ name: 'Kit', avatar: 'sun' });
+      await expect(
+        repo.updateProfile(profile.id, { settings: { sessionMinutes: null, ...extra } as never }),
+      ).rejects.toBeInstanceOf(StorageError);
+      expect(await repo.getProfile(profile.id)).toEqual(profile);
+    });
+
     it.each([
       ['an empty name', { name: '   ', avatar: 'sun' }],
       ['a very long name', { name: 'x'.repeat(40), avatar: 'sun' }],

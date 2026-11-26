@@ -140,6 +140,25 @@
   gap: 10px;
 }
 
+/* A switch that is held to change: the same fill, clipped to the round button by a layer of its own. */
+.holdToggle {
+  isolation: isolate;
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+
+.holdClip {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+:root[data-motion='reduced'] .holdToggle.holding .holdFill {
+  transition-duration: var(--hold-seconds) !important;
+}
+
 /* Modal */
 .modal {
   width: min(92vw, 26rem);

@@ -55,6 +55,8 @@ import {
   IconTrash,
   IconUpload,
 } from '@/ui/icons';
+import { Select } from './Select';
+import { WhereToBegin } from './WhereToBegin';
 import { describeEvidence, grownUpText as text } from './text';
 import styles from './GrownUps.module.css';
 
@@ -414,9 +416,8 @@ function DeviceSettings() {
       </label>
       <div className={styles.field}>
         <label htmlFor={motionId}>{text.motion}</label>
-        <select
+        <Select
           id={motionId}
-          className={styles.input}
           value={settings.motion}
           onChange={(event) => store.set({ motion: event.target.value as MotionOption })}
         >
@@ -425,13 +426,12 @@ function DeviceSettings() {
               {text.motionOptions[option]}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
       <div className={styles.field}>
         <label htmlFor={graphicsId}>{text.graphics}</label>
-        <select
+        <Select
           id={graphicsId}
-          className={styles.input}
           value={settings.graphics}
           onChange={(event) => store.set({ graphics: event.target.value as GraphicsOption })}
         >
@@ -440,7 +440,7 @@ function DeviceSettings() {
               {text.graphicsOptions[option]}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
     </section>
   );
@@ -576,6 +576,7 @@ function Area() {
       <p className={styles.lead}>{text.privacy}</p>
 
       <Players onDialog={setDialog} />
+      <WhereToBegin key={`begin-${playing?.id ?? 'nobody'}`} profile={playing} />
       <Evidence key={playing?.id ?? 'nobody'} profile={playing} />
       <Data profile={playing} onDialog={setDialog} />
       <DeviceSettings />

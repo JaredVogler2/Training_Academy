@@ -1,17 +1,130 @@
 # Quality report
 
-This file has six parts. The first is the review of Reading Cove's later activities, from rhyme to a sentence
-(the second half of phase 05). The second is the review of Number Garden's later activities, the ones that
-bring numerals in (the second half of phase 06). The third is the review of the Music Lab (phase 11). The
-fourth is the review of the six worlds and the voice (phases 04 to 10). The fifth is Phase 03's review of what
-Phase 03 built. The sixth is Phase 02's report on the home screen, kept as it was written, because it is still
-the assessment of the hub.
+This file has seven parts. The first is the review of the help for a first visit (the rest of phase 04). The
+second is the review of Reading Cove's later activities, from rhyme to a sentence (the second half of phase
+05). The third is the review of Number Garden's later activities, the ones that bring numerals in (the second
+half of phase 06). The fourth is the review of the Music Lab (phase 11). The fifth is the review of the six
+worlds and the voice (phases 04 to 10). The sixth is Phase 03's review of what Phase 03 built. The seventh is
+Phase 02's report on the home screen, kept as it was written, because it is still the assessment of the hub.
 
 All are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
 reading of screenshots and of the running game in headless Chromium. Nobody else has reviewed it, no child has
 played it, **no person has listened to the voice**, and it has never run on a real graphics card. The owner has
 opened the live site (Phase 03) on an iPhone; nothing in this file comes from a device. The standard it is rated
 against is `docs/ART_DIRECTION.md`.
+
+## Phase 04, the rest (2026-11-25): help for a first visit
+
+### Summary
+
+Phase 04 asked for a voice and for a way in for a child who cannot read and may never have used a screen. The
+voice was built first. This is the way in, and it is four things, none of them a world:
+
+- **How to play.** Someone who has never played is taken from the front door to a page where Glim shows three
+  things and the child does each: tap the one that is asked for; tap a picture and it goes to its place, then
+  the tick; tap Glim to have a thing shown again. Then the arrow, which is the way on everywhere.
+- **Help with the screen.** When a child's taps land on nothing, an activity points out what can be pressed.
+- **A grown-up is helping.** A switch a grown-up holds down, after which answers are written down as helped.
+- **Where to begin.** In the grown-ups' area: what a grown-up has seen the child do, and where Play begins.
+
+**Two things the brief asked for are not here, on purpose, and a reader should know it before reading on.** It
+asked for a demonstration of dragging: nothing in this game is dragged. Every board answers a tap, because a
+tap is within reach of a hand that cannot yet hold a thing down and move it; what is shown instead is the tap
+that puts a picture in its place. And it asked for a few sample questions to place a child. There are none. A
+handful of questions on a first visit is a test of how a child takes to a new screen; the grown-up's word, and
+a link to the real activity to watch the child try, do that work here.
+
+**And the risk is the usual one, stated plainly: no child has been near it.** "How to play" is the first
+thing a new player meets, so it is the part of the game where being wrong costs most.
+
+### How it was made, which bears on how far to trust it
+
+In one working tree, by one hand, straight after Reading Cove. "How to play" is drawn with the lesson's own
+parts (the same classes, the same tick, the same arrow, Glim as the same button), so it cannot drift from what
+an activity looks like; but it does not go through the engine, and its rules are a file of their own, written
+and tested as data before any screen was drawn. It was then looked at in the running build at four screen
+sizes, changed, and looked at again. Eighty-six faults were put back, one at a time, to see the tests fail;
+seven of the tests did not, and were themselves at fault.
+
+Four faults in the game were found by tests and by nothing else. On the phone's screen the showing ran short
+and its lines ran into one another, because it asked how long each line lasts a moment before the voice was
+awake. It would have been heard at once by anyone listening, and nobody is listening: that is the state of
+the whole project in one bug. The other three were found by running everything on every screen: a hand two
+pixels below the foot of a phone held sideways, a bell whose swing left a small phone's screen, and "shown"
+written down too late to survive the page being left at once.
+
+### The review
+
+Looked at in the running production build at 390×844, 640×256 and 1366×768, and measured at six sizes:
+`docs/review/first-visit/`, 18 pictures. 1 = poor, 3 = acceptable, 5 = excellent.
+
+| Category             | Rating | Why                                                                                                                                                                                                                                             |
+| -------------------- | :----: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composition          |   4    | An activity's own layout, so nothing is new to the eye when the first real activity opens. One thing on the stage at a time. The bell, the last of the three, stands alone in a box with a good deal of air round it on a tall phone.           |
+| Craft and materials  |  3.5   | Kit pictures (a sun, a fish, an apple, a hen, a bell) and the lesson's cards. Nothing was drawn for it. Glim's hand is the small pointing hand the boards already use; it is plain, and on a large screen it is small beside what it points at. |
+| Cohesive palette     |   4    | The harbour's colours and the kit's. Sun yellow means "this, now" as it does everywhere: the lit choice, the arrow, the ring of a nudge, the nudge's words in Glim's bubble.                                                                    |
+| Liveliness           |   3    | The hand bobs, a chosen card settles, the bell swings when it is rung, Glim celebrates. Between those nothing moves, and a picture does not travel to its place: it is in the tray and then it is in the place.                                 |
+| Interface legibility |   4    | Everything a child presses is 56 points or more on every screen shape, measured by the tests. The grown-up's switch is a grown-up's size and sits where the pause button will be.                                                               |
+| Motion quality       |  3.5   | Each showing is a hand on a thing and then the thing happening, in time with the line that says it. With the sound off each line still gets its time. Seen in a browser, never against the sound.                                               |
+| The sound            |   —    | **Not rated.** Twelve new lines, heard by a recogniser and by nobody.                                                                                                                                                                           |
+| Child comprehension  |   —    | **Not rated.** No child has seen it.                                                                                                                                                                                                            |
+
+Measured, in pixels, in headless Chromium (across, high):
+
+| What is pressed                            | 320×568  | 390×844  | 844×390  | 640×256  | 768×1024 | 1366×768 |
+| ------------------------------------------ | :------: | :------: | :------: | :------: | :------: | :------: |
+| A picture to choose                        | 296, 107 | 366, 184 | 257, 241 | 192, 107 | 354, 430 | 430, 293 |
+| A picture to put in its place              | 145, 179 | 180, 225 | 190, 241 | 143, 107 | 355, 393 | 429, 267 |
+| A place                                    | 133, 155 | 164, 205 | 180, 221 | 133, 87  | 339, 361 | 414, 238 |
+| Glim, the "show me again" button           |  85, 80  |  85, 80  |  75, 71  |  75, 71  | 120, 114 | 120, 114 |
+| The tick                                   |  64, 64  |  64, 64  | 144, 56  | 144, 56  | 144, 56  | 144, 56  |
+| The arrow                                  |  64, 64  |  64, 64  | 142, 56  | 142, 56  | 142, 56  | 142, 56  |
+| The house, the way out                     |  56, 56  |  56, 56  |  56, 56  |  56, 56  |  56, 56  |  56, 56  |
+| Glim's hand (it is not pressed; it points) |  44, 44  |  44, 44  |  44, 44  |  44, 44  |  44, 44  |  44, 44  |
+| The grown-up's switch, here and on pause   |  48, 48  |  48, 48  |  48, 48  |  48, 48  |  48, 48  |  48, 48  |
+| A box to choose in, in "where to begin"    | 232, 48  | 302, 48  | 620, 48  | 518, 48  | 620, 48  | 620, 48  |
+
+Everything a child presses is 56 points or more in both directions at every size. What a grown-up presses is
+48, which is this project's size for grown-ups' controls.
+
+### Seen — cause — fix
+
+| Seen                                                                                                     | Cause                                                                                                                                    | Fix                                                                                                                                    |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| On a phone, the words of a nudge lay across the arrow they were pointing at                              | They were a note drawn over the foot of the screen, in the middle                                                                        | They are written where Glim's words are, in the bubble at the foot, in the sun colour. Nothing is drawn over anything                  |
+| The showing ran short on the phone's screen, and each line began on the last word of the one before      | How long each line lasts was asked once, as the page opened: a moment before the tap that brought the child there had woken the voice    | Each beat's wait is worked out when the beat before it has happened                                                                    |
+| On a phone held sideways, with Glim's hand on Glim, the page was a pixel or two taller than the screen   | The hand hangs a little below whatever it points at, as it does under a card; under the foot of the screen there is nothing to hang into | At the foot of the screen the hand stands inside what it points at. A test holds it still at its lowest, on every screen, and measures |
+| On a phone 360 wide, for most of a second after the bell was rung, the page could be pushed sideways     | A square that turns is wider, corner to corner, than it was: the bell's swing reached 16 points past the edge                            | What swings inside the box stays inside it                                                                                             |
+| A child shown "how to play" to its end was shown it all again, if the page was left the instant it ended | That the player had been shown was written down as the page was left, and the page had gone before the writing was done                  | It is written as soon as the last of the three things is done                                                                          |
+| The bell's box filled the whole stage, a tall dashed frame round a small bell                            | It was given the room a question's picture and its choices share                                                                         | It is as large as it needs to be, in the middle                                                                                        |
+| Under "placing", four lines of words at the foot of a phone                                              | Both of its lines were written at once: where the picture goes, and what the tick is for                                                 | One at a time: the line about the tick is written once everything is in its place, which is also when it is said                       |
+| A switch that sets aside every answer of a visit could be flipped by a stray tap                         | It was drawn as the pause screen's other switches are: tap to change                                                                     | It is held down to change, either way. A tap, by anyone, does nothing to it                                                            |
+| "Tap the arrow when you want a turn" was heard by the recogniser as "…when you want to turn"             | "a turn" and "to turn" are one sound apart                                                                                               | The line is "Tap the arrow, and then it is your turn."                                                                                 |
+| A child who keeps tapping a picture would have been told "Tap one of these" every third tap              | The line was said whenever the ring was shown                                                                                            | The ring comes back each time; the line is said once for a step, and a line kept back while Glim was talking is said the next time     |
+
+### What is still wrong or weak
+
+- **Nobody has watched a child meet it.** Whether three things shown once each by a hand and a voice are
+  followed by a three-year-old; whether half a minute is too long to wait for the first island; whether a child
+  taps the hand instead of the thing under it. All unknown, and this is the page where it matters most.
+- **Three kinds of tap are shown, and the game has more kinds of board.** Pairs to turn over, a robot's steps to
+  lay down, a beat to tap, a place on a map, a thing to mend: each is shown only by its own activity's first
+  step. "How to play" teaches the commonest three and the arrow.
+- **A picture does not travel to its place.** It is in the tray, and then it is in the place. The line says "it
+  goes to its place"; what is seen is that it is there. A short flight would say it better and is not built.
+- **The hand is small on a large screen**: 44 points beside a card that is 300 across on a desktop.
+- **Where to begin is rules of thumb.** Three of them, written here by nobody who teaches, and each passes over
+  everything before the chosen activity, not only what was seen. The card says so in its own words, and a
+  grown-up can choose any activity instead.
+- **The numbers in the nudge are guesses.** Three taps, eight seconds, five seconds on the screen, eight seconds
+  before a tick is pointed out. A child who taps a picture because it is a picture is told what to press.
+- **"A grown-up is helping" lasts the visit.** Left on, a child's later answers alone are written down as
+  helped. The only sign is the mark on the pause button. It errs towards claiming too little, which is the
+  right way to err, and it is still an error.
+- **The hold is not a lock.** A child who holds a finger on the grown-up's mark for a second and a fifth
+  changes it. So is the gate to the grown-ups' area; neither is described as more than it is.
+- **A tab closed in the middle of "how to play" brings it back** at the next visit, until the child has done
+  it, passed it by, or begun an activity. That is meant; whether it is welcome is not known.
 
 ## Phase 05, second half (2026-11-25): rhyme to a sentence in Reading Cove
 

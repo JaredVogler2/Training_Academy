@@ -1,5 +1,5 @@
 import { avatarNames } from '@/app/strings';
-import type { EvidenceStatus, SkillEvidence } from '@/engine';
+import type { EvidenceStatus, Observation, Seen, SkillEvidence } from '@/engine';
 import type { GraphicsOption, MotionOption } from '@/app/settings';
 
 const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
@@ -54,6 +54,48 @@ export const grownUpText = {
     'provisionally-independent': 'Independent so far',
     'consistently-independent': 'Independent across days',
   } satisfies Record<EvidenceStatus, string>,
+
+  begin: (name: string) => `Where ${name} begins`,
+  beginHelp:
+    'You know this child; the game does not yet. If they can already do some of this, the big Play button can begin further on. It is only where Play begins: every activity stays open on its island’s page, and nothing here is counted as something they have shown. That comes only from what they do in the game.',
+  seenTitle: 'What you have seen them do',
+  seenHelp:
+    'Leave anything you are not sure of as “Not yet observed”. To find out, watch them try the activity named beside it.',
+  observations: {
+    taps: 'Taps the thing they mean to',
+    listens: 'Listens to what the voice says',
+    'counts-to-five': 'Counts five things, touching each one once',
+    'first-sounds': 'Hears the first sound of a word: “sun” begins with sss',
+    'letter-shapes': 'Knows some letters by their shape or their name',
+    'letter-sounds': 'Knows the sound some letters stand for',
+  } satisfies Record<Observation, string>,
+  /** The three things a grown-up can say of each. */
+  notObserved: 'Not yet observed',
+  seen: {
+    seen: 'Yes, I have seen this',
+    'not-yet': 'Not yet',
+  } satisfies Record<Seen, string>,
+  watchIn: (activity: string) => `Watch them try: ${activity}`,
+  tapsNote:
+    'Glim shows how to play at the very start, and can show it again whenever you like. In any activity, the pause button has “A grown-up is helping”: what you help with is then not counted as theirs.',
+  listensNote:
+    'Everything Glim says is also shown, so most of the game can be played with the sound off. An activity that is about listening needs the sound, and says so when it opens.',
+  howToAgain: 'Show how to play',
+  suggest: (world: string, activity: string) =>
+    `From what you have seen, Play in ${world} could begin at “${activity}”.`,
+  beginThere: 'Begin there',
+  startsTitle: 'Where Play begins',
+  startsHelp:
+    'Once everything from there on has been finished, Play goes back to what was passed over.',
+  startOf: (world: string) => `${world}: Play begins at`,
+  atTheBeginning: 'The beginning',
+  beginsAt: (activity: string) => `Play begins at “${activity}”.`,
+  partOf: (activity: string, part: number) => `${activity}, part ${part}`,
+  beginSaved: 'Saved.',
+  togetherTitle: 'Playing together',
+  helpingToday: 'I am helping today: do not count answers as theirs alone',
+  helpingHelp:
+    'It stays on for this visit, and every activity shows it on its pause button, which is also where it is switched off.',
 
   data: 'Saved data',
   dataBody:

@@ -3,8 +3,9 @@ import { settingsStore, useReducedMotion, useSettings } from '@/app/settings';
 import { ui } from '@/app/strings';
 import { playCue } from '@/audio';
 import { Guide } from '@/ui/Guide';
-import { ActionButton, ActionLink, ToggleButton } from '@/ui/controls';
+import { ActionButton, ActionLink, HoldToggle, ToggleButton } from '@/ui/controls';
 import {
+  IconGrownUps,
   IconHome,
   IconMotionCalm,
   IconMotionOn,
@@ -22,8 +23,23 @@ import styles from './Lesson.module.css';
  * It is a modal dialog, so nothing behind it can be tapped or reached by the keyboard, and Escape carries on. It is
  * also what a child comes back to after the phone has been away in another app: the tap that carries on is the
  * touch a phone needs before it will make sound again.
+ *
+ * It is also where a grown-up says that they are helping. That is theirs to say: while it is on, what is answered
+ * is written down as answered with help, and is not counted as something the child did alone. It lasts for the
+ * visit, and is held down to change, so that a small finger does not switch it either way.
  */
-export function PauseSheet({ open, onResume }: { open: boolean; onResume: () => void }) {
+export function PauseSheet({
+  open,
+  onResume,
+  helping,
+  onHelping,
+}: {
+  open: boolean;
+  onResume: () => void;
+  /** A grown-up has said they are helping with this sitting. */
+  helping: boolean;
+  onHelping: (helping: boolean) => void;
+}) {
   const ref = useRef<HTMLDialogElement>(null);
   const settings = useSettings();
   const reducedMotion = useReducedMotion();
@@ -96,7 +112,19 @@ export function PauseSheet({ open, onResume }: { open: boolean; onResume: () => 
                 playCue('tap');
               }}
             />
+            {/* A grown-up's to set, so it is held to change: a tap, by anyone, does nothing to it. */}
+            <HoldToggle
+              pressed={helping}
+              label={lessonText.helping}
+              stateText={helping ? lessonText.helpingOn : lessonText.helpingOff}
+              icon={<IconGrownUps />}
+              onChange={(on) => {
+                onHelping(on);
+                playCue(on ? 'on' : 'off');
+              }}
+            />
           </div>
+          {helping && <p className={styles.pauseNote}>{lessonText.helpingNote}</p>}
         </div>
       )}
     </dialog>

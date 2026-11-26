@@ -177,6 +177,48 @@
   font-size: 1rem;
 }
 
+/*
+ * A select, in a box of its own that cuts off whatever runs past it: Safari lays a select's words out at their full
+ * length under the control, and the page would be as wide as they are (see Select.tsx). The edge and the ring that
+ * says where the keyboard is belong to the box, where nothing cuts them off.
+ */
+.select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 2px solid var(--ink-faint);
+  border-radius: var(--radius-s);
+  background: var(--white);
+}
+
+.select > select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-height: calc(var(--tap-small) - 4px);
+  padding: 8px 14px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  color: var(--ink);
+  background: transparent;
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select:has(:focus-visible) {
+  outline: 4px solid var(--ink);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--white);
+}
+
+.select > select:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 .avatars {
   display: flex;
   flex-wrap: wrap;
@@ -234,6 +276,55 @@
   width: 26px;
   height: 26px;
   accent-color: var(--ink);
+}
+
+/* Where to begin: what a grown-up has seen, and where Play begins in each world */
+.part {
+  margin: 6px 0 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.observations,
+.starts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.observation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  justify-items: start;
+  padding: 14px 16px;
+  border-radius: var(--radius-m);
+  background: var(--white);
+}
+
+.observation label {
+  font-weight: 800;
+}
+
+/* Said, one way or the other: a heavier edge as well as the word in the box. */
+.observation[data-seen] {
+  box-shadow: inset 6px 0 0 var(--ink-faint);
+}
+
+.observation[data-seen='seen'] {
+  box-shadow: inset 6px 0 0 var(--number-deep);
+}
+
+.suggestion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  justify-items: start;
+  padding: 12px 16px;
+  border-left: 6px solid var(--sun);
+  border-radius: var(--radius-s);
+  background: var(--paper-warm);
 }
 
 /* What the player has shown: world by world */

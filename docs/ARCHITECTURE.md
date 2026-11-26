@@ -637,6 +637,36 @@ it again with the same model, so that what is watched is what the child's answer
 it. Nothing is stored for the portfolio and nothing in it can go out of date: it is the record, read another
 way. Where motion is reduced a tap plays nothing and the picture is of how the test came out.
 
+**The room for making a story** (`content/explorer-harbor/storymaker.json` and `storymaker.ts`;
+`game/worlds/explorer-harbor/StoryRoom.tsx`, `telling.ts`, `storyScenes.tsx`, `storyParts.tsx`). It is the
+third room, at `/world/explorer-harbor/room`, and a part of its own, fetched by whoever opens it. It is not a
+lesson and does not go near the engine: nothing in it has an answer. Four things make it.
+
+- _What a story can be_ is one file of data and pure functions over it: `nextTurn`, `choicesAt`, `pagesOf`,
+  `pageLines`, `askOf`, and `everyStory`, which walks every way through for the tests. A story is five
+  optional names (`who`, `where`, `seed`, `trouble`, `ending`), and everything else is read from them, so
+  there is no state that can disagree with itself. The content generator writes the same lines from the
+  same file for the voice, and a test holds the two to one another, to the letter.
+- _What is shown and said, moment by moment_ is a script, as in a lesson (`telling.ts`, built with the
+  lesson's `Writer` and played by its `useScript`): after a choice, the page it made is turned to and told
+  line by line, and then the next question is put. The beats are the lesson's own, read as a book reads them:
+  a picture lifted (`name`, with `which: 'page-2'`) is a page being told; a thing with so many parts in place
+  (`do`) is the book lying open at that page. Nothing is offered to choose from while a page is being told,
+  and the scripts are tested for that at every step of every story without a screen. They are `essential`:
+  they play where less motion is asked for, because they are what the room is for; only the leaf does not
+  turn.
+- _A picture_ is put together, not stored: `StoryPicture` draws a place, then the scene's back, then one of
+  three animals where the scene puts it and with the face the scene gives it, then the scene's front. There
+  are 42 scenes (six beginnings, twelve troubles, twenty-four endings) and so 216 pages, none of them a
+  file. A picture to choose from is the page the story would have if it were chosen, drawn the same way.
+- _The book_ shows one page and, when the page changes, a leaf: the page that was there turning away over a
+  hinge on the left with the next already under it (or, going back, the earlier page turning in). It is CSS
+  alone, and where less motion is asked for there is no leaf.
+
+Nothing is written down by the room. What a grown-up says of it, that a child told a story back in their own
+words, is the same held switch as _what a grown-up says was tried_ (above), under the key `eh-make-story`: a
+word beside the record, never in it.
+
 ### Music
 
 The Music Lab's notes are not files. `AudioEngine.tone(timbre, frequency, { at? })` builds one stroke of an

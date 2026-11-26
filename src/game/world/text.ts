@@ -23,6 +23,10 @@ export const worldText = {
   tried: 'We tried this',
   holdToSay: 'Hold to say you tried this together.',
   triedOn: (day: string) => `Tried on ${day}. That is your word: the game did not see it.`,
+  /** The same for a story told back: what a grown-up holds to say so, and what is written once they have. */
+  told: 'They told it back',
+  holdToSayTold: 'Hold to say your child told a story back in their own words.',
+  toldOn: (day: string) => `Told back on ${day}. That is your word: the game did not hear it.`,
   couldNotSave: 'That could not be saved on this device.',
   laterHeading: 'Rooms that have not been built',
   notBuilt: 'Not built',

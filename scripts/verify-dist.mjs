@@ -32,8 +32,13 @@ const BUDGET_KB = {
   /**
    * Everything in dist but the voice and the content, uncompressed: the game itself. It grows when code or
    * pictures are added, and a jump in it is a library or a picture that was not meant to be there.
+   *
+   * It was 2700 until Explorer Harbor's room for making a story, which brought 109 kB with it and took the
+   * game to 2796: forty-two drawn scenes, three animals and three places, the book they are shown in, and the
+   * list of seventy-five more recordings. The room is a part of its own (12 kB compressed), fetched only by
+   * whoever opens it. The limit was moved for that, on purpose, and stands as far above the game as it did.
    */
-  totalRaw: 2700,
+  totalRaw: 2850,
   /**
    * The content together, uncompressed: every challenge of every world, written out, and the outlines of the
    * continents for Explorer Harbor's globe. This is meant to grow, an activity at a time; each pack is fetched
@@ -42,8 +47,13 @@ const BUDGET_KB = {
   contentRaw: 900,
   /** One clip of the voice (MP3, measured as it is): a sentence or a word, never a recording of any length. */
   voiceClip: 60,
-  /** Every clip of the voice together. Each is fetched only when it is first wanted, and kept after that. */
-  voiceTotal: 9000,
+  /**
+   * Every clip of the voice together. Each is fetched only when it is first wanted, and kept after that.
+   *
+   * It was 9000 until a story to make up, which is told aloud: 75 lines, the longest of them two sentences, and
+   * 1453 kB. A device has only the lines of the stories that have been made on it.
+   */
+  voiceTotal: 10500,
 };
 
 /** Chunks that must never be part of the first load. */
@@ -59,6 +69,10 @@ const LAZY_ONLY = [
   /^GrownUps-/,
   /^VoiceCheck-/,
   /^engine-play-/,
+  // The rooms: a room is opened by whoever wants it, and the story room is forty-two drawings.
+  /^StoryRoom-/,
+  /^Portfolio-/,
+  /^Room-/,
   // A world's own code and its content pack, whichever world it is.
   /^(reading-cove|number-garden|robot-ridge|memory-forest|inventor-island|explorer-harbor)/,
 ];

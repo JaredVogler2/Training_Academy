@@ -20,10 +20,12 @@ export interface WorldInfo {
   activities: Activity[];
   role: WorldRole;
   /**
-   * A room of the world's own, where it has one: a place to play freely (the Music Lab's), or to look at what
-   * has been made (Inventor Island's). Nothing is asked there. `note` is for the grown-up.
+   * A room of the world's own, where it has one: a place to play freely (the Music Lab's), to look at what has
+   * been made (Inventor Island's), or to make up a story (Explorer Harbor's). Nothing is asked there. `note` is
+   * for the grown-up. `told` is where a grown-up's word is kept that a child told a story back in their own
+   * words: beside what they say was tried away from the screen, and like it counted nowhere.
    */
-  room?: { title: string; note: string };
+  room?: { title: string; note: string; told?: string };
   /**
    * More that could be built here one day and has not been. It is listed for the grown-up, plainly as not built,
    * and nothing on the page leads to it.
@@ -190,7 +192,7 @@ export const WORLDS: readonly WorldInfo[] = [
     name: 'Explorer Harbor',
     focus: 'Stories and the wide world',
     about:
-      'Stories told in pictures — beginning, middle and end, and why things happen — first ideas about a map: land and water, near and far — and a globe of the real world, with its seven big lands and fifteen famous places.',
+      'Stories told in pictures — beginning, middle and end, and why things happen — and a story of your child’s own to make up; first ideas about a map: land and water, near and far; and a globe of the real world, with its seven big lands and fifteen famous places.',
     activities: [
       {
         title: 'Beginning, middle, end',
@@ -245,6 +247,11 @@ export const WORLDS: readonly WorldInfo[] = [
       },
     ],
     role: 'explorer',
+    room: {
+      title: 'Make a story',
+      note: 'Your child makes up a story by tapping pictures: who it is about, where it happens, what they want, what goes wrong and how it comes right. It is told aloud a page at a time, and every choice is a good one: nothing is marked, nothing is counted and nothing is kept. Afterwards, ask them to tell it back to you in their own words; the three small pictures turn to each page.',
+      told: 'eh-make-story',
+    },
   },
   {
     id: 'music-lab',

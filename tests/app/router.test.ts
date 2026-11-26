@@ -29,8 +29,8 @@ describe('routes', () => {
     });
   });
 
-  it('knows the room of its own that two worlds have: one to play in, one to look at what was made', () => {
-    expect(ROOMS).toEqual(['music-lab', 'inventor-island']);
+  it('knows the room of its own that three worlds have: to play in, to look at what was made, to make a story in', () => {
+    expect(ROOMS).toEqual(['music-lab', 'inventor-island', 'explorer-harbor']);
     expect(parsePath('/world/music-lab/room')).toEqual({ name: 'room', world: 'music-lab' });
     expect(toPath({ name: 'room', world: 'music-lab' })).toBe('/world/music-lab/room');
     expect(parsePath('/world/inventor-island/room')).toEqual({
@@ -38,6 +38,11 @@ describe('routes', () => {
       world: 'inventor-island',
     });
     expect(toPath({ name: 'room', world: 'inventor-island' })).toBe('/world/inventor-island/room');
+    expect(parsePath('/world/explorer-harbor/room')).toEqual({
+      name: 'room',
+      world: 'explorer-harbor',
+    });
+    expect(toPath({ name: 'room', world: 'explorer-harbor' })).toBe('/world/explorer-harbor/room');
     // A world with no room has no such page, and a room has nothing beyond its door.
     for (const path of ['/world/number-garden/room', '/world/music-lab/room/extra']) {
       expect(parsePath(path)).toEqual({ name: 'not-found', path });

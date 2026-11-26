@@ -3,11 +3,11 @@
 Everything in this file was actually run. Where something was not run, it says so.
 
 - **Date:** 2026-11-26
-- **Code under test:** `main` as the owner merged it on 2026-11-26 (pull request #14: Inventor Island's
-  shelter, a grown-up's word and the portfolio), with the pull request this document came with (#15):
-  Explorer Harbor's globe, the seven big lands and fifteen famous places, and what CI's last two runs led
-  to. The release check below was run on that tree. What was run on the live site was run on what was live,
-  and says so.
+- **Code under test:** `main` as the owner merged it on 2026-11-26 (pull request #15: Explorer Harbor's
+  globe, the seven big lands and fifteen famous places), with the pull request this document came with
+  (#16): Explorer Harbor's room for making a story, and what CI's run on that merge led to, which is the
+  globe's turn, mended. The release check below was run on that tree. What was run on the live site was run
+  on what was live, and says so.
 - **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright 1.63.0
   with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
 - **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium and WebKit builds that Playwright 1.63.0 installs.
@@ -29,29 +29,44 @@ Result of the last local run: **passed.**
 | `npm run format:check` | clean                                                                                                                           |
 | `npm run lint`         | no errors, no warnings                                                                                                          |
 | `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                  |
-| `npm test`             | **2396 tests in 74 files, all passed**                                                                                          |
-| `npm run build`        | built; 760 files in `dist/`, 660 of them the voice's recordings                                                                 |
-| `npm run verify:dist`  | **1670 checks, all passed** (sizes below)                                                                                       |
-| `npm run test:e2e`     | **1471 browser tests in one go: 1231 passed, 240 skipped by design, none failed** (Chromium, seven screen shapes, 55.5 minutes) |
+| `npm test`             | **2438 tests in 77 files, all passed**                                                                                          |
+| `npm run build`        | built; 839 files in `dist/`, 735 of them the voice's recordings                                                                 |
+| `npm run verify:dist`  | **1834 checks, all passed** (sizes below)                                                                                       |
+| `npm run test:e2e`     | **1505 browser tests in one go: 1264 passed, 241 skipped by design, none failed** (Chromium, seven screen shapes, 58.3 minutes) |
 
 **What the browser tests were run on, exactly.** The whole suite was run in one go, in Chromium on all seven
-screens, on the final tree: **1471 tests, 1231 passed, 240 skipped by design, none failed** (55.5 minutes). By
-screen: desktop 416 passed, phone 507, the tablet, the small phone and the phone held sideways 60 each, and
-the two Android shapes 64 each. The 240 skip themselves and say why: 163 on the desktop, which are
-measurements made once, as a touch phone (136 of them the sizes of what is pressed), the tests only Safari's
-engine can run, and the globe turned in the hand; 72 on the phone, which are the activities played to their
-ends once, on the desktop (59), the keyboard journeys, and the tests of the tests' own guard and limits, which
-are run once; and one on each of the other five screens, the globe turned in the hand again, which is tried
-once, as a phone. One of the 1231 is the test that is built to fail by the guard and by nothing else, on the
-desktop: it failed, and failing is what it is for. Nothing was changed after the run but documents. The unit
-tests, the build, its checks and the rehearsal of the update are of the same tree. **WebKit is CI's**, as
-always.
+screens, on the tree with the room for making a story in it: **1505 tests, 1264 passed, 241 skipped by
+design, none failed** (58.3 minutes). By screen: desktop 429 passed, phone 522, the tablet, the small phone
+and the phone held sideways 61 each, and the two Android shapes 65 each. The 241 skip themselves and say why:
+167 on the desktop, which are measurements made once, as a touch phone (136 of them the sizes of what is
+pressed, and four the room's on its four smallest screens), the tests only Safari's engine can run, and the
+globe turned in the hand; and 74 on the phone, which are the activities played to their ends once, on the
+desktop (59), the keyboard journeys, every way through a story, which is walked once, and the tests of the
+tests' own guard and limits, which are run once. None is skipped on the other five screens any more: the
+globe turned in the hand was listed there and passed over, and is now listed only where it is run. One of the
+1264 is the test that is built to fail by the guard and by nothing else, on the desktop: it failed, and
+failing is what it is for.
 
-The suite is 1471 tests, 69 more than it was. On each of the two screens that run everything, 27: the
-globe's twelve, eight more measurements of sizes, the three new lessons each played to its end and each
-checked for accessibility, and one test of the tests' own page limit. On each of the other five, the globe's
-three layout tests. Before this run, as the work went, the specs it touched were run on the desktop and the
+**One thing was changed after that run, and it is not a document.** While the suite ran, the owner merged
+pull request #15, and CI's run on that merge had a test of the globe pass only at a second attempt (_Run 54_,
+below). The cause was a fault in the game. It was mended in `GlobeBoard.tsx`, a test was written for it and
+shown to fail without the mending, and **the globe's tests were then run again on all seven screens: 36
+tests, 34 passed, 2 skipped by design, none failed** (13 each as a desktop and as a phone, with one passed
+over on each, and two on each of the other five). The rest of the suite was not run again: nothing else
+draws the globe. The unit tests, the build, its checks and the rehearsal of the update are of the tree as
+it is committed. **WebKit is CI's**, as always.
+
+The suite is 1507 tests, 36 more than it was. On each of the two screens that run everything, 18: the
+room's seventeen (fourteen written, one of them on four sizes of screen) and the globe's turn that the page
+stops in the middle of. On each of the other five the count is as it was: the room's one test of layout
+came, and the globe's test for an upright phone went from the list. The test of the notch visits the room
+on every screen. Before the run, as the work went, the specs it touched were run on the desktop and the
 phone more than once, and those runs are not counted here.
+
+**Before that, with Explorer Harbor's globe.** The whole suite was run in one go, in Chromium on all seven
+screens, on the tree with the globe in it: **1471 tests, 1231 passed, 240 skipped by design, none failed**
+(55.5 minutes). By screen: desktop 416 passed, phone 507, the tablet, the small phone and the phone held
+sideways 60 each, and the two Android shapes 64 each.
 
 **Before that, with Inventor Island's shelter.** The whole suite was run in one go, in Chromium on all seven
 screens, on the tree with Inventor Island's shelter, record and portfolio in it: **1402 tests, 1181 passed,
@@ -902,6 +917,124 @@ and the lesson takes no second answer while it is busy with the first. The guard
 | In a browser, on the phone: sideways, the globe is laid out as it is upright; the turning buttons stand over the globe's lower corners                                                                                                                                                                                                                                                                                                        | "held the other way, the globe and its pins are laid out again and are still right"       |
 | In the tests' own tools: a page is waited for as long as its test has (**did not build at first: written again**); a numeral shows its dots all the time; the snails are never said to be being counted                                                                                                                                                                                                                                       | the page limit's test, after 2.2 minutes; the mended numbers test                         |
 
+### What Explorer Harbor's room for making a story added to the tests, and what the tests found
+
+42 unit tests and 17 browser tests on each of the two screens that run everything (fourteen written, one of
+them on four sizes of screen), with one of them on each of the other five and the room added to the test of
+the notch. The unit tests are of what a story can be (`tests/content/storymaker.test.ts`: the five turns,
+what is offered at each, every way through walked from nothing chosen to the last page, the lines every page
+is told with, and that the lines the voice was made from are the lines the game shows, to the letter); of
+what is shown and said after each choice, as scripts, with a voice and with none
+(`tests/game/storyTelling.test.ts`: at every one of the 139 stages a story can be at, nothing is offered to
+choose from while a page is being told, and something that can be acted on is always said last); and of the
+pictures (`tests/game/storyPictures.test.tsx`: all 216 pages drawn, the one it is about glad, then not, then
+glad, and no two things a child chooses between drawn alike).
+
+The browser tests make a story by five taps and listen to every line of it in order; make all 24 stories
+there are for one of the three, holding what is offered at each turn to the content; watch a leaf turn going
+on and going back; hold the clock and watch a page being told, with nothing to choose from and its room
+kept; tap Glim at a question and in the middle of a telling; turn to a page by its small page; make a story
+with the sound off, switch the sound on and off again; make one where nothing is to move, and one from the
+keyboard; find nothing stored afterwards; measure everything that can be pressed, and the book itself at
+every turn of the story with the most words, on the four smallest screens; run the accessibility checks at
+three moments; and hold the switch on the harbour's page that says a story was told back.
+
+**What the tests found in the new work.**
+
+- **Glim's button lay over the first picture to choose, by 1.3 points, on the flattest phone.** Found by the
+  size test at its first run (640 by 256). The button was seven points taller than Glim, because Glim was a
+  piece of a line of text inside it and a line has its own height. Glim is a block there now.
+- **The two buttons at the end were 170 points tall on a narrow phone**, and the book 24 points smaller for
+  it. Found by measuring every part of the room at every turn. They had been given the columns the pictures
+  have, and their words broke over three lines. Each is now as wide as its own word, and the words were
+  shortened to "Again" and "New story" (the buttons are still called "Hear it again" and "A new story").
+- **The book changed size from one turn to the next on a narrow phone**: 159 points tall while a story was
+  made and 151 at its end, because what Glim says grew from two lines to three. Room for three is kept from
+  the start. **The first try at that did nothing**: the rule for narrow phones stood in the stylesheet above
+  the rule it changes. A check added to the size test, that the book is where it was and the size it was
+  after every choice, failed and said so.
+- **Switched on at the end, the sound told the whole story over again.** Found when the test of the sound
+  switch was changed to wait a moment longer. The room plays again whatever it played last when the sound
+  comes on, so that a question put before the first touch is heard after it; at the end of a silent
+  retelling, that was the retelling. The switch now has the room say where the story has got to, and
+  nothing more.
+- **On the harbour's page, the words for grown-ups were one letter wide.** Found by looking at a picture of
+  the page, and by no test: nothing overflowed and nothing was hidden. The switch that says a story was told
+  back asked for a second column, as the same switch has in the list above it; the section then had two, and
+  every other thing in it (a heading, a paragraph) was put in the one with no width. Under a room's note the
+  switch now has the section's one column, and the test of the switch measures every part of that section.
+  **The first check written for it passed with the fault put back**: it measured three paragraphs, and they
+  were three that had landed in the wide column. It measures them all now.
+- **A recording ran over the seven seconds a line is allowed** (7.16), and a second was within a twentieth
+  of a second of it. Found by the test of the voice's files. Both lines were made shorter.
+- **A shorter closing line was heard wrongly.** "…Hear it again, or make a new one." came back from the
+  recogniser as "…hear it again, we'll make a new one" in five takes of five. The line went back to the
+  wording it hears rightly, and the room it needed was found another way (above).
+
+**Measured, in CSS pixels**, with the story that has the most words, at each of its six moments. The book is
+the same size at all six on every screen.
+
+| Screen   | The book | A picture, of three | A picture, of two | A small page | Glim's button | The two at the end |
+| -------- | -------- | ------------------- | ----------------- | ------------ | ------------- | ------------------ |
+| 320×568  | 214×146  | 93×63               | 134×91            | 82×56        | 83×71         | 111×56 and 143×56  |
+| 360×740  | 336×228  | 106×72              | 164×111           | 82×56        | 83×71         | 111×56 and 143×56  |
+| 390×844  | 366×249  | 116×79              | 178×121           | 82×56        | 83×71         | 111×56 and 143×56  |
+| 640×256  | 271×184  | 86×58               | 90×61             | 82×56        | 72×62         | 107×56 and 139×56  |
+| 750×342  | 306×208  | 102×69              | 121×82            | 82×56        | 72×62         | 107×56 and 139×56  |
+| 844×390  | 377×256  | 116×79              | 138×94            | 82×56        | 72×62         | 107×56 and 139×56  |
+| 768×1024 | 674×458  | 214×146             | 221×150           | 82×56        | 83×71         | 111×56 and 143×56  |
+| 1024×768 | 484×329  | 181×123             | 181×123           | 82×56        | 83×71         | 111×56 and 143×56  |
+| 1366×768 | 484×329  | 181×123             | 181×123           | 82×56        | 83×71         | 111×56 and 143×56  |
+
+Nothing that can be pressed is under 56 in either direction, and no two share any of the screen. On the
+narrowest phone upright the page is 214 across, which is the smallest the book is anywhere. On a desk it is
+484 where there is room for twice that: the room is laid out as it is on a tablet and does not grow.
+
+**What was wrong with the new tests, found by putting faults back.** 78 faults were put back, one at a
+time: 46 against the unit tests and 32 in a browser. **72 were caught at once** by the test meant for them.
+The other six each taught something.
+
+- **One was not a fault.** Meant to make two endings one picture, it moved an animal a little to the right.
+  Written again, as every ending drawn as the first of its two, it was caught.
+- **Four found a test weaker than its name.** A bear drawn as a fox was still "different from the fox",
+  because the pictures were compared with their labels on, and one said bear: they are compared now by what
+  is drawn. "Keeps the room for what will be offered" measured that room before a page was told and after,
+  when the pictures were in it both times, and never while it was empty: it is measured then now. And "tells
+  the whole story again from the first" asked which page the book was at after the telling had been
+  announced, by which time a book that had begun at its last page had turned to its first: the page is now
+  written down in the page itself at the moment each line begins. And the check that the words for
+  grown-ups are as wide as their part of the page measured three paragraphs, which were three that had
+  landed in the column that was wide: it measures every part now.
+- **One found a rule that was not needed.** On the flattest phone Glim had been made smaller, to cure the
+  1.3 points by which its button lay over a picture. Taken out, nothing failed: making Glim a block, done at
+  the same time, had cured it already. The rule is gone, and that fault (Glim as a piece of a line of text)
+  is caught.
+
+| The fault                                                                                                                                                                                                                                                                                                                                                          | Caught by                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| The turns are taken from the last; every beginning is offered in every place; the endings offered are those of the first trouble; a page is made when the place is chosen; the last page does not say it ended well; everyone is Fox at the end; what they want is asked as who it is about; a trouble is called by its beginning; not every way through is walked | `storymaker.test.ts`, one to eight tests each (and the tests of the telling and the pictures beside) |
+| In the content: a line calls someone he; a way through has one ending; an ending is a telling-off; a line is too long to say in a breath or two; two choices at a turn are called alike; the game words a line differently from the voice                                                                                                                          | the test of each, and "are what the voice was made from, to the letter"                              |
+| The page a choice made is not turned to; the fourth choice is taken to make the first page again; what there is to choose from is offered while the page is told; the first line does not wait for the page to turn; it does not play where less motion is asked for; a whole story is followed by nothing                                                         | `storyTelling.test.ts`, the test of each; the third by the test of all 139 stages                    |
+| Told again: it does not say that it will be; it is announced over the last page, or before the page has turned; the pages come in the wrong order; in silence they go by as fast as they turn; aloud each waits as if nothing were heard                                                                                                                           | the three tests of a whole story told again                                                          |
+| A page asked for is left as if the story were at its end; any page number is a page of the book; a book can lie open at no page; the question again tells the page again; the lines of the pages are not fetched ahead                                                                                                                                             | the test of each                                                                                     |
+| Whoever it is about is glad on every page; the second page is the first over again; an ending has no scene; the place is not drawn; a page not reached is drawn as the beginning; any name an object has is a beginning; a word is written in a picture; someone on a blank page has the beach round them; a picture is read out by a screen reader                | `storyPictures.test.tsx`, the test of each                                                           |
+| Every ending is drawn as the first of its two (**first written as something that was no fault**); the bear is drawn as the fox (**caught by nothing at first: the pictures were compared by their labels**); the forest is drawn as the garden; what they want is not drawn on the first page                                                                      | "are all different pictures", "are different for each of the three", "shows each of the three"       |
+| Explorer Harbor has no room                                                                                                                                                                                                                                                                                                                                        | the router's test; in a browser, every test of the room                                              |
+| In a browser: a choice is drawn without what was chosen before; a picture to choose has no name; a page is not told when it is made                                                                                                                                                                                                                                | "is made by five taps on pictures"; the accessibility checks                                         |
+| In a browser: every beginning is offered in every place                                                                                                                                                                                                                                                                                                            | "offers what the content says at every turn, and every way through comes to an end"                  |
+| In a browser: choices are offered while a page is being told; the line being said is not marked; the room for what will be offered is not kept (**caught by nothing at first: the room was measured only when it was full**)                                                                                                                                       | "takes no choice while a page is being told"                                                         |
+| In a browser: Glim, tapped at a question, tells the page again; Glim, tapped while a page is told, only asks the question                                                                                                                                                                                                                                          | the two tests of Glim                                                                                |
+| In a browser: the small pages can be pressed before the story is whole; a small page pressed tells the whole story; the first page is not among them until it is whole                                                                                                                                                                                             | "has three small pages"                                                                              |
+| In a browser: no leaf turns back; no leaf turns at all; told again, it is announced over the last page (**caught by nothing at first: the page was asked for too late**)                                                                                                                                                                                           | "turns a page with a leaf, going on and going back"                                                  |
+| In a browser: a leaf turns where nothing is to move                                                                                                                                                                                                                                                                                                                | "no leaf turns: the page is simply the next one"                                                     |
+| In a browser: the sound switch switches nothing; switched on, the room tells over again what it told in silence; with the sound off the question is not written down either                                                                                                                                                                                        | "works with the sound off"                                                                           |
+| In a browser: the keyboard is not handed on when the choices change; a new story begins with the old one                                                                                                                                                                                                                                                           | "can be made from the keyboard"                                                                      |
+| In a browser: a choice is written down on the device                                                                                                                                                                                                                                                                                                               | "keeps nothing"                                                                                      |
+| In a browser, on the phone: the pictures to choose from are small on the flattest phone; Glim is a piece of a line of text there, and its button seven points taller; the foot keeps no room for three lines on a narrow phone; the two end buttons have the columns the pictures have                                                                             | the size tests on 640 by 256 and 320 by 568, the last two by the book having moved                   |
+| In a browser, on the phone: Glim is as small on the flattest phone as it was made (**caught by nothing: the rule was not needed, and is gone**)                                                                                                                                                                                                                    | nothing                                                                                              |
+| In a browser, on the phone: the room goes up under a notch                                                                                                                                                                                                                                                                                                         | "every screen keeps what a child sees and presses clear of the notch"                                |
+| On the harbour's page: there is no switch for a story told back; the switch says it was tried; the switch asks for a second column (**the first check for it passed with the fault back: it measured three paragraphs that had landed in the wide column**)                                                                                                        | "is a switch they hold to say a story was told back"                                                 |
+
 ## Continuous integration
 
 Every push to a pull request, and to `main`, runs thirteen jobs (`.github/workflows/ci.yml`): lint, types, unit
@@ -1686,6 +1819,111 @@ it is in the next.
 The first part of Chromium's desktop and tablet took 18.3 minutes, where it took 16.1 in run 51 and 14.5 in
 run 50. It is the part with the most to play, and it grows with every activity; it has 40 minutes.
 
+**Run 53** is the first run on pull request #15 (`8ae92f3`: Explorer Harbor's globe, the half-minute limit
+on a page, and the mended Number Garden test). **All thirteen jobs passed**, in 18.3 minutes. Eleven
+artifacts are between 0.56 and 0.78 MB; WebKit's desktop and tablet, first half, is 22.5 MB. **One test
+passed only at its second attempt**, and it was read.
+
+| Job                                              | Result                                 | The whole job (minutes) |
+| ------------------------------------------------ | -------------------------------------- | ----------------------- |
+| Lint, types, unit tests, build                   | passed                                 | 1.8                     |
+| Chromium, desktop and tablet, in three parts     | passed                                 | 15.9, 18.3 and 10.2     |
+| Chromium, the phone, in two halves               | passed                                 | 16.8 and 16.1           |
+| Chromium, the small phone and the phone sideways | passed                                 | 12.7                    |
+| Chromium, the Pixel, upright and sideways        | passed                                 | 16.4                    |
+| WebKit, desktop and tablet, in two halves        | passed, one test at its second attempt | 14.1 and 16.3           |
+| WebKit, the phone, in two halves                 | passed                                 | 13.5 and 13.5           |
+| WebKit, the iPhone, upright and sideways         | passed                                 | 16.6                    |
+
+**It was the page that never comes, a tenth time, and it cost half a minute where it had cost two.**
+`howto.spec.ts`, "is shown one moment after another, and nothing can be tapped until Glim has shown it", as
+WebKit's desktop: the test's first line asks for the front door, and nothing comes. The attempt ended after
+30.2 seconds with "page.goto: Timeout 30000ms exceeded", and the guard's note was with it, as it now is for
+a test that fails with a page still owed: "out of time: the last page asked for had not been read yet; 1
+unanswered: document / (asked for 30.0 s before; the browser reported no answer at all; requests for / that
+reached the server after that: at +0.0 s from Macintosh, answered in 0 ms; at +22.2 s from Macintosh,
+answered in 0 ms; at +24.7 s from Macintosh, answered in 0 ms); the page stood at about:blank; the test that
+had the browser before this one: [webkit-desktop] a grown-up is helping › answers given before and after it
+was on are still the child's own". The two later requests are other tests' in the other worker: every test
+asks for `/`. At its second attempt the page came in a third of a second. **Still not explained**: ten
+times in ten tests after ten different tests, always a test's first page, always CI's WebKit, and each time
+the server has the request and answered it at once. What has changed is the cost, which is what the limit
+was for: that job's 322 tests took 12.9 minutes. Only that one report was fetched; the other eleven are the
+size a report is when nothing was run twice.
+
+**Run 54** is `main` after the owner merged pull request #15 (`64a507b`), at 15:19:15 UTC: 38 minutes after
+run 53 went green. **All thirteen jobs passed**, in 20.7 minutes. Ten artifacts are between 0.53 and 0.76 MB;
+Chromium's desktop and tablet, first part, is 2.9 MB, and WebKit's desktop and tablet, first half, is 14.5 MB.
+**Two tests passed only at a second attempt**, and both were read. One is the page that never comes. **The
+other was a fault in the game.**
+
+| Job                                              | Result                                 | The whole job (minutes) |
+| ------------------------------------------------ | -------------------------------------- | ----------------------- |
+| Lint, types, unit tests, build                   | passed                                 | 2.0                     |
+| Chromium, desktop and tablet, in three parts     | passed, one test at its second attempt | 20.7, 17.9 and 10.5     |
+| Chromium, the phone, in two halves               | passed                                 | 16.6 and 16.6           |
+| Chromium, the small phone and the phone sideways | passed                                 | 12.3                    |
+| Chromium, the Pixel, upright and sideways        | passed                                 | 13.9                    |
+| WebKit, desktop and tablet, in two halves        | passed, one test at its second attempt | 13.3 and 14.8           |
+| WebKit, the phone, in two halves                 | passed                                 | 13.3 and 13.3           |
+| WebKit, the iPhone, upright and sideways         | passed                                 | 14.4                    |
+
+**In WebKit it was the page that never comes, an eleventh time.** `garden.spec.ts`, "how many, at a glance:
+asked to be told again before the look is over, starts over with the look still to come", as WebKit's desktop.
+The test's first line asks for the activity by its address, and nothing comes: "page.goto: Timeout 30000ms
+exceeded", and with it the guard's note: "out of time: the last page asked for had not been read yet; 1
+unanswered: document /world/number-garden/play/ng-glance-01 (asked for 30.0 s before; the browser reported no
+answer at all; requests for /world/number-garden/play/ng-glance-01 that reached the server after that: at +0.0
+s from Macintosh, answered in 1 ms; at +2.2 s from Macintosh, answered in 1 ms); the page stood at
+about:blank; the test that had the browser before this one: [webkit-desktop] how many, at a glance › asking to
+be told again in one step takes nothing from the next". The second request is another test's, in the other
+worker: the tests of that activity all begin at that address. At its second attempt the page came. **Still not
+explained**: eleven times in eleven tests, always a test's first page, always CI's WebKit, and each time the
+server has the request and answered it at once. It cost half a minute, which is what the limit is for.
+
+**In Chromium it was the globe, and the globe was wrong.** `globe.spec.ts`, "turning the globe: two buttons
+turn it a step at a time, and they are not answers", as the desktop. The test presses the button that turns
+the globe to the left and waits for the globe to have looked 40 degrees to the left of where the question is
+asked from. It never did. What the page wrote down of where the globe looked, after the press:
+
+```
+-22.1  -27.9  -33.1  -37.8  -41.9  -45.5  -48.6  -46.8  -45.0  -43.3  …      (it was sent to -61.2)
+```
+
+Seven frames of a turn that starts fast and slows, a sixtieth of a second apart, and then the globe going
+back the way it came, at the pace of the turn it makes by itself when a pin has gone out of sight. **The
+cause was in how that turn back was timed.** A turn by a button takes a third of a second; where it leaves a
+pin out of sight the globe waits 1.6 seconds and turns back, so that a child can look round the world and
+never lose the question. The wait was counted from the press, as one timer of 1.92 seconds, the turn and the
+wait together. A page that stops for two seconds in the middle of the turn, as a machine with something else
+to do stops one, wakes with the timer already due and the turn not yet finished; and where the browser
+attends to the timer first, the globe goes half-way and comes back.
+
+**It was shown before it was mended.** A script pressed the button, stopped the page a tenth of a second into
+the turn for 2.1 seconds, and wrote down where the globe looked. On the build before the change, three times
+of three, the globe got as far as -49.3 and turned back: CI's numbers, but for where the first frame fell.
+With a stop of 1.5 seconds, shorter than the timer, it finished the turn. With no stop it finished the turn.
+On the build after the change, with stops of 2.1 and 3.5 seconds, it finished the turn every time.
+
+**The change** (`GlobeBoard.tsx`): whether a pin has gone out of sight is asked when the globe has got where
+it was sent, and the wait before it turns back is counted from then. A turn that something else takes over (a
+finger, another press) is followed by nothing, as before. A turn with nothing in its way takes exactly as
+long as it did.
+
+**The test for it** stops the page in the same way, for longer than the turn and the wait together, and holds
+three things: the globe gets where it was sent; it had begun to turn before the page stopped; and it is left
+there for the whole of the wait. With the change taken out it fails as a desktop with CI's own picture ("-23.8
+-29.4 -34.5 -39.0 -43.0 -46.4 -49.4 -47.8 -45.9 -44.1 …"), and as a phone the other way the race can go: the
+globe does arrive, in the frame the page wakes in, and leaves 8.5 thousandths of a second later. With the
+change it passed six times of six. **The test's own first draft had a race in it, which its first run as a
+phone found**: it asked whether the globe was back where it started straight after the press, when the globe
+had not yet begun to turn and was still there. It now waits for the globe to have got where it was sent
+before it asks anything else, as the older test's helper does.
+
+**This fault is live**, from the merge of pull request #15 until the pull request this came with is merged.
+What a child loses by it is one turn of the globe, on a device that stops at the wrong moment; the next
+press turns it. The older test was right to fail, and was not changed.
+
 **Phase 03** is pull request [#4](https://github.com/JaredVogler2/Training_Academy/pull/4). The first run with
 the whole phase in it to pass was [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45093042202)
 below, on `d2e644c`: **all three jobs passed, with no failed test and no retry.**
@@ -1814,7 +2052,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 2396)
+## What the unit tests cover (Vitest, 2438)
 
 | Area                                                               | Files                                                                                                                                                                                                                                           | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1850,6 +2088,8 @@ failures were the useful part:
 | **A grown-up is helping** (Phase 04, the rest)                     | `tests/game/helping.test.ts`, `tests/game/lessonRunner.test.ts`, `tests/app/components.test.tsx`, `tests/ui/modal.test.tsx`                                                                                                                     | Off until said; kept for the visit and not beyond; every answer while it is on written down as helped and none counted as the child's own; asked at each answer; the switch is held to change, either way                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | **A shelter, a grown-up's word, a portfolio** (Phase 09, the rest) | `tests/engine/models.test.ts`, `tests/game/inventorIsland.test.ts`, `tests/content/inventorIslandRules.test.ts`, `tests/game/placement.test.ts`, `tests/game/portfolio.test.ts`, `tests/storage/repository.test.ts`, `tests/app/router.test.ts` | The shelter held to set-ups worked out by hand, to its mirror, to its directions, and to refusing what it does not know; where everything in its picture stands and which way it falls, and the same in words; that only where the prop stands against the wind decides a guess, and that walls are mended from both sides; what a grown-up says was tried, said, taken back and kept by every kind of storage; the last thing mended and not the first, nothing drawn that did not work, guesses counted at the first guess; a day in words; two rooms                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | **Telling after the press** (after run 49)                         | `tests/app/audioUnlock.test.ts`, `tests/app/audio.test.ts`                                                                                                                                                                                      | The audio is awake by the time anything further along a press is given it, and nobody has been told; whoever listens is told once, afterwards, for a run of presses, and again after the next; the engine can be woken without telling and tells when asked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **A globe** (Phase 10, the rest)                                   | `tests/content/globe.test.ts`, `atlas.test.ts`, `explorerHarborRules.test.ts`, `tests/game/globePictures.test.tsx`                                                                                                                              | Where a place is on a ball looked at from far away, whether it faces us, how a finger turns it, and what a land's shape is by itself; the seven continents' outlines held to the world by 51 places on land and 21 at sea; nineteen rules, each with a question that breaks it; fifteen drawings, and words that never name a land                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **A story to make up** (Phase 10, the rest)                        | `tests/content/storymaker.test.ts`, `tests/game/storyTelling.test.ts`, `storyPictures.test.tsx`, `tests/app/router.test.ts`                                                                                                                     | Five turns, and what is offered at each; every way through walked to its end, 72 of them; a line for every page of every one, the same in the game as in the voice's list; what is shown and said after each choice, with a voice and with none, and nothing to choose from while a page is told; 216 pages each with its picture, glad then worried then glad, and no two things chosen between drawn alike                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ## What the browser tests cover (Playwright, against the production build)
 
@@ -1864,11 +2104,11 @@ it.) Exceptions are named one by one in `e2e/fixtures.ts`
 
 | Project (engine)                                                          | Screen                     | Tests                                                                                                         |
 | ------------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `desktop` (Chromium)                                                      | 1366×768                   | all 579 (the measurements of what is pressed, and eight tests for a small touch screen, skip themselves here) |
-| `phone` (Chromium, touch)                                                 | 390×844                    | all 579 (keyboard journeys, and the activities played to their ends, skip themselves here)                    |
+| `desktop` (Chromium)                                                      | 1366×768                   | all 596 (the measurements of what is pressed, and eight tests for a small touch screen, skip themselves here) |
+| `phone` (Chromium, touch)                                                 | 390×844                    | all 596 (keyboard journeys, and the activities played to their ends, skip themselves here)                    |
 | `phone-landscape`, `tablet`, `small-phone` (Chromium, touch)              | 844×390, 768×1024, 360×740 | the 61 layout tests each                                                                                      |
 | `android`, `android-landscape` (Chromium as a Pixel 7)                    | 412×839, 863×360           | the 61 layout tests and the 4 journeys each                                                                   |
-| `webkit-desktop`, `webkit-phone` (WebKit)                                 | 1366×768, 390×844          | all 579 each, in CI only (what needs the 3D scene or the service worker skips itself)                         |
+| `webkit-desktop`, `webkit-phone` (WebKit)                                 | 1366×768, 390×844          | all 596 each, in CI only (what needs the 3D scene or the service worker skips itself)                         |
 | `iphone`, `iphone-landscape`, `ipad` (WebKit as an iPhone 13 and an iPad) | 390×664, 750×342, 810×1080 | the 61 layout tests and the 4 journeys each, in CI only                                                       |
 
 The named devices are Playwright's descriptions of them: the screen the device's browser leaves a page with its
@@ -1906,33 +2146,41 @@ phone 360 pixels wide leaves a page about 264 to 280. `phones.spec.ts` tests bot
 | `begin.spec.ts` (the first-visit help)       | **Where to begin**: a suggestion moves nothing until it is taken; Play is then the chosen activity; every activity is still there, none marked done, the first still opens; nothing is written into what the child has shown; kept at the next visit; one player's, not the device's                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `music.spec.ts` (the Music Lab)              | A question that is listened to takes no answer until the last of it has been heard, and no tap in the middle of it; a wrong answer is told only that it was not the one, and it is played again; a beat is kept by tapping the drum in time with the lights, by touch or with a mouse; a steady lateness is not counted against the child, and a beat left alone is not marked as wrong; notes are played back in the order they sounded; any tune of the shape asked for is taken, and one of another shape is left where it is to be changed; the room has the whole octave, lights a bar when it is played and keeps nothing; where the sound is off, what cannot be played by eye says so. The bars and the drum measured on every screen                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `sizes.spec.ts`                              | **What a child presses is large enough to press, where there is least room.** One activity for each kind of board, 34 of them, on four screens (844 by 390, 750 by 342, 640 by 256 and 320 by 568): every button and link inside the activity, measured while a question is being asked, is 56 points or more across and down, and none is off the screen. Measured once, as a touch phone                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `globe.spec.ts` (Explorer Harbor's globe)    | **Every pin is where the content says its land is, with the globe wherever it has been turned to**; the three pins and the two turning buttons are large enough and clear of one another; the land that is found is lit and looked at, and a famous place is put where it is; a land that is only named has nothing to match until help is asked for; a finger pulls the globe and a pin under the finger is not pressed; a pin pressed straight after a flick is pressed; turned until a pin is out of sight, it cannot be pressed, and the globe comes back; two buttons and the arrow keys turn it, and the keyboard is never left with nothing; held the other way it is laid out again; where nothing is to move it is simply where it should be; and on the flattest phone                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `globe.spec.ts` (Explorer Harbor's globe)    | **Every pin is where the content says its land is, with the globe wherever it has been turned to**; the three pins and the two turning buttons are large enough and clear of one another; the land that is found is lit and looked at, and a famous place is put where it is; a land that is only named has nothing to match until help is asked for; a finger pulls the globe and a pin under the finger is not pressed; a pin pressed straight after a flick is pressed; turned until a pin is out of sight, it cannot be pressed, and the globe comes back; two buttons and the arrow keys turn it, and the keyboard is never left with nothing; **a turn by a button is finished however long the page stops in the middle of it**; held the other way it is laid out again; where nothing is to move it is simply where it should be; and on the flattest phone                                                                                                                                                                                                                                                                                                                                                               |
+| `story.spec.ts` (Explorer Harbor's room)     | **A story is made by five taps on pictures, and every line of it is heard in order**; all 24 stories there are for one of the three are made, with what is offered at each turn held to the content; a leaf turns going on and going back, and each line is said over its own page; nothing can be chosen while a page is told, and its room is kept; Glim says a question again, and tells a page again from the top when tapped in the middle of it; three small pages turn the book once the story is whole and not before; with the sound off the pages turn and the words are there, and the sound has a switch; where nothing is to move no leaf turns; the keyboard is never left with nothing; nothing is stored; everything that can be pressed is measured, and the book at every turn of the wordiest story, on the four smallest screens; the accessibility checks at three moments; and on the harbour's page, the switch a grown-up holds to say a story was told back, with every part of the grown-ups' section measured                                                                                                                                                                                           |
 
 ## Sizes (`npm run verify:dist`)
 
-| What                                                    | Size (gzip) | Budget  |
-| ------------------------------------------------------- | ----------- | ------- |
-| Script for the first screen                             | 106.9 kB    | 110 kB  |
-| Styles for the first screen                             | 7.4 kB      | 12 kB   |
-| Fonts                                                   | 67.2 kB     | 80 kB   |
-| The hub's pictures (WebP, not gzipped)                  | 284.0 kB    | 330 kB  |
-| 3D hub (on demand)                                      | 260.1 kB    | 290 kB  |
-| Largest other on-demand part (Explorer Harbor's code)   | 21.1 kB     | 30 kB   |
-| The game: everything but the voice and the content, raw | 2686.8 kB   | 2700 kB |
-| The content: seven packs and the atlas, raw             | 716.5 kB    | 900 kB  |
-| The voice: 660 recordings (MP3, not gzipped)            | 7882 kB     | 9000 kB |
-| The largest recording                                   | 32.8 kB     | 60 kB   |
+| What                                                    | Size (gzip) | Budget   |
+| ------------------------------------------------------- | ----------- | -------- |
+| Script for the first screen                             | 107.1 kB    | 110 kB   |
+| Styles for the first screen                             | 7.4 kB      | 12 kB    |
+| Fonts                                                   | 67.2 kB     | 80 kB    |
+| The hub's pictures (WebP, not gzipped)                  | 284.0 kB    | 330 kB   |
+| 3D hub (on demand)                                      | 260.1 kB    | 290 kB   |
+| Largest other on-demand part (Explorer Harbor's code)   | 18.2 kB     | 30 kB    |
+| The game: everything but the voice and the content, raw | 2795.8 kB   | 2850 kB  |
+| The content: seven packs and the atlas, raw             | 716.5 kB    | 900 kB   |
+| The voice: 735 recordings (MP3, not gzipped)            | 9335 kB     | 10500 kB |
+| The largest recording                                   | 38.6 kB     | 60 kB    |
 
-A world's code is 4.5 to 21.1 kB and its content 5.4 to 12.4 kB, each fetched on entering that world
+A world's code is 4.5 to 18.2 kB and its content 5.4 to 12.4 kB, each fetched on entering that world
 (Inventor Island's are 4.5 and 6.0, and its portfolio 1.7, fetched by whoever opens it; Explorer Harbor's
-code is the 21.1, with 37 story pictures and fifteen famous places drawn in it; the
-continents' outlines are a file of their own beside it, 12.1 kB, counted with the content); the lesson frame is
+code is the 18.2, with 37 story pictures and fifteen famous places drawn in it; the continents' outlines are
+a file of their own beside it, 12.1 kB, counted with the content; and its room for making a story is 12.5 kB,
+with its 42 scenes, fetched by whoever opens it); the lesson frame is
 9.3 kB and the part of the engine that judges answers 6.4 kB, fetched with the first activity; and a
 recording is fetched when the step that may say it arrives.
 
-**Three of these are worth watching.** The game's own code is 2687 kB of the 2700 it is allowed, and one
-world still has a room to gain: the limit will have to be raised for it, and the commit that raises it must
-say why. The script for the first screen is 106.9 kB of the 110 it is allowed, and
+**Two limits were raised for the room for making a story, on purpose.** The game's own code was 2687 kB of
+the 2700 it was allowed; the room brought 109 kB (forty-two drawn scenes, three animals, three places, a
+book, and the list of 75 more recordings), and the limit is 2850. The voice was 7882 kB of 9000; a story is
+told aloud, in 75 lines of up to two sentences, which are 1453 kB, and the limit is 10500. Neither is in the
+first load, and neither is fetched by anyone who does not open the room: the reasons are written beside the
+numbers in `scripts/verify-dist.mjs`.
+
+**Two of these are worth watching.** The game's own code is 2796 kB of the 2850 it is now allowed, with
+nothing more planned that draws. The script for the first screen is 107.1 kB of the 110 it is allowed, and
 it has grown with every activity: what each world offers, with the grown-ups' words about it, is in it. (Six
 more activities in Reading Cove added a tenth of a kilobyte; the first-visit help added seven tenths, for
 what a player's settings may now hold and for the front door's knowing who is new. "How to play" itself is a
@@ -1947,6 +2195,18 @@ recording reachable from it by static import; no inline script or style (so the 
 its icons; and that the service worker pre-downloads exactly the first screen's files and knows every hashed file.
 
 ## Screenshots
+
+`docs/review/explorer-harbor-story/` — 34 JPEGs of Explorer Harbor's room for making a story, taken from the
+running production build by a script that makes stories in it: the way in from the harbour's page; each of
+the five turns of a story about a fox and a kite, on a phone upright (390×844), with the first page being
+told, a page half turned, the end, and the story being told again; the first question and a question with
+two pictures on a phone sideways (844×390), on the narrowest phone sideways (640×256), on a tablet (768×1024)
+and on a desk (1366×768); the end of five other stories, one on each of those and one on the narrowest phone
+upright (320×568); a page changing where nothing is to move; and the harbour's page with the switch a
+grown-up holds. Then eight sheets drawn straight from the drawings: the three animals and the three places,
+all 42 scenes with an animal in each, and every scene at the size it is chosen at on a small phone. At twice
+the size. They were looked at, and then measured on nine sizes. **Looking found what no test had**: on the
+harbour's page the words for grown-ups were one letter wide (_What Explorer Harbor's room … added_, above).
 
 `docs/review/explorer-harbor-globe/` — 28 JPEGs of Explorer Harbor's globe, taken from the running
 production build by a script that plays it: the harbour's page with its six things to do; a land shown and
@@ -2162,10 +2422,16 @@ the press reached the activity. It needs a busy machine to show, which is why it
 **Two tests out of time** on `main` (run 50): explained under _Run 50_. They took 59.5 seconds of their 60
 when they passed. A test now has two minutes, and one that uses three quarters of its limit fails for that.
 
-**Still not explained: the page that never comes.** Nine times in CI's WebKit, always a test's first page,
+**Still not explained: the page that never comes.** Eleven times in CI's WebKit, always a test's first page,
 never in Chromium, never here: the server answers at once and the browser never reads the answer. It did not
-happen in runs 49 or 50; it did in runs 51 and 52, once each, and cost two minutes each time. A page now has
-half a minute to come (_Run 51_, above), so the tenth will cost a quarter of that.
+happen in runs 49 or 50; it did in runs 51, 52, 53 and 54, once each. The first two of those cost two minutes
+each. A page now has half a minute to come (_Run 51_, above), and the tenth and the eleventh, in runs 53 and
+54, cost 30 seconds each and said what they had been waiting for.
+
+**A globe that turned half-way and came back** (run 54): explained under _Run 54_, and put right. It was not
+only the machine: the wait before the globe turns back by itself was counted from the press, and a page that
+stopped for two seconds in the middle of the turn woke to find the wait over and the turn unfinished. It
+needs a page that stops at that moment, which is why it showed only there; a phone can stop a page too.
 
 **A test that looked for something after it had been and gone** (run 51): explained under _Run 51_. The
 test waited for a state that lasts a second, after a press that on that machine took five to come back. It
@@ -2259,6 +2525,20 @@ wrong side that holds nothing; and "My inventions", reached from the island, sho
 mended before anything has been. No probe was made beyond those tests. CI's own run on that commit was green
 in every job: _Run 52_, above.
 
+**After the owner merged pull request #15** (2026-11-26, `64a507b`), an hour and three quarters after the
+merge: Vercel's own record of the production deployment said "Ready", made three seconds after the merge. The
+tests of that commit, not of this tree, were run against the address from a clean copy of it, and this time
+on every screen the configuration has, where the three checks before this one asked for three of them: **324
+passed of 329, none failed, and five were passed over as they are written to be** (one test, which is for a
+phone held upright, on the five other screens it was listed on). Eight are the smoke tests as a desktop and
+eight as a phone; 60 each are the tests of layout as a tablet, as a phone held sideways and as a small phone;
+and 64 each are the Pixel 7's, upright and sideways, which play something in every world. It took 21.7
+minutes. Among them are the globe's, played against the site, two on each of five screens: every pin on the
+globe where its land is, in sight and clear of the others, with the land that is found lit; and a famous
+place shown with the shape of its land, and put on the globe where it is when its land is found. No probe was
+made beyond those tests. CI's own run on that commit was green in every job, with two tests at a second
+attempt, one of which is a fault that is live: _Run 54_, above.
+
 ## An update, rehearsed
 
 `npm run rehearse:update -- <commit>` (`scripts/rehearse-update.mjs`): two real builds and one browser, in
@@ -2278,7 +2558,8 @@ same address, as a deployment puts one build in the place of another, and eighte
 | `ed3efd6`, what was live then (pull request #11 merged)      | this tree, with Robot Ridge's three  | **18 of 18**                                                                                                                                                                                                           |
 | `3c322c5`, what was live then (pull request #12 merged)      | this tree, with Memory Forest's two  | **18 of 18**: a sitting may now be told what the one before it kept, and a sitting stored by the build before kept nothing                                                                                             |
 | `a0e60f8`, what was live then (pull request #13 merged)      | this tree, with the island's shelter | **18 of 18**: a player's settings may now hold what a grown-up says was tried, and a player stored by the build before has none of it; the island's content is a new version, and its four live activities keep theirs |
-| `3f5c5f7`, what is live now (pull request #14 merged)        | this tree, with the harbour's globe  | **18 of 18**: the harbour's content is a new version, and its eight live lessons keep theirs; the continents' outlines are a new file of the build; nothing that is stored has changed shape                           |
+| `3f5c5f7`, what was live then (pull request #14 merged)      | this tree, with the harbour's globe  | **18 of 18**: the harbour's content is a new version, and its eight live lessons keep theirs; the continents' outlines are a new file of the build; nothing that is stored has changed shape                           |
+| `64a507b`, what is live now (pull request #15 merged)        | this tree, with the harbour's room   | **18 of 18**: no lesson has changed and nothing that is stored has changed shape; a player's settings may now hold the day a grown-up said a story was told back, in the place they already hold what was tried        |
 
 What held every time:
 

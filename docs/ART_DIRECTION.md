@@ -377,6 +377,17 @@ counted, named, remembered or put in order, and anything in them that is not the
 - **A famous place** is a small scene of its own, in the manner of the story pictures: sky, ground, and the
   place, flat colours, no lettering, **no person**. A place is drawn as itself and not as a sign for a country
   or for the people who live there.
+- **A page of a made-up story** is put together and not drawn whole: a place (a beach, a forest or a garden,
+  each the whole of the picture), then one of three animals standing in it, then what the page says beside
+  them. A page shows what its line says and nothing else: the wave that washed the castle away is on that
+  page and on no other. **The one a story is about has a face that follows the story**: glad at the
+  beginning, worried when something has gone wrong (brows up towards the middle, never down: that is cross),
+  and glad again at the end. Nothing is written in a page, and nobody in it is a person. Two things a child
+  chooses between must look different at the size they are chosen at, which is a hundred points across on a
+  small phone: look at them at that size before calling them done.
+- **A book turns its pages.** A leaf, hinged on the left, goes over and the next page is under it; going
+  back, the earlier page comes over. It takes seven tenths of a second. Where less motion is asked for there
+  is no leaf.
 - **Lit means "this one, now"**: a thing being named or counted lifts for as long as its word; the right answer
   gets a sun-coloured edge and a tick, never colour alone; a choice set aside goes quiet and hollow, with no
   cross and no red.

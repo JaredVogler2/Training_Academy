@@ -1,22 +1,135 @@
 # Quality report
 
-This file has eleven parts. The first is the review of Explorer Harbor's globe: the seven big lands and
-fifteen famous places (the first half of the rest of phase 10). The second is the review of Inventor Island's
-shelter, of the record a grown-up keeps and of the portfolio (the rest of phase 09). The third is the review
-of Memory Forest's two later activities (the rest of phase 08). The fourth is the review of Robot Ridge's
-three later activities (the rest of phase 07). The fifth is the review of the help for a first visit (the
-rest of phase 04). The sixth is the review of Reading Cove's later activities, from rhyme to a sentence (the
-second half of phase 05). The seventh is the review of Number Garden's later activities, the ones that bring
-numerals in (the second half of phase 06). The eighth is the review of the Music Lab (phase 11). The ninth is
-the review of the six worlds and the voice (phases 04 to 10). The tenth is Phase 03's review of what Phase 03
-built. The eleventh is Phase 02's report on the home screen, kept as it was written, because it is still the
-assessment of the hub.
+This file has twelve parts. The first is the review of Explorer Harbor's room for making a story (the second
+half of the rest of phase 10). The second is the review of Explorer Harbor's globe: the seven big lands and
+fifteen famous places (the first half). The third is the review of Inventor Island's shelter, of the record a
+grown-up keeps and of the portfolio (the rest of phase 09). The fourth is the review of Memory Forest's two
+later activities (the rest of phase 08). The fifth is the review of Robot Ridge's three later activities (the
+rest of phase 07). The sixth is the review of the help for a first visit (the rest of phase 04). The seventh
+is the review of Reading Cove's later activities, from rhyme to a sentence (the second half of phase 05). The
+eighth is the review of Number Garden's later activities, the ones that bring numerals in (the second half of
+phase 06). The ninth is the review of the Music Lab (phase 11). The tenth is the review of the six worlds and
+the voice (phases 04 to 10). The eleventh is Phase 03's review of what Phase 03 built. The twelfth is Phase
+02's report on the home screen, kept as it was written, because it is still the assessment of the hub.
 
 All are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
 reading of screenshots and of the running game in headless Chromium. Nobody else has reviewed it, no child has
 played it, **no person has listened to the voice**, and it has never run on a real graphics card. The owner has
 opened the live site (Phase 03) on an iPhone; nothing in this file comes from a device. The standard it is rated
 against is `docs/ART_DIRECTION.md`.
+
+## Phase 10, the rest, second half (2026-11-26): a story to make up
+
+### Summary
+
+A room at Explorer Harbor, "Make a story". A child makes five choices, each by tapping a picture: who the
+story is about (a fox, a bear or a rabbit), where it happens (the beach, the forest or the garden), what they
+want there (two things in each place), what goes wrong (two things for each), and how it comes right (two
+ways for each). The first three choices put the first page of a book together in front of the child; the
+fourth makes the second page and the fifth the third. Each page is turned to with a leaf that goes over, and
+told aloud as it is made; the whole can be told again from the beginning, or a page at a time by tapping one
+of three small pages. Nothing is right or wrong, nothing is counted, and nothing is kept. Thirty-four pictures
+are in `docs/review/explorer-harbor-story/`.
+
+**My reading: it works, it is kind, and it is plain.** Every one of the 72 stories that can be made reads as
+a story with a beginning, a trouble and an ending, and every one ends well. A child cannot get anything
+wrong in it, and nothing on the screen suggests they could. The pictures are clear at the size a child
+chooses between them on a small phone, and the one the story is about looks glad, then worried, then glad
+again, on every page of every story. **What it is not is a storybook someone drew.** No page is drawn as a
+whole: each is put together from a place, an animal and a small scene, which is how 216 pages come from 42
+scenes, and it shows. The animals stand beside what happens and do not do it: a fox "runs" by leaning with
+three lines behind it. The brief asks for beautiful illustrations and coherent expressions; the expressions
+are coherent, and the illustrations are neat rather than beautiful.
+
+### How it was made, which bears on how far to trust it
+
+What a story can be is one file (`src/content/explorer-harbor/storymaker.json`): three who, three where, six
+beginnings, twelve troubles, twenty-four endings, and the lines each is told with. It is not a lesson and is
+not in the content pack: nothing in it has an answer. Its tests walk every way through, from nothing chosen
+to the last page, and hold that none stops short, that every page has its lines and its picture, and that
+the lines the voice was made from are the lines the game shows, to the letter.
+
+The lines had to fit any of the three, so only the first and last pages name who the story is about ("One
+day, Rabbit went into the forest. Rabbit wanted to pick some berries." and "Rabbit was happy. The end.").
+What goes wrong and how it comes right are told without them: "But the basket had a hole, and the berries
+fell out." "A big leaf went into the basket, over the hole." It keeps the recordings to 75 where naming them
+throughout would have needed 147, and it avoids calling a fox he or she. It also makes the middle of every
+story a little impersonal, and a person reading it aloud would not tell it that way.
+
+The tests were made to fail before they were believed. 78 faults were put back, one at a time: 46 in what a
+story can be, in its telling and in its pictures, against the unit tests, and 32 in the room, its styles and
+the harbour's page, in a browser. **72 were caught at once** by the test meant for them. One was not a fault
+as it was written. **Four found a test weaker than its name**: the pictures of the three animals were told
+apart by their labels, so that a bear drawn as a fox was still "different from the fox"; the room kept for
+the pictures to choose from was measured before and after a page was told and not while it was; where the
+telling of a whole story is announced was asked for afterwards, by which time the book had turned to the
+right page; and the check that the words for grown-ups are as wide as their part of the page measured three
+paragraphs that happened to be the wide ones. Each was strengthened until it failed. **One found a rule that was not needed**, and the rule is
+gone. `docs/TEST_RESULTS.md` has every one.
+
+Nothing here was tried by a child, and **no person has heard the 75 new lines**. A recogniser heard each as
+written. Three were reworded on the way: two that ran over the seven seconds a line is allowed, and one whose
+shorter wording the recogniser heard differently ("or make" as "we'll make"), which went back to the wording
+it heard rightly.
+
+### The review
+
+Looked at on a phone upright (390 by 844 and 320 by 568), on its side (844 by 390, 750 by 342 and 640 by 256),
+on a tablet and on a desk; measured on nine sizes, at every turn of the story with the most words.
+
+| What                      | How it is                                                                                                                                                                                                                                           |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The book                  | One page at a time, as large as the screen allows, in a white frame. Before anything is chosen it is blank paper with a dotted line where the ground will be; then someone stands on it; then the place is round them; then what they want is there |
+| The three it can be about | A fox, a bear and a rabbit, drawn from the front, flat, each with two feet, two arms and a face that is glad, plain or worried. The same three in every place                                                                                       |
+| The three places          | A beach with the sea behind it and a sun; a forest with trees along the back; a garden with a fence and three flowers. Nothing in them is written                                                                                                   |
+| The scenes                | Forty-two: for each of six beginnings, what is there at the start, at each of two troubles, and at each of four endings. A kite, a sandcastle, a bush of berries, a stream, a picnic, an apple tree, and what happens to each                       |
+| A choice                  | A picture of the page the story would have if it were chosen: the fox on the beach, in the forest, in the garden. Two or three at a turn, each 56 points or more however small the screen                                                           |
+| The words of a page       | Under the page, for whoever reads: the line that is being said is marked while it is said. On the flattest phones they are read out and not shown                                                                                                   |
+| Turning a page            | A leaf hinged on the left goes over in seven tenths of a second and the next page is under it; going back, the earlier page comes over. Where less motion is asked for there is no leaf and the page is simply the next one                         |
+| The three small pages     | Under the book: which pages have been made, and which is open. Once the story is whole each turns the book to its page and tells it                                                                                                                 |
+| Glim                      | Says each question, points at the book while a page is told, and is glad at the end. Tapped, says the question again; tapped while a page is being told, tells it again from its first line                                                         |
+| At the end                | "That is your story. You can hear it again, or make a new one.", and two buttons: Again, and New story                                                                                                                                              |
+| With the sound off        | The pages still turn and the words are there to read; told again, each page stays two and a half seconds and more to be looked at. The sound has a switch in the room, on and off                                                                   |
+| What a grown-up can say   | On the harbour's page, under the note about the room: a switch they hold to say their child told a story back in their own words. It is kept with the day, shown as their word, and counted nowhere                                                 |
+
+### Seen — cause — fix
+
+| Seen                                                                                 | Cause                                                                                                                                                          | Fix                                                                                                                                                                                |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A worried animal that looked cross                                                   | Its brows sloped down towards the middle                                                                                                                       | They slope up towards the middle                                                                                                                                                   |
+| Two troubles that looked alike when small: no wind, and a tangled string             | Both were a kite lying on the sand                                                                                                                             | With no wind a flag hangs limp from its pole; with a tangle the kite is still up and a great knot is beside                                                                        |
+| Berries "too high to reach" level with a raised paw                                  | The tall bush was not tall                                                                                                                                     | Its lowest berry is above a paw held up from the ground, and within reach of one held up from a log                                                                                |
+| Rain clouds cut off by the top of the picture                                        | They were drawn too high                                                                                                                                       | Lower                                                                                                                                                                              |
+| Glim's button over the first picture to choose, by 1.3 points, on the flattest phone | The question, the pictures and the three small pages were taller together than the screen                                                                      | Glim is smaller there, on a button that is still 56 points                                                                                                                         |
+| The two end buttons 170 points tall on a narrow phone                                | They had the columns the pictures have, and their words broke over three lines                                                                                 | Each is as wide as its own word, which is one short word or two                                                                                                                    |
+| The book 183 points tall at the first question, 159 at the fourth and 151 at the end | What Glim says grew from one line to three, and the words of the last page from two to four                                                                    | Room is kept for three lines and for four from the start: the book is the same size at every turn                                                                                  |
+| That fix doing nothing at first                                                      | The rule for narrow phones stood above the rule it changes                                                                                                     | It stands after it; a test of the book's size at every turn found it                                                                                                               |
+| On the harbour's page, a heading and a paragraph for grown-ups one letter wide       | The new switch asked for a second column, as it has in the list above it; the section then had two, and every other thing in it was left the one with no width | Under a room's note the switch has the section's one column. Seen in a picture of the page: nothing overflowed, so no test had said so; one measures every part of the section now |
+| Switched on at the end, the sound telling the whole story over again                 | When the sound comes on the room plays again whatever it played last, so that a question put before the first touch is heard after it                          | The switch has the room say where the story has got to, and nothing more                                                                                                           |
+
+### What is not right yet, or not known
+
+- **No child has tried it, and nobody has heard it.** As everywhere here.
+- **The pictures are put together, not drawn.** Each is clear and none is wrong, and a page is a diagram of
+  what its line says more than an illustration of it. Someone who draws could replace the 42 scenes one at a
+  time without touching anything else: each is a few shapes under a name.
+- **The 72 stories are 24, each with a fox, a bear or a rabbit in it.** Who it is about changes the first
+  and last lines and the animal in the pictures, and nothing that happens.
+- **The middle of every story names nobody** (above).
+- **A story is gone when the room is left.** Nothing is kept: not the story, not that one was made. A child
+  who makes one they like cannot show it to someone that evening. Keeping the last one would be a small
+  change to what is stored and was not made.
+- **Nothing a child says is heard.** The brief asks for a child's own narration to be possible, led by a
+  grown-up and without a microphone. It is: the three small pages turn the book for whoever is telling it.
+  With the sound switched off in the room they turn it without a word. Whether anyone will do it is not known.
+- **The question is not said again by itself.** A child who does not choose is not prompted; Glim says it
+  again when tapped.
+- **Told again in silence, a page stays for a fixed time**, which is long for a picture and short for
+  someone reading four lines aloud to a child. The small pages do not have that limit.
+- **On the narrowest phone upright the page is 214 points across.** Everything on it can be made out;
+  it is the smallest the book is anywhere.
+- **Safari's engine has not run it here.** CI's WebKit will; a leaf that turns in three dimensions is the
+  kind of thing engines differ on.
 
 ## Phase 10, the rest, first half (2026-11-26): a globe, the seven big lands, and fifteen famous places
 
@@ -98,18 +211,19 @@ both ways and on a desk; measured on nine sizes.
 
 ### Seen — cause — fix
 
-| Seen                                                                                              | Cause                                                                                                         | Fix                                                                                                           |
-| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| A pale patch on the sea that could be taken for a land or a cloud                                 | The light on the ball was drawn as a large faint ellipse over the middle of it                                | A glint along the edge where the light falls, and a darker far edge                                           |
-| Europe's shape small in a corner of its card                                                      | Far northern islands set the size of the picture                                                              | A shape is sized by the parts that are each a hundredth of the land or more                                   |
-| A strip of Europe's colour at the far end of Asia                                                 | Russia past 180 degrees is numbered from -180 in the source, and fell west of the line the Urals are taken as | It is Asia; two places there are in the list the outlines are held to                                         |
-| A turning button and a pin's place sharing up to 3.9 pixels                                       | The buttons stood in the lower corners of the globe's square                                                  | They are never over the globe: at each end of the row under it, or at each side of it                         |
-| A pin's place 48 pixels across on the narrowest phone held sideways                               | Pins could be 0.9 of the radius apart, which there is 46 pixels                                               | They are 1.1 apart, which there is 56; the 35 questions were made again                                       |
-| A land found at the very edge of the globe, where a child had turned it                           | The globe stayed where it had been turned to                                                                  | When the land is found the globe turns to look at it                                                          |
-| A tap on a pin straight after a flick: nothing                                                    | Chromium makes no click of a tap that follows a flick by less than a fifth of a second                        | A press is taken as the finger comes up on the pin it went down on                                            |
-| An arrow key that turned nothing, after one that had turned the focused pin out of sight          | A pin that is out of sight cannot hold the keyboard, and the browser gave it to nothing                       | The keyboard is handed to the button that turns the globe that way                                            |
-| "Tap one of these" ringing the two turning buttons with the pins                                  | The ring went round every button on a board                                                                   | A button that is not an answer says so, and is not ringed                                                     |
-| The harbour's part of the game too large for the limit every such part is held to (33.5 kB of 30) | 31 kB of outlines in with the code that draws them                                                            | The outlines are a file of their own, 12.1 kB compressed, counted with the content as a pack of challenges is |
+| Seen                                                                                              | Cause                                                                                                                                         | Fix                                                                                                              |
+| ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| A pale patch on the sea that could be taken for a land or a cloud                                 | The light on the ball was drawn as a large faint ellipse over the middle of it                                                                | A glint along the edge where the light falls, and a darker far edge                                              |
+| Europe's shape small in a corner of its card                                                      | Far northern islands set the size of the picture                                                                                              | A shape is sized by the parts that are each a hundredth of the land or more                                      |
+| A strip of Europe's colour at the far end of Asia                                                 | Russia past 180 degrees is numbered from -180 in the source, and fell west of the line the Urals are taken as                                 | It is Asia; two places there are in the list the outlines are held to                                            |
+| A turning button and a pin's place sharing up to 3.9 pixels                                       | The buttons stood in the lower corners of the globe's square                                                                                  | They are never over the globe: at each end of the row under it, or at each side of it                            |
+| A pin's place 48 pixels across on the narrowest phone held sideways                               | Pins could be 0.9 of the radius apart, which there is 46 pixels                                                                               | They are 1.1 apart, which there is 56; the 35 questions were made again                                          |
+| A land found at the very edge of the globe, where a child had turned it                           | The globe stayed where it had been turned to                                                                                                  | When the land is found the globe turns to look at it                                                             |
+| A tap on a pin straight after a flick: nothing                                                    | Chromium makes no click of a tap that follows a flick by less than a fifth of a second                                                        | A press is taken as the finger comes up on the pin it went down on                                               |
+| An arrow key that turned nothing, after one that had turned the focused pin out of sight          | A pin that is out of sight cannot hold the keyboard, and the browser gave it to nothing                                                       | The keyboard is handed to the button that turns the globe that way                                               |
+| After it was live: a press of a turning button that turned the globe half-way and back (CI, once) | The wait before the globe turns back by itself was counted from the press, and the page had stopped for two seconds in the middle of the turn | The wait is counted from when the globe has got where it was sent; a test stops the page in the middle of a turn |
+| "Tap one of these" ringing the two turning buttons with the pins                                  | The ring went round every button on a board                                                                                                   | A button that is not an answer says so, and is not ringed                                                        |
+| The harbour's part of the game too large for the limit every such part is held to (33.5 kB of 30) | 31 kB of outlines in with the code that draws them                                                                                            | The outlines are a file of their own, 12.1 kB compressed, counted with the content as a pack of challenges is    |
 
 ### What is not right yet, or not known
 

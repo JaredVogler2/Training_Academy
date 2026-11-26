@@ -130,14 +130,20 @@ function Tried({
   lesson,
   day,
   onChange,
+  told = false,
 }: {
   lesson: string;
   day: string | undefined;
   onChange: (lesson: string, tried: boolean) => void;
+  /** It is a story told back that is being said of, not a thing tried: the same switch, in its own words. */
+  told?: boolean;
 }) {
+  const label = told ? worldText.told : worldText.tried;
+  const hold = told ? worldText.holdToSayTold : worldText.holdToSay;
+  const on = told ? worldText.toldOn : worldText.triedOn;
   return (
     <p
-      className={styles.tried}
+      className={told ? `${styles.tried} ${styles.triedAlone}` : styles.tried}
       data-testid="tried"
       data-lesson={lesson}
       data-tried={day !== undefined}
@@ -145,11 +151,11 @@ function Tried({
       <HoldToggle
         pressed={day !== undefined}
         onChange={(tried) => onChange(lesson, tried)}
-        label={worldText.tried}
-        stateText={day === undefined ? worldText.holdToSay : worldText.tried}
+        label={label}
+        stateText={day === undefined ? hold : label}
         icon={<IconCheck size={22} />}
       />
-      <span>{day === undefined ? worldText.holdToSay : worldText.triedOn(dayInWords(day))}</span>
+      <span>{day === undefined ? hold : on(dayInWords(day))}</span>
     </p>
   );
 }
@@ -358,6 +364,14 @@ export default function WorldView({ world }: { world: WorldId }) {
           <p className={styles.note}>
             <strong>{info.room.title}.</strong> {info.room.note}
           </p>
+        )}
+        {open && info.room?.told !== undefined && player && (
+          <Tried
+            lesson={info.room.told}
+            day={triedOn(player, info.room.told)}
+            onChange={sayTried}
+            told
+          />
         )}
         {info.later && (
           <>

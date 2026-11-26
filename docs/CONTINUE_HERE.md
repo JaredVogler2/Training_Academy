@@ -2,30 +2,38 @@
 
 **Seven worlds are built: the six islands, and the Music Lab in the lighthouse. Phases 01 to 03 are complete;
 phase 04 is built (the voice, and help for a child's first visit); phases 05, 06 and 11 are built as far as
-their briefs' last optional parts, and phases 07, 08 and 09, Robot Ridge, Memory Forest and Inventor Island,
-as far as their briefs go; phase 10 is partly done: it has a globe now, and no story to make up yet. All of it
+their briefs' last optional parts, and phases 07 to 10, Robot Ridge, Memory Forest, Inventor Island and
+Explorer Harbor, as far as their briefs go (but for countries and flags on the globe, which its brief leaves
+optional). The worlds are finished as far as this plan takes them: what is left is phases 12 to 17. All of it
 is unheard. The rest of the plan is being built on one branch, a pull request at a time: the owner has merged
-each one soon after its checks went green, seven times now, so every push is kept fit to go live. The one
-that is open is [#15](https://github.com/JaredVogler2/Training_Academy/pull/15).**
+each one soon after its checks went green, eight times now, so every push is kept fit to go live. The one
+that is open is [#16](https://github.com/JaredVogler2/Training_Academy/pull/16).**
 
 - **Date:** 2026-11-26
 - **What is live:** `main`, at `https://training-academy-dun.vercel.app`: the six islands and the Music Lab,
-  68 activities, the help for a first visit, Robot Ridge's seven activities, Memory Forest's eight, and since
-  2026-11-26 Inventor Island's fifth, a shelter from the wind, with the switch a grown-up holds to say a thing
-  was tried away from the screen, and "My inventions". The owner merged pull request #14 that day, 31 seconds
-  after the last of its checks went green. The update had been rehearsed (18 of 18). The live
-  site was checked two and three quarter hours afterwards: Vercel's production deployment of `3f5c5f7` was
-  ready, and 78 of 78 browser tests passed against the address as a desktop, a phone and a Pixel 7, with the
-  shelter and "My inventions" played through among them.
-- **CI on `main` is green**, in all thirteen jobs (run 52, of the merge). One test passed at a second
-  attempt: the page that never comes in CI's WebKit, a ninth time, still not explained.
-- **The fault that was live in Safari is mended there.** A tap in the moment the sound first came on was
-  sometimes seen by nothing; its fix went live with pull request #14.
-- **What is not live**, on pull request #15: **a globe at Explorer Harbor**, with three lessons on it (the
-  seven big lands by their shape, then by their name alone, and fifteen famous places); a half-minute limit
-  on a page that does not come, in the tests; and one test of Number Garden mended.
+  71 activities, the help for a first visit, Robot Ridge's seven activities, Memory Forest's eight, Inventor
+  Island's five, and since 2026-11-26 **Explorer Harbor's globe**, with three lessons on it (the seven big
+  lands by their shape, then by their name alone, and fifteen famous places). The owner merged pull request
+  #15 that day, 38 minutes after the last of its checks went green. The update had been rehearsed (18 of
+  18). The live site was checked an hour and three quarters afterwards: Vercel's production deployment of
+  `64a507b` was ready, and of that commit's own browser tests, run against the address on seven screens,
+  324 passed and none failed (five more were passed over as they are written to be), with the globe's among
+  them: every pin on the globe where its land is, and a famous place put where it is.
+- **CI on `main` is green**, in all thirteen jobs (run 54, of the merge). Two tests passed at a second
+  attempt. One was the page that never comes in CI's WebKit, an eleventh time, still not explained; it cost
+  half a minute. **The other was a fault in the game, which is live:** a press of one of the globe's two
+  turning buttons, on a device that stops for about two seconds in the middle of the turn, turns the globe
+  half-way and back again. Nothing is lost by it and a second press turns it. It is explained and mended on
+  the pull request that is open.
+- **A fault found on the way to phase 12 is live and not yet mended.** In _Find the pairs_ (Memory Forest),
+  a game finished in many more turns than remembering needs is written into the record as done alone, and
+  the grown-ups' area can then say "Independent so far" of a child who turned cards over at random. The
+  sitting itself counts it rightly (its own page says none were done alone); the record does not. It is the
+  only kind of answer that can be right without showing the skill. `docs/PROGRESS.md` → _Known gaps_.
+- **What is not live**, on pull request #16: **a room at Explorer Harbor for making up a story**, with the
+  switch a grown-up holds to say it was told back; and the globe's turn, mended.
   The update from what is live to this tree was rehearsed: 18 of 18. When it goes live, Explorer Harbor's
-  page has eleven things to play where it had eight, the three new ones last.
+  page has, under its eleven things to play, the way to its room.
 - **The owner's instruction for this stretch of work** (2026-11-25): build all that is left, in the order
   recommended, and the owner will review all of it at once, sounds included, when it is complete. The order:
   the Music Lab; numerals and the number line in Number Garden; rhyme, syllables, letter pairs and sentences in
@@ -34,7 +42,7 @@ that is open is [#15](https://github.com/JaredVogler2/Training_Academy/pull/15).
 
 ## The one thing that matters most now
 
-**Nobody has listened to anything, and nobody has played.** The game talks — 660 recordings, made by a speech
+**Nobody has listened to anything, and nobody has played.** The game talks — 735 recordings, made by a speech
 synthesiser ahead of time and shipped with it, each checked by a speech recogniser, which is a machine's
 opinion of the words and nothing more — and it also plays notes, which are made by arithmetic at the moment
 they sound and which no ear has checked at all. The briefs call the accuracy of the audio a release gate. That
@@ -68,8 +76,9 @@ comparing, then numerals, the numbers in order and adding and taking away in Num
 a row of steps to mend, a long way to plan and a bridge to wait for in Robot Ridge; pairs, hidden things,
 orders, three ways to remember, a choice among them and three things kept for the next visit in Memory
 Forest; guesses that are tested and things to mend in Inventor Island, a shelter from the wind among them,
-with a page of what a child has mended; stories to put in order, why things happen, a map to answer on and
-a globe of the world with its seven big lands and fifteen famous places in Explorer Harbor; and in
+with a page of what a child has mended; stories to put in order, why things happen, a map to answer on, a
+globe of the world with its seven big lands and fifteen famous places, and a room for making up a story of
+one's own in Explorer Harbor; and in
 the Music Lab high and low, the same or different, a beat to tap, notes to play back, a tune to know again and a
 tune to make, with a room to play in freely. Each activity is shown first by Glim, then tried with help at hand,
 then tried alone, and what a child did alone and at the first try is kept apart from everything else. Every
@@ -78,24 +87,28 @@ answer is right. Everything is saved on the device.
 
 ## Verified
 
-- Locally: format, lint, typecheck, **2396 unit tests**, the production build and its **1670 build checks**.
-  The whole suite was run in one go in Chromium on all seven screens, on the final tree: **1471 tests,
-  1231 passed, 240 skipped by design, none failed** (55.5 minutes). WebKit is CI's.
-- **CI's last two runs, 51 and 52.** Both were green in all thirteen jobs. Run 51, on pull request #14, had
-  two tests pass at a second attempt: the page that never comes in CI's WebKit, an eighth time; and a test
-  of Number Garden's numerals that looked for a state lasting one second with two seconds to find it, on a
-  runner where one press took five. Run 52, on `main` after the merge, had one: the page that never comes, a
-  ninth time. It is still not explained. What was done about it is on pull request #15: a page that has not
-  come in half a minute is given up on, where it had the whole of its test's two minutes, and the test says
-  that this is what happened. In 2859 page loads read from CI's reports the slowest took 4.7 seconds.
-  `docs/TEST_RESULTS.md` → _Run 51_ and _Run 52_.
+- Locally: format, lint, typecheck, **2438 unit tests**, the production build and its **1834 build checks**.
+  The whole suite was run in one go in Chromium on all seven screens, on the room's tree: 1505 tests, of
+  which 1264 passed, 241 were passed over as they are written to be, and none failed, in 58 minutes. The
+  globe's turn was mended after that, with a test of its own (1507 now), and the globe's tests were run
+  again on all seven screens: 36, of which 34 passed and 2 were passed over. WebKit is CI's.
+- **CI's last two runs, 53 and 54.** Both were green in all thirteen jobs. Run 53, the first on pull request
+  #15, had one test pass at a second attempt: the page that never comes in CI's WebKit, a tenth time. Run
+  54, on `main` after that pull request was merged, had two: the same, an eleventh time, and the globe's
+  unfinished turn (above), which is the one thing in these runs that was the game's fault. A page that has
+  not come in half a minute is given up on, and the test says that this is what happened: each cost 30
+  seconds. It is still not explained. **CI has not yet run the room for making a story, and Safari's engine
+  has not drawn its page turn.** `docs/TEST_RESULTS.md` → _Run 53_ and _Run 54_.
 - **CI's twelve browser jobs do what they were made for.** In the runs since they were dealt out by screen
   the longest set of tests took 18.3 minutes. The longest job took 30.1 of the forty it is allowed, and
   sixteen and a half of those went on fetching its browser from a slow mirror: another ten would have
   cancelled a job in which nothing was wrong. Nothing was changed for it.
 - **A test's time limit means something.** Two minutes unless a test asks for more, and a test that
   passes having used three quarters of its limit fails for that, with the remedy in its words.
-- **The tests that passed first time were made to fail.** For Explorer Harbor's globe, 58 faults were put
+- **The tests that passed first time were made to fail.** For Explorer Harbor's room for making a story, 78
+  faults were put back one at a time: 72 were caught at once by the test meant for them; one was not a
+  fault as it was written; four found a test weaker than its name, each strengthened until it failed; and
+  one found a rule that was not needed, which is gone. For Explorer Harbor's globe, 58 faults were put
   back one at a time: 53 were caught at once by the test meant for them; four taught something about the
   fault and not the test, and were written again and caught; and one was caught by nothing, because the
   guard it took away was not needed, and the guard is gone. For Inventor Island's shelter, its record and its
@@ -118,9 +131,9 @@ answer is right. Everything is saved on the device.
 - Every content pack is exactly what its generator writes, and every rule that can refuse a challenge has been
   shown to fire (`tests/content/`): 32 of them are the Music Lab's.
 - Every browser test also fails on any console error or warning, failed request, or request to another origin.
-- **The live site**, as above: `main` after pull request #14. `docs/DEPLOYMENT.md` has the check.
+- **The live site**, as above: `main` after pull request #15. `docs/DEPLOYMENT.md` has the check.
 - **The update from what is live to this tree was rehearsed** (`npm run rehearse:update -- origin/main`), in
-  Chromium: 18 of 18, from the build that pull request #14's merge made live. Rehearse it again after any
+  Chromium: 18 of 18, from the build that pull request #15's merge made live. Rehearse it again after any
   later change to content or to what is stored.
 
 ## Not verified — read this before relying on anything
@@ -203,29 +216,40 @@ or sooner if there is a moment:
     prop has to go? Then, on Inventor Island's page, hold the tick under a thing to try, and open **My
     inventions**.
 
-11. **Turn the globe** (on the preview of pull request #15, or on the site once it is merged): Explorer
+11. **Turn the globe**, which is live: Explorer
     Harbor, _The seven big lands_. Pull it with a finger on the phone the game is for. Is a land known by its
     shape at that size? Then listen to _Famous places_ for the names a synthetic voice is likeliest to say
     wrongly: Kilimanjaro, Chichen Itza, Machu Picchu, Uluru, Fuji, the Taj Mahal, Oceania. And say whether
     "Oceania" is the name your child will be taught, or "Australia", or "Australasia".
 
-Pull request #15 has a preview on Vercel (behind the owner's Vercel login) for looking at the globe before
-it is merged.
+12. **Make a story with a child** (on the preview of pull request #16, or on the site once it is merged):
+    Explorer Harbor, _Make a story_, under the things to play. Watch what they choose and whether they
+    listen to a page before choosing the next. Then switch the sound off with the button at the top right,
+    tap the three small pages one at a time, and ask them to tell it to you. If they do, hold the tick on the
+    harbour's page that says so. And say what the pictures look like to you: they are put together from
+    parts, and it shows.
+
+Pull request #16 has a preview on Vercel (behind the owner's Vercel login) for looking at the room before it
+is merged.
 
 ## The next action
 
 If this session is the one still building: carry on down the order above. The Music Lab, Number Garden's
 numerals, Reading Cove's later activities, the first-visit help of phase 04, Robot Ridge's longer plans and
 bridge, Memory Forest's choice of a way and its keeping for next time, Inventor Island's shelter, record
-and portfolio, and Explorer Harbor's globe are done; **next is the last gap in the last world** (a story to
-make up, from six beginnings that branch and all end well, with pages that turn: a room of Explorer Harbor,
-where nothing is scored), and then phases 12 to 17. `docs/PROGRESS.md` → the table at the top says which phases are done; its _Known
+and portfolio, and Explorer Harbor's globe and its room for making a story are done: the worlds are as far as
+this plan takes them. **Next is phase 12, the adaptive mastery engine** (`prompt-series/12_ADAPTIVE_MASTERY_ENGINE.md`),
+and then phases 13 to 17. Four things already written down bear on phase 12: "Famous places" tells its own
+answer and must not count as knowing where a place is; what a grown-up says (seen, tried, told back, where
+to begin) is never evidence; the room for making a story writes nothing down and must stay that way; and a
+game of pairs finished in too many turns is in the record as done alone (above), which phase 12 is to mend
+before it leans on the record. `docs/PROGRESS.md` → the table at the top says which phases are done; its _Known
 gaps_ table says what each world still lacks.
 
 If it is a new session:
 
 > Read prompt-series/README.md and prompt-series/00_MASTER_BRIEF.md, then docs/CONTINUE_HERE.md,
-> docs/PROGRESS.md, docs/CURRICULUM.md and docs/ARCHITECTURE.md. Pull request #15 is open: carry on with what
+> docs/PROGRESS.md, docs/CURRICULUM.md and docs/ARCHITECTURE.md. Pull request #16 is open: carry on with what
 > docs/CONTINUE_HERE.md says is next, on the same branch. It must work on Android and iOS devices on a Vercel
 > deployment.
 
@@ -354,6 +378,35 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
 - **Testing a deployment, name the screens**: `BASE_URL=… npx playwright test --project=desktop
 --project=phone`. Without them the layout tests of five more screens run against the site as well.
 
+**New with Explorer Harbor's room for making a story**
+
+- **A thing can be squeezed without overflowing, and then no test of fitting sees it.** A switch that asked
+  for a second column, in a section that had one, left every heading and paragraph beside it one letter
+  wide. Nothing scrolled sideways and nothing was hidden; a picture of the page showed it. Where a page
+  gains something, measure the width of what is read there, all of it: the first check measured three
+  paragraphs, and they were three that had landed in the wide column.
+- **Look at the pictures of the page a change lands on, not only of the thing that was made.** The room was
+  looked at on seven screens; the bug was on the harbour's page.
+- **Measure every part at every moment, not the thing at its best.** A script that printed the height of
+  each part of the room after each choice found the book 24 points smaller at the end of a story than at
+  its start. The size test now holds the book to the same box after every choice.
+- **A rule for one shape of screen goes after the rule it changes** (again): the first fix for that stood
+  above its target and did nothing, and the new check said so.
+- **A check that asks afterwards can be answered by what happened next.** Which page a line was said over
+  was asked for once the line had been heard, by which time the book had turned. It is written down in the
+  page at the moment the line begins (`SAID_EVENT`), and read afterwards.
+- **Compare drawings by what is drawn.** Three pictures that differ only in a `data-` label are one picture.
+- **A room is not a lesson.** It has no engine, no pack and no record; what it needs of a lesson (a script
+  with moments, played against the voice) it borrows whole (`Writer`, `useScript`). A story is five optional
+  names and everything else is worked out from them, so nothing can disagree with itself.
+- **When the sound comes on, a script written in silence is written again and played**: that is how a
+  question put before the first touch gets said. It also means that whatever was played last plays again.
+  Anything that switches the sound itself should say what it wants played (the room's switch does).
+- **A line is seven seconds at most** (`tests/config/voice.test.ts`), and a shorter wording is not always
+  heard rightly: try it before leaning on it.
+- **The game's own code is 2796 kB of the 2850 it is allowed, and the voice 9335 kB of 10500.** Both limits
+  were raised for the room, with the reasons beside them in `scripts/verify-dist.mjs`.
+
 **New with Explorer Harbor's globe**
 
 - **A thing that is pulled takes its press as the finger comes up, not at the click.** Chromium makes no
@@ -384,9 +437,6 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
   before the step begins, and move it on from the test (`holdClock`, `watchFor`).
 - **A pin on a ball falls behind the finger that pulls it.** A test, or a fault, that expects the finger to
   end a long pull still over the pin it began on is wrong about the geometry.
-- **The game's own code has 13 kB of its budget left** (2687 of 2700 kB), and the voice 1.1 MB of its 9. The
-  story to make up will need both raised. Raising a budget is a decision, to be said in the commit that does
-  it.
 
 **New with Memory Forest's later activities**
 

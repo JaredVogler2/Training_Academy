@@ -340,6 +340,16 @@
   color: var(--ink);
 }
 
+/*
+ * The same switch under the note about a room, where it is not in a row of the list but a paragraph of the
+ * section. There it has the section's one column: asked to start at a second one, as in the list, it made
+ * one, as wide as itself, and every other paragraph of the section was left a column one letter wide.
+ */
+.triedAlone {
+  grid-column: auto;
+  margin-top: 0;
+}
+
 .together em {
   display: block;
   margin-top: 4px;

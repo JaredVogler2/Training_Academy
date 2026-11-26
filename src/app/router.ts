@@ -20,8 +20,11 @@ export type Route =
 
 const LESSON_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-/** The worlds that have a room of their own: one to play in freely, one to look at what has been made. */
-export const ROOMS: readonly WorldId[] = ['music-lab', 'inventor-island'];
+/**
+ * The worlds that have a room of their own: one to play in freely, one to look at what has been made, one to
+ * make up a story in.
+ */
+export const ROOMS: readonly WorldId[] = ['music-lab', 'inventor-island', 'explorer-harbor'];
 
 function isWorldId(value: string): value is WorldId {
   return (WORLD_IDS as readonly string[]).includes(value);

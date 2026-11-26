@@ -2,9 +2,9 @@
 
 **Status: seven worlds, a first pass through each.** Every activity the six islands' pages promised is authored
 and playable, and so are the Music Lab's six. Counts in this document are of real content in the repository,
-and the tests pin the ones quoted most. (All of it is live but Explorer Harbor's three lessons on a globe,
-which are on a pull request that is not merged. The help for a first visit, described at the end
-of this document under _Where a child begins_, went live on 2026-11-26.)
+and the tests pin the ones quoted most. (All of it is live but Explorer Harbor's three lessons on a globe
+and its room for making a story, which are on a pull request that is not merged. The help for a first visit,
+described at the end of this document under _Where a child begins_, went live on 2026-11-26.)
 
 |                              | Authored and tested |
 | ---------------------------- | ------------------- |
@@ -12,7 +12,7 @@ of this document under _Where a child begins_, went live on 2026-11-26.)
 | Activities (lessons)         | 71                  |
 | Challenges                   | 823                 |
 | Skills                       | 81                  |
-| Spoken lines and words       | 660 recordings      |
+| Spoken lines and words       | 735 recordings      |
 
 **Nothing here has been reviewed by an early-years teacher or tried with a child, and no person has listened to
 the recordings.** All three are required before any claim about what the game teaches. Each world's brief in
@@ -552,7 +552,8 @@ they mended this one.
 
 ### Explorer Harbor — `explorer-harbor.v2.json` (contentVersion 2)
 
-11 activities, 103 challenges, 11 skills, 127 spoken lines. Written by `scripts/content/explorer-harbor.mjs`,
+11 activities, 103 challenges, 11 skills, 127 spoken lines; and a room for making a story, which is no
+activity and has 75 more (below). Written by `scripts/content/explorer-harbor.mjs`,
 from the storybook, and for the globe from two more files: the outlines of the seven continents
 (`src/content/explorer-harbor/atlas.json`, made from Natural Earth by `scripts/atlas/make_atlas.mjs`) and
 the list of the continents and of fifteen famous places with where each is
@@ -621,6 +622,56 @@ Great Wall, the Taj Mahal and Mount Fuji; the Statue of Liberty and the pyramid 
 and Angel Falls; the Sydney Opera House and Uluru. Ten are built and five are not; none is shown with a
 person in it; each is said to be in its country only after its continent has been found ("Yes. The Taj Mahal
 is in India."). Antarctica has no famous place, and both of Oceania's are in Australia.
+
+#### Make a story — the harbour's room (`src/content/explorer-harbor/storymaker.json`)
+
+**It is not an activity.** Nothing in it has an answer, so it is not in the content pack, has no skill, and
+writes nothing down: not a choice, not a story, not that one was made. A child chooses five things by
+tapping pictures, and a book of three pages is made and told as they choose.
+
+| The choice         | What there is to choose from        | What it makes   |
+| ------------------ | ----------------------------------- | --------------- |
+| Who it is about    | Fox, Bear or Rabbit                 | the first page  |
+| Where it happens   | the beach, the forest or the garden | the first page  |
+| What they want     | two things in each place            | the first page  |
+| What goes wrong    | two things for each of those        | the second page |
+| How it comes right | two ways for each of those          | the third page  |
+
+That is the shape the brief asks a child to meet: someone, somewhere, who wants something; a trouble; and a
+way through it. Six beginnings, each with two troubles, each with two endings: 24 ways through, and each can
+be about any of the three, so 72 stories. Every one ends well and none is better than another. The tests
+walk all of them.
+
+| Where      | What they want           | What goes wrong           | How it comes right                                   |
+| ---------- | ------------------------ | ------------------------- | ---------------------------------------------------- |
+| The beach  | to fly a kite            | the wind stops            | run with it; or wait for the wind                    |
+|            |                          | the string is in a tangle | a crab snips the knots; or undo them one by one      |
+|            | to build a sandcastle    | a wave washes it away     | build it higher up the beach; or dig a ditch round   |
+|            |                          | the sand is too dry       | fetch a bucket of water; or dig down to wet sand     |
+| The forest | to pick berries          | the berries are too high  | stand on a log; or pull the branch down with a stick |
+|            |                          | the basket has a hole     | mend it with a leaf; or eat them straight away       |
+|            | to get across the stream | the bridge is broken      | step across on the stones; or lay a log across       |
+|            |                          | the water is too deep     | find where it is not deep; or row across in a boat   |
+| The garden | to have a picnic         | it begins to rain         | sit under the big tree; or put up an umbrella        |
+|            |                          | ants come for the cake    | give every ant a crumb; or move to the top of a hill |
+|            | to get the big red apple | the apple is too high     | climb a ladder; or shake the tree gently             |
+|            |                          | the apple rolls away      | run after it; or a duck brings it back               |
+
+**What is said**: 75 lines. Nine are the room's questions and its own words: "Let us make a story. Who is
+it about?", "Where does the story happen?", "What does Rabbit want to do?" (one for each of the three), "Oh
+dear. Something goes wrong. What is it?", "What happens now? You choose.", "Here is your story, from the
+beginning." and "That is your story. You can hear it again, or make a new one." The other 66 tell the pages.
+Only the first and last pages name who the story is about ("One day, Rabbit went into the forest. Rabbit
+wanted to pick some berries." … "Rabbit was happy. The end."); the trouble and the ending are told so that
+they fit any of the three ("But the basket had a hole, and the berries fell out." "A big leaf went into the
+basket, over the hole. Not one more berry fell out."), and nobody is called he or she.
+
+**What a grown-up can add.** The brief asks for a child's own telling to be possible, led by a grown-up, and
+for a grown-up to be able to record that a child took part. On the harbour's page, under the note about the
+room, is a switch they hold to say their child told a story back in their own words. It is kept with its day
+beside what they say was tried away from the screen, shown as their word ("the game did not hear it"), and
+read by nothing that reports what a child has shown. **Nothing here is evidence of anything**, and phase 12
+must not treat it as any.
 
 ### The first activity as it is played (Phase 03)
 
@@ -795,7 +846,7 @@ From the briefs in `prompt-series/`; `docs/PROGRESS.md` has each brief set again
 | Robot Ridge     | a condition other than waiting for a bridge (no "if … or else", and nothing is sensed but the bridge); doing a part of a row again (the whole row is done again); steps that are dragged (they are tapped, by decision)                                                                                                                                                            | 07    |
 | Memory Forest   | more than five things; a way of remembering that is the child's own (the three ways are the game's, and nothing checks that the way chosen was used); waits told apart beyond "later the same day" and "another day"; anything said aloud by the child                                                                                                                             | 08    |
 | Inventor Island | saying what changed after a mend (nothing in the game asks; the thing to try together asks it aloud); a heavier and a lighter ball on the ramp; a bridge of anything but a thin or a thick plank; building freely, with nothing to mend; parts that are dragged (they are changed by tapping a picture, by decision); a portfolio of more than the last thing mended at each bench | 09    |
-| Explorer Harbor | making up a story; stories that branch; countries on the globe (it has the seven continents and no border), flags and people; a place found with nothing said about where it is; lands that are neighbours asked together (Europe is never one of three with Africa or Asia); a globe that can be looked at closer                                                                 | 10    |
+| Explorer Harbor | a story a child tells that is kept, or heard; a story made up from more than six beginnings; countries on the globe (it has the seven continents and no border), flags and people; a place found with nothing said about where it is; lands that are neighbours asked together (Europe is never one of three with Africa or Asia); a globe that can be looked at closer            | 10    |
 | The Music Lab   | tapping a rhythm back; black keys; keeping a tune a child has made; the five other rooms its brief describes                                                                                                                                                                                                                                                                       | 11    |
 
 Open questions: who reviews the phonics content and the audio; whether a person should record the voice; how

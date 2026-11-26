@@ -80,18 +80,19 @@ answer is right. Everything is saved on the device.
   The whole suite was run in one go in Chromium on all seven screens: **1288 tests, 1086 passed, 202 skipped
   by design, none failed** (48.8 minutes). After it the tests' guard was changed and a test added for Safari's
   engine (1290 now). The specs in which a request fails, a page is left with something under way, or the guard is itself tested were then run on all seven screens (smoke, the hub, resilience, the voice, the journey, Robot Ridge and "how to play"): **284 tests, 263 passed, 21 skipped by design, none failed** (18.5 minutes). WebKit is CI's.
-- **CI's last complete run, run 45, was of `main` after the owner merged pull request #11, and it was green
-  in all eight jobs.** It was not clean, and nor was run 44 before it (the same tree, on the pull request):
-  eight tests in the two runs passed only at a second attempt. Four were one fault in the game, which is live
-  and is put right in this push (passing "how to play" by was written down as the page was left, and a page
-  refreshed at once had not been written). One was a test that read one moment in two steps; it and two like
-  it now read in one. One was the tests' own guard, wrong for the third time about the same sentence of
-  WebKit's, and this time the sentence was found in WebKit's source: a page that is being left is not allowed
-  to begin a download there, no request is made, and the sentence is all that is said. The guard's rule is
-  rewritten to that, and has a test that runs in Safari's engine itself. Two were the page that never comes
-  in CI's WebKit, the fifth and sixth times, still not explained. `docs/TEST_RESULTS.md` has all of it under
-  _Run 44_ and _Run 45_. **CI has not yet run Robot Ridge's new activities, or the guard's new test, in
-  WebKit**: read the run on this push, and that test first.
+- **CI's last run, run 46, was the first on pull request #12: seven jobs passed and one was cancelled at its
+  forty-minute limit.** No test failed and none was run twice. The job that was cancelled, WebKit's desktop
+  and tablet, had 566 of its 567 tests done: putting the browser on that machine had taken 17 minutes, where
+  it takes half a minute, because the mirror it fetched Ubuntu's packages from was slow. The jobs are now
+  dealt out in more parts (eleven jobs, none needing more than about half its forty minutes for its tests).
+  **What that run settled:** the guard's reading of WebKit is right (its test that stages nothing ran for the
+  first time and passed on both screens; see _Run 45_ and _Run 46_ in `docs/TEST_RESULTS.md`), and Robot
+  Ridge's three later activities pass in Safari's engine.
+- **The two runs before it, 44 and 45, were green and not clean**: eight tests passed only at a second
+  attempt. Four were one fault in the game, live until pull request #12 is merged (passing "how to play" by
+  was written down as the page was left). One was a test that read one moment in two steps. One was the
+  tests' own guard, wrong for the third time about the same sentence of WebKit's. Two were the page that
+  never comes in CI's WebKit, the fifth and sixth times, still not explained.
 - **The tests that passed first time were made to fail.** For Robot Ridge's three later activities, sixty-one
   faults were put back one at a time; all that could be caught were, and the two that were not were checks that
   can never fire, since removed. For the way out of "how to play", five; for the guard's rule, thirteen. For the first-visit help, eighty-six faults were put

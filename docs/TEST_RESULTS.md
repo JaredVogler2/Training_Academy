@@ -528,12 +528,13 @@ ever run in CI, for the reason told under run 44 below.
 
 ## Continuous integration
 
-Every push to a pull request, and to `main`, runs five jobs (`.github/workflows/ci.yml`): lint, types, unit tests
-and build; the browser tests in Chromium on seven screen shapes, shared between two jobs; and the browser tests in
-WebKit on five, likewise. The machine they run on has four processor cores and no graphics card, and runs two
-tests at a time. (Until the six worlds there was one job for each engine. With twice the tests, one Chromium job
-would have run close to its forty-minute limit, so each engine's screens are now split between a job for the
-desktop and tablets and a job for phones.)
+Every push to a pull request, and to `main`, runs eleven jobs (`.github/workflows/ci.yml`): lint, types, unit
+tests and build; the browser tests in Chromium on seven screen shapes, dealt out between six jobs; and the
+browser tests in WebKit on five, between four. The machine they run on has four processor cores and no
+graphics card, and runs two tests at a time. (Until the six worlds there was one job for each engine. The
+jobs have been divided as the suite grew, each time one came near its forty-minute limit, and once after one
+reached it: run 46, below. A job's forty minutes also have to cover putting the browser and what it needs on
+the machine, which is usually half a minute and has taken seventeen.)
 
 **For the six worlds.** Pull request #5, which carried the engine for every kind of game, the voice and Number
 Garden's seven activities, passed on its head commit `9cb3dda` (run 26; the run on the commit before it was
@@ -719,16 +720,17 @@ met 47-point bars. The dialog is live, as it has been all along.
 
 **And two runs after those. The second ran everything, and everything passed.**
 
-| Run | What                                                                   | Chromium, desktop and tablet    | Chromium, phones                 | WebKit, desktop and tablet                 | WebKit, phones                         |
-| --- | ---------------------------------------------------------------------- | ------------------------------- | -------------------------------- | ------------------------------------------ | -------------------------------------- |
-| 38  | pull request #9, Number Garden's numerals (`30d47ae`)                  | cancelled by the next push      | cancelled                        | cancelled                                  | cancelled                              |
-| 39  | pull request #9, the place kept through an update (`0afde1b`)          | 17.9 and 8.6 for the two halves | 12.3 and 18.5 for the two halves | 15.3 minutes, after 12.8 installing WebKit | 22.1 minutes                           |
-| 40  | `main` after the owner merged pull request #9 (`dbbdbc3`)              | passed, both halves             | passed, both halves              | passed                                     | passed                                 |
-| 41  | pull request #10, Reading Cove's later activities (`563f46c`)          | 17.1 and 10.8                   | 17.4 and 21.2                    | 22.6 minutes                               | 28.8 minutes                           |
-| 42  | `main` after the owner merged pull request #10 (`8288833`)             | passed, both halves             | passed, both halves              | passed                                     | passed                                 |
-| 43  | pull request #11, the help for a first visit (`4fce12e`)               | 25.4 and 12.6                   | 20.4 and 24.3                    | 21.8 minutes                               | **failed**, both halves: 13.3 and 16.8 |
-| 44  | pull request #11, the page that was too wide for an iPhone (`1decf66`) | 19.5 and 12.1                   | 17.4 and 24.8                    | 24.1 minutes                               | 14.1 and 18.6, **passed**              |
-| 45  | `main` after the owner merged pull request #11 (`ed3efd6`)             | 24.5 and 12.4                   | 19.5 and 26.1                    | 24.2 minutes                               | 15.0 and 16.9                          |
+| Run | What                                                                   | Chromium, desktop and tablet    | Chromium, phones                 | WebKit, desktop and tablet                             | WebKit, phones                         |
+| --- | ---------------------------------------------------------------------- | ------------------------------- | -------------------------------- | ------------------------------------------------------ | -------------------------------------- |
+| 38  | pull request #9, Number Garden's numerals (`30d47ae`)                  | cancelled by the next push      | cancelled                        | cancelled                                              | cancelled                              |
+| 39  | pull request #9, the place kept through an update (`0afde1b`)          | 17.9 and 8.6 for the two halves | 12.3 and 18.5 for the two halves | 15.3 minutes, after 12.8 installing WebKit             | 22.1 minutes                           |
+| 40  | `main` after the owner merged pull request #9 (`dbbdbc3`)              | passed, both halves             | passed, both halves              | passed                                                 | passed                                 |
+| 41  | pull request #10, Reading Cove's later activities (`563f46c`)          | 17.1 and 10.8                   | 17.4 and 21.2                    | 22.6 minutes                                           | 28.8 minutes                           |
+| 42  | `main` after the owner merged pull request #10 (`8288833`)             | passed, both halves             | passed, both halves              | passed                                                 | passed                                 |
+| 43  | pull request #11, the help for a first visit (`4fce12e`)               | 25.4 and 12.6                   | 20.4 and 24.3                    | 21.8 minutes                                           | **failed**, both halves: 13.3 and 16.8 |
+| 44  | pull request #11, the page that was too wide for an iPhone (`1decf66`) | 19.5 and 12.1                   | 17.4 and 24.8                    | 24.1 minutes                                           | 14.1 and 18.6, **passed**              |
+| 45  | `main` after the owner merged pull request #11 (`ed3efd6`)             | 24.5 and 12.4                   | 19.5 and 26.1                    | 24.2 minutes                                           | 15.0 and 16.9                          |
+| 46  | pull request #12, Robot Ridge's longer plans and bridge (`e9cdb5c`)    | 25.4 and 18.1                   | 22.2 and 34.7                    | **cancelled** at its 40 minutes, 566 of 567 tests done | 16.2 and 21.2                          |
 
 Run 39 is the first to have Number Garden's numerals, the room at its three sizes and the dialog test in
 Safari's engine, and all of them passed there. No test in any job needed a second attempt: the six artifacts
@@ -957,6 +959,52 @@ with its time.
    never asked for it, that WebKit's sentence is what the guard let pass, and that nothing is held against the
    test. **That test runs only in CI, and has not run yet.** If the reading above is wrong, it fails, and says
    which part.
+
+**Run 46** is pull request #12's first (`e9cdb5c`): Robot Ridge's three later activities, the fixes above, and
+the guard's new rule, in Safari's engine for the first time. **Seven jobs passed and one was cancelled at its
+forty-minute limit**: WebKit's desktop and tablet. No test failed in any job, and none needed a second
+attempt: the six artifacts are between 0.65 and 1.03 MB, and no log has a failed or retried line.
+
+| Job                            | Result                                                      | The whole job |
+| ------------------------------ | ----------------------------------------------------------- | ------------- |
+| Lint, types, unit tests, build | passed                                                      | 2.1 minutes   |
+| Chromium, desktop and tablet   | passed, both halves                                         | 25.4 and 18.1 |
+| Chromium, phones               | passed, both halves                                         | 22.2 and 34.7 |
+| WebKit, desktop and tablet     | **cancelled at 40 minutes**, with 566 of 567 tests done     | 40.2          |
+| WebKit, phones                 | passed, both halves: 239 and 183 passed, 73 and 128 skipped | 16.2 and 21.2 |
+
+**Why it was cancelled: the tests had 23 minutes and needed a few seconds more.** Putting WebKit on the machine
+took 16 minutes 40 seconds, where it takes half a minute. The log has where the time went: 16 minutes 15
+seconds of it was fetching the 185 packages of Ubuntu's that WebKit needs, 129 MB at 133 kB a second, from the
+mirror that runner was given (five packages were given up on twice there and fetched from Ubuntu's own
+archive instead). The other two WebKit jobs, started in the same second on other machines, fetched the same
+packages from a mirror of the same name in three and four seconds. WebKit itself came in 2.4 seconds. The
+tests then ran for 23 minutes: 566 of the 567 had a result when the job was stopped, 357 passed, 209 skipped by
+design, none failed, none run twice; the last was nine seconds from its end.
+
+So nothing in the game or its tests failed, and the cause is outside the repository. What is in the
+repository is how little room there was for it: a job whose tests take 23 of its 40 minutes fails whenever
+the machine takes 17 to get ready, and it has taken 13 before (run 39). **The same was waiting to happen in
+Chromium:** in this run the second half of the phones took 34.7 of its 40 minutes, 5.7 of them the same slow
+fetching, and its tests alone take 29.
+
+**What was done.** The jobs are dealt out in more parts: Chromium's desktop and tablet in three (the two took
+25 and 18 minutes of tests), Chromium's phones in three (22 and 29), WebKit's desktop and tablet in two (23.5
+as one). No part should now need more than about half of its forty minutes for its tests. The limit itself is
+left at forty: it is there to stop a job that hangs.
+
+**What that run showed that was waited for.**
+
+- **The guard's reading of WebKit is right.** The test that stages nothing ran for the first time, in both of
+  WebKit's screens that run it, and passed (1.3 and 1.1 seconds): the file asked for while the next page was on
+  its way was refused, the server was never asked for it, WebKit's sentence was what the guard let pass, and
+  nothing was held against the test. And "the way is marked instead of walked", which had failed over that
+  sentence in runs 30, 43 and 45, passed at its first attempt on both.
+- **Robot Ridge's three later activities passed in Safari's engine**, on every screen that reached them: the
+  desktop, the tablet, the phone and the iPhone upright and on its side.
+- **The fault of passing "how to play" by did not show**: the test that it failed four times in the two runs
+  before passed at its first attempt on all nine screens that run it. That is what the fix should do; it is
+  not proof, since the fault showed only now and then.
 
 **And the time, a third time.** The two halves of the desktop took 15.5 and 11.3 minutes, where the one job
 had taken 29.2: that worked. But the phones took 32.5 of their 40: the phone is the screen everything pressed

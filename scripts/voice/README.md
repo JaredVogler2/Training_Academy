@@ -72,6 +72,12 @@ meant. A sentence is tried up to five times and the first take that is heard wor
 fails if a clip is missing, stale, left over, changed since it was made, or heard differently without being listed
 by name in `tests/config/voice.test.ts`.
 
+A word the synthesiser says wrongly as it is written can be given to it in another spelling (`SAID_AS`, near
+the top of the script). Only the synthesiser sees that spelling: what is shown is the word, and what is heard
+is still held to the word as written. There is one, "Uluru", which is given as "Oolooroo". Reach for it only
+when the same word is heard wrongly in sentence after sentence; a line that is heard wrongly once is better
+reworded.
+
 That catches a wrong word, a cut-off ending, noise. It does not say whether a clip sounds clear, natural or kind to
 a small child, and nothing here can. **A person has to listen.** The grown-ups' area has a section for it — "The
 voice: listen to every recording" — where each clip can be played and marked. When a clip has been listened to and

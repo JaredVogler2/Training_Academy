@@ -91,6 +91,14 @@ export default defineConfig({
               test: /src[\\/]render[\\/]hub3d[\\/](?!Hub3D\.|Studio\.)/,
               priority: 5,
             },
+            {
+              // The outlines of the seven continents, for Explorer Harbor's globe: content, as a world's pack of
+              // challenges is, and like a pack a file of its own, so that the world's code stays small and the
+              // outlines are fetched once and kept. (scripts/verify-dist.mjs counts it with the content.)
+              name: 'atlas',
+              test: /src[\\/]content[\\/]explorer-harbor[\\/]atlas\.json$/,
+              priority: 4,
+            },
           ],
         },
       },

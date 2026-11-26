@@ -142,15 +142,23 @@ test.describe('numbers one to five', () => {
     press,
   }) => {
     await page.clock.install();
-    await toTheFirstStep(page, press, 'ng-numerals-01');
+    await page.goto(play('ng-numerals-01'));
+    await expect(myTurn(page)).toBeVisible();
+    // The clock is held before the child's turn begins, and moved on by the test: Glim's counting, which lasts
+    // about a second, is watched as it comes and goes. It used to be looked for after the turn had begun, and a
+    // press once took five seconds to come back (CI run 51, in WebKit, on a machine that had taken sixteen
+    // minutes to fetch its browser): the counting was over before the test first looked, and it waited ten
+    // seconds for what had been and gone.
+    await holdClock(page);
+    await press(myTurn(page));
+    await choices(page).first().waitFor();
     // Three snails; the numerals 3 and 1.
     const { right, wrong } = await rightAndWrong(page);
     await expect(right.locator('svg')).toHaveAttribute('data-numeral', '3');
     await expect(wrong.locator('svg')).toHaveAttribute('data-numeral', '1');
-    // Glim counts the snails with the child first. All the while, and after, no numeral shows a single dot.
-    // (Both numerals are read in one go. Read one after the other, as they were, the two counts could be of two
-    // moments: in CI, in WebKit, the test once saw one dot on the 1 and three on the 3 together, which the page
-    // never showed.)
+    // Everything is read in one go, by one function run in the page. Read one thing after another, the readings
+    // could be of two moments: in CI, in WebKit, the test once saw one dot on the 1 and three on the 3 together,
+    // which the page never showed.
     const dots = () =>
       lesson(page).evaluate((frame) => {
         const on = (numeral: string) =>
@@ -160,15 +168,24 @@ test.describe('numbers one to five', () => {
             ?.querySelectorAll('[data-dot]').length ?? -1;
         return `${String(on('1'))} on 1, ${String(on('3'))} on 3`;
       });
-    const counted = async () =>
-      (await asked(page).locator('svg').getAttribute('data-counting')) ?? '';
-    await expect.poll(counted).toBe('true');
-    expect(await dots()).toBe('0 on 1, 0 on 3');
-    await expect.poll(counted, { timeout: 15_000 }).toBe('false');
-    expect(await dots()).toBe('0 on 1, 0 on 3');
+    const counting = () =>
+      lesson(page).evaluate((frame) => {
+        const on = (numeral: string) =>
+          frame
+            .querySelector(`svg[data-numeral="${numeral}"]`)
+            ?.closest('[data-choice]')
+            ?.querySelectorAll('[data-dot]').length ?? -1;
+        const snails = frame.querySelector('[data-same] svg')?.getAttribute('data-counting');
+        return `the snails ${snails === 'true' ? 'being counted' : 'not being counted'}: ${String(on('1'))} on 1, ${String(on('3'))} on 3`;
+      });
+    // Glim counts the snails with the child first. Before, all the while, and after, no numeral shows a dot.
+    expect(await watchFor(page, 9000, counting)).toEqual([
+      'the snails not being counted: 0 on 1, 0 on 3',
+      'the snails being counted: 0 on 1, 0 on 3',
+      'the snails not being counted: 0 on 1, 0 on 3',
+    ]);
 
     // The wrong numeral is answered by what it is: one dot, counted. Then the right one is shown: three dots.
-    await holdClock(page);
     await press(wrong);
     await expect(caption(page)).toHaveText('Not that one. Let us count.');
     const seen = await watchFor(page, 16_000, dots);

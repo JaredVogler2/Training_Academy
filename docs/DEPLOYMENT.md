@@ -3,8 +3,8 @@
 **Status: the owner has deployed it.** The repository is connected to a Vercel project, `training-academy`, by its
 owner. Production is the `main` branch, at `https://training-academy-dun.vercel.app`.
 
-- **What is live** is what `main` has: since 2026-11-23 all six worlds, and since 2026-11-25 the Music Lab as
-  well (below). The six worlds went live when the owner merged pull
+- **What is live** is what `main` has: since 2026-11-23 all six worlds, since 2026-11-25 the Music Lab as
+  well, and what each merge since has added (below). The six worlds went live when the owner merged pull
   request #5 (the map, the voice, Number Garden's seven activities) and then pull request
   [#6](https://github.com/JaredVogler2/Training_Academy/pull/6) (the other five worlds). Nothing was promoted,
   merged or changed in the Vercel project from a session like this one: a merge is the owner's decision, and
@@ -118,22 +118,33 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   passed, with the new activities among them: four things laid out three ways and asked about the way they
   were left, five things and three to keep, and a next sitting that begins, after the page has been loaded
   again, by asking for what was kept.
-- **CI's run on that merge has one red job of thirteen, and it says nothing against the site.** Two browser
+- **CI's run on that merge had one red job of thirteen, and it said nothing against the site.** Two browser
   tests of Robot Ridge's longest activity ran out of their sixty seconds in Safari's engine, at both
   attempts; in the run before, on the same files, they had passed in 59.5 and 59.4 seconds. The tests play a
-  whole sitting at the pace a child is shown it, and had no time to spare. The remedy is on pull request #14.
-  The job was not run again, because a pass by half a second would show nothing, so `main` shows a failed
-  check until the next merge (`docs/TEST_RESULTS.md` → _Run 50_).
-- **One small fault is live in Safari, and has been since the first-visit help went live.** Now and then, a
-  tap on a picture in the moment the sound first comes on is seen by nothing, and the help that comes after
-  three taps on nothing comes after four. No answer is known to have been lost to it. Its fix is on pull
-  request #14 (`docs/TEST_RESULTS.md` → _Run 49_).
-- **What is on pull request [#14](https://github.com/JaredVogler2/Training_Academy/pull/14) is not live**:
-  Inventor Island's fifth activity (a shelter from the wind), the switch a grown-up holds to say a thing was
-  tried away from the screen, "My inventions", the two remedies above, and whatever else that pull request
-  gains. Its own description says how far it has got. The update from what is live (`a0e60f8`) to it was
-  rehearsed on 2026-11-26 and passed, 18 of 18. It should be rehearsed again after anything more is added
-  (_Before a release_, below).
+  whole sitting at the pace a child is shown it, and had no time to spare. The remedy went in with pull
+  request #14, and `main` has been green since (`docs/TEST_RESULTS.md` → _Run 50_ and _Run 52_).
+- **Inventor Island's shelter, a grown-up's word and "My inventions" went live on 2026-11-26**, when the owner
+  merged pull request [#14](https://github.com/JaredVogler2/Training_Academy/pull/14), 31 seconds after the
+  last of its checks went green: a fifth activity, a shelter from the wind; under each thing to try away from
+  the screen, a switch a grown-up holds to say it was tried; and a page of the last thing a child mended at
+  each workbench. **The update had been rehearsed** before its push and passed, 18 of 18. **Checked on the
+  live site two and three quarter hours after the merge:** Vercel's record of the production deployment of
+  the merge commit `3f5c5f7` said "Ready"; of 78 browser tests run against the address as a desktop, a phone
+  and a Pixel 7 (that commit's own tests, run from a clean copy of it: the smoke tests, and the Pixel's tests
+  that play something in every world), 78 passed, with the shelter and the portfolio among them; and CI's run
+  on `main` was green in all thirteen jobs, with one test passing only at a second attempt
+  (`docs/TEST_RESULTS.md` → _Run 52_).
+- **The small fault that was live in Safari is mended on the site.** Now and then, a tap on a picture in the
+  moment the sound first came on was seen by nothing, and the help that comes after three taps on nothing
+  came after four. No answer is known to have been lost to it. It was live from the first-visit help until
+  pull request #14 (`docs/TEST_RESULTS.md` → _Run 49_). Safari's engine has not been pointed at the live
+  site, so that it is gone there rests on CI's WebKit, where the test that met it passed at its first attempt
+  in both runs since.
+- **What is on pull request [#15](https://github.com/JaredVogler2/Training_Academy/pull/15) is not live**:
+  Explorer Harbor's globe and its three lessons (the seven big lands, by shape and by name, and fifteen
+  famous places), and whatever else that pull request gains. Its own description says how far it has got. The
+  update from what is live (`3f5c5f7`) to it was rehearsed on 2026-11-26 and passed, 18 of 18. It should be rehearsed
+  again after anything more is added (_Before a release_, below).
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The

@@ -1,3 +1,4 @@
+import { PAGE_LIMIT } from './diagnosis';
 import { SHARE_OF_LIMIT, expect, holdClock, nearItsLimit, test } from './fixtures';
 
 /**
@@ -248,6 +249,27 @@ test.describe('the time a test is given', () => {
     test.fail();
     test.setTimeout(30_000);
     await page.waitForTimeout(24_000);
+  });
+
+  test('and a page that does not come is given up on in half a minute, not when the test’s time is up', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Once is enough: it is the tests’ own tool.');
+    // A page that is asked for and never answered, as CI's WebKit has left a test's first page eight times.
+    await page.route('**/a-page-that-never-comes', () => {
+      // Never answered, never refused.
+    });
+    const began = Date.now();
+    const said = await page.goto('/a-page-that-never-comes').then(
+      () => 'the page came',
+      (error: unknown) => String(error),
+    );
+    const waited = Date.now() - began;
+    expect(said).toContain(`Timeout ${String(PAGE_LIMIT)}ms exceeded`);
+    expect(waited).toBeGreaterThanOrEqual(PAGE_LIMIT - 500);
+    // Well short of the test's own two minutes, which is what it used to cost.
+    expect(waited).toBeLessThan(PAGE_LIMIT + 10_000);
+    expect(PAGE_LIMIT).toBe(30_000);
   });
 });
 

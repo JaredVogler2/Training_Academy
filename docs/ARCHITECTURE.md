@@ -182,9 +182,25 @@ are not shipped to the browser.
 
 What a world's rules and its drawing both need lives in the content layer, because that layer may not import
 from the game (ESLint enforces it): `src/art/lexicon.json` (what each kit picture is called and how it is spelt),
-`src/content/explorer-harbor/storybook.json` (the stories and the changes with a cause) and
+`src/content/explorer-harbor/storybook.json` (the stories and the changes with a cause),
 `src/content/explorer-harbor/maps.ts` (the maths of a map: what counts as on land, as nearest, as far enough
-apart to press).
+apart to press), and the globe's three: `atlas.json` (the outlines of the seven continents), `places.json` (the
+continents' middles and fifteen famous places) and `globe.ts`.
+
+**The globe is arithmetic, and one copy of it.** `globe.ts` says where a place on the earth is on a disc looked
+at from far away, whether it faces, what a land's outline is when part of it has gone round the edge (cut
+there, and joined up along the edge), how a pull of a finger turns the view, and what a land's shape is by
+itself. The rules use it to work every question out again; the drawing (`Globe.tsx`) uses it to draw; the
+board (`GlobeBoard.tsx`) uses it to put each pin over its land and to know when a pin is out of sight; the
+browser tests use it to say where each pin should be. There is no map library and no projection but this one.
+The content generator, which is plain JavaScript and cannot import it, has its own few lines of the same
+arithmetic, and a test fails if a pack is not what the generator writes or a question breaks a rule.
+
+The globe's board is the one board that takes a press as the finger comes up and not at the click a browser
+makes of it (Chromium makes no click of a tap that follows a flick by less than a fifth of a second), and the
+one that hands the keyboard on: a pin that has gone round the back cannot hold it, and it goes to the button
+that turns the globe that way. How far a turn goes and how long the globe waits before turning back are in
+`turning.ts`, where the browser tests read them too.
 
 See `docs/CURRICULUM.md` for the authoring conventions and what is authored.
 
@@ -436,19 +452,19 @@ next world: what a world's large Play button goes to, and where Glim points on t
 `game/worlds/modules.ts` is the registry of per-world code. Each world has a module, fetched with its content
 pack on entering that world and never before:
 
-| A module gives | What it is                                                                                                                                               |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Picture`      | How a stimulus is drawn, as a question, a choice or a card; lit when it is named; with its gap filled when its question has been answered                |
-| `describe`     | The same picture in words, for a screen reader                                                                                                           |
-| `countable`    | How many things a picture holds, where counting is how the world teaches (Number Garden only)                                                            |
-| `chooseScript` | How the world shows off a question with choices: counting, saying a word slowly, uncovering and covering, telling a story as far as it goes              |
-| `makeScript`   | The same for a thing to make, where the world has more to say than the board (a story told back picture by picture)                                      |
-| `soundOf`      | The recording a picture makes of its own accord when lit or tapped (a drum)                                                                              |
-| `toneOf`       | The note a picture plays when it is tapped, where it is an instrument (a chime bar's own pitch)                                                          |
-| `echoLayout`   | `row`, where things to repeat stand in a row in their own order with nothing round them, like the bars of a keyboard                                     |
-| `boards`       | Boards for games only this world has, by the kind of task (`program`, `design`, `give`, `beat`, `tune`, `recall`) or the scene asked about (`scene:map`) |
-| `linesFor`     | Lines a challenge is told with beside its own, to be fetched before they are wanted: a story's lines; in Reading Cove, every clip its script may say     |
-| `voice`        | Where this world's recordings are and how long each lasts                                                                                                |
+| A module gives | What it is                                                                                                                                                              |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Picture`      | How a stimulus is drawn, as a question, a choice or a card; lit when it is named; with its gap filled when its question has been answered                               |
+| `describe`     | The same picture in words, for a screen reader                                                                                                                          |
+| `countable`    | How many things a picture holds, where counting is how the world teaches (Number Garden only)                                                                           |
+| `chooseScript` | How the world shows off a question with choices: counting, saying a word slowly, uncovering and covering, telling a story as far as it goes                             |
+| `makeScript`   | The same for a thing to make, where the world has more to say than the board (a story told back picture by picture)                                                     |
+| `soundOf`      | The recording a picture makes of its own accord when lit or tapped (a drum)                                                                                             |
+| `toneOf`       | The note a picture plays when it is tapped, where it is an instrument (a chime bar's own pitch)                                                                         |
+| `echoLayout`   | `row`, where things to repeat stand in a row in their own order with nothing round them, like the bars of a keyboard                                                    |
+| `boards`       | Boards for games only this world has, by the kind of task (`program`, `design`, `give`, `beat`, `tune`, `recall`) or the scene asked about (`scene:map`, `scene:globe`) |
+| `linesFor`     | Lines a challenge is told with beside its own, to be fetched before they are wanted: a story's lines; in Reading Cove, every clip its script may say                    |
+| `voice`        | Where this world's recordings are and how long each lasts                                                                                                               |
 
 `game/lessonRunner.ts` runs one sitting: resume or create, answer, hint, next, restart. It updates the screen first and
 saves second; a failed save never interrupts a child (the lesson continues in memory and says it is not saved).
@@ -682,6 +698,7 @@ the browser tests (`listenIn` in `e2e/fixtures.ts`).
 | the Music Lab's room, Inventor Island's portfolio | on first visit to that room               |
 | `engine-play` (judging, the robot, the models)    | with the first activity                   |
 | a world's code and its content pack, each a chunk | on entering that world                    |
+| `atlas` (the continents' outlines)                | with Explorer Harbor's code               |
 | a recording                                       | the first time its line is wanted         |
 | `VoiceCheck` and the voice manifest               | when a grown-up opens the list            |
 | `Studio`, `GuideSheet`                            | only at `/studio/…`                       |
@@ -694,6 +711,11 @@ Rolldown's `codeSplitting` groups are configured with `includeDependenciesRecurs
 React Three Fiber group also captured React itself, which made the 3D chunk a static dependency of the entry — the
 verifier failed the build, and the setting was added. Sizes and budgets are printed by `npm run verify:dist` and
 recorded in `docs/TEST_RESULTS.md`.
+
+The continents' outlines are a group of their own (`atlas`). They are content, as a pack of challenges is, and
+with Explorer Harbor's code they made that world's part larger than any on-demand part may be; apart, the code
+is 20.7 kB compressed and the outlines 12.1. `verify-dist` counts the atlas with the content, and fails if it
+is not exactly one file.
 
 An on-demand part is fetched by its own `import()`. Vite would normally add a `<link rel="modulepreload">` for the
 part and everything it imports just before that; this is switched off for scripts (`build.modulePreload` in

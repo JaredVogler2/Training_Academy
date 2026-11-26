@@ -475,6 +475,7 @@
 /*
  * Help with the screen (useNudge.ts). When taps have been landing on nothing, what can be pressed now wears a sun
  * ring for a few seconds: every thing there is to answer with, alike, or the one button that goes on from here.
+ * (A button on a board that is not an answer, such as the two that turn the globe, says so with `data-aside`.)
  * The words are written where Glim's are, in the bubble at the foot, so that they cover nothing being pointed at.
  */
 .caption[data-tone='nudge'] {
@@ -485,7 +486,7 @@
 
 .lesson[data-nudge='answers']
   > :not(.bar, .foot, dialog)
-  :is(button, a[href]):not([aria-disabled='true'], :disabled),
+  :is(button, a[href]):not([aria-disabled='true'], :disabled, [data-aside]),
 .lesson[data-nudge='done'] .done,
 .lesson[data-nudge='next'] .next,
 .lesson[data-nudge='my-turn'] .myTurn {

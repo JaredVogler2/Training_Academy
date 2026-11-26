@@ -2,17 +2,17 @@
 
 **Status: seven worlds, a first pass through each.** Every activity the six islands' pages promised is authored
 and playable, and so are the Music Lab's six. Counts in this document are of real content in the repository,
-and the tests pin the ones quoted most. (All of it is live but Inventor Island's fifth activity, a shelter
-from the wind, which is on a pull request that is not merged. The help for a first visit, described at the end
+and the tests pin the ones quoted most. (All of it is live but Explorer Harbor's three lessons on a globe,
+which are on a pull request that is not merged. The help for a first visit, described at the end
 of this document under _Where a child begins_, went live on 2026-11-26.)
 
 |                              | Authored and tested |
 | ---------------------------- | ------------------- |
 | Worlds with playable content | 7 of 7              |
-| Activities (lessons)         | 68                  |
-| Challenges                   | 788                 |
-| Skills                       | 78                  |
-| Spoken lines and words       | 604 recordings      |
+| Activities (lessons)         | 71                  |
+| Challenges                   | 823                 |
+| Skills                       | 81                  |
+| Spoken lines and words       | 660 recordings      |
 
 **Nothing here has been reviewed by an early-years teacher or tried with a child, and no person has listened to
 the recordings.** All three are required before any claim about what the game teaches. Each world's brief in
@@ -550,9 +550,13 @@ reader who will not open the code.
 says a child "knows" why bridges hold. What is recorded is what a child guessed about this set-up, and whether
 they mended this one.
 
-### Explorer Harbor — `explorer-harbor.v1.json` (contentVersion 1)
+### Explorer Harbor — `explorer-harbor.v2.json` (contentVersion 2)
 
-8 activities, 68 challenges, 8 skills, 71 spoken lines. Written by `scripts/content/explorer-harbor.mjs`.
+11 activities, 103 challenges, 11 skills, 127 spoken lines. Written by `scripts/content/explorer-harbor.mjs`,
+from the storybook, and for the globe from two more files: the outlines of the seven continents
+(`src/content/explorer-harbor/atlas.json`, made from Natural Earth by `scripts/atlas/make_atlas.mjs`) and
+the list of the continents and of fifteen famous places with where each is
+(`src/content/explorer-harbor/places.json`). `docs/ASSETS.md` says where both came from.
 
 **How it teaches.** Eight little stories, three pictures each, put in order and then told back by the voice with
 each picture lifted in turn. The same stories with the last picture missing. Eight changes with a cause — a
@@ -560,33 +564,63 @@ snowman and the sun, a tower and a ball — asked both ways: what did it, and wh
 made-up islands to answer on by tapping the map itself: the flag that stands on water, the flag on land, the
 island nearest the boat, the island farthest.
 
+Then the real world, on a globe with nothing written on it and no border on it: seven lands and the sea. A
+child is shown the shape of a continent and told its name, and finds that land among three pins; then is
+told the name alone, with nothing to match until help is asked for (that one needs sound). And fifteen famous
+places, each shown as a drawing beside the shape of the continent it is in: the question says which
+continent that is, the child finds it, and the place is put on the globe where it is. **That last activity
+tells its own answer, on purpose**: it is a first meeting with the places and with the idea that each is
+somewhere, and its skill says in its own words that nothing in it shows a child knows where a place is. A
+pin is called by where it is on the globe ("the land at the top, on the left") and never by its land's name,
+and a land that is pressed wrongly is not named either.
+
 **What the rules check** (`src/content/rules/explorerHarbor.ts`): a story's order is the storybook's; nothing
 offered beside an ending or a cause could be taken for it (the storybook lists, for each, what must never be
 offered); every map is worked out again from its numbers — a flag counts as on land only well inside a shore
 and as on water only well clear of every shore, an island is the nearest only if it is no more than 62 % as far
-as the next, and places are far enough apart to press.
+as the next, and places are far enough apart to press. And every question on the globe is worked out again
+from the outlines themselves: each pin is on the land it stands for and on no other; every pin faces us
+squarely enough to be seen (half way to the edge of the disc at least) and is 1.1 of the globe's radius from
+every other, which is a finger's room on the smallest screen; the land asked for is pinned at its middle,
+and its middle faces more squarely still; the answer that is marked is the land that is asked for; a famous
+place is in the continent the question says, at the place the list gives; no label has a land's name in it;
+and a question with only a name is in a lesson that says it needs sound. Nineteen rules, each with a question
+in the tests that breaks it.
 
-| Activity       | Title                       | Challenges | A sitting                       | The child's part |
-| -------------- | --------------------------- | ---------- | ------------------------------- | ---------------- |
-| `eh-story-01`  | Put the story in order      | 8          | 1 shown, 2 guided, 3 of 5 alone | put in order     |
-| `eh-ending-01` | How does it end?            | 8          | 1 shown, 2 guided, 3 of 5 alone | a choice         |
-| `eh-why-01`    | What made it happen?        | 8          | 1 shown, 2 guided, 3 of 5 alone | a choice         |
-| `eh-next-01`   | What happens next?          | 8          | 1 shown, 2 guided, 3 of 5 alone | a choice         |
-| `eh-water-01`  | Which flag is on the water? | 9          | 1 shown, 2 guided, 4 of 6 alone | a choice         |
-| `eh-land-01`   | Which flag is on the land?  | 9          | 1 shown, 2 guided, 4 of 6 alone | a choice         |
-| `eh-near-01`   | Which island is nearest?    | 9          | 1 shown, 2 guided, 4 of 6 alone | a choice         |
-| `eh-far-01`    | Which island is farthest?   | 9          | 1 shown, 2 guided, 4 of 6 alone | a choice         |
+| Activity       | Title                       | Challenges | A sitting                        | The child's part                |
+| -------------- | --------------------------- | ---------- | -------------------------------- | ------------------------------- |
+| `eh-story-01`  | Put the story in order      | 8          | 1 shown, 2 guided, 3 of 5 alone  | put in order                    |
+| `eh-ending-01` | How does it end?            | 8          | 1 shown, 2 guided, 3 of 5 alone  | a choice                        |
+| `eh-why-01`    | What made it happen?        | 8          | 1 shown, 2 guided, 3 of 5 alone  | a choice                        |
+| `eh-next-01`   | What happens next?          | 8          | 1 shown, 2 guided, 3 of 5 alone  | a choice                        |
+| `eh-water-01`  | Which flag is on the water? | 9          | 1 shown, 2 guided, 4 of 6 alone  | a choice                        |
+| `eh-land-01`   | Which flag is on the land?  | 9          | 1 shown, 2 guided, 4 of 6 alone  | a choice                        |
+| `eh-near-01`   | Which island is nearest?    | 9          | 1 shown, 2 guided, 4 of 6 alone  | a choice                        |
+| `eh-far-01`    | Which island is farthest?   | 9          | 1 shown, 2 guided, 4 of 6 alone  | a choice                        |
+| `eh-lands-01`  | The seven big lands         | 10         | 1 shown, 2 guided, 4 of 7 alone  | a pin on the globe              |
+| `eh-lands-02`  | Which land is it?           | 10         | 1 shown, 2 guided, 4 of 7 alone  | a pin on the globe; needs sound |
+| `eh-places-01` | Famous places               | 15         | 1 shown, 2 guided, 4 of 12 alone | a pin on the globe              |
 
-| Skill                          | For grown-ups           | What it means                                                                                                                |
-| ------------------------------ | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `story.sequence.order-three`   | Put a story in order    | Puts three pictures of something that happens into the order it happens in: beginning, middle and end.                       |
-| `story.sequence.choose-ending` | Say how a story ends    | Shown the beginning and the middle of a short story, picks the picture it ends with from among the endings of other stories. |
-| `story.cause.find-cause`       | Say what made it happen | Shown a thing before and after something happened to it, picks what did it from three things, two of which could not have.   |
-| `story.cause.predict`          | Say what happens next   | Shown a thing and what is about to happen to it, picks how it will turn out from three pictures.                             |
-| `world.map.water`              | Find water on a map     | On a simple map of sea and islands, picks the one flag of two or three that stands on water.                                 |
-| `world.map.land`               | Find land on a map      | On a simple map of sea and islands, picks the one flag of two or three that stands on land.                                  |
-| `world.space.nearest`          | Find the nearest place  | On a map with a boat and three islands, picks the island nearest to the boat.                                                |
-| `world.space.farthest`         | Find the farthest place | On a map with a boat and three islands, picks the island farthest from the boat.                                             |
+| Skill                          | For grown-ups                           | What it means                                                                                                                                                                                              |
+| ------------------------------ | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `story.sequence.order-three`   | Put a story in order                    | Puts three pictures of something that happens into the order it happens in: beginning, middle and end.                                                                                                     |
+| `story.sequence.choose-ending` | Say how a story ends                    | Shown the beginning and the middle of a short story, picks the picture it ends with from among the endings of other stories.                                                                               |
+| `story.cause.find-cause`       | Say what made it happen                 | Shown a thing before and after something happened to it, picks what did it from three things, two of which could not have.                                                                                 |
+| `story.cause.predict`          | Say what happens next                   | Shown a thing and what is about to happen to it, picks how it will turn out from three pictures.                                                                                                           |
+| `world.map.water`              | Find water on a map                     | On a simple map of sea and islands, picks the one flag of two or three that stands on water.                                                                                                               |
+| `world.map.land`               | Find land on a map                      | On a simple map of sea and islands, picks the one flag of two or three that stands on land.                                                                                                                |
+| `world.space.nearest`          | Find the nearest place                  | On a map with a boat and three islands, picks the island nearest to the boat.                                                                                                                              |
+| `world.space.farthest`         | Find the farthest place                 | On a map with a boat and three islands, picks the island farthest from the boat.                                                                                                                           |
+| `world.globe.match-shape`      | Find a continent by its shape           | Shown the shape of one of the seven continents and told its name, finds that land on a globe among two or three.                                                                                           |
+| `world.globe.find-named`       | Find a continent by its name            | Told the name of a continent, with nothing shown to match, finds that land on a globe among two or three. Needs sound.                                                                                     |
+| `world.place.continent-of`     | Find the continent a famous place is in | Shown a famous place and the shape of the continent it is in, and told both, finds that continent on a globe. It is the continent that is found: nothing here shows that a child knows where the place is. |
+
+The seven lands are Africa, Antarctica, Asia, Europe, North America, Oceania and South America. The fifteen
+places: the pyramids, Mount Kilimanjaro and Table Mountain; the Eiffel Tower, the Colosseum and Big Ben; the
+Great Wall, the Taj Mahal and Mount Fuji; the Statue of Liberty and the pyramid of Chichen Itza; Machu Picchu
+and Angel Falls; the Sydney Opera House and Uluru. Ten are built and five are not; none is shown with a
+person in it; each is said to be in its country only after its continent has been found ("Yes. The Taj Mahal
+is in India."). Antarctica has no famous place, and both of Oceania's are in Australia.
 
 ### The first activity as it is played (Phase 03)
 
@@ -761,7 +795,7 @@ From the briefs in `prompt-series/`; `docs/PROGRESS.md` has each brief set again
 | Robot Ridge     | a condition other than waiting for a bridge (no "if … or else", and nothing is sensed but the bridge); doing a part of a row again (the whole row is done again); steps that are dragged (they are tapped, by decision)                                                                                                                                                            | 07    |
 | Memory Forest   | more than five things; a way of remembering that is the child's own (the three ways are the game's, and nothing checks that the way chosen was used); waits told apart beyond "later the same day" and "another day"; anything said aloud by the child                                                                                                                             | 08    |
 | Inventor Island | saying what changed after a mend (nothing in the game asks; the thing to try together asks it aloud); a heavier and a lighter ball on the ramp; a bridge of anything but a thin or a thick plank; building freely, with nothing to mend; parts that are dragged (they are changed by tapping a picture, by decision); a portfolio of more than the last thing mended at each bench | 09    |
-| Explorer Harbor | making up a story; stories that branch; a globe, continents, countries, flags, people and places                                                                                                                                                                                                                                                                                   | 10    |
+| Explorer Harbor | making up a story; stories that branch; countries on the globe (it has the seven continents and no border), flags and people; a place found with nothing said about where it is; lands that are neighbours asked together (Europe is never one of three with Africa or Asia); a globe that can be looked at closer                                                                 | 10    |
 | The Music Lab   | tapping a rhythm back; black keys; keeping a tune a child has made; the five other rooms its brief describes                                                                                                                                                                                                                                                                       | 11    |
 
 Open questions: who reviews the phonics content and the audio; whether a person should record the voice; how

@@ -190,7 +190,7 @@ export const WORLDS: readonly WorldInfo[] = [
     name: 'Explorer Harbor',
     focus: 'Stories and the wide world',
     about:
-      'Stories told in pictures — beginning, middle and end, and why things happen — and first ideas about a map: land and water, near and far.',
+      'Stories told in pictures — beginning, middle and end, and why things happen — first ideas about a map: land and water, near and far — and a globe of the real world, with its seven big lands and fifteen famous places.',
     activities: [
       {
         title: 'Beginning, middle, end',
@@ -223,6 +223,24 @@ export const WORLDS: readonly WorldInfo[] = [
         together: {
           what: 'Stand still in a room and pick three things. Which is nearest? Which is farthest? Walk to each and count the steps to find out.',
           safety: 'Clear the floor first, and choose things that are safe to walk up to.',
+        },
+      },
+      {
+        title: 'The seven big lands',
+        lessons: ['eh-lands-01', 'eh-lands-02'],
+        together: {
+          what: 'Find a globe or a map of the world, or draw the seven big lands roughly on paper. Say the name of one and find it together, then let your child choose one for you to find. Where do you live? Where does someone you know live?',
+          safety:
+            'Nothing to watch out for. Maps do not all use the same names: the lands of the Pacific are Oceania here, and Australia or Australasia on other maps. Any of them is right.',
+        },
+      },
+      {
+        title: 'Famous places',
+        lessons: ['eh-places-01'],
+        together: {
+          what: 'Choose one of the famous places and look for a photograph of the real thing in a book. What is it made of? Who built it, or is it a mountain or a waterfall that nobody built? Then make one together from blocks, boxes or sand.',
+          safety:
+            'Nothing to watch out for. One famous place is a very small part of a country: if your child asks what it is like there, look for more than one picture.',
         },
       },
     ],

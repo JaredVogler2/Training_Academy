@@ -1,0 +1,135 @@
+{
+  "about": "Explorer Harbor's world: where each continent's pin stands on the globe, and fifteen famous places. A place's coordinates are degrees east, then degrees north, rounded to a hundredth of a degree, and were compared with the English Wikipedia article named in \"article\" by scripts/atlas/check_places.mjs (docs/ASSETS.md says when). Nothing here is about people, and no border is drawn from it.",
+  "continents": {
+    "africa": { "name": "Africa", "at": [20, 5] },
+    "antarctica": { "name": "Antarctica", "at": [60, -80] },
+    "asia": { "name": "Asia", "at": [95, 45] },
+    "europe": { "name": "Europe", "at": [15, 50] },
+    "north-america": { "name": "North America", "at": [-100, 45] },
+    "oceania": { "name": "Oceania", "at": [135, -25] },
+    "south-america": { "name": "South America", "at": [-58, -12] }
+  },
+  "landmarks": {
+    "pyramids": {
+      "name": "the pyramids",
+      "many": true,
+      "country": "Egypt",
+      "continent": "africa",
+      "kind": "built",
+      "at": [31.13, 29.98],
+      "article": "Giza pyramid complex"
+    },
+    "kilimanjaro": {
+      "name": "Mount Kilimanjaro",
+      "country": "Tanzania",
+      "continent": "africa",
+      "kind": "natural",
+      "at": [37.35, -3.07],
+      "article": "Mount Kilimanjaro"
+    },
+    "table-mountain": {
+      "name": "Table Mountain",
+      "country": "South Africa",
+      "continent": "africa",
+      "kind": "natural",
+      "at": [18.41, -33.96],
+      "article": "Table Mountain"
+    },
+    "eiffel-tower": {
+      "name": "the Eiffel Tower",
+      "country": "France",
+      "continent": "europe",
+      "kind": "built",
+      "at": [2.29, 48.86],
+      "article": "Eiffel Tower"
+    },
+    "colosseum": {
+      "name": "the Colosseum",
+      "country": "Italy",
+      "continent": "europe",
+      "kind": "built",
+      "at": [12.49, 41.89],
+      "article": "Colosseum"
+    },
+    "big-ben": {
+      "name": "Big Ben",
+      "country": "the United Kingdom",
+      "continent": "europe",
+      "kind": "built",
+      "at": [-0.12, 51.5],
+      "article": "Big Ben"
+    },
+    "great-wall": {
+      "name": "the Great Wall",
+      "country": "China",
+      "continent": "asia",
+      "kind": "built",
+      "at": [116.56, 40.43],
+      "article": "Great Wall of China"
+    },
+    "taj-mahal": {
+      "name": "the Taj Mahal",
+      "country": "India",
+      "continent": "asia",
+      "kind": "built",
+      "at": [78.04, 27.18],
+      "article": "Taj Mahal"
+    },
+    "mount-fuji": {
+      "name": "Mount Fuji",
+      "country": "Japan",
+      "continent": "asia",
+      "kind": "natural",
+      "at": [138.73, 35.36],
+      "article": "Mount Fuji"
+    },
+    "statue-of-liberty": {
+      "name": "the Statue of Liberty",
+      "country": "the United States",
+      "continent": "north-america",
+      "kind": "built",
+      "at": [-74.04, 40.69],
+      "article": "Statue of Liberty"
+    },
+    "chichen-itza": {
+      "name": "the pyramid of Chichen Itza",
+      "country": "Mexico",
+      "continent": "north-america",
+      "kind": "built",
+      "at": [-88.57, 20.68],
+      "article": "Chichen Itza"
+    },
+    "machu-picchu": {
+      "name": "Machu Picchu",
+      "country": "Peru",
+      "continent": "south-america",
+      "kind": "built",
+      "at": [-72.55, -13.16],
+      "article": "Machu Picchu"
+    },
+    "angel-falls": {
+      "name": "Angel Falls",
+      "country": "Venezuela",
+      "continent": "south-america",
+      "kind": "natural",
+      "at": [-62.54, 5.97],
+      "article": "Angel Falls"
+    },
+    "sydney-opera-house": {
+      "name": "the Sydney Opera House",
+      "country": "Australia",
+      "continent": "oceania",
+      "kind": "built",
+      "at": [151.22, -33.86],
+      "article": "Sydney Opera House"
+    },
+    "uluru": {
+      "name": "Uluru",
+      "country": "Australia",
+      "continent": "oceania",
+      "kind": "natural",
+      "at": [131.04, -25.34],
+      "article": "Uluru"
+    }
+  }
+}

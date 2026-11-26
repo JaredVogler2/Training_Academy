@@ -8,13 +8,22 @@
 //   which is on the land?       the same, the other way about
 //   which is nearest?           a boat and three islands; one is plainly the nearest
 //   which is farthest?          the same, the other way about
+//   the seven big lands         the shape of a continent, and its name; the land to find on a globe
+//   which land is it?           the name alone
+//   famous places               a famous place, the continent it is in, and that land to find
 //
 // The stories and the changes are in src/content/explorer-harbor/storybook.json, with what each picture
 // shows; the drawings are beside it. The maps are made here, by trying places until a map is found that can be
 // read plainly: a flag well inside a shore or well clear of every shore, an island nearer or farther by a good
 // deal. The world's rules (src/content/rules/explorerHarbor.ts) work every map out again from its numbers.
 //
-// Nothing here scores a story a child makes up, and nothing here is about any real place or people.
+// The globe is the real one: its lands are src/content/explorer-harbor/atlas.json (made from Natural Earth by
+// scripts/atlas/make_atlas.mjs) and its famous places are src/content/explorer-harbor/places.json, each with
+// the article its place was checked against. A question about the globe is made by trying sets of lands until
+// one is found that a single view shows well: every pin plainly facing, and far enough from the others for a
+// small finger on the smallest screen. The world's rules work each one out again.
+//
+// Nothing here scores a story a child makes up. Nothing here is about people, and no border is drawn.
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -591,6 +600,369 @@ function boatLesson(ask) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------------------------------------------------
+// The globe: the seven big lands, and fifteen famous places
+// ---------------------------------------------------------------------------------------------------------------------
+
+const places = JSON.parse(
+  readFileSync(join(root, 'src/content/explorer-harbor/places.json'), 'utf8'),
+);
+const atlas = JSON.parse(
+  readFileSync(join(root, 'src/content/explorer-harbor/atlas.json'), 'utf8'),
+);
+const CONTINENTS = Object.keys(places.continents);
+
+const RAD = Math.PI / 180;
+/** How far a globe may be tipped towards a pole. The same number as in src/content/explorer-harbor/globe.ts. */
+const TIP_MOST = 40;
+/** How squarely every pin must face: 1 is the middle of the disc, 0 its edge. */
+const FACING_LEAST = 0.5;
+/**
+ * How far apart two pins must be, in globe radii: on the smallest globe there is, 56 pixels, which is what a
+ * small finger needs. (At 0.9 the lands that are neighbours could be asked together, and pins were 46 pixels
+ * apart there. A land is still told from two others by its shape; which two they are is less various.)
+ */
+const PINS_APART = 1.1;
+/**
+ * How squarely the land that is asked for must face, at its middle: most of it has to be there to be known by.
+ * (Antarctica is let off: it is only ever the white land at the foot of the globe.)
+ */
+const WANTED_FACING = 0.6;
+
+/** Where a place is on the disc when `view` is in the middle of it (see globe.ts, which the rules use). */
+function onDisc([viewLon, viewLat], [lon, lat]) {
+  const across = (lon - viewLon) * RAD;
+  const up = lat * RAD;
+  const tip = viewLat * RAD;
+  const x = Math.cos(up) * Math.sin(across);
+  const y = Math.sin(up);
+  const z = Math.cos(up) * Math.cos(across);
+  return {
+    x,
+    y: -(y * Math.cos(tip) - z * Math.sin(tip)),
+    facing: y * Math.sin(tip) + z * Math.cos(tip),
+  };
+}
+
+/** The view that looks most squarely at several places at once, to a tenth of a degree. */
+function viewOf(pins) {
+  let x = 0;
+  let y = 0;
+  let z = 0;
+  for (const [lon, lat] of pins) {
+    x += Math.cos(lat * RAD) * Math.sin(lon * RAD);
+    y += Math.sin(lat * RAD);
+    z += Math.cos(lat * RAD) * Math.cos(lon * RAD);
+  }
+  const length = Math.hypot(x, y, z);
+  const lat = Math.max(-TIP_MOST, Math.min(TIP_MOST, Math.asin(y / length) / RAD));
+  return [Number((Math.atan2(x, z) / RAD).toFixed(1)), Number(lat.toFixed(1))];
+}
+
+function insideRing([lon, lat], ring) {
+  let within = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [ax, ay] = ring[i];
+    const [bx, by] = ring[j];
+    if (ay > lat !== by > lat && lon < ((bx - ax) * (lat - ay)) / (by - ay) + ax) within = !within;
+  }
+  return within;
+}
+
+/**
+ * Where a pin may stand for each land: places well inside it, far from each other. A land is asked about with
+ * whichever of its pins leaves most room between it and the others on the disc.
+ */
+const PINS = {
+  africa: [
+    [20, 5],
+    [25, -15],
+    [5, 20],
+    [35, 0],
+  ],
+  antarctica: [
+    [60, -80],
+    [-60, -80],
+    [120, -75],
+    [0, -78],
+    [-120, -80],
+  ],
+  asia: [
+    [95, 45],
+    [78, 22],
+    [110, 62],
+    [48, 25],
+    [135, 60],
+    [105, 30],
+  ],
+  europe: [
+    [15, 50],
+    [15, 62],
+    [-3, 40],
+    [40, 55],
+  ],
+  'north-america': [
+    [-100, 45],
+    [-110, 60],
+    [-100, 25],
+    [-42, 72],
+    [-80, 40],
+  ],
+  oceania: [
+    [135, -25],
+    [145, -22],
+    [120, -28],
+    [144.2, -5.9],
+  ],
+  'south-america': [
+    [-58, -12],
+    [-65, -33],
+    [-70, 3],
+    [-45, -10],
+  ],
+};
+for (const [continent, pins] of Object.entries(PINS)) {
+  for (const pin of pins) {
+    if (!atlas.continents[continent].some((ring) => insideRing(pin, ring))) {
+      throw new Error(`A pin for ${continent} is not on it: ${pin.join(', ')}`);
+    }
+  }
+}
+
+/** How a set of pins sits in the view that looks at them: the least any faces, the least any two are apart. */
+function sitting(pins) {
+  const view = viewOf(pins);
+  const at = pins.map((pin) => onDisc(view, pin));
+  let apart = Infinity;
+  for (let i = 0; i < at.length; i++) {
+    for (let j = 0; j < i; j++) {
+      apart = Math.min(apart, Math.hypot(at[i].x - at[j].x, at[i].y - at[j].y));
+    }
+  }
+  return { view, at, facing: Math.min(...at.map((each) => each.facing)), apart };
+}
+
+/** Every way of choosing one pin for each of some lands. */
+function pinnings(lands) {
+  return lands.reduce(
+    (sets, land) => sets.flatMap((set) => PINS[land].map((pin) => [...set, pin])),
+    [[]],
+  );
+}
+
+/**
+ * The best view of a set of lands, the first of which is the one asked for, if any view shows them well: the
+ * pins that leave most room between them. The land asked for is pinned at its middle, and its middle faces.
+ */
+function bestSitting(lands) {
+  const [want] = lands;
+  const middle = places.continents[want].at;
+  let best = null;
+  for (const pins of pinnings(lands)) {
+    if (want !== 'antarctica' && (pins[0][0] !== middle[0] || pins[0][1] !== middle[1])) continue;
+    const sat = sitting(pins);
+    if (sat.facing < FACING_LEAST || sat.apart < PINS_APART) continue;
+    if (want !== 'antarctica' && sat.at[0].facing < WANTED_FACING) continue;
+    if (best === null || sat.apart > best.apart) best = { ...sat, pins };
+  }
+  return best;
+}
+
+/** The sets of lands each land can be asked about among: three where three can be shown well, else two. */
+const COMPANY = Object.fromEntries(
+  CONTINENTS.map((want) => {
+    const others = CONTINENTS.filter((each) => each !== want);
+    const threes = [];
+    const twos = [];
+    for (let i = 0; i < others.length; i++) {
+      const two = bestSitting([want, others[i]]);
+      if (two) twos.push({ lands: [want, others[i]], ...two });
+      for (let j = i + 1; j < others.length; j++) {
+        const three = bestSitting([want, others[i], others[j]]);
+        if (three) threes.push({ lands: [want, others[i], others[j]], ...three });
+      }
+    }
+    if (threes.length === 0 && twos.length === 0) throw new Error(`No view shows ${want} well.`);
+    return [want, threes.length > 0 ? threes : twos];
+  }),
+);
+
+/** Where on the disc a pin is, in words: what its button is called, which must not be the land's name. */
+function whereOnDisc({ x, y }) {
+  const across = x < -0.2 ? 'on the left' : x > 0.2 ? 'on the right' : 'in the middle';
+  const up = y < -0.2 ? 'at the top' : y > 0.2 ? 'at the bottom' : '';
+  return up === '' ? `The land ${across}` : `The land ${up}, ${across}`;
+}
+
+/** A question about one land: the view, the lands to choose between and their pins, and which is right. */
+function globeQuestion(want, seed) {
+  const company = COMPANY[want];
+  const { lands, pins, view, at } = company[seed % company.length];
+  const order = rng(seed).shuffle(lands.map((_, index) => index));
+  const choices = order.map((index, place) => ({
+    id: LETTERS[place],
+    label: whereOnDisc(at[index]),
+    stimulus: { type: 'scene', scene: 'land', of: { continent: lands[index], at: pins[index] } },
+  }));
+  if (new Set(choices.map((choice) => choice.label)).size !== choices.length) {
+    throw new Error(`Two lands would be called the same on the globe for ${want}, seed ${seed}.`);
+  }
+  return { view, choices, answer: LETTERS[order.indexOf(0)] };
+}
+
+function globeChallenge({
+  id,
+  ask,
+  want,
+  seed,
+  skillId,
+  instruction,
+  correct,
+  incorrect,
+  hint,
+  landmark,
+}) {
+  const { view, choices, answer } = globeQuestion(want, seed);
+  const distractors = choices.filter((choice) => choice.id !== answer);
+  return {
+    id,
+    kind: 'choose-one',
+    skillId,
+    // Practice ranges over the lands: which land is asked for is the kind of question it is.
+    variant: want,
+    prompt: {
+      instruction,
+      stimulus: {
+        type: 'scene',
+        scene: 'globe',
+        // A famous place is carried with where it is, so that it can be put there.
+        of: {
+          ask,
+          want,
+          view,
+          ...(landmark ? { landmark, at: places.landmarks[landmark].at } : {}),
+        },
+      },
+    },
+    choices,
+    answer,
+    hints: [
+      { type: 'model', caption: hint },
+      ...(distractors.length > 1
+        ? [{ type: 'eliminate', remove: [distractors.at(-1).id], caption: 'eh.hint.not-this' }]
+        : []),
+      { type: 'reveal', caption: 'eh.globe.hint.reveal' },
+    ],
+    misconceptions: Object.fromEntries(
+      distractors.map((choice) => [choice.id, `took-${choice.stimulus.of.continent}`]),
+    ),
+    feedback: { correct, incorrect },
+  };
+}
+
+/** The seven, in the order they are met: the plainest shapes first. */
+const LANDS_ORDER = [
+  'africa',
+  'south-america',
+  'oceania',
+  'north-america',
+  'antarctica',
+  'europe',
+  'asia',
+];
+
+function landsLesson(ask) {
+  const id = ask === 'shape' ? 'eh-lands-01' : 'eh-lands-02';
+  const skillId = ask === 'shape' ? 'world.globe.match-shape' : 'world.globe.find-named';
+  const row = (want, index, name) =>
+    globeChallenge({
+      id: `${id}.${name}`,
+      ask,
+      want,
+      seed: (ask === 'shape' ? 6100 : 6200) + index,
+      skillId,
+      instruction: `eh.globe.${ask}.${want}`,
+      correct: `eh.globe.yes.${want}`,
+      incorrect: `eh.globe.no.${ask}`,
+      hint: `eh.globe.hint.${ask}`,
+    });
+  // Shown and tried with help on lands that are asked for again alone, in other company.
+  const demo = [row('africa', 20, 'demo')];
+  const guided = [row('south-america', 21, 'guided-a'), row('oceania', 22, 'guided-b')];
+  const pool = LANDS_ORDER.map((want, index) => row(want, index, want));
+  return {
+    ...lesson({
+      id,
+      title: ask === 'shape' ? 'The seven big lands' : 'Which land is it?',
+      summary:
+        ask === 'shape'
+          ? 'A globe of the real world, with no words on it and no borders. Your child is shown the shape of one of the seven continents and told its name, and finds that land on the globe by tapping the pin on it. The globe can be turned with a finger.'
+          : 'The same globe, and only the name: "Which land is Africa?" Nothing is shown to match, so this one needs sound. Asked for help, your child is shown the shape.',
+      demo,
+      guided,
+      pool,
+      count: 4,
+    }),
+    ...(ask === 'name' ? { needsSound: true } : {}),
+  };
+}
+
+/** Three famous places are shown and tried with help; the other twelve are asked alone. */
+const PLACES_FIRST = ['pyramids', 'eiffel-tower', 'great-wall'];
+
+function placesLesson() {
+  const id = 'eh-places-01';
+  const row = (landmark, index) =>
+    globeChallenge({
+      id: `${id}.${landmark}`,
+      ask: 'place',
+      want: places.landmarks[landmark].continent,
+      seed: 6300 + index,
+      skillId: 'world.place.continent-of',
+      instruction: `eh.place.ask.${landmark}`,
+      correct: `eh.place.yes.${landmark}`,
+      incorrect: 'eh.globe.no.shape',
+      hint: 'eh.globe.hint.shape',
+      landmark,
+    });
+  const rest = Object.keys(places.landmarks).filter((each) => !PLACES_FIRST.includes(each));
+  const rows = [...PLACES_FIRST, ...rest].map(row);
+  return lesson({
+    id,
+    title: 'Famous places',
+    summary:
+      'Fifteen famous places, drawn: the pyramids, the Great Wall, Mount Fuji. Your child is shown one, with the shape of the continent it is in, and told both. They find that continent on the globe, and the place is put where it is. It is a first meeting with the places, not a test of where they are.',
+    minutes: 4,
+    demo: rows.slice(0, 1),
+    guided: rows.slice(1, 3),
+    pool: rows.slice(3),
+    count: 4,
+  });
+}
+
+function globeStrings() {
+  const strings = {
+    'eh.globe.no.shape': 'Not that one. Look at its shape again.',
+    'eh.globe.no.name': 'Not that one. Listen again.',
+    'eh.globe.hint.shape': 'Look at the shape. Which land on the globe is the same shape?',
+    'eh.globe.hint.name': 'Here is its shape. Which land is the same shape?',
+    'eh.globe.hint.reveal': 'It is this one.',
+  };
+  for (const [key, { name }] of Object.entries(places.continents)) {
+    strings[`eh.globe.shape.${key}`] = `This is the shape of ${name}. Find ${name} on the globe.`;
+    strings[`eh.globe.name.${key}`] = `Which land is ${name}?`;
+    strings[`eh.globe.yes.${key}`] = `Yes. That is ${name}.`;
+  }
+  for (const [key, place] of Object.entries(places.landmarks)) {
+    const land = places.continents[place.continent].name;
+    const is = place.many ? 'are' : 'is';
+    const said = capital(place.name);
+    strings[`eh.place.ask.${key}`] = `${said} ${is} in ${land}. Find ${land}.`;
+    strings[`eh.place.yes.${key}`] = `Yes. ${said} ${is} in ${place.country}.`;
+  }
+  return strings;
+}
+
 const skill = (id, title, objective, prerequisites) => ({
   id,
   world: 'explorer-harbor',
@@ -649,6 +1021,24 @@ const SKILLS = [
     'On a map with a boat and three islands, picks the island farthest from the boat.',
     ['world.space.nearest'],
   ),
+  skill(
+    'world.globe.match-shape',
+    'Find a continent by its shape',
+    'Shown the shape of one of the seven continents and told its name, finds that land on a globe among two or three.',
+    ['world.map.land'],
+  ),
+  skill(
+    'world.globe.find-named',
+    'Find a continent by its name',
+    'Told the name of a continent, with nothing shown to match, finds that land on a globe among two or three. Needs sound.',
+    ['world.globe.match-shape'],
+  ),
+  skill(
+    'world.place.continent-of',
+    'Find the continent a famous place is in',
+    'Shown a famous place and the shape of the continent it is in, and told both, finds that continent on a globe. It is the continent that is found: nothing here shows that a child knows where the place is.',
+    ['world.globe.match-shape'],
+  ),
 ];
 
 function changeStrings() {
@@ -704,6 +1094,7 @@ const STRINGS = {
   'eh.far.correct': 'Yes. That one is farthest. It is a long way to go.',
   'eh.far.incorrect': 'Another one is farther away. Look again.',
   'eh.far.hint.model': 'Look at the lines. The longest line goes to the farthest.',
+  ...globeStrings(),
 };
 
 export function buildExplorerHarborPack() {
@@ -712,7 +1103,7 @@ export function buildExplorerHarborPack() {
     schemaVersion: 1,
     id: 'explorer-harbor',
     world: 'explorer-harbor',
-    contentVersion: 1,
+    contentVersion: 2,
     strings: { en: STRINGS },
     skills: SKILLS,
     lessons: [
@@ -724,6 +1115,9 @@ export function buildExplorerHarborPack() {
       flagsLesson('land'),
       boatLesson('near'),
       boatLesson('far'),
+      landsLesson('shape'),
+      landsLesson('name'),
+      placesLesson(),
     ],
   };
 }

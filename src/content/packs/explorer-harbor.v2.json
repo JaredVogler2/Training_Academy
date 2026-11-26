@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "id": "explorer-harbor",
   "world": "explorer-harbor",
-  "contentVersion": 1,
+  "contentVersion": 2,
   "strings": {
     "en": {
       "eh.hint.not-this": "Not this one.",
@@ -76,7 +76,63 @@
       "eh.far.instruction": "Which island is farthest from the boat?",
       "eh.far.correct": "Yes. That one is farthest. It is a long way to go.",
       "eh.far.incorrect": "Another one is farther away. Look again.",
-      "eh.far.hint.model": "Look at the lines. The longest line goes to the farthest."
+      "eh.far.hint.model": "Look at the lines. The longest line goes to the farthest.",
+      "eh.globe.no.shape": "Not that one. Look at its shape again.",
+      "eh.globe.no.name": "Not that one. Listen again.",
+      "eh.globe.hint.shape": "Look at the shape. Which land on the globe is the same shape?",
+      "eh.globe.hint.name": "Here is its shape. Which land is the same shape?",
+      "eh.globe.hint.reveal": "It is this one.",
+      "eh.globe.shape.africa": "This is the shape of Africa. Find Africa on the globe.",
+      "eh.globe.name.africa": "Which land is Africa?",
+      "eh.globe.yes.africa": "Yes. That is Africa.",
+      "eh.globe.shape.antarctica": "This is the shape of Antarctica. Find Antarctica on the globe.",
+      "eh.globe.name.antarctica": "Which land is Antarctica?",
+      "eh.globe.yes.antarctica": "Yes. That is Antarctica.",
+      "eh.globe.shape.asia": "This is the shape of Asia. Find Asia on the globe.",
+      "eh.globe.name.asia": "Which land is Asia?",
+      "eh.globe.yes.asia": "Yes. That is Asia.",
+      "eh.globe.shape.europe": "This is the shape of Europe. Find Europe on the globe.",
+      "eh.globe.name.europe": "Which land is Europe?",
+      "eh.globe.yes.europe": "Yes. That is Europe.",
+      "eh.globe.shape.north-america": "This is the shape of North America. Find North America on the globe.",
+      "eh.globe.name.north-america": "Which land is North America?",
+      "eh.globe.yes.north-america": "Yes. That is North America.",
+      "eh.globe.shape.oceania": "This is the shape of Oceania. Find Oceania on the globe.",
+      "eh.globe.name.oceania": "Which land is Oceania?",
+      "eh.globe.yes.oceania": "Yes. That is Oceania.",
+      "eh.globe.shape.south-america": "This is the shape of South America. Find South America on the globe.",
+      "eh.globe.name.south-america": "Which land is South America?",
+      "eh.globe.yes.south-america": "Yes. That is South America.",
+      "eh.place.ask.pyramids": "The pyramids are in Africa. Find Africa.",
+      "eh.place.yes.pyramids": "Yes. The pyramids are in Egypt.",
+      "eh.place.ask.kilimanjaro": "Mount Kilimanjaro is in Africa. Find Africa.",
+      "eh.place.yes.kilimanjaro": "Yes. Mount Kilimanjaro is in Tanzania.",
+      "eh.place.ask.table-mountain": "Table Mountain is in Africa. Find Africa.",
+      "eh.place.yes.table-mountain": "Yes. Table Mountain is in South Africa.",
+      "eh.place.ask.eiffel-tower": "The Eiffel Tower is in Europe. Find Europe.",
+      "eh.place.yes.eiffel-tower": "Yes. The Eiffel Tower is in France.",
+      "eh.place.ask.colosseum": "The Colosseum is in Europe. Find Europe.",
+      "eh.place.yes.colosseum": "Yes. The Colosseum is in Italy.",
+      "eh.place.ask.big-ben": "Big Ben is in Europe. Find Europe.",
+      "eh.place.yes.big-ben": "Yes. Big Ben is in the United Kingdom.",
+      "eh.place.ask.great-wall": "The Great Wall is in Asia. Find Asia.",
+      "eh.place.yes.great-wall": "Yes. The Great Wall is in China.",
+      "eh.place.ask.taj-mahal": "The Taj Mahal is in Asia. Find Asia.",
+      "eh.place.yes.taj-mahal": "Yes. The Taj Mahal is in India.",
+      "eh.place.ask.mount-fuji": "Mount Fuji is in Asia. Find Asia.",
+      "eh.place.yes.mount-fuji": "Yes. Mount Fuji is in Japan.",
+      "eh.place.ask.statue-of-liberty": "The Statue of Liberty is in North America. Find North America.",
+      "eh.place.yes.statue-of-liberty": "Yes. The Statue of Liberty is in the United States.",
+      "eh.place.ask.chichen-itza": "The pyramid of Chichen Itza is in North America. Find North America.",
+      "eh.place.yes.chichen-itza": "Yes. The pyramid of Chichen Itza is in Mexico.",
+      "eh.place.ask.machu-picchu": "Machu Picchu is in South America. Find South America.",
+      "eh.place.yes.machu-picchu": "Yes. Machu Picchu is in Peru.",
+      "eh.place.ask.angel-falls": "Angel Falls is in South America. Find South America.",
+      "eh.place.yes.angel-falls": "Yes. Angel Falls is in Venezuela.",
+      "eh.place.ask.sydney-opera-house": "The Sydney Opera House is in Oceania. Find Oceania.",
+      "eh.place.yes.sydney-opera-house": "Yes. The Sydney Opera House is in Australia.",
+      "eh.place.ask.uluru": "Uluru is in Oceania. Find Oceania.",
+      "eh.place.yes.uluru": "Yes. Uluru is in Australia."
     }
   },
   "skills": [
@@ -143,6 +199,30 @@
       "title": "Find the farthest place",
       "objective": "On a map with a boat and three islands, picks the island farthest from the boat.",
       "prerequisites": ["world.space.nearest"]
+    },
+    {
+      "id": "world.globe.match-shape",
+      "world": "explorer-harbor",
+      "strand": "language-and-world",
+      "title": "Find a continent by its shape",
+      "objective": "Shown the shape of one of the seven continents and told its name, finds that land on a globe among two or three.",
+      "prerequisites": ["world.map.land"]
+    },
+    {
+      "id": "world.globe.find-named",
+      "world": "explorer-harbor",
+      "strand": "language-and-world",
+      "title": "Find a continent by its name",
+      "objective": "Told the name of a continent, with nothing shown to match, finds that land on a globe among two or three. Needs sound.",
+      "prerequisites": ["world.globe.match-shape"]
+    },
+    {
+      "id": "world.place.continent-of",
+      "world": "explorer-harbor",
+      "strand": "language-and-world",
+      "title": "Find the continent a famous place is in",
+      "objective": "Shown a famous place and the shape of the continent it is in, and told both, finds that continent on a globe. It is the continent that is found: nothing here shows that a child knows where the place is.",
+      "prerequisites": ["world.globe.match-shape"]
     }
   ],
   "lessons": [
@@ -3266,6 +3346,1980 @@
           ],
           "misconceptions": { "c": "the-nearest", "a": "in-between" },
           "feedback": { "correct": "eh.far.correct", "incorrect": "eh.far.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "eh-lands-01",
+      "version": 1,
+      "world": "explorer-harbor",
+      "title": "The seven big lands",
+      "summary": "A globe of the real world, with no words on it and no borders. Your child is shown the shape of one of the seven continents and told its name, and finds that land on the globe by tapping the pin on it. The globe can be turned with a finger.",
+      "skillIds": ["world.globe.match-shape"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["eh-lands-01.demo"],
+        "guided": ["eh-lands-01.guided-a", "eh-lands-01.guided-b"],
+        "independent": {
+          "pool": [
+            "eh-lands-01.africa",
+            "eh-lands-01.south-america",
+            "eh-lands-01.oceania",
+            "eh-lands-01.north-america",
+            "eh-lands-01.antarctica",
+            "eh-lands-01.europe",
+            "eh-lands-01.asia"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "eh-lands-01.demo",
+          "kind": "choose-one",
+          "skillId": "world.globe.match-shape",
+          "variant": "africa",
+          "prompt": {
+            "instruction": "eh.globe.shape.africa",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "shape", "want": "africa", "view": [-18.1, -30.5] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [60, -80] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [20, 5] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-70, 3] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-antarctica", "c": "took-south-america" },
+          "feedback": { "correct": "eh.globe.yes.africa", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-lands-01.guided-a",
+          "kind": "choose-one",
+          "skillId": "world.globe.match-shape",
+          "variant": "south-america",
+          "prompt": {
+            "instruction": "eh.globe.shape.south-america",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "shape", "want": "south-america", "view": [-21.2, 15.5] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-58, -12] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-42, 72] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [25, -15] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "b": "took-north-america", "c": "took-africa" },
+          "feedback": { "correct": "eh.globe.yes.south-america", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-lands-01.guided-b",
+          "kind": "choose-one",
+          "skillId": "world.globe.match-shape",
+          "variant": "oceania",
+          "prompt": {
+            "instruction": "eh.globe.shape.oceania",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "shape", "want": "oceania", "view": [76, -40] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [135, -25] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [-60, -80] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [35, 0] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "b": "took-antarctica", "c": "took-africa" },
+          "feedback": { "correct": "eh.globe.yes.oceania", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-lands-01.africa",
+          "kind": "choose-one",
+          "skillId": "world.globe.match-shape",
+          "variant": "africa",
+          "prompt": {
+            "instruction": "eh.globe.shape.africa",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "shape", "want": "africa", "view": [45.9, 40] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "asia", "at": [105, 30] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-42, 72] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [20, 5] }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-asia", "b": "took-north-america" },
+          "feedback": { "correct": "eh.globe.yes.africa", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-lands-01.south-america",
+          "kind": "choose-one",
+          "skillId": "world.globe.match-shape",
+          "variant": "south-america",
+          "prompt": {
+            "instruction": "eh.globe.shape.south-america",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "shape", "want": "south-america", "view": [-53.2, 36.7] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-58, -12] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "europe", "at": [15, 50] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-north-america", "c": "took-europe" },
+          "feedback": { "correct": "eh.globe.yes.south-america", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-lands-01.oceania",
+          "kind": "choose-one",
+          "skillId": "world.globe.match-shape",
+          "variant": "oceania",
+          "prompt": {
+            "instruction": "eh.globe.shape.oceania",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "shape", "want": "oceania", "view": [76, -40] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [-60, -80] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [135, -25] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [35, 0] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-antarctica", "c": "took-africa" },
+          "feedback": { "correct": "eh.globe.yes.oceania", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-lands-01.north-america",
+          "kind": "choose-one",
+          "skillId": "world.globe.match-shape",
+          "variant": "north-america",
+          "prompt": {
+            "instruction": "eh.globe.shape.north-america",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "shape", "want": "north-america", "view": [-45.3, 40] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "europe", "at": [40, 55] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-45, -10] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-europe", "c": "took-south-america" },
+          "feedback": { "correct": "eh.globe.yes.north-america", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-lands-01.antarctica",
+          "kind": "choose-one",
+          "skillId": "world.globe.match-shape",
+          "variant": "antarctica",
+          "prompt": {
+            "instruction": "eh.globe.shape.antarctica",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "shape", "want": "antarctica", "view": [98.8, -33.2] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [0, -78] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [135, -25] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "asia", "at": [78, 22] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "b": "took-oceania", "c": "took-asia" },
+          "feedback": { "correct": "eh.globe.yes.antarctica", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-lands-01.europe",
+          "kind": "choose-one",
+          "skillId": "world.globe.match-shape",
+          "variant": "europe",
+          "prompt": {
+            "instruction": "eh.globe.shape.europe",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "shape", "want": "europe", "view": [-45.8, 37.2] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-45, -10] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "europe", "at": [15, 50] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-south-america", "c": "took-north-america" },
+          "feedback": { "correct": "eh.globe.yes.europe", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-lands-01.asia",
+          "kind": "choose-one",
+          "skillId": "world.globe.match-shape",
+          "variant": "asia",
+          "prompt": {
+            "instruction": "eh.globe.shape.asia",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "shape", "want": "asia", "view": [78.8, -0.6] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [120, -28] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [25, -15] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "asia", "at": [95, 45] }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-oceania", "b": "took-africa" },
+          "feedback": { "correct": "eh.globe.yes.asia", "incorrect": "eh.globe.no.shape" }
+        }
+      ]
+    },
+    {
+      "id": "eh-lands-02",
+      "version": 1,
+      "world": "explorer-harbor",
+      "title": "Which land is it?",
+      "summary": "The same globe, and only the name: \"Which land is Africa?\" Nothing is shown to match, so this one needs sound. Asked for help, your child is shown the shape.",
+      "skillIds": ["world.globe.find-named"],
+      "estimatedMinutes": 3,
+      "plan": {
+        "demo": ["eh-lands-02.demo"],
+        "guided": ["eh-lands-02.guided-a", "eh-lands-02.guided-b"],
+        "independent": {
+          "pool": [
+            "eh-lands-02.africa",
+            "eh-lands-02.south-america",
+            "eh-lands-02.oceania",
+            "eh-lands-02.north-america",
+            "eh-lands-02.antarctica",
+            "eh-lands-02.europe",
+            "eh-lands-02.asia"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "eh-lands-02.demo",
+          "kind": "choose-one",
+          "skillId": "world.globe.find-named",
+          "variant": "africa",
+          "prompt": {
+            "instruction": "eh.globe.name.africa",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "name", "want": "africa", "view": [45.9, 40] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-42, 72] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "asia", "at": [105, 30] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [20, 5] }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.name" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-north-america", "b": "took-asia" },
+          "feedback": { "correct": "eh.globe.yes.africa", "incorrect": "eh.globe.no.name" }
+        },
+        {
+          "id": "eh-lands-02.guided-a",
+          "kind": "choose-one",
+          "skillId": "world.globe.find-named",
+          "variant": "south-america",
+          "prompt": {
+            "instruction": "eh.globe.name.south-america",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "name", "want": "south-america", "view": [-53.2, 36.7] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-58, -12] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "europe", "at": [15, 50] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.name" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "b": "took-north-america", "c": "took-europe" },
+          "feedback": { "correct": "eh.globe.yes.south-america", "incorrect": "eh.globe.no.name" }
+        },
+        {
+          "id": "eh-lands-02.guided-b",
+          "kind": "choose-one",
+          "skillId": "world.globe.find-named",
+          "variant": "oceania",
+          "prompt": {
+            "instruction": "eh.globe.name.oceania",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "name", "want": "oceania", "view": [76, -40] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [-60, -80] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [135, -25] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [35, 0] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.name" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-antarctica", "c": "took-africa" },
+          "feedback": { "correct": "eh.globe.yes.oceania", "incorrect": "eh.globe.no.name" }
+        },
+        {
+          "id": "eh-lands-02.africa",
+          "kind": "choose-one",
+          "skillId": "world.globe.find-named",
+          "variant": "africa",
+          "prompt": {
+            "instruction": "eh.globe.name.africa",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "name", "want": "africa", "view": [-22.4, 24.5] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-42, 72] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the bottom, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [20, 5] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-58, -12] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.name" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-north-america", "c": "took-south-america" },
+          "feedback": { "correct": "eh.globe.yes.africa", "incorrect": "eh.globe.no.name" }
+        },
+        {
+          "id": "eh-lands-02.south-america",
+          "kind": "choose-one",
+          "skillId": "world.globe.find-named",
+          "variant": "south-america",
+          "prompt": {
+            "instruction": "eh.globe.name.south-america",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "name", "want": "south-america", "view": [-12.4, -35] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-58, -12] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [20, 5] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [60, -80] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.name" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "b": "took-africa", "c": "took-antarctica" },
+          "feedback": { "correct": "eh.globe.yes.south-america", "incorrect": "eh.globe.no.name" }
+        },
+        {
+          "id": "eh-lands-02.oceania",
+          "kind": "choose-one",
+          "skillId": "world.globe.find-named",
+          "variant": "oceania",
+          "prompt": {
+            "instruction": "eh.globe.name.oceania",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "name", "want": "oceania", "view": [76, -40] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [-60, -80] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [135, -25] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [35, 0] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.name" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-antarctica", "c": "took-africa" },
+          "feedback": { "correct": "eh.globe.yes.oceania", "incorrect": "eh.globe.no.name" }
+        },
+        {
+          "id": "eh-lands-02.north-america",
+          "kind": "choose-one",
+          "skillId": "world.globe.find-named",
+          "variant": "north-america",
+          "prompt": {
+            "instruction": "eh.globe.name.north-america",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "name", "want": "north-america", "view": [-45.3, 40] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "europe", "at": [40, 55] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-45, -10] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.name" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-europe", "c": "took-south-america" },
+          "feedback": { "correct": "eh.globe.yes.north-america", "incorrect": "eh.globe.no.name" }
+        },
+        {
+          "id": "eh-lands-02.antarctica",
+          "kind": "choose-one",
+          "skillId": "world.globe.find-named",
+          "variant": "antarctica",
+          "prompt": {
+            "instruction": "eh.globe.name.antarctica",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "name", "want": "antarctica", "view": [81.3, -40] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [145, -22] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [-60, -80] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [35, 0] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.name" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-oceania", "c": "took-africa" },
+          "feedback": { "correct": "eh.globe.yes.antarctica", "incorrect": "eh.globe.no.name" }
+        },
+        {
+          "id": "eh-lands-02.europe",
+          "kind": "choose-one",
+          "skillId": "world.globe.find-named",
+          "variant": "europe",
+          "prompt": {
+            "instruction": "eh.globe.name.europe",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "name", "want": "europe", "view": [-45.8, 37.2] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-45, -10] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "europe", "at": [15, 50] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.name" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-south-america", "c": "took-north-america" },
+          "feedback": { "correct": "eh.globe.yes.europe", "incorrect": "eh.globe.no.name" }
+        },
+        {
+          "id": "eh-lands-02.asia",
+          "kind": "choose-one",
+          "skillId": "world.globe.find-named",
+          "variant": "asia",
+          "prompt": {
+            "instruction": "eh.globe.name.asia",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": { "ask": "name", "want": "asia", "view": [78.8, -0.6] }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [25, -15] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the bottom, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [120, -28] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "asia", "at": [95, 45] }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.name" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-africa", "b": "took-oceania" },
+          "feedback": { "correct": "eh.globe.yes.asia", "incorrect": "eh.globe.no.name" }
+        }
+      ],
+      "needsSound": true
+    },
+    {
+      "id": "eh-places-01",
+      "version": 1,
+      "world": "explorer-harbor",
+      "title": "Famous places",
+      "summary": "Fifteen famous places, drawn: the pyramids, the Great Wall, Mount Fuji. Your child is shown one, with the shape of the continent it is in, and told both. They find that continent on the globe, and the place is put where it is. It is a first meeting with the places, not a test of where they are.",
+      "skillIds": ["world.place.continent-of"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["eh-places-01.pyramids"],
+        "guided": ["eh-places-01.eiffel-tower", "eh-places-01.great-wall"],
+        "independent": {
+          "pool": [
+            "eh-places-01.kilimanjaro",
+            "eh-places-01.table-mountain",
+            "eh-places-01.colosseum",
+            "eh-places-01.big-ben",
+            "eh-places-01.taj-mahal",
+            "eh-places-01.mount-fuji",
+            "eh-places-01.statue-of-liberty",
+            "eh-places-01.chichen-itza",
+            "eh-places-01.machu-picchu",
+            "eh-places-01.angel-falls",
+            "eh-places-01.sydney-opera-house",
+            "eh-places-01.uluru"
+          ],
+          "count": 4,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 3 },
+      "challenges": [
+        {
+          "id": "eh-places-01.pyramids",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "africa",
+          "prompt": {
+            "instruction": "eh.place.ask.pyramids",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "africa",
+                "view": [-18.1, -30.5],
+                "landmark": "pyramids",
+                "at": [31.13, 29.98]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [20, 5] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [60, -80] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-70, 3] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "b": "took-antarctica", "c": "took-south-america" },
+          "feedback": { "correct": "eh.place.yes.pyramids", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.eiffel-tower",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "europe",
+          "prompt": {
+            "instruction": "eh.place.ask.eiffel-tower",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "europe",
+                "view": [-45.8, 37.2],
+                "landmark": "eiffel-tower",
+                "at": [2.29, 48.86]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "europe", "at": [15, 50] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-45, -10] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-north-america", "c": "took-south-america" },
+          "feedback": { "correct": "eh.place.yes.eiffel-tower", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.great-wall",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "asia",
+          "prompt": {
+            "instruction": "eh.place.ask.great-wall",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "asia",
+                "view": [78.8, -0.6],
+                "landmark": "great-wall",
+                "at": [116.56, 40.43]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "asia", "at": [95, 45] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the bottom, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [120, -28] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [25, -15] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "b": "took-oceania", "c": "took-africa" },
+          "feedback": { "correct": "eh.place.yes.great-wall", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.kilimanjaro",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "africa",
+          "prompt": {
+            "instruction": "eh.place.ask.kilimanjaro",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "africa",
+                "view": [-18.1, -30.5],
+                "landmark": "kilimanjaro",
+                "at": [37.35, -3.07]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-70, 3] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [20, 5] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [60, -80] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-south-america", "c": "took-antarctica" },
+          "feedback": { "correct": "eh.place.yes.kilimanjaro", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.table-mountain",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "africa",
+          "prompt": {
+            "instruction": "eh.place.ask.table-mountain",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "africa",
+                "view": [45.9, 40],
+                "landmark": "table-mountain",
+                "at": [18.41, -33.96]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [20, 5] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-42, 72] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "asia", "at": [105, 30] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "b": "took-north-america", "c": "took-asia" },
+          "feedback": { "correct": "eh.place.yes.table-mountain", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.colosseum",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "europe",
+          "prompt": {
+            "instruction": "eh.place.ask.colosseum",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "europe",
+                "view": [-45.8, 37.2],
+                "landmark": "colosseum",
+                "at": [12.49, 41.89]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "europe", "at": [15, 50] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-45, -10] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "b": "took-north-america", "c": "took-south-america" },
+          "feedback": { "correct": "eh.place.yes.colosseum", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.big-ben",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "europe",
+          "prompt": {
+            "instruction": "eh.place.ask.big-ben",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "europe",
+                "view": [-45.8, 37.2],
+                "landmark": "big-ben",
+                "at": [-0.12, 51.5]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "europe", "at": [15, 50] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-45, -10] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-north-america", "c": "took-south-america" },
+          "feedback": { "correct": "eh.place.yes.big-ben", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.taj-mahal",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "asia",
+          "prompt": {
+            "instruction": "eh.place.ask.taj-mahal",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "asia",
+                "view": [78.8, -0.6],
+                "landmark": "taj-mahal",
+                "at": [78.04, 27.18]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [120, -28] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [25, -15] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "asia", "at": [95, 45] }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-oceania", "b": "took-africa" },
+          "feedback": { "correct": "eh.place.yes.taj-mahal", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.mount-fuji",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "asia",
+          "prompt": {
+            "instruction": "eh.place.ask.mount-fuji",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "asia",
+                "view": [78.8, -0.6],
+                "landmark": "mount-fuji",
+                "at": [138.73, 35.36]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [120, -28] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "asia", "at": [95, 45] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [25, -15] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-oceania", "c": "took-africa" },
+          "feedback": { "correct": "eh.place.yes.mount-fuji", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.statue-of-liberty",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "north-america",
+          "prompt": {
+            "instruction": "eh.place.ask.statue-of-liberty",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "north-america",
+                "view": [-45.3, 40],
+                "landmark": "statue-of-liberty",
+                "at": [-74.04, 40.69]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-45, -10] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "europe", "at": [40, 55] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-south-america", "b": "took-europe" },
+          "feedback": {
+            "correct": "eh.place.yes.statue-of-liberty",
+            "incorrect": "eh.globe.no.shape"
+          }
+        },
+        {
+          "id": "eh-places-01.chichen-itza",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "north-america",
+          "prompt": {
+            "instruction": "eh.place.ask.chichen-itza",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "north-america",
+                "view": [-49.7, 15.6],
+                "landmark": "chichen-itza",
+                "at": [-88.57, 20.68]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-65, -33] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [5, 20] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-south-america", "c": "took-africa" },
+          "feedback": { "correct": "eh.place.yes.chichen-itza", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.machu-picchu",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "south-america",
+          "prompt": {
+            "instruction": "eh.place.ask.machu-picchu",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "south-america",
+                "view": [-53.2, 36.7],
+                "landmark": "machu-picchu",
+                "at": [-72.55, -13.16]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "north-america", "at": [-100, 45] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-58, -12] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "europe", "at": [15, 50] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-north-america", "c": "took-europe" },
+          "feedback": { "correct": "eh.place.yes.machu-picchu", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.angel-falls",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "south-america",
+          "prompt": {
+            "instruction": "eh.place.ask.angel-falls",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "south-america",
+                "view": [-12.4, -35],
+                "landmark": "angel-falls",
+                "at": [-62.54, 5.97]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [60, -80] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "south-america", "at": [-58, -12] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [20, 5] }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-antarctica", "c": "took-africa" },
+          "feedback": { "correct": "eh.place.yes.angel-falls", "incorrect": "eh.globe.no.shape" }
+        },
+        {
+          "id": "eh-places-01.sydney-opera-house",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "oceania",
+          "prompt": {
+            "instruction": "eh.place.ask.sydney-opera-house",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "oceania",
+                "view": [98.8, -33.2],
+                "landmark": "sydney-opera-house",
+                "at": [151.22, -33.86]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [135, -25] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the bottom, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [0, -78] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "asia", "at": [78, 22] }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["c"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "b": "took-antarctica", "c": "took-asia" },
+          "feedback": {
+            "correct": "eh.place.yes.sydney-opera-house",
+            "incorrect": "eh.globe.no.shape"
+          }
+        },
+        {
+          "id": "eh-places-01.uluru",
+          "kind": "choose-one",
+          "skillId": "world.place.continent-of",
+          "variant": "oceania",
+          "prompt": {
+            "instruction": "eh.place.ask.uluru",
+            "stimulus": {
+              "type": "scene",
+              "scene": "globe",
+              "of": {
+                "ask": "place",
+                "want": "oceania",
+                "view": [76, -40],
+                "landmark": "uluru",
+                "at": [131.04, -25.34]
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The land at the bottom, in the middle",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "antarctica", "at": [-60, -80] }
+              }
+            },
+            {
+              "id": "b",
+              "label": "The land at the top, on the left",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "africa", "at": [35, 0] }
+              }
+            },
+            {
+              "id": "c",
+              "label": "The land on the right",
+              "stimulus": {
+                "type": "scene",
+                "scene": "land",
+                "of": { "continent": "oceania", "at": [135, -25] }
+              }
+            }
+          ],
+          "answer": "c",
+          "hints": [
+            { "type": "model", "caption": "eh.globe.hint.shape" },
+            { "type": "eliminate", "remove": ["b"], "caption": "eh.hint.not-this" },
+            { "type": "reveal", "caption": "eh.globe.hint.reveal" }
+          ],
+          "misconceptions": { "a": "took-antarctica", "b": "took-africa" },
+          "feedback": { "correct": "eh.place.yes.uluru", "incorrect": "eh.globe.no.shape" }
         }
       ]
     }

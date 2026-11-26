@@ -143,6 +143,16 @@ export class LeftUndone {
 export const pageLogPath = (port: number): string =>
   join(tmpdir(), `training-academy-preview-${String(port)}.pages.log`);
 
+/**
+ * How long a page is waited for before the test that asked for it gives up: half a minute, where it was as long
+ * as the test had. A page comes or it does not. Of 2859 page loads in the reports of thirteen of CI's jobs (run
+ * 49's twelve and one each of runs 50 and 51), the slowest that came took 4.7 seconds, the next 1.7, and every
+ * other one less than a second; the one that did not come (run 51, WebKit as a phone: the eighth time) was
+ * waited for until the test's two minutes were up. Half a minute is six times the slowest page there has been,
+ * and a quarter of what the eighth one cost.
+ */
+export const PAGE_LIMIT = 30_000;
+
 interface PageNote {
   /** Which request, counted from the server's start. */
   id: number;

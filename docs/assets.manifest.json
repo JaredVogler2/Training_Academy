@@ -85,7 +85,7 @@
       "id": "world-pictures",
       "kind": "vector",
       "origin": "original",
-      "what": "Each world's own drawings: Reading Cove's sound cards and word tiles, its claps, its line of print and its pictures of one thing on or in another (put together from the picture kit); Memory Forest's scenes; Robot Ridge's robot and ground; Inventor Island's bridge, ramp, beam and tub; Explorer Harbor's 37 story pictures, its maps, flags, islands and boat; the Music Lab's chime bars, bird, drum and signs",
+      "what": "Each world's own drawings: Reading Cove's sound cards and word tiles, its claps, its line of print and its pictures of one thing on or in another (put together from the picture kit); Memory Forest's scenes; Robot Ridge's robot and ground; Inventor Island's bridge, ramp, beam and tub; Explorer Harbor's 37 story pictures, its maps, flags, islands and boat, its globe (drawn from the atlas's outlines) and its fifteen famous places; the Music Lab's chime bars, bird, drum and signs",
       "paths": [
         "src/game/worlds/reading-cove/index.tsx",
         "src/game/worlds/reading-cove/scenes.tsx",
@@ -95,13 +95,16 @@
         "src/game/worlds/explorer-harbor/pictures.tsx",
         "src/game/worlds/explorer-harbor/index.tsx",
         "src/game/worlds/explorer-harbor/MapBoard.tsx",
+        "src/game/worlds/explorer-harbor/Globe.tsx",
+        "src/game/worlds/explorer-harbor/GlobeBoard.tsx",
+        "src/game/worlds/explorer-harbor/landmarks.tsx",
         "src/game/worlds/music-lab/pictures.tsx",
         "src/game/worlds/music-lab/BeatBoard.tsx",
         "src/game/worlds/music-lab/TuneBoard.tsx",
         "src/game/worlds/music-lab/Room.tsx"
       ],
       "licence": "Project",
-      "madeWith": "Hand-written SVG. Explorer Harbor's maps are drawn from numbers written by its content generator"
+      "madeWith": "Hand-written SVG. Explorer Harbor's maps are drawn from numbers written by its content generator, and its globe from the outlines in the atlas (listed below); the fifteen famous places are drawn by hand, from no photograph and no other drawing"
     },
     {
       "id": "modelling-kit",
@@ -198,14 +201,26 @@
       "id": "curriculum",
       "kind": "content",
       "origin": "original",
-      "what": "The content packs: every activity's challenges, written out in full, one file for each world; and the storybook they draw on",
+      "what": "The content packs: every activity's challenges, written out in full, one file for each world; the storybook they draw on; and the list of the seven continents and fifteen famous places for the globe, with where each is",
       "paths": [
         "src/content/packs/*.json",
         "src/content/explorer-harbor/storybook.json",
+        "src/content/explorer-harbor/places.json",
         "src/art/lexicon.json"
       ],
       "licence": "Project",
-      "madeWith": "Written for this project: by hand, and from tables by the generators in scripts/content (npm run content)"
+      "madeWith": "Written for this project: by hand, and from tables by the generators in scripts/content (npm run content). Where each famous place is was written down by hand and then compared with the coordinates on its Wikipedia article (scripts/atlas/check_places.mjs); only numbers were compared, and nothing was copied"
+    },
+    {
+      "id": "atlas",
+      "kind": "content",
+      "origin": "third-party",
+      "what": "The outlines of the seven continents, for Explorer Harbor's globe: 2117 points in 122 outlines, with no country and no border among them",
+      "paths": ["src/content/explorer-harbor/atlas.json"],
+      "source": "Natural Earth, Admin 0 – Countries, 1:110m: ne_110m_admin_0_countries.geojson from the natural-earth-vector repository (sha256 6866c877d39cba9c357620878839b336d569f8c662d3cfab4cb1dbe2d39c977f)",
+      "holder": "None: Natural Earth's map data is in the public domain",
+      "licence": "Public-Domain",
+      "madeWith": "scripts/atlas/make_atlas.mjs: countries melted into continents, Russia divided at 60 degrees east, outlines made coarser. Not the source file: what is shipped is what the script wrote"
     },
     {
       "id": "site-files",

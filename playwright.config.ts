@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 import { defineConfig, devices, webkit, type Project } from '@playwright/test';
-import { pageLogPath } from './e2e/diagnosis';
+import { PAGE_LIMIT, pageLogPath } from './e2e/diagnosis';
 
 /**
  * Browser tests run against the production build, served by `vite preview` under the same headers, rewrites and
@@ -118,6 +118,9 @@ export default defineConfig({
   ...(remote ? { grep: /@smoke/ } : {}),
   use: {
     baseURL,
+    // A page that has not come in half a minute is not coming (see PAGE_LIMIT): the test fails then, and says
+    // what it was waiting for, instead of waiting out the whole of its own time.
+    navigationTimeout: PAGE_LIMIT,
     // Tracing every test costs about a third of the run; switch it on to debug a failure (`--trace on`). In CI a
     // test that has to be run a second time is traced on that second run, so that something is left to read.
     trace: ci ? 'on-first-retry' : 'off',

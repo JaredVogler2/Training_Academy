@@ -10,7 +10,7 @@ import {
 } from '@/content/explorer-harbor/maps';
 import storybook from '@/content/explorer-harbor/storybook.json';
 import { lintPack } from '@/content/lint';
-import explorerHarbor from '@/content/packs/explorer-harbor.v1.json';
+import explorerHarbor from '@/content/packs/explorer-harbor.v2.json';
 import { parseContentPack, type ChooseOneChallenge, type ContentPack } from '@/engine';
 import voiceLines from '@/voice/lines/explorer-harbor.json';
 import { breaking, challengeIn, codes, rulesIn, type Loose } from '../helpers/lint';
@@ -52,7 +52,7 @@ describe('Explorer Harbor, as it is shipped', () => {
     expect(lintPack(pack())).toEqual([]);
   });
 
-  it('is eight activities and sixty-eight challenges', () => {
+  it('is eleven activities and 103 challenges', () => {
     // Counts the documents quote, pinned here.
     expect(pack().lessons.map((lesson) => lesson.id)).toEqual([
       'eh-story-01',
@@ -63,8 +63,11 @@ describe('Explorer Harbor, as it is shipped', () => {
       'eh-land-01',
       'eh-near-01',
       'eh-far-01',
+      'eh-lands-01',
+      'eh-lands-02',
+      'eh-places-01',
     ]);
-    expect(pack().lessons.reduce((total, lesson) => total + lesson.challenges.length, 0)).toBe(68);
+    expect(pack().lessons.reduce((total, lesson) => total + lesson.challenges.length, 0)).toBe(103);
   });
 
   it('uses every story of the storybook once to put in order, and once to end', () => {
@@ -272,6 +275,99 @@ describe('every Explorer Harbor rule fires', () => {
     },
     'map-boat': (pack) => {
       delete at(pack, 'eh-near-01.demo').prompt.stimulus.of.boat;
+    },
+    'globe-ask': (pack) => {
+      at(pack, 'eh-lands-01.demo').prompt.stimulus.of.ask = 'colour';
+    },
+    'globe-want': (pack) => {
+      at(pack, 'eh-lands-01.demo').prompt.stimulus.of.want = 'atlantis';
+    },
+    'globe-view': (pack) => {
+      // A globe stood on its head.
+      at(pack, 'eh-lands-01.demo').prompt.stimulus.of.view = [0, 75];
+    },
+    'globe-place': (pack) => {
+      at(pack, 'eh-places-01.pyramids').prompt.stimulus.of.landmark = 'atlantis';
+    },
+    'globe-place-land': (pack) => {
+      // The pyramids, asked for in Asia.
+      at(pack, 'eh-places-01.pyramids').prompt.stimulus.of.want = 'asia';
+    },
+    'globe-place-where': (pack) => {
+      // The pyramids, put in the middle of the Atlantic.
+      at(pack, 'eh-places-01.pyramids').prompt.stimulus.of.at = [-30, 30];
+    },
+    'globe-line': (pack) => {
+      at(pack, 'eh-lands-01.africa').prompt.instruction = 'eh.globe.shape.asia';
+    },
+    'globe-sound': (pack) => {
+      // A name with nothing to match it by, in an activity that does not say it needs sound.
+      delete pack.lessons.find((lesson: Loose) => lesson.id === 'eh-lands-02').needsSound;
+    },
+    'globe-land': (pack) => {
+      at(pack, 'eh-lands-01.demo').choices[0].stimulus = { type: 'picture', id: 'sun' };
+    },
+    'globe-count': (pack) => {
+      const challenge = at(pack, 'eh-lands-01.demo');
+      const offered = challenge.choices.map((choice: Loose) => choice.stimulus.of.continent);
+      const another = ['europe', 'north-america', 'oceania', 'south-america'].find(
+        (land) => !offered.includes(land),
+      );
+      challenge.choices.push({
+        id: 'd',
+        label: 'One more land',
+        stimulus: { type: 'scene', scene: 'land', of: { continent: another, at: [0, 0] } },
+      });
+    },
+    'globe-land-twice': (pack) => {
+      const [first, second] = wrongOf(at(pack, 'eh-lands-01.demo'));
+      second!.stimulus.of.continent = first!.stimulus.of.continent;
+    },
+    'globe-pin-off': (pack) => {
+      // A pin in the sea.
+      wrongOf(at(pack, 'eh-lands-01.demo'))[0]!.stimulus.of.at = [-30, 30];
+    },
+    'globe-pin-edge': (pack) => {
+      // The same pins, and the globe turned a third of the way round from them.
+      const { of } = at(pack, 'eh-lands-01.demo').prompt.stimulus;
+      of.view = [
+        Number(of.view[0]) - 120 < -180 ? Number(of.view[0]) + 120 : Number(of.view[0]) - 120,
+        of.view[1],
+      ];
+    },
+    'globe-label': (pack) => {
+      // A button that says what the land is gives the answer to anyone who is read it.
+      at(pack, 'eh-lands-02.africa').choices[0].label = 'Africa';
+    },
+    'globe-crowded': (pack) => {
+      // Europe pinned in Spain and Africa in the Sahara: a finger covers both.
+      const challenge = at(pack, 'eh-lands-01.guided-a');
+      for (const choice of challenge.choices) {
+        if (choice.stimulus.of.continent === 'europe') choice.stimulus.of.at = [-3, 40];
+        if (choice.stimulus.of.continent === 'africa') choice.stimulus.of.at = [5, 20];
+      }
+    },
+    'globe-answer-count': (pack) => {
+      // The land asked for is not among the pins at all.
+      const challenge = at(pack, 'eh-lands-01.demo');
+      const right = challenge.choices.find((choice: Loose) => choice.id === challenge.answer);
+      right.stimulus.of.continent = 'europe';
+    },
+    'globe-answer-wrong': (pack) => {
+      const challenge = at(pack, 'eh-lands-01.demo');
+      challenge.answer = wrongOf(challenge)[0]!.id;
+    },
+    'globe-wanted-pin': (pack) => {
+      // Africa asked for, and pinned at its southern end.
+      const challenge = at(pack, 'eh-lands-01.demo');
+      const right = challenge.choices.find((choice: Loose) => choice.id === challenge.answer);
+      right.stimulus.of.at = [25, -15];
+    },
+    'globe-wanted-hidden': (pack) => {
+      // Africa asked for, with the globe turned until Africa's middle (20 east, 5 north) is a sixth of the way
+      // round the world from the middle of the picture: it faces half as squarely as it would there.
+      const { of } = at(pack, 'eh-lands-01.demo').prompt.stimulus;
+      of.view = [80, 5];
     },
   };
 

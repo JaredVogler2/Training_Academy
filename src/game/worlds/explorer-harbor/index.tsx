@@ -2,14 +2,21 @@ import { Fragment, type ReactNode } from 'react';
 import type { Challenge, Stimulus } from '@/engine';
 import type { PictureProps, WorldModule } from '../modules';
 import { MAP, islandsOf } from '@/content/explorer-harbor/maps';
+import { Globe, Heard, LandShape } from './Globe';
+import { GlobeBoard } from './GlobeBoard';
+import { LandmarkPicture } from './landmarks';
 import { MapBoard } from './MapBoard';
 import { StoryPicture } from './pictures';
 import { chooseScript, makeScript, panelLine } from './script';
+import places from '@/content/explorer-harbor/places.json';
 import storybook from '@/content/explorer-harbor/storybook.json';
 import { voice } from './voice';
 import styles from './explorerHarbor.module.css';
 
-/** Explorer Harbor: stories told in pictures, why things happen, and first ideas about a map. */
+/**
+ * Explorer Harbor: stories told in pictures, why things happen, first ideas about a map, and the globe: the seven
+ * big lands and fifteen famous places.
+ */
 
 type Scene = Extract<Stimulus, { type: 'scene' }>;
 
@@ -18,6 +25,11 @@ const nameOf = (id: string): string => NAMES[id] ?? id;
 
 const listOf = (value: unknown): string[] =>
   Array.isArray(value) ? value.filter((each): each is string => typeof each === 'string') : [];
+
+const numbersOf = (value: unknown): number[] =>
+  Array.isArray(value) ? value.filter((each): each is number => typeof each === 'number') : [];
+
+const LANDMARKS: Readonly<Record<string, { name: string }>> = places.landmarks;
 
 /** "And then": a short arrow between two pictures of a story. */
 function Then() {
@@ -275,6 +287,25 @@ function Picture({ stimulus, place = 'card', solved = false }: PictureProps) {
       }
       if (stimulus.scene === 'map') return <Sea stimulus={stimulus} />;
       if (stimulus.scene === 'spot') return <Mark stimulus={stimulus} />;
+      if (stimulus.scene === 'globe') {
+        const { ask, landmark, view } = stimulus.of;
+        // On a small card, what the question is about: a famous place, a name that is only heard, or the globe.
+        if (place === 'card' && typeof landmark === 'string') {
+          return <LandmarkPicture id={landmark} className={styles.picture} />;
+        }
+        if (place === 'card' && ask === 'name') return <Heard className={styles.picture} />;
+        const [lon, lat] = numbersOf(view);
+        return <Globe view={{ lon: lon ?? 0, lat: lat ?? 0 }} className={styles.picture} />;
+      }
+      // One of the seven big lands: its shape, alone.
+      if (stimulus.scene === 'land') {
+        return (
+          <LandShape
+            land={typeof stimulus.of.continent === 'string' ? stimulus.of.continent : ''}
+            className={styles.picture}
+          />
+        );
+      }
       return null;
     // Things other worlds draw.
     case 'quantity':
@@ -305,6 +336,18 @@ export function describe(stimulus: Stimulus): string {
           return 'A map: a boat on the sea, and three islands.';
         return `A map: blue sea, and ${islands === 1 ? 'one green island' : `${String(islands)} green islands`}, with flags.`;
       }
+      // The globe is described by what is on it and never by the name of the land that is asked for: the
+      // question says that, aloud and in writing.
+      if (scene === 'globe') {
+        const globe =
+          'A globe of the world, with nothing written on it. Three of its lands have a pin.';
+        if (of.ask === 'place' && typeof of.landmark === 'string') {
+          const name = LANDMARKS[of.landmark]?.name ?? 'a famous place';
+          return `A picture of ${name}. The shape of one land. ${globe}`;
+        }
+        return of.ask === 'shape' ? `The shape of one land. ${globe}` : globe;
+      }
+      if (scene === 'land') return 'A land on the globe.';
       return '';
     }
     case 'quantity':
@@ -335,7 +378,7 @@ const explorerHarbor: WorldModule = {
   chooseScript,
   makeScript,
   linesFor,
-  boards: { 'scene:map': MapBoard },
+  boards: { 'scene:map': MapBoard, 'scene:globe': GlobeBoard },
   voice,
 };
 export default explorerHarbor;

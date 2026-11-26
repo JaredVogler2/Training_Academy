@@ -9,11 +9,11 @@ import { LeftUndone, Pages, fetchNotLoaded, onSite, pagesServed } from './diagno
  *   - a guard that fails the test on any console error or warning, uncaught exception, failed request, or request to
  *     another origin (the game talks to nobody) — unless the test says a specific one is expected. The one thing it
  *     lets pass on its own is a download the browser cancelled because the page had moved on to another document;
- *   - a note of what it was still waiting for, if it runs out of time: four times in CI a test's first page in
- *     WebKit has waited a whole minute and then arrived at once on the second attempt, and a silence explains
- *     nothing. The note says how far the page had got, what had not been answered and whether the browser had so
- *     much as the start of an answer, what the server made of it, where the page stood, and which test had the
- *     browser before;
+ *   - a note of what it was still waiting for, if it runs out of time or its page does not come: eight times in
+ *     CI a test's first page in WebKit has been waited for to the end and then arrived at once on the second
+ *     attempt, and a silence explains nothing. The note says how far the page had got, what had not been answered
+ *     and whether the browser had so much as the start of an answer, what the server made of it, where the page
+ *     stood, and which test had the browser before;
  *   - the graphics setting chosen up front (the hub as a picture by default, so only the 3D specs pay for software
  *     rendering);
  *   - `press`, which taps on a touch device and clicks otherwise, so one spec exercises both;
@@ -210,7 +210,10 @@ export const test = base.extend<Fixtures>({
 
       problems.push(...undone.held());
       // A test that ran out of time has failed already; this adds what it was waiting for to what is reported.
-      if (testInfo.status === 'timedOut') {
+      // So has one whose page did not come in the time a page is given (PAGE_LIMIT), which is the same thing
+      // found out sooner: it failed with a page asked for and still not answered.
+      const pageOwed = [...unanswered.values()].some(({ kind }) => kind === 'document');
+      if (testInfo.status === 'timedOut' || (testInfo.status === 'failed' && pageOwed)) {
         const now = Date.now();
         // Tests against a deployment have no server of their own to ask.
         const port =

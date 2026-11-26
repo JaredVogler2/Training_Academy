@@ -61,6 +61,7 @@ export function MapBoard(props: BoardProps) {
     aim,
     same,
     standingOf,
+    over,
   } = useChoosing(props);
   const { Picture } = module;
   const { stimulus } = challenge.prompt;
@@ -83,7 +84,13 @@ export function MapBoard(props: BoardProps) {
 
   return (
     <>
-      <div className={styles.mapBoard} data-testid="map-board" data-ask={ask} inert={paused}>
+      <div
+        className={styles.mapBoard}
+        data-testid="map-board"
+        data-ask={ask}
+        data-shown={over}
+        inert={paused}
+      >
         <div className={styles.map} data-same={same} data-helping={helping ? ask : undefined}>
           <span className="sr-only">{module.describe(stimulus, 'prompt')}</span>
           <Picture stimulus={stimulus} place="prompt" solved={same} />

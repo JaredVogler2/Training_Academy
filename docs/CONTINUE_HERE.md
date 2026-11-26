@@ -32,6 +32,13 @@ that is open is [#16](https://github.com/JaredVogler2/Training_Academy/pull/16).
   at a second attempt, and **that was a fault in the page, which is live**: for a moment at every opening,
   before it has read the record, the page says "Nothing recorded yet" of every skill. It is mended on the
   pull request that is open. `docs/TEST_RESULTS.md` → _Run 55_.
+- **Its second run (run 56) passed both of those, and had another job red, which is answered too.** A test of
+  Number Garden's towers measured two answers while the game was lifting the first to offer it: the test's
+  fault, shown here before it was changed, and mended by having a board say when it has shown its step. One
+  more test passed at a second attempt, in Chromium: an activity stood at "Getting ready…" for ten seconds
+  after the page was loaded again. **That one is not explained** (it would not happen here in 110 tries); an
+  activity being opened now says what it is waiting for, and a failing test reports it.
+  `docs/TEST_RESULTS.md` → _Run 56_.
 - **A fault found on the way to phase 12 is live and not yet mended.** In _Find the pairs_ (Memory Forest),
   a game finished in many more turns than remembering needs is written into the record as done alone, and
   the grown-ups' area can then say "Independent so far" of a child who turned cards over at random. The
@@ -95,14 +102,15 @@ answer is right. Everything is saved on the device.
 
 ## Verified
 
-- Locally: format, lint, typecheck, **2444 unit tests**, the production build and its **1834 build checks**.
+- Locally: format, lint, typecheck, **2451 unit tests**, the production build and its **1834 build checks**.
   The whole suite was run in one go in Chromium on all seven screens, on the room's tree: 1505 tests, of
   which 1264 passed, 241 were passed over as they are written to be, and none failed, in 58 minutes. The
   globe's turn was mended after that, with a test of its own (1507 now), and the globe's tests were run
   again on all seven screens: 36, of which 34 passed and 2 were passed over. After CI's run 55 the seven
   files of browser tests that turn the globe or read the grown-ups' list were run again on all seven
-  screens: 149 tests, of which 146 passed and 3 were passed over. WebKit is CI's.
-- **CI's last three runs, 53, 54 and 55.** Runs 53 and 54 were green in all thirteen jobs. Run 53, the
+  screens: 149 tests, of which 146 passed and 3 were passed over. After run 56, ten files on all seven
+  screens: 491 tests, of which 467 passed and 24 were passed over. The suite is 1511 tests. WebKit is CI's.
+- **CI's last four runs, 53 to 56.** Runs 53 and 54 were green in all thirteen jobs. Run 53, the
   first on pull request #15, had one test pass at a second attempt: the page that never comes in CI's
   WebKit, a tenth time. Run 54, on `main` after that pull request was merged, had two: the same, an eleventh
   time, and the globe's unfinished turn (above), which was the game's fault. A page that has not come in
@@ -111,8 +119,9 @@ answer is right. Everything is saved on the device.
   the new test of the globe's turn at both attempts, and the fault was the test's (above). One more test
   passed at a second attempt, in Chromium, and that one was the grown-ups' page's fault (above). The page
   that never comes did not happen. **It was the first time Safari's engine drew the room for making a
-  story, its page turn with it, and nothing of the room failed.** `docs/TEST_RESULTS.md` → _Run 53_, _Run
-  54_ and _Run 55_.
+  story, its page turn with it, and nothing of the room failed.** **Run 56, on the push that answered run 55, passed both of those things** (WebKit as a
+  phone ran the rewritten globe test; nothing of the grown-ups' page needed a second attempt) **and had one
+  job red for a third**: the towers' test, as above. `docs/TEST_RESULTS.md` → _Run 53_ to _Run 56_.
 - **CI's twelve browser jobs do what they were made for.** In the runs since they were dealt out by screen
   the longest set of tests took 18.3 minutes. The longest job took 30.1 of the forty it is allowed, and
   sixteen and a half of those went on fetching its browser from a slow mirror: another ten would have

@@ -1,7 +1,14 @@
 import { test as base, expect, type Locator, type Page } from '@playwright/test';
 import { CHOOSE, PLACE, type Phase, type Step } from '../src/game/howto/steps';
 import { WORLDS, isOpen } from '../src/game/worlds';
-import { LeftUndone, Pages, fetchNotLoaded, onSite, pagesServed } from './diagnosis';
+import {
+  LeftUndone,
+  Pages,
+  fetchNotLoaded,
+  onSite,
+  openingInWords,
+  pagesServed,
+} from './diagnosis';
 
 /**
  * What every browser test gets:
@@ -227,7 +234,23 @@ export const test = base.extend<Fixtures>({
       // So has one whose page did not come in the time a page is given (PAGE_LIMIT), which is the same thing
       // found out sooner: it failed with a page asked for and still not answered.
       const pageOwed = [...unanswered.values()].some(({ kind }) => kind === 'document');
-      if (testInfo.status === 'timedOut' || (testInfo.status === 'failed' && pageOwed)) {
+      // And so has one that failed with an activity still being opened: the page says what it was waiting for,
+      // and that is said here with whatever had been asked for and not answered. (Run 56: an activity stood at
+      // "Getting ready…" for ten seconds after the page was loaded again, the test gave up on it, and nothing
+      // said what it had been waiting for. It opened at once at the second attempt, and ninety times here.)
+      let opening: string | null = null;
+      if (testInfo.status === 'timedOut' || testInfo.status === 'failed') {
+        opening = openingInWords(
+          await Promise.race([
+            page.evaluate(() => document.documentElement.dataset.opening ?? null).catch(() => null),
+            new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000)),
+          ]),
+        );
+      }
+      if (
+        testInfo.status === 'timedOut' ||
+        (testInfo.status === 'failed' && (pageOwed || opening !== null))
+      ) {
         const now = Date.now();
         // Tests against a deployment have no server of their own to ask.
         const port =
@@ -258,11 +281,18 @@ export const test = base.extend<Fixtures>({
           : loading.parsed
             ? 'had been read but had not finished loading'
             : 'had not been read yet';
+        const how =
+          testInfo.status === 'timedOut' || pageOwed
+            ? 'out of time'
+            : 'failed with an activity still being opened';
         problems.push(
-          `out of time: the last page asked for ${reached}; ` +
+          `${how}: the last page asked for ${reached}; ` +
             (waiting.length === 0
               ? 'no request was unanswered'
               : `${String(waiting.length)} unanswered: ${waiting.join('; ')}`) +
+            (opening === null
+              ? ''
+              : `; the page said it was still opening an activity, and waiting for ${opening}`) +
             `; the page stood at ${stoodAt}` +
             (ranBefore === null
               ? '; this was the first test in its browser'
@@ -336,6 +366,24 @@ export async function arrived(page: Page): Promise<void> {
     });
     await Promise.all(ending.map((animation) => animation.finished.catch(() => undefined)));
   });
+}
+
+/**
+ * Wait until a step has shown what it shows of itself, and everything has then arrived: its question has been
+ * said, each thing to answer with has been offered in its turn, and the board is where it comes to rest. (A board
+ * with answers to choose from, a map, the globe, a guess and a robot's row of steps say so on the page.)
+ *
+ * `arrived` alone is not enough for measuring what a child answers with. It waits for whatever is moving when it
+ * is asked; and the answers are offered, each lifted and grown a little for half a second, only once the question
+ * has been said, which is two or three seconds after the step appears. A test that measured straight away
+ * measured before that on a fast machine, and in the middle of it on a slow one: run 56 found two towers "on the
+ * same ground" with one of them six points higher, at both attempts.
+ */
+export async function shown(page: Page): Promise<void> {
+  await expect(page.locator('[data-shown]')).toHaveAttribute('data-shown', 'true', {
+    timeout: 20_000,
+  });
+  await arrived(page);
 }
 
 /**

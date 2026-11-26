@@ -410,6 +410,18 @@ to put it on a phone.
 
 ## Log
 
+- **2026-11-26** — CI's run on that push (run 56) passed the two things run 55 had found, and had one job red
+  for something else: a test of Number Garden's towers, untouched by any of this, failed in Safari's engine as
+  an iPad at both attempts. **The fault was the test's.** It asked two answer cards to stand level and
+  measured them in the half second in which the game lifts the first to offer it: until then its measuring
+  had always come before that. It was written down with a script before it was changed (level for 3.4
+  seconds after the step appears, up to 13.5 points apart from 3.8 to 4.3), and the test as pushed fails here
+  with its measuring made 3.5 seconds late. **A board now says when it has shown its step** (`data-shown`),
+  and the test waits for that; seven faults put back into it were each caught. In the same run a Memory
+  Forest test passed at a second attempt, in Chromium: an activity stayed at "Getting ready…" for ten seconds
+  after the page was loaded again. **That is not explained**: it would not happen here in 110 tries. An
+  activity being opened now says what it is waiting for (`data-opening`), and a test that fails while one is
+  still opening reports it, so that the next one explains itself. `docs/TEST_RESULTS.md` → _Run 56_.
 - **2026-11-26** — CI's first run on pull request #16 (run 55) had one job red, and one test in another
   that passed only at a second attempt. Both were read, and neither is left as it was. **The red job was the
   fault of a test**, written the day before for the globe's mended turn: it stopped the page a tenth of a

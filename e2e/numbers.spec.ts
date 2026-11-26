@@ -6,6 +6,7 @@ import {
   myTurn,
   next,
   screenFit,
+  shown,
   test,
   watchFor,
   type Locator,
@@ -58,7 +59,9 @@ test.describe('one more each time', () => {
     await expect(stairs.locator('[data-block]')).toHaveCount(5);
     await expect(stairs.locator('[data-gap] [data-block]')).toHaveCount(0);
 
-    await arrived(page);
+    // Measured when the question has been asked and each tower offered, and not before: while it is offered a
+    // tower is lifted and a little larger, and two towers measured then do not stand on the same ground.
+    await shown(page);
     expect(await screenFit(page)).toEqual({ sideways: [], taller: 0 });
     // The towers to choose from stand in a row, on the same ground, however narrow the screen: that is how two
     // towers are told apart.
@@ -104,6 +107,43 @@ test.describe('one more each time', () => {
     await expect(stairs).toHaveAttribute('data-solved', 'true');
     await expect(stairs.locator('[data-gap] [data-block]')).toHaveCount(4);
     await expect(next(page)).toBeVisible();
+  });
+});
+
+test.describe('a step with answers to choose from', () => {
+  test('says when it has shown what it shows of itself: once each answer has been offered, and not before', async ({
+    page,
+    press,
+  }) => {
+    // The clock is the test's: nothing timed happens until it is moved on, so this is not a matter of being
+    // quick enough.
+    await page.clock.install();
+    await page.goto(play('ng-stairs-01'));
+    // Glim shows first, and that is timed too: the clock is held once that is over and before the child's turn.
+    await expect(myTurn(page)).toBeVisible();
+    await holdClock(page);
+    await press(myTurn(page));
+    await choices(page).first().waitFor();
+    // What the board says of itself, and whether an answer is being offered at that moment, read in one go.
+    const look = () =>
+      page.evaluate(() => {
+        const board = document.querySelector('[data-shown]');
+        const offered = document.querySelector('[data-choice][data-asking="true"]') !== null;
+        return `${board?.getAttribute('data-shown') ?? 'nothing says'}${offered ? ', offering' : ''}`;
+      });
+    // The question is said; the answers are offered, each lifted in its turn; and only when that is over and
+    // the board is at rest does it say it has been shown. (A test that measures the answers waits for that.)
+    const seen = await watchFor(page, 12_000, look);
+    expect(seen[0]).toBe('false');
+    expect(seen).toContain('false, offering');
+    expect(seen.at(-1)).toBe('true');
+    // Never both: it does not say it has been shown while an answer is still being offered.
+    expect(seen).not.toContain('true, offering');
+    // And once said, it is not unsaid.
+    expect(seen.indexOf('true')).toBe(seen.length - 1);
+    await page.clock.resume();
+    // With everything shown, the two towers are level, and stay so.
+    await shown(page);
   });
 });
 

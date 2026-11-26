@@ -181,7 +181,7 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
     [view.key, view.hintsUsed, event, asked, seconds],
   );
   const run = `${view.key}/${String(view.hintsUsed)}/${event}/${String(asked)}`;
-  const { beat } = useScript(script, run, !paused, calm);
+  const { beat, over } = useScript(script, run, !paused, calm);
   const showing = showingOf(beat);
   /** The faulty row is running, or has run and left the robot where it went astray. */
   const faulty = showing?.show === 'fault' || showing?.show === 'astray';
@@ -577,6 +577,7 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
       <div
         className={styles.board}
         data-testid="program-board"
+        data-shown={over}
         data-mode={mode}
         data-columns={task.grid.columns}
         data-rows={task.grid.rows}

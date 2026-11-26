@@ -76,7 +76,7 @@ export function useChoosing({ state, module, paused, calm }: BoardProps) {
     [module, situation],
   );
   const run = `${view.key}/${String(view.hintsUsed)}/${event}/${String(asked)}`;
-  const { beat, turn, glanced } = useScript(script, run, !paused, calm, glance);
+  const { beat, turn, glanced, over } = useScript(script, run, !paused, calm, glance);
 
   /** Whether the script is, at this moment, counting the picture in this place. */
   const counting = (role: 'prompt' | 'answer' | 'tried', id?: string) =>
@@ -171,6 +171,7 @@ export function useChoosing({ state, module, paused, calm }: BoardProps) {
     script,
     beat,
     turn,
+    over,
     counting,
     named,
     mood,

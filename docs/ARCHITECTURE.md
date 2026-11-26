@@ -619,6 +619,15 @@ Nothing is marked as done, no activity is closed, and nothing is written into th
 is the only place "what a child has shown" is read from. There is no quiz: beside each thing is a link to the
 real activity in which to watch the child try it.
 
+**What a page says of itself.** Four things on the page are there for whatever reads it, a test or a person
+reporting a fault, and change nothing a child sees. A world's page, and the list of skills in the grown-ups'
+area, say when what they show is all there will be (`data-settled`). A board that offers things to answer
+with says when it has shown its step: the question said, each answer offered in its turn, everything at rest
+(`data-shown`, from `over` in `game/lesson/useScript.ts`, which is true once a run of the step's script has
+reached its end and false from the first frame of the next). An activity that is being opened says what it
+is waiting for (`data-opening` on the page: its content, the store, or the sitting). And an activity says
+which challenge is on the screen (`data-challenge`).
+
 **What a player has shown** (`parent/Evidence.tsx`). The list in the grown-ups' area: every skill the worlds
 teach and what `getSkillEvidence` says of each, from the record of attempts and nothing else. Two things
 have to be fetched before anything can be said, the record and the worlds' lists of skills, and until both

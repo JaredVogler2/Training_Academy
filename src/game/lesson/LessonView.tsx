@@ -50,6 +50,18 @@ type Load =
 /** Loads in flight, so two requests for the same lesson (React's development double-render) share one sitting. */
 const inFlight = new Map<string, Promise<Loaded | null>>();
 
+/**
+ * What an activity that is being opened is waiting for, written on the page for as long as it waits: the
+ * world's content and the code that draws it; the device's store and who is playing; or the sitting itself,
+ * found or begun in that store. It is for whoever has to explain a page that stays at "Getting ready…". (One
+ * did, for ten seconds, once, in CI's run 56, and nothing there said which of the three it was waiting for.)
+ */
+function waitingFor(what: 'content' | 'store' | 'sitting' | null): void {
+  const page = document.documentElement;
+  if (what === null) delete page.dataset.opening;
+  else page.dataset.opening = what;
+}
+
 function openLesson(world: WorldId, lessonId: string): Promise<Loaded | null> {
   const key = `${world}/${lessonId}`;
   const pending = inFlight.get(key);
@@ -58,13 +70,16 @@ function openLesson(world: WorldId, lessonId: string): Promise<Loaded | null> {
   const loading = (async (): Promise<Loaded | null> => {
     if (!hasPack(world) || !hasWorldModule(world)) return null;
     addVoice(commonVoice);
+    waitingFor('content');
     const [pack, module] = await Promise.all([
       loadChunk(`content:${world}`, () => loadPack(world)),
       loadWorldModule(world),
     ]);
     const lesson = findLesson(pack, lessonId);
     if (!lesson) return null;
+    waitingFor('store');
     const [repository, profile] = await Promise.all([getRepository(), ensureActiveProfile()]);
+    waitingFor('sitting');
     const runner = await LessonRunner.start({
       repository,
       pack,
@@ -81,7 +96,12 @@ function openLesson(world: WorldId, lessonId: string): Promise<Loaded | null> {
     return { runner, pack, lesson, module };
   })();
   inFlight.set(key, loading);
-  void loading.finally(() => inFlight.delete(key)).catch(() => undefined);
+  void loading
+    .finally(() => {
+      inFlight.delete(key);
+      waitingFor(null);
+    })
+    .catch(() => undefined);
   return loading;
 }
 

@@ -174,6 +174,7 @@ export function GlobeBoard(props: BoardProps) {
     aim,
     same,
     standingOf,
+    over,
   } = useChoosing(props);
   const { stimulus } = challenge.prompt;
   const of = stimulus.type === 'scene' ? stimulus.of : {};
@@ -368,7 +369,13 @@ export function GlobeBoard(props: BoardProps) {
 
   return (
     <>
-      <div className={styles.globeBoard} data-testid="globe-board" data-ask={ask} inert={paused}>
+      <div
+        className={styles.globeBoard}
+        data-testid="globe-board"
+        data-ask={ask}
+        data-shown={over}
+        inert={paused}
+      >
         <div className={styles.globeLayout}>
           <span className="sr-only">{module.describe(stimulus, 'prompt')}</span>
 

@@ -619,6 +619,17 @@ Nothing is marked as done, no activity is closed, and nothing is written into th
 is the only place "what a child has shown" is read from. There is no quiz: beside each thing is a link to the
 real activity in which to watch the child try it.
 
+**What a player has shown** (`parent/Evidence.tsx`). The list in the grown-ups' area: every skill the worlds
+teach and what `getSkillEvidence` says of each, from the record of attempts and nothing else. Two things
+have to be fetched before anything can be said, the record and the worlds' lists of skills, and until both
+are here the page says that it is reading and says nothing of any skill: "Nothing recorded yet" is a
+statement about a child, and the page used to make it of every skill for the moment before it had looked.
+The section carries `data-settled`, as a world's page does, for whatever reads the page to know when what
+is there is all there will be. What was read for one player is never shown for another; what is on the page
+stays there while the record is read again (it is read again whenever the player's entry is, which is what
+loading a copy into the same player does); and a record that cannot be read is said to be that, and is not
+shown as an empty one.
+
 **What a grown-up says was tried** (`withTried`, `triedOn` in `game/placement.ts`; the switch is in
 `game/world/WorldView.tsx`). Under each thing to try together away from the screen, where somebody is playing,
 is a switch that has to be held, as everything meant for a grown-up on a child's page is. Holding it writes the

@@ -201,6 +201,9 @@ test.describe('accessibility', () => {
     await openGrownUps(page);
     const card = page.getByTestId('where-to-begin');
     await expect(card.getByRole('heading', { name: 'Where Explorer begins' })).toBeVisible();
+    // The list of what the player has shown is checked with the rest: it is on the page before the check.
+    await expect(page.locator('[data-testid="evidence"][data-settled="true"]')).toBeVisible();
+    await expect(page.getByTestId('skill').first()).toBeVisible();
     await expectNoViolations(page, 'where to begin, as it starts');
     await card.getByLabel('Counts five things, touching each one once').selectOption('seen');
     await card.getByLabel('Taps the thing they mean to').selectOption('not-yet');

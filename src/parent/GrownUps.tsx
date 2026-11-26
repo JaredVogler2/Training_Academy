@@ -18,18 +18,7 @@ import {
   type GraphicsOption,
   type MotionOption,
 } from '@/app/settings';
-import { hasPack, loadPack } from '@/content';
-import {
-  AVATAR_IDS,
-  WORLD_IDS,
-  getSkillEvidence,
-  type Attempt,
-  type AvatarId,
-  type Profile,
-  type Skill,
-  type WorldId,
-} from '@/engine';
-import { worldById } from '@/game/worlds';
+import { AVATAR_IDS, type AvatarId, type Profile } from '@/engine';
 import {
   activeProfile,
   createProfile,
@@ -55,9 +44,10 @@ import {
   IconTrash,
   IconUpload,
 } from '@/ui/icons';
+import { Evidence } from './Evidence';
 import { Select } from './Select';
 import { WhereToBegin } from './WhereToBegin';
-import { describeEvidence, grownUpText as text } from './text';
+import { grownUpText as text } from './text';
 import styles from './GrownUps.module.css';
 
 /**
@@ -234,84 +224,6 @@ function Players({ onDialog }: { onDialog: (dialog: Dialog) => void }) {
           {text.notPersistent}
         </p>
       )}
-    </section>
-  );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-// What the player has shown
-// ---------------------------------------------------------------------------------------------------------------------
-
-/** What each world with content teaches, world by world, in the order the worlds are met. */
-function useSkills(): { world: WorldId; skills: Skill[] }[] {
-  const [skills, setSkills] = useState<{ world: WorldId; skills: Skill[] }[]>([]);
-  useEffect(() => {
-    let current = true;
-    void Promise.all(WORLD_IDS.filter(hasPack).map((world) => loadPack(world))).then(
-      (packs) => {
-        if (current) setSkills(packs.map((pack) => ({ world: pack.world, skills: pack.skills })));
-      },
-      () => undefined,
-    );
-    return () => {
-      current = false;
-    };
-  }, []);
-  return skills;
-}
-
-function Evidence({ profile }: { profile: Profile | null }) {
-  const skills = useSkills();
-  const [attempts, setAttempts] = useState<Attempt[]>([]);
-  const profileId = profile?.id ?? null;
-
-  useEffect(() => {
-    let current = true;
-    if (profileId === null) return;
-    void getRepository()
-      .then((repository) => repository.listAttempts(profileId))
-      .then(
-        (list) => {
-          if (current) setAttempts(list);
-        },
-        () => undefined,
-      );
-    return () => {
-      current = false;
-    };
-  }, [profileId]);
-
-  if (!profile) return null;
-  return (
-    <section className={styles.card} aria-labelledby="evidence-title">
-      <h2 id="evidence-title">{text.shown(profile.name)}</h2>
-      <p className={styles.small}>{text.shownHelp}</p>
-      {skills.map((group) => (
-        <div key={group.world} className={styles.world} data-world={group.world}>
-          <h3>{worldById(group.world).name}</h3>
-          <ul className={styles.skills}>
-            {group.skills.map((skill) => {
-              const evidence = getSkillEvidence(attempts, skill.id);
-              return (
-                <li
-                  key={skill.id}
-                  className={styles.skill}
-                  data-testid="skill"
-                  data-skill={skill.id}
-                  data-status={evidence.status}
-                >
-                  <div>
-                    <strong>{skill.title}</strong>
-                    <p className={styles.small}>{skill.objective}</p>
-                  </div>
-                  <p className={styles.status}>{text.status[evidence.status]}</p>
-                  <p className={styles.evidence}>{describeEvidence(evidence)}</p>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
     </section>
   );
 }

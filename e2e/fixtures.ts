@@ -43,6 +43,8 @@ interface Fixtures {
   /** Arrive as a new visit does: at the front door. Off by default, so most specs start on the map. */
   frontDoor: boolean;
   guard: Guard;
+  /** A slower machine, when one is asked for: see `SLOW_CPU`. */
+  slowly: undefined;
   /** Tap on a touch screen, click otherwise; `position` is measured from the target's top-left corner. */
   press: (target: Locator, options?: { position?: { x: number; y: number } }) => Promise<void>;
 }
@@ -96,6 +98,18 @@ export function nearItsLimit(taken: number, limit: number): string | null {
     'would have run out of time. Give the test a limit that fits what it does (test.setTimeout), or make it shorter'
   );
 }
+
+/**
+ * How many times slower than this machine's the processor every page is given is: `SLOW_CPU=6 npx playwright
+ * test …`. One, which is no slower, unless it is asked for.
+ *
+ * It is for meeting here what is otherwise met only in CI. CI's machines are slower than this one, and WebKit on
+ * them slower again: a test that counts on something having happened "by now" passes here every time and fails
+ * there (the first test of a globe turn that the page stops in the middle of asked for three pictures to have
+ * been drawn in a tenth of a second; WebKit, on a phone's screen in CI, drew two: run 55). It is asked of
+ * Chromium's own tools, so it does nothing in WebKit; and it slows the page's own work, not the network.
+ */
+export const SLOW_CPU = Math.max(1, Number(process.env.SLOW_CPU ?? 1) || 1);
 
 /**
  * The test that had this worker's browser before the one now running: a browser is kept from test to test, so a
@@ -289,6 +303,17 @@ export const test = base.extend<Fixtures>({
     );
     await use(page);
   },
+
+  slowly: [
+    async ({ page, browserName }, use) => {
+      if (SLOW_CPU > 1 && browserName === 'chromium') {
+        const tools = await page.context().newCDPSession(page);
+        await tools.send('Emulation.setCPUThrottlingRate', { rate: SLOW_CPU });
+      }
+      await use(undefined);
+    },
+    { auto: true },
+  ],
 
   press: async ({ hasTouch }, use) => {
     await use((target, options) => (hasTouch ? target.tap(options) : target.click(options)));

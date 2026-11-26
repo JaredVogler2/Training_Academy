@@ -160,6 +160,11 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   and then back to where the question is asked from: the turn is never finished. Nothing is lost by it, a
   second press turns the globe, and a globe pulled by a finger is not touched by it. It is mended on pull
   request #16 (`docs/TEST_RESULTS.md` → _Run 54_ says how it was found and shown).
+- **A fault in the grown-ups' page is live too, and has been since phase 01.** For the moment it takes to
+  read a player's record, at every opening of the page, the list of skills says "Not yet observed" and
+  "Nothing recorded yet" of every one of them, whatever the record holds; then it puts itself right. A test
+  read the page in that moment in CI's first run on pull request #16 (`docs/TEST_RESULTS.md` → _Run 55_).
+  It is mended on that pull request: nothing is said of any skill until the record has been read.
 - **A fault in what is written down is live too, and is not mended yet.** In Memory Forest's _Find the
   pairs_, a game finished in many more turns than remembering needs is written into the record as done
   alone at the first try. The sitting's own page counts it rightly; the grown-ups' area, which reads the

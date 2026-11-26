@@ -169,8 +169,12 @@ test.describe('the grown-ups area', () => {
     await page.goto(LESSON_PATH);
     await finishCorrectly(page, press);
     await openGrownUps(page);
+    // What the page says once it has read the record. (For the moment before it had, it used to say "Nothing
+    // recorded yet" of every skill, and this test, which read the page once and at once, read that: CI's run
+    // 55. The page now says nothing of any skill until it has read the record, and says when it has.)
+    await expect(page.getByTestId('evidence')).toHaveAttribute('data-settled', 'true');
+    await expect(skill(page)).toContainText('3 independent successes');
     const before = await skill(page).innerText();
-    expect(before).toContain('3 independent successes');
 
     const download = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Save a copy of Explorer' }).click();
@@ -195,12 +199,12 @@ test.describe('the grown-ups area', () => {
     await page.getByTestId('import-file').setInputFiles(file);
     await expect(page.getByText('Explorer has been loaded (5 new answers added).')).toBeVisible();
     await expect(players(page)).toHaveCount(1);
-    expect(await skill(page).innerText()).toBe(before);
+    await expect.poll(() => skill(page).innerText()).toBe(before);
 
     // Loading the same file again adds nothing.
     await page.getByTestId('import-file').setInputFiles(file);
     await expect(page.getByText('Explorer has been loaded (0 new answers added).')).toBeVisible();
-    expect(await skill(page).innerText()).toBe(before);
+    await expect.poll(() => skill(page).innerText()).toBe(before);
   });
 
   test('a damaged or foreign file is refused and changes nothing', async ({ page, press }) => {
@@ -279,9 +283,18 @@ test.describe('the grown-ups area', () => {
   test('is readable and usable on this screen @layout', async ({ page }) => {
     await openGrownUps(page);
     // The longest names the form accepts: one with spaces, and one that offers nowhere to break a line.
+    // What each player has shown is measured with the rest: the list of every skill is on the page before
+    // anything is measured. (It comes a moment after the player does, and the page says when it has.)
+    const listed = page.locator('[data-testid="evidence"][data-settled="true"]');
     await addPlayer(page, 'Wonderful long nickname', 'Drop');
+    await expect(listed).toBeVisible();
+    await expect(page.getByTestId('skill').first()).toBeVisible();
     expect((await screenFit(page)).sideways).toEqual([]);
     await addPlayer(page, 'W'.repeat(24), 'Shell');
+    await expect(
+      listed.getByRole('heading', { name: `What ${'W'.repeat(24)} has shown` }),
+    ).toBeVisible();
+    await expect(page.getByTestId('skill').first()).toBeVisible();
     expect((await screenFit(page)).sideways).toEqual([]);
     // A list's own words may be longer than the screen is wide, and Safari lays them out at their full length
     // beneath the control: the page was 440 px wide on an iPhone's 390 (found in CI, where the test above failed).

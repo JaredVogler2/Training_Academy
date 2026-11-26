@@ -670,57 +670,75 @@ test.describe('turning the globe', () => {
     const to = { lon: question.home.lon - TURN_STEP, lat: question.home.lat };
     expect(question.pins.some((pin) => !inSight(to, pin.at))).toBe(true);
 
-    // The page writes down everywhere the globe looks, with the time. And a tenth of a second into the turn it
-    // stops, for longer than a turn and the wait put together: a phone that has something else to do. (The wait
-    // used to be counted from the press. The page then woke to find it was time to turn back, and turned back
-    // from half-way: CI's run 54 met it once, on a busy machine, as a globe that never got where it was sent.)
+    // The page writes down everywhere the globe looks, with the time. And the first time it sees the globe on
+    // its way after the press, and not yet there, it stops, for longer than a turn and the wait put together:
+    // a phone that has something else to do. (The wait used to be counted from the press. The page then woke to
+    // find it was time to turn back, and turned back from half-way: CI's run 54 met it once, on a busy machine,
+    // as a globe that never got where it was sent.)
+    //
+    // It stops when the turn is seen to be under way, and not so long after the press: how many pictures a
+    // browser draws in a tenth of a second is its own affair. (This test first waited a tenth of a second and
+    // then asked for three pictures to have been drawn by then. WebKit, on a phone's screen in CI, drew two.)
     await page.evaluate(
-      (busy) => {
+      ({ busy, there }) => {
         const drawing = document.querySelector<SVGSVGElement>(
           '[data-testid="globe"] svg[data-scene="globe"]',
         );
-        const looked: { at: number; view: string }[] = [];
-        (window as unknown as { globeLooked: typeof looked }).globeLooked = looked;
+        const turn = {
+          looked: [] as { at: number; view: string }[],
+          pressed: false,
+          /** How many places had been looked at when the page stopped: none while it has not. */
+          stoppedAfter: 0,
+        };
+        (window as unknown as { globeTurn: typeof turn }).globeTurn = turn;
         if (!drawing) return;
-        new MutationObserver(() =>
-          looked.push({
-            at: performance.now(),
-            view: `${drawing.dataset.lon ?? ''},${drawing.dataset.lat ?? ''}`,
-          }),
-        ).observe(drawing, { attributes: true, attributeFilter: ['data-lon', 'data-lat'] });
+        new MutationObserver(() => {
+          const view = `${drawing.dataset.lon ?? ''},${drawing.dataset.lat ?? ''}`;
+          turn.looked.push({ at: performance.now(), view });
+          if (!turn.pressed || turn.stoppedAfter > 0 || view === there) return;
+          turn.stoppedAfter = turn.looked.length;
+          const until = performance.now() + busy;
+          while (performance.now() < until) {
+            // Nothing: the page is busy.
+          }
+        }).observe(drawing, { attributes: true, attributeFilter: ['data-lon', 'data-lat'] });
         document.querySelector('[data-turn="left"]')?.addEventListener(
           'click',
           () => {
-            window.setTimeout(() => {
-              const until = performance.now() + busy;
-              while (performance.now() < until) {
-                // Nothing: the page is busy.
-              }
-            }, 100);
+            turn.pressed = true;
           },
           { once: true },
         );
       },
-      TURN_MS.step + BACK_AFTER_MS + 300,
+      { busy: TURN_MS.step + BACK_AFTER_MS + 300, there: written(to) },
     );
 
     await press(page.getByRole('button', { name: 'Turn the globe to the left' }));
-    const everywhere = () =>
+    const theTurn = () =>
       page.evaluate(
-        () => (window as unknown as { globeLooked: { at: number; view: string }[] }).globeLooked,
+        () =>
+          (
+            window as unknown as {
+              globeTurn: { looked: { at: number; view: string }[]; stoppedAfter: number };
+            }
+          ).globeTurn,
       );
-    // It gets where it was sent, although the page was stopped for most of the time that took. (This is waited
-    // for before anything else is asked: straight after the press the globe has not yet begun to turn, and is
+    // It gets where it was sent, although the page was stopped for longer than that takes. (This is waited for
+    // before anything else is asked: straight after the press the globe has not yet begun to turn, and is
     // still where the question is asked from.)
     await expect
-      .poll(async () => (await everywhere()).map((each) => each.view), { timeout: 8000 })
+      .poll(async () => (await theTurn()).looked.map((each) => each.view), { timeout: 8000 })
       .toContain(written(to));
     // In the end it is back where the question is asked from, as after any turn that loses a pin.
     await looksAt(page, question.home);
-    const looked = await everywhere();
+    const { looked, stoppedAfter } = await theTurn();
     const there = looked.findIndex((each) => each.view === written(to));
-    // ...and it had begun before the page stopped: the turn was under way, and was not made in one jump.
-    expect(there).toBeGreaterThan(2);
+    // The page did stop, when the turn was under way and before it had got there: the turn was not made in one
+    // jump, and the page was stopped for as long as was meant.
+    expect(stoppedAfter).toBeGreaterThan(0);
+    expect(there).toBeGreaterThanOrEqual(stoppedAfter);
+    const stoppedFor = (looked[stoppedAfter]?.at ?? 0) - (looked[stoppedAfter - 1]?.at ?? 0);
+    expect(stoppedFor).toBeGreaterThanOrEqual(TURN_MS.step + BACK_AFTER_MS);
     // ...and it was left there for the whole of the wait before it turned back.
     const arrivedAt = looked[there]?.at ?? 0;
     const leftAt = looked[there + 1]?.at ?? 0;

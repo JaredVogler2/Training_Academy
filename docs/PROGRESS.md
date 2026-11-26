@@ -410,6 +410,21 @@ to put it on a phone.
 
 ## Log
 
+- **2026-11-26** — CI's first run on pull request #16 (run 55) had one job red, and one test in another
+  that passed only at a second attempt. Both were read, and neither is left as it was. **The red job was the
+  fault of a test**, written the day before for the globe's mended turn: it stopped the page a tenth of a
+  second after a press and asked for three pictures to have been drawn by then, and Safari's engine, as a
+  phone on CI's machine, had drawn two. It was met here by slowing the processor, which the browser tests
+  can now do (`SLOW_CPU`), and the test now stops the page when it sees the turn under way. With the mend
+  taken out of the game it still fails; the game was not changed. **The other was a fault in the grown-ups'
+  page, live since phase 01**: the page drew its list of skills before it had read the record, and for that
+  moment said "Nothing recorded yet" of every skill. It now says nothing of any skill until it has read the
+  record; it says so when the record cannot be read, where it used to show an empty one; and it reads the
+  record again when a copy is loaded into the player being shown, where it used to leave the list as it was.
+  Six unit tests; seven faults put back, and each caught. Two more browser tests, which measured and checked
+  that page before its list might have come, wait for the list now. **It was also the first time Safari's
+  engine drew the room for making a story, and nothing of the room failed.** `docs/TEST_RESULTS.md` → _Run
+  55_.
 - **2026-11-26** — Explorer Harbor's room for making a story: the second of the two things phase 10 lacked,
   and with it the phase is built as far as its brief goes, but for the countries and flags it leaves
   optional. **"Make a story"**: a child chooses who a story is about (a fox, a bear or a rabbit), where it

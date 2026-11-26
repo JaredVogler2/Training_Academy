@@ -25,13 +25,21 @@ that is open is [#16](https://github.com/JaredVogler2/Training_Academy/pull/16).
   turning buttons, on a device that stops for about two seconds in the middle of the turn, turns the globe
   half-way and back again. Nothing is lost by it and a second press turns it. It is explained and mended on
   the pull request that is open.
+- **CI's first run on the pull request that is open had one job red (run 55), and it has been answered.**
+  The red job was the fault of a test, the one written for the globe's mended turn: it asked how many
+  pictures a browser draws in a tenth of a second, and Safari's engine on CI's machine drew fewer. The test
+  was written again and the game was not touched. In the same run a test of the grown-ups' page passed only
+  at a second attempt, and **that was a fault in the page, which is live**: for a moment at every opening,
+  before it has read the record, the page says "Nothing recorded yet" of every skill. It is mended on the
+  pull request that is open. `docs/TEST_RESULTS.md` → _Run 55_.
 - **A fault found on the way to phase 12 is live and not yet mended.** In _Find the pairs_ (Memory Forest),
   a game finished in many more turns than remembering needs is written into the record as done alone, and
   the grown-ups' area can then say "Independent so far" of a child who turned cards over at random. The
   sitting itself counts it rightly (its own page says none were done alone); the record does not. It is the
   only kind of answer that can be right without showing the skill. `docs/PROGRESS.md` → _Known gaps_.
 - **What is not live**, on pull request #16: **a room at Explorer Harbor for making up a story**, with the
-  switch a grown-up holds to say it was told back; and the globe's turn, mended.
+  switch a grown-up holds to say it was told back; the globe's turn, mended; and a grown-ups' page that
+  says nothing of any skill until it has read the record.
   The update from what is live to this tree was rehearsed: 18 of 18. When it goes live, Explorer Harbor's
   page has, under its eleven things to play, the way to its room.
 - **The owner's instruction for this stretch of work** (2026-11-25): build all that is left, in the order
@@ -87,18 +95,24 @@ answer is right. Everything is saved on the device.
 
 ## Verified
 
-- Locally: format, lint, typecheck, **2438 unit tests**, the production build and its **1834 build checks**.
+- Locally: format, lint, typecheck, **2444 unit tests**, the production build and its **1834 build checks**.
   The whole suite was run in one go in Chromium on all seven screens, on the room's tree: 1505 tests, of
   which 1264 passed, 241 were passed over as they are written to be, and none failed, in 58 minutes. The
   globe's turn was mended after that, with a test of its own (1507 now), and the globe's tests were run
-  again on all seven screens: 36, of which 34 passed and 2 were passed over. WebKit is CI's.
-- **CI's last two runs, 53 and 54.** Both were green in all thirteen jobs. Run 53, the first on pull request
-  #15, had one test pass at a second attempt: the page that never comes in CI's WebKit, a tenth time. Run
-  54, on `main` after that pull request was merged, had two: the same, an eleventh time, and the globe's
-  unfinished turn (above), which is the one thing in these runs that was the game's fault. A page that has
-  not come in half a minute is given up on, and the test says that this is what happened: each cost 30
-  seconds. It is still not explained. **CI has not yet run the room for making a story, and Safari's engine
-  has not drawn its page turn.** `docs/TEST_RESULTS.md` → _Run 53_ and _Run 54_.
+  again on all seven screens: 36, of which 34 passed and 2 were passed over. After CI's run 55 the seven
+  files of browser tests that turn the globe or read the grown-ups' list were run again on all seven
+  screens: 149 tests, of which 146 passed and 3 were passed over. WebKit is CI's.
+- **CI's last three runs, 53, 54 and 55.** Runs 53 and 54 were green in all thirteen jobs. Run 53, the
+  first on pull request #15, had one test pass at a second attempt: the page that never comes in CI's
+  WebKit, a tenth time. Run 54, on `main` after that pull request was merged, had two: the same, an eleventh
+  time, and the globe's unfinished turn (above), which was the game's fault. A page that has not come in
+  half a minute is given up on, and the test says that this is what happened: each cost 30 seconds. It is
+  still not explained. **Run 55, the first on pull request #16, had one job red**: WebKit as a phone failed
+  the new test of the globe's turn at both attempts, and the fault was the test's (above). One more test
+  passed at a second attempt, in Chromium, and that one was the grown-ups' page's fault (above). The page
+  that never comes did not happen. **It was the first time Safari's engine drew the room for making a
+  story, its page turn with it, and nothing of the room failed.** `docs/TEST_RESULTS.md` → _Run 53_, _Run
+  54_ and _Run 55_.
 - **CI's twelve browser jobs do what they were made for.** In the runs since they were dealt out by screen
   the longest set of tests took 18.3 minutes. The longest job took 30.1 of the forty it is allowed, and
   sixteen and a half of those went on fetching its browser from a slow mirror: another ten would have

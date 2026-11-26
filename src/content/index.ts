@@ -15,7 +15,7 @@ export class ContentError extends Error {
 const PACK_LOADERS: Partial<Record<WorldId, () => Promise<{ default: unknown }>>> = {
   'reading-cove': () => import('./packs/reading-cove.v2.json'),
   'number-garden': () => import('./packs/number-garden.v3.json'),
-  'robot-ridge': () => import('./packs/robot-ridge.v1.json'),
+  'robot-ridge': () => import('./packs/robot-ridge.v2.json'),
   'memory-forest': () => import('./packs/memory-forest.v1.json'),
   'inventor-island': () => import('./packs/inventor-island.v1.json'),
   'explorer-harbor': () => import('./packs/explorer-harbor.v1.json'),

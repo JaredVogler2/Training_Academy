@@ -1,6 +1,8 @@
 import { describe as group, expect, it } from 'vitest';
 import type { Stimulus } from '@/engine';
+import { BRIDGE_LINES } from '@/game/worlds/robot-ridge/script';
 import { describe, robotText } from '@/game/worlds/robot-ridge/text';
+import lines from '@/voice/lines.json';
 
 /**
  * The words on Robot Ridge's board. A child needs none of them; a screen reader, and the grown-up alongside, have
@@ -46,6 +48,31 @@ group('a journey in words', () => {
     ).toMatch(/ There are rocks in column 2, row 2; column 3, row 1\.$/);
   });
 
+  it('says where the water is, and where each bridge is and how it stands', () => {
+    const journey = {
+      columns: 4,
+      rows: 3,
+      start: [0, 1] as const,
+      facing: 'east' as const,
+      goal: [3, 1] as const,
+      rocks: [],
+      water: [
+        [2, 0],
+        [2, 2],
+      ] as const,
+    };
+    const with_ = (state: 'up' | 'down' | 'maybe') =>
+      robotText.journey({ ...journey, bridges: [{ at: [2, 1], state }] });
+    expect(with_('up')).toMatch(
+      / There is water in column 3, row 1; column 3, row 3\. There is a bridge in column 3, row 2, and it is up\.$/,
+    );
+    expect(with_('down')).toMatch(/ and it is down\.$/);
+    // Before a run begins nobody knows, and the words say so too.
+    expect(with_('maybe')).toMatch(/ and it is up or down: nobody knows yet\.$/);
+    // Nothing is said of water or bridges where there are none.
+    expect(robotText.journey({ ...journey, water: [], bridges: [] })).not.toMatch(/water|bridge/);
+  });
+
   it('says which way the robot faces as a way on the screen, not as a point of the compass', () => {
     const facing = (way: 'north' | 'east' | 'south' | 'west') => robotText.robotNow([0, 0], way);
     expect(facing('north')).toBe('The robot is in column 1, row 1, facing up the screen.');
@@ -60,6 +87,22 @@ group('what there is to press, by name', () => {
     expect(robotText.command('forward')).toBe('Forward');
     expect(robotText.command('left')).toBe('Turn left');
     expect(robotText.command('right')).toBe('Turn right');
+    expect(robotText.command('wait')).toBe('Wait for the bridge');
+  });
+
+  it('names a step of a longer row by its number and what is in it, and promises nothing of a tap', () => {
+    // The tiles of a longer row are looked at, not pressed.
+    expect(robotText.tile(1, null)).toBe('Step 1: empty');
+    expect(robotText.tile(7, 'right')).toBe('Step 7: turn right');
+    expect(robotText.tile(2, 'wait')).toBe('Step 2: wait for the bridge');
+    expect(robotText.tile(3, 'left')).not.toMatch(/take/i);
+  });
+
+  it('says of the bridge what the voice says of it, word for word', () => {
+    const spoken: Record<string, string> = lines.groups.common.lines;
+    expect(robotText.waits).toBe(spoken[BRIDGE_LINES.waits]);
+    expect(robotText.passes).toBe(spoken[BRIDGE_LINES.passes]);
+    expect(robotText.waits).not.toBe(robotText.passes);
   });
 
   it('names a place of the row by its number and what is in it, and says what a tap will do', () => {
@@ -83,12 +126,17 @@ group('what there is to press, by name', () => {
     // "Go" is found by its name — by a test, by someone speaking to the screen — and must be the only one.
     const others = [
       ...[1, 2, 3, 4].flatMap((count) => [robotText.again(count, 4), robotText.againFixed(count)]),
-      ...(['forward', 'left', 'right'] as const).flatMap((command) => [
+      ...(['forward', 'left', 'right', 'wait'] as const).flatMap((command) => [
         robotText.command(command),
         robotText.step(1, command),
         robotText.fixedStep(1, command),
+        robotText.tile(1, command),
       ]),
       robotText.step(1, null),
+      robotText.tile(1, null),
+      robotText.takeOut,
+      robotText.stepOn,
+      robotText.stepBack,
     ];
     for (const name of others) expect(name).not.toMatch(/\bgo\b/i);
   });
@@ -118,6 +166,23 @@ group('a picture of a journey', () => {
         }),
       ),
     ).toBe("A robot's journey to a star, on a grid 4 by 2");
+    // A bridge on the way is part of what it is a picture of.
+    const over = (bridges: number[]) =>
+      describe(
+        scene({
+          game: 'bridge',
+          columns: 4,
+          rows: 3,
+          start: [0, 1],
+          facing: 'east',
+          goal: [3, 1],
+          rocks: [],
+          water: [2, 0, 2, 2],
+          bridges,
+        }),
+      );
+    expect(over([2, 1])).toBe("A robot's journey to a star, on a grid 4 by 3, over a bridge");
+    expect(over([2, 1, 2, 0])).toBe("A robot's journey to a star, on a grid 4 by 3, over bridges");
   });
 
   it('has nothing to say of a picture that is not a journey', () => {

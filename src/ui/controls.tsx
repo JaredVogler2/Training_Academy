@@ -4,6 +4,7 @@ import {
   useState,
   type ButtonHTMLAttributes,
   type CSSProperties,
+  type MouseEvent,
   type ReactNode,
 } from 'react';
 import { Link } from '@/app/navigation';
@@ -62,6 +63,8 @@ interface ActionLinkProps extends ButtonLook {
   'data-tip-align'?: 'start' | 'end';
   onPointerEnter?: () => void;
   onFocus?: () => void;
+  /** Told of a click before the link goes anywhere; a click it prevents goes nowhere by itself. */
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export function ActionLink({

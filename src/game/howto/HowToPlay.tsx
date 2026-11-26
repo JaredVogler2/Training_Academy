@@ -1,4 +1,11 @@
-import { useEffect, useReducer, useRef, type CSSProperties, type ReactNode } from 'react';
+import {
+  useEffect,
+  useReducer,
+  useRef,
+  type CSSProperties,
+  type MouseEvent,
+  type ReactNode,
+} from 'react';
 import { recordError } from '@/app/diagnostics';
 import { navigate } from '@/app/navigation';
 import {
@@ -254,6 +261,24 @@ export default function HowToPlay() {
     if (over) navigate({ name: 'home' }, { replace: true });
   }, [over]);
 
+  // Passing it by, by the house. That this player has been shown is written down first, and the page is left
+  // when it has been (or when it has turned out that it cannot be). Left for the moment of leaving, as it was, a
+  // page refreshed or closed in the instant after the tap had not been written, and the child was shown it all
+  // again at the next visit: in CI that happened to a test on three phones in one run.
+  const leaving = useRef(false);
+  const passBy = (event: MouseEvent<HTMLAnchorElement>) => {
+    // (Opened in another tab or window, the link is the browser's own business.)
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+    event.preventDefault();
+    if (leaving.current) return;
+    leaving.current = true;
+    void rememberShown()
+      .catch((error: unknown) => recordError('storage', error))
+      .then(() => navigate({ name: 'home' }));
+  };
+
   // A showing: its beats, one after another. Begun again from the first whenever the showing is.
   useEffect(() => {
     if (step === null || phase !== 'show') return;
@@ -351,6 +376,7 @@ export default function HowToPlay() {
           aria-label={howToText.skip}
           data-tip={howToText.skip}
           data-tip-align="start"
+          onClick={passBy}
         />
         <ol className={lesson.steps} aria-label={howToText.progress(state.step + 1, STEPS.length)}>
           {STEPS.map((each, index) => (

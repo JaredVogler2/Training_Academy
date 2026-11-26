@@ -57,6 +57,7 @@ export {
   type TuneShape,
 } from './music';
 export {
+  allRaised,
   fitsTask,
   parseProgram,
   runProgram,

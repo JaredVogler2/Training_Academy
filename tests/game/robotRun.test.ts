@@ -2,25 +2,33 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { parseProgram, type Command, type ProgramTask } from '@/engine';
 import {
+  bridgeLies,
+  carriedOver,
   degreesFacing,
   degreesOf,
   emptyTray,
   fixedBy,
   framesOf,
+  isFull,
   journeyOf,
+  lastOpen,
   liveStep,
   modeOf,
   oneMoreTime,
   placed,
   programOf,
+  runsOf,
+  standingFor,
   taken,
   trailOf,
   trayOf,
+  undone,
   withFixed,
   type Tray,
 } from '@/game/worlds/robot-ridge/run';
 
 const ALL: Command[] = ['forward', 'left', 'right'];
+const WITH_WAIT: Command[] = [...ALL, 'wait'];
 
 /** Two squares by two: from the bottom left, facing up, to the top right. Forward, turn right, forward. */
 const corner: ProgramTask = {
@@ -47,7 +55,32 @@ const blocked: ProgramTask = {
   solution: 'f',
 };
 
+/**
+ * A river down the screen with a bridge over it. The robot is on the left bank,     . . ~ .
+ * facing the bridge, one square from it; the star is on the far bank.               R . = *
+ * Forward, wait for the bridge, forward, forward.                                   . . ~ .
+ */
+const river: ProgramTask = {
+  type: 'program',
+  grid: { columns: 4, rows: 3 },
+  start: { at: [0, 1], facing: 'east' },
+  goal: [3, 1],
+  rocks: [],
+  water: [
+    [2, 0],
+    [2, 2],
+  ],
+  bridges: [[2, 1]],
+  whenRight: ['down'],
+  commands: WITH_WAIT,
+  slots: 4,
+  repeats: 1,
+  live: false,
+  solution: 'f-w-f-f',
+};
+
 const run = (task: ProgramTask, text: string) => framesOf(task, parseProgram(text));
+const commandsOf = (text: string) => parseProgram(text)?.commands ?? [];
 
 describe('a run, as frames to show', () => {
   it('starts where the robot starts, and has one frame for each command carried out', () => {
@@ -110,6 +143,177 @@ describe('a run, as frames to show', () => {
 
   it('is the same every time', () => {
     expect(run(corner, 'f-l-f')).toEqual(run(corner, 'f-l-f'));
+  });
+});
+
+describe('a run over a bridge', () => {
+  it('waits in front of a bridge that is up, in two moments: the robot waiting, then the bridge down', () => {
+    const { frames, outcome } = run(river, 'f-w-f-f');
+    expect(outcome).toBe('arrived');
+    // One frame more than there are commands: waiting for something is two.
+    expect(frames).toHaveLength(6);
+    expect(frames.map((frame) => frame.waiting)).toEqual([false, false, true, false, false, false]);
+    expect(frames.map((frame) => frame.raised)).toEqual([
+      [true],
+      [true],
+      [true],
+      [false],
+      [false],
+      [false],
+    ]);
+    // Both moments belong to the one step, and the robot stands where it was in both.
+    for (const moment of [frames[2], frames[3]]) {
+      expect(moment?.step).toEqual({ index: 1, round: 0, command: 'wait' });
+      expect(moment?.at).toEqual([1, 1]);
+    }
+    expect(frames.every((frame) => !frame.bumped)).toBe(true);
+  });
+
+  it('passes over the same step when the bridge is down: one moment, and nothing in it changes', () => {
+    const { frames, outcome } = framesOf(river, parseProgram('f-w-f-f'), [false]);
+    expect(outcome).toBe('arrived');
+    expect(frames).toHaveLength(5);
+    expect(frames.some((frame) => frame.waiting)).toBe(false);
+    expect(frames.every((frame) => frame.raised[0] === false)).toBe(true);
+    expect(frames[2]).toMatchObject({
+      at: [1, 1],
+      step: { index: 1, command: 'wait' },
+      bumped: false,
+    });
+  });
+
+  it('is stopped by a bridge that is up, and by water, without moving', () => {
+    const noWait = run(river, 'f-f-f');
+    expect(noWait.outcome).toBe('bridge-up');
+    expect(noWait.frames).toHaveLength(3);
+    expect(noWait.frames.at(-1)).toMatchObject({ at: [1, 1], bumped: true, raised: [true] });
+    // Up the bank and into the river.
+    const swim = run(river, 'f-l-f-r-f');
+    expect(swim.outcome).toBe('reached-water');
+    expect(swim.frames.at(-1)).toMatchObject({ at: [1, 0], facing: 'east', bumped: true });
+  });
+
+  it('waits for nothing where no bridge is ahead: the step is carried out and nothing changes', () => {
+    // The wait comes a square too soon; the bridge is still up when the robot gets to it.
+    const { frames, outcome } = run(river, 'w-f-f-f');
+    expect(outcome).toBe('bridge-up');
+    expect(frames[1]).toMatchObject({ at: [0, 1], waiting: false, bumped: false, raised: [true] });
+    expect(frames.some((frame) => frame.waiting)).toBe(false);
+  });
+
+  it('is the run a program is judged by when nothing is said of the bridges: every one up', () => {
+    expect(run(river, 'f-w-f-f')).toEqual(framesOf(river, parseProgram('f-w-f-f'), [true]));
+  });
+
+  it('says nothing of bridges where there are none', () => {
+    const { frames } = run(corner, 'f-r-f');
+    expect(frames.every((frame) => frame.raised.length === 0 && !frame.waiting)).toBe(true);
+  });
+});
+
+describe('how the bridges stand in the run that is shown', () => {
+  it('is every bridge up for a program that does not work: that is the run it fails in', () => {
+    for (const whenRight of [['up'], ['down']] as const) {
+      expect(standingFor({ ...river, whenRight: [...whenRight] }, parseProgram('f-f-f')!)).toEqual([
+        true,
+      ]);
+    }
+  });
+
+  it('is as the journey says for one that works: up to see the wait, down to see it passed over', () => {
+    const works = parseProgram('f-w-f-f')!;
+    expect(standingFor({ ...river, whenRight: ['up'] }, works)).toEqual([true]);
+    expect(standingFor({ ...river, whenRight: ['down'] }, works)).toEqual([false]);
+  });
+
+  it('is nothing at all where there is no bridge', () => {
+    expect(standingFor(corner, parseProgram('f-r-f')!)).toEqual([]);
+  });
+});
+
+describe('the runs there are to show of a journey', () => {
+  it('are the answer’s, the answer’s again with every bridge down, and the faulty row’s', () => {
+    const over = runsOf(river);
+    expect(over.answer).toEqual(parseProgram('f-w-f-f'));
+    expect(over.way).toEqual(run(river, 'f-w-f-f'));
+    expect(over.down).toEqual(framesOf(river, parseProgram('f-w-f-f'), [false]));
+    expect(over.fault).toBeNull();
+    // A row to mend: forward, a wrong turn, and off the side of the grid.
+    const mend = runsOf({ ...corner, given: 'f-l-f' });
+    expect(mend.down).toBeNull();
+    expect(mend.fault?.outcome).toBe('left-the-grid');
+    expect(mend.way.outcome).toBe('arrived');
+  });
+});
+
+describe('which way a bridge lies', () => {
+  const ground = { columns: 4, rows: 3, rocks: [], water: [], bridges: [] };
+
+  it('across, where the river runs up and down the screen', () => {
+    expect(
+      bridgeLies(
+        {
+          ...ground,
+          water: [
+            [2, 0],
+            [2, 2],
+          ],
+          bridges: [[2, 1]],
+        },
+        [2, 1],
+      ),
+    ).toBe('across');
+    // Another bridge is over water too.
+    expect(
+      bridgeLies(
+        {
+          ...ground,
+          bridges: [
+            [2, 0],
+            [2, 1],
+          ],
+        },
+        [2, 1],
+      ),
+    ).toBe('across');
+  });
+
+  it('down, where the river runs across it', () => {
+    expect(
+      bridgeLies(
+        {
+          ...ground,
+          water: [
+            [0, 1],
+            [2, 1],
+            [3, 1],
+          ],
+          bridges: [[1, 1]],
+        },
+        [1, 1],
+      ),
+    ).toBe('down');
+  });
+
+  it('the way there is ground to reach it from, where no water is beside it', () => {
+    // One row: there is ground to the left and to the right.
+    expect(bridgeLies({ ...ground, rows: 1, bridges: [[2, 0]] }, [2, 0])).toBe('across');
+    // One column: the only ground is above and below.
+    expect(bridgeLies({ ...ground, columns: 1, bridges: [[0, 1]] }, [0, 1])).toBe('down');
+    // A rock at each side: it can only be reached from above and below.
+    expect(
+      bridgeLies(
+        {
+          ...ground,
+          rocks: [
+            [0, 1],
+            [2, 1],
+          ],
+          bridges: [[1, 1]],
+        },
+        [1, 1],
+      ),
+    ).toBe('down');
   });
 });
 
@@ -251,6 +455,123 @@ describe('the row a program is built in', () => {
   });
 });
 
+describe('a row that is changed from its end', () => {
+  const row = (text: string, size = 6) => trayOf(text, size);
+
+  it('is full when every place is used', () => {
+    expect(isFull(row('f-f-r', 3))).toBe(true);
+    expect(isFull(row('f-f', 3))).toBe(false);
+    expect(isFull(taken(row('f-f-r', 3), 1))).toBe(false);
+    expect(isFull(emptyTray(2))).toBe(false);
+  });
+
+  it('gives up its last step, and never one that help put there', () => {
+    expect(lastOpen(row('f-r-f'), 0)).toBe(2);
+    expect(undone(row('f-r-f'), 0)).toEqual(row('f-r'));
+    // The first two places are help's: the third can go, and then there is nothing to take.
+    expect(lastOpen(row('f-r-f'), 2)).toBe(2);
+    expect(undone(row('f-r-f'), 2)).toEqual(row('f-r'));
+    expect(lastOpen(row('f-r'), 2)).toBe(-1);
+    expect(undone(row('f-r'), 2)).toBeNull();
+    expect(undone(emptyTray(4), 0)).toBeNull();
+  });
+
+  it('passes over an empty place to find its last step', () => {
+    // A gap in the middle (the answer being shown leaves them): the last step is still the last.
+    const holed = taken(row('f-r-f-f', 4), 1);
+    expect(lastOpen(holed, 0)).toBe(3);
+    expect(undone(holed, 0)?.slots).toEqual(['forward', null, 'forward', null]);
+  });
+
+  it('takes steps off one at a time until none is left, whatever the row', () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.constantFrom<Command | null>(...ALL, null), { minLength: 1, maxLength: 10 }),
+        fc.integer({ min: 0, max: 10 }),
+        (slots, fixed) => {
+          let tray: Tray | null = { slots, times: 1 };
+          const open = slots.filter((slot, place) => slot !== null && place >= fixed).length;
+          let taken = 0;
+          for (;;) {
+            const next: Tray | null = undone(tray, fixed);
+            if (!next) break;
+            // One step fewer each time, and nothing that help put there is touched.
+            expect(next.slots.slice(0, fixed)).toEqual(tray.slots.slice(0, fixed));
+            expect(next.slots.filter((slot) => slot !== null)).toHaveLength(
+              tray.slots.filter((slot) => slot !== null).length - 1,
+            );
+            tray = next;
+            taken += 1;
+            if (taken > slots.length) throw new Error('It never stopped.');
+          }
+          expect(taken).toBe(open);
+        },
+      ),
+    );
+  });
+});
+
+describe('where the robot stands when its row is changed part-way through a run', () => {
+  /** Five across and two down, and far enough to go that nothing here arrives by accident. */
+  const far: ProgramTask = {
+    ...corner,
+    grid: { columns: 5, rows: 2 },
+    start: { at: [0, 0], facing: 'east' },
+    goal: [4, 1],
+    slots: 6,
+    solution: 'f-f-f-f-r-f',
+  };
+  const stands = (task: ProgramTask, at: number, before: string, after: string) =>
+    carriedOver(at, commandsOf(before), commandsOf(after), run(task, after).frames);
+
+  it('stays where it is when a step is put on the end', () => {
+    expect(stands(far, 2, 'f-f', 'f-f-f')).toBe(2);
+    expect(stands(far, 1, 'f-f', 'f-f-f')).toBe(1);
+    expect(stands(far, 0, 'f-f', 'f-f-f')).toBe(0);
+  });
+
+  it('comes back for a step taken off the end only if it had carried that step out', () => {
+    expect(stands(far, 3, 'f-f-f', 'f-f')).toBe(2);
+    expect(stands(far, 2, 'f-f-f', 'f-f')).toBe(2);
+    expect(stands(far, 1, 'f-f-f', 'f-f')).toBe(1);
+  });
+
+  it('goes back to where the two rows part, when a step in the middle is another now', () => {
+    expect(stands(far, 4, 'f-f-f-f', 'f-r-f-f')).toBe(1);
+    expect(stands(far, 4, 'f-f-f-f', 'l-f-f-f')).toBe(0);
+  });
+
+  it('counts both moments of a wait as the one step they are', () => {
+    // Waiting for the bridge is two frames; a step put on after it leaves the robot at the second of them.
+    expect(stands(river, 3, 'f-w', 'f-w-f')).toBe(3);
+    // And taking the step after it off again brings the robot back to the bridge, down.
+    expect(stands(river, 4, 'f-w-f', 'f-w')).toBe(3);
+    // Taking the wait itself off brings it back to before it waited.
+    expect(stands(river, 3, 'f-w', 'f')).toBe(1);
+  });
+
+  it('is always a moment the two runs share, and never further on than the robot was', () => {
+    const rows = fc.array(fc.constantFrom(...ALL), { minLength: 1, maxLength: 6 });
+    fc.assert(
+      fc.property(rows, rows, fc.nat(6), (before, after, at) => {
+        const text = (row: Command[]) => row.map((command) => command.charAt(0)).join('-');
+        const was = run(far, text(before)).frames;
+        const now = run(far, text(after)).frames;
+        const from = Math.min(at, was.length - 1);
+        const stood = carriedOver(from, before, after, now);
+        expect(stood).toBeLessThanOrEqual(from);
+        expect(stood).toBeLessThan(now.length);
+        // Everything up to there is the same in both runs: the robot is where it was at that moment.
+        expect(now.slice(0, stood + 1)).toEqual(was.slice(0, stood + 1));
+        // And it has not come back further than it must: a row that only grew leaves it where it was.
+        if (after.length >= before.length && before.every((step, place) => after[place] === step)) {
+          expect(stood).toBe(from);
+        }
+      }),
+    );
+  });
+});
+
 describe('what help puts in the row', () => {
   it('is the first steps of the answer, and how many times where the answer is done over', () => {
     expect(fixedBy([])).toEqual({ times: null, commands: [] });
@@ -370,9 +691,26 @@ describe('a picture of a journey', () => {
         [1, 1],
         [2, 1],
       ],
+      water: [],
+      bridges: [],
     });
     expect(journeyOf({ ...picture, rocks: [] })?.rocks).toEqual([]);
     expect(journeyOf({ ...picture, game: 'juggling' })?.game).toBeNull();
+  });
+
+  it('is read with its river and its bridges, where it has them', () => {
+    const over = journeyOf({
+      ...picture,
+      game: 'bridge',
+      rocks: [],
+      water: [1, 0],
+      bridges: [1, 1],
+    });
+    expect(over).toMatchObject({ game: 'bridge', rocks: [], water: [[1, 0]], bridges: [[1, 1]] });
+    // Every game there is has a name a picture may say.
+    for (const game of ['live', 'plan', 'again', 'mend', 'long', 'bridge']) {
+      expect(journeyOf({ ...picture, game })?.game).toBe(game);
+    }
   });
 
   it.each([
@@ -381,6 +719,8 @@ describe('a picture of a journey', () => {
     ['a star that is not a square', { ...picture, goal: 'far' }],
     ['half a rock', { ...picture, rocks: [1, 1, 2] }],
     ['a rock that is not on any square', { ...picture, rocks: [1, 'one'] }],
+    ['half a square of water', { ...picture, water: [1] }],
+    ['a bridge that is not on any square', { ...picture, bridges: ['over', 'there'] }],
     ['no size', { ...picture, columns: 'three' }],
   ])('is refused when it has %s', (_what, broken) => {
     expect(journeyOf(broken)).toBeNull();

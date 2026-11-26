@@ -69,8 +69,9 @@ Things worth knowing:
   write a row of steps for a robot, change the parts of a thing until it works, tap along with a beat, make up
   a tune with a shape — and `judgeTask` (`src/engine/tasks.ts`) says whether what was made is right, which
   parts of it were (they are kept), and whether it was done cleanly. Anything that satisfies the rule is right:
-  a robot's row is run (`src/engine/robot.ts`, which also has the solver the content is checked with), a
-  design is tested by a small exact model (`src/engine/models.ts`), and a tune is asked only whether it has
+  a robot's row is run (`src/engine/robot.ts`, which also has the solver the content is checked with; where
+  there is a bridge that may be up or down, the row is run with it up, because a row that arrives then arrives
+  either way), a design is tested by a small exact model (`src/engine/models.ts`), and a tune is asked only whether it has
   the shape (`src/engine/music.ts`). There is no list of accepted answers to drift out of date.
 - **A made thing is written as text** — `egg1-egg2-egg3`, `x2-f-f-l`, `c4-e4-g4`, `on-on-late-on-x1` — so an
   attempt's record is the same shape for every kind of game, and the format a saved copy is written in did not
@@ -145,6 +146,13 @@ a challenge up. `tests/content/generated.test.ts` fails if a pack file is not ex
 so a table changed without running the generator, or a pack edited by hand, is found out. Generators draw on a
 seeded random source where they sample (the maps of Explorer Harbor, some of Robot Ridge's grounds), so they
 write the same thing every time.
+
+**An answer worked out twice.** Robot Ridge's journeys are measured by the engine's solver, which tries every
+program in order of length, and again by `src/content/robot-ridge/ways.ts`, which goes outwards over the places
+the robot can be (which square, facing which way, with which bridges down) and also counts how many ways are
+as short. It is other code, and quick: it is what lets a long journey be drawn from a seed, by looking at
+thousands of grounds for one with a single shortest way, and it is held to the solver by a test on hundreds of
+grounds of every shape. Neither is trusted alone.
 
 **Packs are refused by rules.** `src/content/lint.ts` checks what a schema cannot — references, the prerequisite
 graph, plan arithmetic, hint ladders, and that each task's marked solution is one its rule accepts. Then the

@@ -8,10 +8,17 @@ import { join } from 'node:path';
  */
 
 /**
- * WebKit reports a download begun by `fetch()` and cancelled by leaving the page a second time, in words: "Fetch API
- * cannot load <address> due to access control checks." Playwright passes that on as an uncaught error, having taken
- * everything up to the first colon for the error's name, so what arrives begins part-way through the address.
- * Returns the address without its scheme, or null if the message is something else.
+ * WebKit will not begin a download for a page that is being left. From the moment another page has been asked for
+ * until it arrives, a `fetch()` made by the page that is still there fails at once: no request is made, so none is
+ * reported, and the only thing said of it is a sentence on the console, "Fetch API cannot load <address> due to
+ * access control checks." (WebKit's own source: `CachedResource::load` fails a load before it starts while the
+ * frame's loader is provisional, or stopping, or has no document; `CachedResourceLoader::requestResource` calls such
+ * an immediate failure "likely due to access control"; and `ThreadableLoader::logError` words it, which it never
+ * does for a download that was begun and then cancelled.)
+ *
+ * Playwright passes the sentence on as an uncaught error, having taken everything up to the first colon for the
+ * error's name, so what arrives begins part-way through the address. Returns the address without its scheme, or
+ * null if the message is something else.
  */
 export function fetchNotLoaded(message: string): string | null {
   const found = /^(.*) due to access control checks\.$/.exec(message);
@@ -19,16 +26,20 @@ export function fetchNotLoaded(message: string): string | null {
   return found[1].replace(/^.*?:\/\//, '').replace(/^\/+/, '');
 }
 
+/** Whether an address, as `fetchNotLoaded` gives it, is on the site under test: its host, and then a path. */
+export function onSite(address: string, origin: string): boolean {
+  return address.startsWith(`${new URL(origin).host}/`);
+}
+
 /**
  * Which page asked for what. A download still under way when one page gives way to another is cancelled by the
- * browser, and that is not a failure of anything; a download cancelled with no page after it is. So the guard has
- * to know which page began each download.
+ * browser, and one asked for while the next page is on its way is, in WebKit, never begun; neither is a failure of
+ * anything. Left undone with no page after it, either is. So the guard has to know which page each belongs to.
  *
  * Counting the pages asked for is not enough. A page that is being left goes on living until the next one has
- * arrived, and can begin a download in between: the voice starts a line a moment after an answer, and a test that
- * has seen the answer is already asking for the next page. That download belongs to the page being left. Counted
- * by pages asked for, it was taken for the new page's own, and its being cancelled failed a test in CI twice
- * (WebKit, the same clip both times) that passed on its second attempt.
+ * arrived, and what it does in between is its own: the voice starts a line a moment after an answer, and a test
+ * that has seen the answer is already asking for the next page. Counted by pages asked for, that was taken for
+ * the new page's doing, with no page after it.
  *
  * So two things are kept: how many pages have been asked for, and which of them is there now.
  */
@@ -64,9 +75,58 @@ export class Pages {
     return this.here;
   }
 
-  /** Whether another page has been asked for since this one: what it left unfinished was cancelled by leaving. */
+  /** How many pages have been asked for so far. */
+  get count(): number {
+    return this.asked;
+  }
+
+  /** Whether another page has been asked for since this one: what it left undone was left by leaving it. */
   left(page: number): boolean {
     return page < this.asked;
+  }
+}
+
+/**
+ * What pages left undone, and whether it is held against a test.
+ *
+ *   a download that was begun and then cancelled    belongs to the page that began it
+ *   a download WebKit would not begin (above)       belongs to the page that was there when WebKit said so
+ *
+ * Either is held against a test only while its page is the last one asked for: once another has been asked for,
+ * it is what leaving a page does. It is judged when it is asked about, not when it happens, so the order in which
+ * the browser reports the next page and the thing left undone does not matter.
+ */
+export class LeftUndone {
+  private readonly things: { line: string; page: number; refused: boolean }[] = [];
+
+  constructor(private readonly pages: Pages) {}
+
+  /** A download begun by `page` was cancelled. */
+  cancelled(line: string, page: number): void {
+    this.things.push({ line, page, refused: false });
+  }
+
+  /** WebKit has said it would not begin a download: the page that is there asked for it. */
+  refused(line: string): void {
+    this.things.push({ line, page: this.pages.current, refused: true });
+  }
+
+  /** What is held against the test: left undone by a page that nobody has since asked to leave. */
+  held(): string[] {
+    return this.things
+      .filter(({ page }) => !this.pages.left(page))
+      .map(({ line, page, refused }) =>
+        refused
+          ? // Said in full, because this has been misread before: which page was there, and of how many.
+            `${line} (WebKit would not begin this download, and no page was asked for after the one that was ` +
+            `there: page ${String(page)} of ${String(this.pages.count)})`
+          : line,
+      );
+  }
+
+  /** What is let pass: left undone by a page that has been left since. */
+  passed(): string[] {
+    return this.things.filter(({ page }) => this.pages.left(page)).map(({ line }) => line);
   }
 }
 

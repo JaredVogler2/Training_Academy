@@ -3,7 +3,14 @@ import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSy
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { Pages, fetchNotLoaded, pageLogPath, pagesServed } from '../../e2e/diagnosis';
+import {
+  LeftUndone,
+  Pages,
+  fetchNotLoaded,
+  onSite,
+  pageLogPath,
+  pagesServed,
+} from '../../e2e/diagnosis';
 import { vercelParity } from '../../scripts/vite/vercel-parity';
 
 /**
@@ -11,20 +18,19 @@ import { vercelParity } from '../../scripts/vite/vercel-parity';
  * test that ran out of time says for itself, so it is tested here, where no browser is needed.
  */
 
-describe('a download WebKit says it could not load', () => {
-  // Word for word what a test was failed for in CI: Playwright had taken "Fetch API cannot load http" for the
-  // error's name and passed on the rest.
+describe('a download WebKit says it would not begin', () => {
+  // Word for word what a test was failed for in CI, three times: Playwright had taken "Fetch API cannot load http"
+  // for the error's name and passed on the rest.
   const asPassedOn =
     '/127.0.0.1:4173/immutable/rr.steps.correct-BoltnQ2G.mp3 due to access control checks.';
   const asWebKitSaysIt =
     'Fetch API cannot load http://127.0.0.1:4173/immutable/rr.steps.correct-BoltnQ2G.mp3 due to access control checks.';
-  const asked = 'http://127.0.0.1:4173/immutable/rr.steps.correct-BoltnQ2G.mp3';
 
-  it('is recognised, cut short or whole, as the address that was asked for', () => {
+  it('is recognised, cut short or whole, by the address that was wanted', () => {
     for (const message of [asPassedOn, asWebKitSaysIt]) {
-      const address = fetchNotLoaded(message);
-      expect(address).toBe('127.0.0.1:4173/immutable/rr.steps.correct-BoltnQ2G.mp3');
-      expect(asked.endsWith(address ?? 'no')).toBe(true);
+      expect(fetchNotLoaded(message)).toBe(
+        '127.0.0.1:4173/immutable/rr.steps.correct-BoltnQ2G.mp3',
+      );
     }
   });
 
@@ -37,6 +43,19 @@ describe('a download WebKit says it could not load', () => {
     ]) {
       expect(fetchNotLoaded(message), message).toBeNull();
     }
+  });
+
+  it('is this site’s own only if the address is on the site under test', () => {
+    const address = fetchNotLoaded(asPassedOn) ?? '';
+    expect(onSite(address, 'http://127.0.0.1:4173')).toBe(true);
+    // Another port is another site, and so is a host that only begins the same way, or one named in the path.
+    expect(onSite(address, 'http://127.0.0.1:4174')).toBe(false);
+    expect(onSite('127.0.0.1:41730/immutable/a.mp3', 'http://127.0.0.1:4173')).toBe(false);
+    expect(onSite('elsewhere.example/127.0.0.1:4173/a.mp3', 'http://127.0.0.1:4173')).toBe(false);
+    expect(onSite('fonts.example/a.woff2', 'https://training-academy.example')).toBe(false);
+    expect(onSite('training-academy.example/robots.txt', 'https://training-academy.example')).toBe(
+      true,
+    );
   });
 });
 
@@ -58,8 +77,7 @@ describe('which page asked for what', () => {
   });
 
   it('gives a download begun after the next page was asked for, and before it arrived, to the page being left', () => {
-    // The order it happened in CI: the next page is asked for; the page that is still there begins a clip; the
-    // next page arrives and the clip is cancelled.
+    // The next page is asked for; the page that is still there asks for a clip; the next page arrives.
     const pages = new Pages();
     pages.ask(HUB);
     pages.arrive(HUB);
@@ -103,6 +121,90 @@ describe('which page asked for what', () => {
     expect(pages.current).toBe(0);
     pages.arrive(HUB);
     expect(pages.current).toBe(first);
+  });
+});
+
+describe('what a page left undone', () => {
+  const HUB = 'http://127.0.0.1:4173/';
+  const WORLD = 'http://127.0.0.1:4173/world/robot-ridge';
+  const REFUSED = 'uncaught: /127.0.0.1:4173/immutable/a.mp3 due to access control checks.';
+  const CANCELLED = 'request failed: http://127.0.0.1:4173/immutable/a.mp3 (cancelled)';
+
+  const onTheHub = () => {
+    const pages = new Pages();
+    pages.ask(HUB);
+    pages.arrive(HUB);
+    return { pages, undone: new LeftUndone(pages) };
+  };
+
+  it('lets pass a download WebKit would not begin while the next page was on its way', () => {
+    // What failed a test in CI three times: the next page is asked for; the page still there asks for a clip, and
+    // WebKit will not begin it; the next page arrives. It is the doing of the page that was left.
+    const { pages, undone } = onTheHub();
+    pages.ask(WORLD);
+    undone.refused(REFUSED);
+    expect(undone.held()).toEqual([]);
+    pages.arrive(WORLD);
+    expect(undone.held()).toEqual([]);
+    expect(undone.passed()).toEqual([REFUSED]);
+  });
+
+  it('lets it pass whichever the browser reports first, the refusal or the next page', () => {
+    const { pages, undone } = onTheHub();
+    undone.refused(REFUSED);
+    // Nothing has been asked for yet, as far as anyone has been told: it is held, for now.
+    expect(undone.held()).toHaveLength(1);
+    pages.ask(WORLD);
+    pages.arrive(WORLD);
+    expect(undone.held()).toEqual([]);
+    expect(undone.passed()).toEqual([REFUSED]);
+  });
+
+  it('holds a refusal with no page after it against the test, and says which page was there', () => {
+    const { undone } = onTheHub();
+    undone.refused(REFUSED);
+    expect(undone.passed()).toEqual([]);
+    expect(undone.held()).toEqual([
+      `${REFUSED} (WebKit would not begin this download, and no page was asked for after the one that was there: page 1 of 1)`,
+    ]);
+  });
+
+  it('holds a refusal said once the next page has arrived against that page', () => {
+    const { pages, undone } = onTheHub();
+    pages.ask(WORLD);
+    pages.arrive(WORLD);
+    undone.refused(REFUSED);
+    expect(undone.held()).toEqual([
+      `${REFUSED} (WebKit would not begin this download, and no page was asked for after the one that was there: page 2 of 2)`,
+    ]);
+    expect(undone.passed()).toEqual([]);
+  });
+
+  it('holds a cancelled download against the page that began it, in its own words, until that page is left', () => {
+    const { pages, undone } = onTheHub();
+    undone.cancelled(CANCELLED, pages.current);
+    expect(undone.held()).toEqual([CANCELLED]);
+    expect(undone.passed()).toEqual([]);
+    pages.ask(WORLD);
+    expect(undone.held()).toEqual([]);
+    expect(undone.passed()).toEqual([CANCELLED]);
+  });
+
+  it('judges each thing by its own page', () => {
+    const { pages, undone } = onTheHub();
+    undone.cancelled(CANCELLED, pages.current);
+    const world = pages.ask(WORLD);
+    pages.arrive(WORLD);
+    // The hub's is forgiven; what the world itself began, and had cancelled with nothing after it, is not.
+    const own = 'request failed: http://127.0.0.1:4173/immutable/b.mp3 (cancelled)';
+    undone.cancelled(own, world);
+    expect(undone.held()).toEqual([own]);
+    expect(undone.passed()).toEqual([CANCELLED]);
+    // And by the page that began it, whichever page is there when its being cancelled is reported.
+    const late = 'request failed: http://127.0.0.1:4173/immutable/c.mp3 (cancelled)';
+    undone.cancelled(late, 1);
+    expect(undone.held()).toEqual([own]);
+    expect(undone.passed()).toEqual([CANCELLED, late]);
   });
 });
 

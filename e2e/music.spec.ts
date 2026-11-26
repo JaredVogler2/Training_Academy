@@ -177,15 +177,17 @@ test.describe('the Music Lab: the same, or different?', () => {
     await pastTheShowing(page, press);
     await holdClock(page);
     await press(glim(page));
-    const state = async () => {
-      const playing = await lesson(page)
-        .locator('[data-part][data-sounding="true"]')
-        .evaluateAll((list) => list.map((one) => one.getAttribute('data-part')).join('+'));
-      const open = await choices(page).evaluateAll((list) =>
-        list.some((choice) => choice.getAttribute('aria-disabled') !== 'true'),
-      );
-      return `${playing === '' ? 'neither' : `number ${playing}`} plays, ${open ? 'open' : 'waiting'}`;
-    };
+    // (Which of the two is playing and whether the signs can be tapped are read in one go: one moment.)
+    const state = () =>
+      lesson(page).evaluate((frame) => {
+        const playing = [...frame.querySelectorAll('[data-part][data-sounding="true"]')]
+          .map((one) => one.getAttribute('data-part'))
+          .join('+');
+        const open = [...frame.querySelectorAll('[data-choice]')].some(
+          (choice) => choice.getAttribute('aria-disabled') !== 'true',
+        );
+        return `${playing === '' ? 'neither' : `number ${playing}`} plays, ${open ? 'open' : 'waiting'}`;
+      });
     expect(await watchFor(page, 12_000, state, 60)).toEqual([
       'neither plays, waiting',
       'number 0 plays, waiting',

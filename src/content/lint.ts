@@ -140,7 +140,9 @@ function lintProgram(task: ProgramTask, report: Report): void {
   const on = ([column, row]: readonly [number, number]) => column < columns && row < rows;
   const same = (a: readonly [number, number], b: readonly [number, number]) =>
     a[0] === b[0] && a[1] === b[1];
-  for (const cell of [task.start.at, task.goal, ...task.rocks]) {
+  const water = task.water ?? [];
+  const bridges = task.bridges ?? [];
+  for (const cell of [task.start.at, task.goal, ...task.rocks, ...water, ...bridges]) {
     if (!on(cell)) report('program-off-grid', `[${cell.join(', ')}] is not on the grid`);
   }
   if (same(task.start.at, task.goal))
@@ -149,6 +151,50 @@ function lintProgram(task: ProgramTask, report: Report): void {
     if (same(rock, task.start.at) || same(rock, task.goal)) {
       report('program-rock', `a rock lies on ${same(rock, task.goal) ? 'the goal' : 'the start'}`);
     }
+  }
+  // Water and bridges: each square is one thing, and the robot neither starts on one nor is going to one.
+  const laid: [string, readonly [number, number]][] = [
+    ...task.rocks.map((cell): [string, readonly [number, number]] => ['a rock', cell]),
+    ...water.map((cell): [string, readonly [number, number]] => ['water', cell]),
+    ...bridges.map((cell): [string, readonly [number, number]] => ['a bridge', cell]),
+  ];
+  for (const [index, [what, cell]] of laid.entries()) {
+    const before = laid.slice(0, index).find(([, other]) => same(other, cell));
+    if (before) {
+      report('program-square-twice', `[${cell.join(', ')}] is ${before[0]} and ${what} at once`);
+    }
+  }
+  for (const cell of [...water, ...bridges]) {
+    if (same(cell, task.start.at) || same(cell, task.goal)) {
+      report(
+        'program-in-the-river',
+        `the robot ${same(cell, task.goal) ? 'is going to' : 'starts on'} water or a bridge`,
+      );
+    }
+  }
+  // A bridge may be up, and waiting is how that is met: the one is never there without the other.
+  const waits = task.commands.includes('wait');
+  if (bridges.length > 0 && !waits) {
+    report('program-bridge-no-wait', 'there is a bridge and no way to wait for it');
+  }
+  if (bridges.length === 0 && waits) {
+    report('program-wait-no-bridge', 'waiting is offered and there is nothing to wait for');
+  }
+  if ((task.whenRight?.length ?? 0) !== bridges.length) {
+    report(
+      'program-bridges-shown',
+      'how the bridges stand for a program that works is not said once for each bridge',
+    );
+  }
+  // A row that is changed from its end and run a step at a time is a plan: nothing else is drawn that way.
+  if (
+    task.stepwise === true &&
+    (task.live || task.repeats > 1 || task.given !== undefined || bridges.length > 0)
+  ) {
+    report(
+      'program-stepwise-plain',
+      'a row run a step at a time is a plan made once: not live, not done over, not to mend, and with no bridge',
+    );
   }
   const shown = parseProgram(task.solution);
   if (!shown || !fitsTask(task, shown)) {

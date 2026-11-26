@@ -58,6 +58,8 @@ const BOARDS: readonly (readonly [world: string, lesson: string, what: string])[
   ['explorer-harbor', 'eh-ending-01', 'a story, and endings'],
   ['explorer-harbor', 'eh-water-01', 'a map to answer on'],
   ['robot-ridge', 'rr-steps-01', 'a row of steps for a robot'],
+  ['robot-ridge', 'rr-plan-02', 'a long row of steps, and the keys that run it'],
+  ['robot-ridge', 'rr-bridge-01', 'a row of steps, and the step that waits'],
   ['inventor-island', 'ii-bridge-01', 'a guess, and a thing to mend'],
   ['music-lab', 'ml-high-low-01', 'a sign, and two to listen to'],
   ['music-lab', 'ml-same-01', 'two to listen to, and two signs'],

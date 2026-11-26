@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "id": "robot-ridge",
   "world": "robot-ridge",
-  "contentVersion": 1,
+  "contentVersion": 2,
   "strings": {
     "en": {
       "rr.hint.route": "Watch the way to the star.",
@@ -23,7 +23,14 @@
       "rr.mend.correct": "Yes. You found the wrong step and changed it.",
       "rr.mend.incorrect": "Still not at the star. Look for the step that went wrong.",
       "rr.mend.hint.model": "Watch again. Where does it go wrong?",
-      "rr.mend.hint.reveal": "This is the step to change."
+      "rr.mend.hint.reveal": "This is the step to change.",
+      "rr.long.instruction": "It is a long way round. Put the arrows in order. Then press go.",
+      "rr.long.correct": "Yes. All those steps, in the right order.",
+      "rr.long.hint.step": "Here are the first steps.",
+      "rr.bridge.instruction": "The bridge may be up, or it may be down. Tell the robot to wait for it.",
+      "rr.bridge.correct": "Yes. Up or down, your steps get the robot across.",
+      "rr.bridge.incorrect": "Not at the star yet. If the bridge is up, the robot has to wait for it.",
+      "rr.bridge.hint.wait": "This step waits for the bridge. It goes just before the bridge."
     }
   },
   "skills": [
@@ -44,6 +51,22 @@
       "prerequisites": ["coding.commands.one-move"]
     },
     {
+      "id": "coding.sequence.plan-to-six",
+      "world": "robot-ridge",
+      "strand": "coding",
+      "title": "Plan a way of four to six steps",
+      "objective": "Puts four, five or six commands in order before the robot sets off, round rocks that are in the way, so that it reaches the goal. May run the plan a step at a time to see where it goes.",
+      "prerequisites": ["coding.sequence.plan-short"]
+    },
+    {
+      "id": "coding.sequence.plan-to-ten",
+      "world": "robot-ridge",
+      "strand": "coding",
+      "title": "Plan a long way, up to ten steps",
+      "objective": "Puts seven to ten commands in order for a way that winds between rocks, and when the robot does not arrive finds the step that went wrong and changes the plan from there.",
+      "prerequisites": ["coding.sequence.plan-to-six"]
+    },
+    {
       "id": "coding.repeat.do-again",
       "world": "robot-ridge",
       "strand": "coding",
@@ -57,6 +80,14 @@
       "strand": "coding",
       "title": "Find and mend a wrong step",
       "objective": "Watches a program go wrong, finds the one step that sends the robot the wrong way, and changes that step so that the robot arrives.",
+      "prerequisites": ["coding.sequence.plan-short"]
+    },
+    {
+      "id": "coding.condition.wait-for-bridge",
+      "world": "robot-ridge",
+      "strand": "coding",
+      "title": "Use a step that depends on what the robot finds",
+      "objective": "Puts \"wait for the bridge\" where it belongs in a row of steps, so that the robot reaches the goal whether the bridge turns out to be up or down: the same step waits when there is something to wait for and passes on when there is not.",
       "prerequisites": ["coding.sequence.plan-short"]
     }
   ],
@@ -1896,6 +1927,1455 @@
             { "type": "reveal", "caption": "rr.mend.hint.reveal" }
           ],
           "feedback": { "correct": "rr.mend.correct", "incorrect": "rr.mend.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "rr-plan-01",
+      "version": 1,
+      "world": "robot-ridge",
+      "title": "A longer way",
+      "summary": "Four, five and six steps, with rocks to go round. The row is too long now for each step to be a button, so it is changed from its end: one key takes the last step out. Your child can run it all at once, or one step at a time, forwards and back, to see where each step takes the robot.",
+      "skillIds": ["coding.sequence.plan-to-six"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["rr-plan-01.demo-four"],
+        "guided": ["rr-plan-01.guided-four", "rr-plan-01.guided-five"],
+        "independent": {
+          "pool": [
+            "rr-plan-01.four-one",
+            "rr-plan-01.four-two",
+            "rr-plan-01.five-one",
+            "rr-plan-01.five-two",
+            "rr-plan-01.six-one",
+            "rr-plan-01.six-two",
+            "rr-plan-01.six-three"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "rr-plan-01.demo-four",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-six",
+          "variant": "four-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 3,
+                "rows": 2,
+                "start": [0, 0],
+                "facing": "east",
+                "goal": [2, 1],
+                "rocks": [0, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 3, "rows": 2 },
+            "start": { "at": [0, 0], "facing": "east" },
+            "goal": [2, 1],
+            "rocks": [[0, 1]],
+            "commands": ["forward", "left", "right"],
+            "slots": 4,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-f-r-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-01.guided-four",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-six",
+          "variant": "four-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 3,
+                "rows": 3,
+                "start": [1, 2],
+                "facing": "north",
+                "goal": [0, 0],
+                "rocks": [2, 0, 2, 1, 0, 2]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 3, "rows": 3 },
+            "start": { "at": [1, 2], "facing": "north" },
+            "goal": [0, 0],
+            "rocks": [
+              [2, 0],
+              [2, 1],
+              [0, 2]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 4,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-f-l-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-01.guided-five",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-six",
+          "variant": "five-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 3,
+                "rows": 3,
+                "start": [0, 2],
+                "facing": "north",
+                "goal": [1, 0],
+                "rocks": [0, 0, 1, 2]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 3, "rows": 3 },
+            "start": { "at": [0, 2], "facing": "north" },
+            "goal": [1, 0],
+            "rocks": [
+              [0, 0],
+              [1, 2]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 5,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-r-f-l-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-01.four-one",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-six",
+          "variant": "four-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 3,
+                "rows": 3,
+                "start": [1, 1],
+                "facing": "east",
+                "goal": [2, 2],
+                "rocks": [0, 1, 2, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 3, "rows": 3 },
+            "start": { "at": [1, 1], "facing": "east" },
+            "goal": [2, 2],
+            "rocks": [
+              [0, 1],
+              [2, 1]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 4,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "r-f-l-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-01.four-two",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-six",
+          "variant": "four-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 3,
+                "rows": 3,
+                "start": [1, 2],
+                "facing": "north",
+                "goal": [0, 1],
+                "rocks": [1, 1, 2, 0]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 3, "rows": 3 },
+            "start": { "at": [1, 2], "facing": "north" },
+            "goal": [0, 1],
+            "rocks": [
+              [1, 1],
+              [2, 0]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 4,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "l-f-r-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-01.five-one",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-six",
+          "variant": "five-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 4,
+                "rows": 3,
+                "start": [0, 0],
+                "facing": "south",
+                "goal": [1, 2],
+                "rocks": [0, 2, 1, 0, 3, 0]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 4, "rows": 3 },
+            "start": { "at": [0, 0], "facing": "south" },
+            "goal": [1, 2],
+            "rocks": [
+              [0, 2],
+              [1, 0],
+              [3, 0]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 5,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-l-f-r-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-01.five-two",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-six",
+          "variant": "five-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 4,
+                "rows": 3,
+                "start": [1, 1],
+                "facing": "south",
+                "goal": [3, 2],
+                "rocks": [0, 0, 2, 0, 2, 2]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 4, "rows": 3 },
+            "start": { "at": [1, 1], "facing": "south" },
+            "goal": [3, 2],
+            "rocks": [
+              [0, 0],
+              [2, 0],
+              [2, 2]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 5,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "l-f-f-r-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-01.six-one",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-six",
+          "variant": "six-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 4,
+                "rows": 3,
+                "start": [2, 0],
+                "facing": "south",
+                "goal": [0, 2],
+                "rocks": [0, 0, 2, 2, 3, 2]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 4, "rows": 3 },
+            "start": { "at": [2, 0], "facing": "south" },
+            "goal": [0, 2],
+            "rocks": [
+              [0, 0],
+              [2, 2],
+              [3, 2]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 6,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-r-f-f-l-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-01.six-two",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-six",
+          "variant": "six-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 4,
+                "rows": 3,
+                "start": [3, 0],
+                "facing": "west",
+                "goal": [1, 2],
+                "rocks": [0, 0, 1, 0, 3, 2]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 4, "rows": 3 },
+            "start": { "at": [3, 0], "facing": "west" },
+            "goal": [1, 2],
+            "rocks": [
+              [0, 0],
+              [1, 0],
+              [3, 2]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 6,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-l-f-f-r-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-01.six-three",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-six",
+          "variant": "six-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 4,
+                "rows": 3,
+                "start": [0, 0],
+                "facing": "east",
+                "goal": [0, 2],
+                "rocks": [0, 1, 2, 1, 3, 2]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 4, "rows": 3 },
+            "start": { "at": [0, 0], "facing": "east" },
+            "goal": [0, 2],
+            "rocks": [
+              [0, 1],
+              [2, 1],
+              [3, 2]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 6,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-r-f-f-r-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "rr-bridge-01",
+      "version": 1,
+      "world": "robot-ridge",
+      "title": "Wait for the bridge",
+      "summary": "A river, and a bridge that may be up or down: nobody knows which until the robot sets off. One new step says \"if the bridge is up, wait for it\". Put just before the bridge, it makes the same steps work either way: the robot waits if there is something to wait for, and goes on if not.",
+      "skillIds": ["coding.condition.wait-for-bridge"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["rr-bridge-01.demo-across"],
+        "guided": ["rr-bridge-01.guided-at-once", "rr-bridge-01.guided-round-to-it"],
+        "independent": {
+          "pool": [
+            "rr-bridge-01.one-before",
+            "rr-bridge-01.two-before",
+            "rr-bridge-01.at-the-start",
+            "rr-bridge-01.down-and-across",
+            "rr-bridge-01.up-and-across",
+            "rr-bridge-01.across-and-up",
+            "rr-bridge-01.across-and-down"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "rr-bridge-01.demo-across",
+          "kind": "make",
+          "skillId": "coding.condition.wait-for-bridge",
+          "variant": "straight",
+          "prompt": {
+            "instruction": "rr.bridge.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "bridge",
+                "columns": 4,
+                "rows": 2,
+                "start": [0, 0],
+                "facing": "east",
+                "goal": [3, 0],
+                "rocks": [],
+                "water": [2, 1],
+                "bridges": [2, 0]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 4, "rows": 2 },
+            "start": { "at": [0, 0], "facing": "east" },
+            "goal": [3, 0],
+            "rocks": [],
+            "commands": ["forward", "left", "right", "wait"],
+            "slots": 4,
+            "repeats": 1,
+            "live": false,
+            "water": [[2, 1]],
+            "bridges": [[2, 0]],
+            "whenRight": ["up"],
+            "solution": "f-w-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.bridge.hint.wait" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.bridge.correct", "incorrect": "rr.bridge.incorrect" }
+        },
+        {
+          "id": "rr-bridge-01.guided-at-once",
+          "kind": "make",
+          "skillId": "coding.condition.wait-for-bridge",
+          "variant": "bridge-first",
+          "prompt": {
+            "instruction": "rr.bridge.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "bridge",
+                "columns": 4,
+                "rows": 3,
+                "start": [0, 1],
+                "facing": "east",
+                "goal": [3, 1],
+                "rocks": [],
+                "water": [1, 0, 1, 2],
+                "bridges": [1, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 4, "rows": 3 },
+            "start": { "at": [0, 1], "facing": "east" },
+            "goal": [3, 1],
+            "rocks": [],
+            "commands": ["forward", "left", "right", "wait"],
+            "slots": 4,
+            "repeats": 1,
+            "live": false,
+            "water": [
+              [1, 0],
+              [1, 2]
+            ],
+            "bridges": [[1, 1]],
+            "whenRight": ["up"],
+            "solution": "w-f-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 1, "caption": "rr.bridge.hint.wait" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.bridge.correct", "incorrect": "rr.bridge.incorrect" }
+        },
+        {
+          "id": "rr-bridge-01.guided-round-to-it",
+          "kind": "make",
+          "skillId": "coding.condition.wait-for-bridge",
+          "variant": "turn-before",
+          "prompt": {
+            "instruction": "rr.bridge.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "bridge",
+                "columns": 3,
+                "rows": 2,
+                "start": [0, 0],
+                "facing": "south",
+                "goal": [2, 1],
+                "rocks": [],
+                "water": [1, 0],
+                "bridges": [1, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 3, "rows": 2 },
+            "start": { "at": [0, 0], "facing": "south" },
+            "goal": [2, 1],
+            "rocks": [],
+            "commands": ["forward", "left", "right", "wait"],
+            "slots": 5,
+            "repeats": 1,
+            "live": false,
+            "water": [[1, 0]],
+            "bridges": [[1, 1]],
+            "whenRight": ["down"],
+            "solution": "f-l-w-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 3, "caption": "rr.bridge.hint.wait" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.bridge.correct", "incorrect": "rr.bridge.incorrect" }
+        },
+        {
+          "id": "rr-bridge-01.one-before",
+          "kind": "make",
+          "skillId": "coding.condition.wait-for-bridge",
+          "variant": "straight",
+          "prompt": {
+            "instruction": "rr.bridge.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "bridge",
+                "columns": 5,
+                "rows": 3,
+                "start": [0, 1],
+                "facing": "east",
+                "goal": [4, 1],
+                "rocks": [],
+                "water": [2, 0, 2, 2],
+                "bridges": [2, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 5, "rows": 3 },
+            "start": { "at": [0, 1], "facing": "east" },
+            "goal": [4, 1],
+            "rocks": [],
+            "commands": ["forward", "left", "right", "wait"],
+            "slots": 5,
+            "repeats": 1,
+            "live": false,
+            "water": [
+              [2, 0],
+              [2, 2]
+            ],
+            "bridges": [[2, 1]],
+            "whenRight": ["down"],
+            "solution": "f-w-f-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.bridge.hint.wait" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.bridge.correct", "incorrect": "rr.bridge.incorrect" }
+        },
+        {
+          "id": "rr-bridge-01.two-before",
+          "kind": "make",
+          "skillId": "coding.condition.wait-for-bridge",
+          "variant": "straight",
+          "prompt": {
+            "instruction": "rr.bridge.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "bridge",
+                "columns": 5,
+                "rows": 3,
+                "start": [0, 1],
+                "facing": "east",
+                "goal": [4, 1],
+                "rocks": [],
+                "water": [3, 0, 3, 2],
+                "bridges": [3, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 5, "rows": 3 },
+            "start": { "at": [0, 1], "facing": "east" },
+            "goal": [4, 1],
+            "rocks": [],
+            "commands": ["forward", "left", "right", "wait"],
+            "slots": 5,
+            "repeats": 1,
+            "live": false,
+            "water": [
+              [3, 0],
+              [3, 2]
+            ],
+            "bridges": [[3, 1]],
+            "whenRight": ["up"],
+            "solution": "f-f-w-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 3, "caption": "rr.bridge.hint.wait" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.bridge.correct", "incorrect": "rr.bridge.incorrect" }
+        },
+        {
+          "id": "rr-bridge-01.at-the-start",
+          "kind": "make",
+          "skillId": "coding.condition.wait-for-bridge",
+          "variant": "bridge-first",
+          "prompt": {
+            "instruction": "rr.bridge.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "bridge",
+                "columns": 5,
+                "rows": 3,
+                "start": [0, 1],
+                "facing": "east",
+                "goal": [4, 1],
+                "rocks": [],
+                "water": [1, 0, 1, 2],
+                "bridges": [1, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 5, "rows": 3 },
+            "start": { "at": [0, 1], "facing": "east" },
+            "goal": [4, 1],
+            "rocks": [],
+            "commands": ["forward", "left", "right", "wait"],
+            "slots": 5,
+            "repeats": 1,
+            "live": false,
+            "water": [
+              [1, 0],
+              [1, 2]
+            ],
+            "bridges": [[1, 1]],
+            "whenRight": ["down"],
+            "solution": "w-f-f-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 1, "caption": "rr.bridge.hint.wait" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.bridge.correct", "incorrect": "rr.bridge.incorrect" }
+        },
+        {
+          "id": "rr-bridge-01.down-and-across",
+          "kind": "make",
+          "skillId": "coding.condition.wait-for-bridge",
+          "variant": "turn-before",
+          "prompt": {
+            "instruction": "rr.bridge.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "bridge",
+                "columns": 3,
+                "rows": 2,
+                "start": [0, 0],
+                "facing": "south",
+                "goal": [2, 1],
+                "rocks": [],
+                "water": [1, 0],
+                "bridges": [1, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 3, "rows": 2 },
+            "start": { "at": [0, 0], "facing": "south" },
+            "goal": [2, 1],
+            "rocks": [],
+            "commands": ["forward", "left", "right", "wait"],
+            "slots": 5,
+            "repeats": 1,
+            "live": false,
+            "water": [[1, 0]],
+            "bridges": [[1, 1]],
+            "whenRight": ["up"],
+            "solution": "f-l-w-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 3, "caption": "rr.bridge.hint.wait" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.bridge.correct", "incorrect": "rr.bridge.incorrect" }
+        },
+        {
+          "id": "rr-bridge-01.up-and-across",
+          "kind": "make",
+          "skillId": "coding.condition.wait-for-bridge",
+          "variant": "turn-before",
+          "prompt": {
+            "instruction": "rr.bridge.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "bridge",
+                "columns": 3,
+                "rows": 2,
+                "start": [0, 1],
+                "facing": "north",
+                "goal": [2, 0],
+                "rocks": [],
+                "water": [1, 1],
+                "bridges": [1, 0]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 3, "rows": 2 },
+            "start": { "at": [0, 1], "facing": "north" },
+            "goal": [2, 0],
+            "rocks": [],
+            "commands": ["forward", "left", "right", "wait"],
+            "slots": 5,
+            "repeats": 1,
+            "live": false,
+            "water": [[1, 1]],
+            "bridges": [[1, 0]],
+            "whenRight": ["up"],
+            "solution": "f-r-w-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 3, "caption": "rr.bridge.hint.wait" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.bridge.correct", "incorrect": "rr.bridge.incorrect" }
+        },
+        {
+          "id": "rr-bridge-01.across-and-up",
+          "kind": "make",
+          "skillId": "coding.condition.wait-for-bridge",
+          "variant": "turn-after",
+          "prompt": {
+            "instruction": "rr.bridge.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "bridge",
+                "columns": 3,
+                "rows": 2,
+                "start": [0, 1],
+                "facing": "east",
+                "goal": [2, 0],
+                "rocks": [],
+                "water": [1, 0],
+                "bridges": [1, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 3, "rows": 2 },
+            "start": { "at": [0, 1], "facing": "east" },
+            "goal": [2, 0],
+            "rocks": [],
+            "commands": ["forward", "left", "right", "wait"],
+            "slots": 5,
+            "repeats": 1,
+            "live": false,
+            "water": [[1, 0]],
+            "bridges": [[1, 1]],
+            "whenRight": ["down"],
+            "solution": "w-f-f-l-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 1, "caption": "rr.bridge.hint.wait" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.bridge.correct", "incorrect": "rr.bridge.incorrect" }
+        },
+        {
+          "id": "rr-bridge-01.across-and-down",
+          "kind": "make",
+          "skillId": "coding.condition.wait-for-bridge",
+          "variant": "turn-after",
+          "prompt": {
+            "instruction": "rr.bridge.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "bridge",
+                "columns": 3,
+                "rows": 2,
+                "start": [0, 0],
+                "facing": "east",
+                "goal": [2, 1],
+                "rocks": [],
+                "water": [1, 1],
+                "bridges": [1, 0]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 3, "rows": 2 },
+            "start": { "at": [0, 0], "facing": "east" },
+            "goal": [2, 1],
+            "rocks": [],
+            "commands": ["forward", "left", "right", "wait"],
+            "slots": 5,
+            "repeats": 1,
+            "live": false,
+            "water": [[1, 1]],
+            "bridges": [[1, 0]],
+            "whenRight": ["up"],
+            "solution": "w-f-f-r-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 1, "caption": "rr.bridge.hint.wait" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.bridge.correct", "incorrect": "rr.bridge.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "rr-plan-02",
+      "version": 1,
+      "world": "robot-ridge",
+      "title": "A long way round",
+      "summary": "Seven to ten steps: as long a plan as there is here. The way winds between the rocks, and there is one shortest way. Running it a step at a time shows which step went wrong when the robot does not arrive.",
+      "skillIds": ["coding.sequence.plan-to-ten"],
+      "estimatedMinutes": 5,
+      "plan": {
+        "demo": ["rr-plan-02.demo-seven"],
+        "guided": ["rr-plan-02.guided-seven", "rr-plan-02.guided-eight"],
+        "independent": {
+          "pool": [
+            "rr-plan-02.seven-one",
+            "rr-plan-02.eight-one",
+            "rr-plan-02.eight-two",
+            "rr-plan-02.nine-one",
+            "rr-plan-02.nine-two",
+            "rr-plan-02.ten-one",
+            "rr-plan-02.ten-two"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "rr-plan-02.demo-seven",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-ten",
+          "variant": "seven-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 3,
+                "rows": 2,
+                "start": [0, 0],
+                "facing": "east",
+                "goal": [2, 0],
+                "rocks": [1, 0]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 3, "rows": 2 },
+            "start": { "at": [0, 0], "facing": "east" },
+            "goal": [2, 0],
+            "rocks": [[1, 0]],
+            "commands": ["forward", "left", "right"],
+            "slots": 7,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "r-f-l-f-f-l-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-02.guided-seven",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-ten",
+          "variant": "seven-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 5,
+                "rows": 3,
+                "start": [0, 0],
+                "facing": "south",
+                "goal": [3, 2],
+                "rocks": [2, 0, 3, 0, 2, 2, 4, 2]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 5, "rows": 3 },
+            "start": { "at": [0, 0], "facing": "south" },
+            "goal": [3, 2],
+            "rocks": [
+              [2, 0],
+              [3, 0],
+              [2, 2],
+              [4, 2]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 7,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-l-f-f-f-r-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-02.guided-eight",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-ten",
+          "variant": "eight-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 5,
+                "rows": 3,
+                "start": [0, 0],
+                "facing": "south",
+                "goal": [3, 1],
+                "rocks": [1, 0, 1, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 5, "rows": 3 },
+            "start": { "at": [0, 0], "facing": "south" },
+            "goal": [3, 1],
+            "rocks": [
+              [1, 0],
+              [1, 1]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 8,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-f-l-f-f-f-l-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-02.seven-one",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-ten",
+          "variant": "seven-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 5,
+                "rows": 3,
+                "start": [1, 0],
+                "facing": "north",
+                "goal": [3, 2],
+                "rocks": [0, 2, 1, 1, 3, 0, 3, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 5, "rows": 3 },
+            "start": { "at": [1, 0], "facing": "north" },
+            "goal": [3, 2],
+            "rocks": [
+              [0, 2],
+              [1, 1],
+              [3, 0],
+              [3, 1]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 7,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "r-f-r-f-f-l-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-02.eight-one",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-ten",
+          "variant": "eight-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 5,
+                "rows": 3,
+                "start": [4, 2],
+                "facing": "west",
+                "goal": [0, 0],
+                "rocks": [0, 1, 1, 2, 3, 1, 4, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 5, "rows": 3 },
+            "start": { "at": [4, 2], "facing": "west" },
+            "goal": [0, 0],
+            "rocks": [
+              [0, 1],
+              [1, 2],
+              [3, 1],
+              [4, 1]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 8,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-f-r-f-f-l-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-02.eight-two",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-ten",
+          "variant": "eight-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 5,
+                "rows": 3,
+                "start": [2, 0],
+                "facing": "south",
+                "goal": [0, 0],
+                "rocks": [1, 0, 1, 1, 3, 1, 4, 1]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 5, "rows": 3 },
+            "start": { "at": [2, 0], "facing": "south" },
+            "goal": [0, 0],
+            "rocks": [
+              [1, 0],
+              [1, 1],
+              [3, 1],
+              [4, 1]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 8,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-f-r-f-f-r-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-02.nine-one",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-ten",
+          "variant": "nine-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 6,
+                "rows": 3,
+                "start": [4, 1],
+                "facing": "west",
+                "goal": [0, 1],
+                "rocks": [1, 1, 2, 1, 2, 2, 4, 0, 5, 2]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 6, "rows": 3 },
+            "start": { "at": [4, 1], "facing": "west" },
+            "goal": [0, 1],
+            "rocks": [
+              [1, 1],
+              [2, 1],
+              [2, 2],
+              [4, 0],
+              [5, 2]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 9,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-r-f-l-f-f-f-l-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-02.nine-two",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-ten",
+          "variant": "nine-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 6,
+                "rows": 3,
+                "start": [5, 1],
+                "facing": "north",
+                "goal": [0, 0],
+                "rocks": [0, 2, 1, 1, 1, 2, 3, 0, 4, 0]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 6, "rows": 3 },
+            "start": { "at": [5, 1], "facing": "north" },
+            "goal": [0, 0],
+            "rocks": [
+              [0, 2],
+              [1, 1],
+              [1, 2],
+              [3, 0],
+              [4, 0]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 9,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "l-f-f-f-r-f-l-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-02.ten-one",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-ten",
+          "variant": "ten-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 6,
+                "rows": 3,
+                "start": [5, 0],
+                "facing": "south",
+                "goal": [1, 0],
+                "rocks": [0, 0, 2, 0, 3, 0, 3, 1, 4, 0]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 6, "rows": 3 },
+            "start": { "at": [5, 0], "facing": "south" },
+            "goal": [1, 0],
+            "rocks": [
+              [0, 0],
+              [2, 0],
+              [3, 0],
+              [3, 1],
+              [4, 0]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 10,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "f-f-r-f-f-f-f-r-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
+        },
+        {
+          "id": "rr-plan-02.ten-two",
+          "kind": "make",
+          "skillId": "coding.sequence.plan-to-ten",
+          "variant": "ten-steps",
+          "prompt": {
+            "instruction": "rr.long.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "grid",
+              "of": {
+                "game": "long",
+                "columns": 6,
+                "rows": 3,
+                "start": [0, 2],
+                "facing": "north",
+                "goal": [5, 0],
+                "rocks": [0, 0, 0, 1, 2, 1, 3, 1, 4, 2]
+              }
+            }
+          },
+          "task": {
+            "type": "program",
+            "grid": { "columns": 6, "rows": 3 },
+            "start": { "at": [0, 2], "facing": "north" },
+            "goal": [5, 0],
+            "rocks": [
+              [0, 0],
+              [0, 1],
+              [2, 1],
+              [3, 1],
+              [4, 2]
+            ],
+            "commands": ["forward", "left", "right"],
+            "slots": 10,
+            "repeats": 1,
+            "live": false,
+            "stepwise": true,
+            "solution": "r-f-l-f-f-r-f-f-f-f"
+          },
+          "hints": [
+            { "type": "model", "caption": "rr.hint.route" },
+            { "type": "step", "count": 2, "caption": "rr.long.hint.step" },
+            { "type": "reveal", "caption": "rr.steps.hint.reveal" }
+          ],
+          "feedback": { "correct": "rr.long.correct", "incorrect": "rr.steps.incorrect" }
         }
       ]
     }

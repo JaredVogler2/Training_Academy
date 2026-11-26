@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import robotRidge from '@/content/packs/robot-ridge.v1.json';
+import robotRidge from '@/content/packs/robot-ridge.v2.json';
 import { lintPack, type LintIssue } from '@/content/lint';
 import {
+  LONG_FROM,
+  LONG_TO,
   MOST_PLACES,
   MOST_PLACES_AGAIN,
   MOST_ROWS,
@@ -76,6 +78,26 @@ describe('the pack as it is shipped', () => {
       solution: 'f-r-f',
       slots: 3,
     });
+    // A longer plan: up, across and up again, between two rocks.
+    expect(journey(pack, 'guided-five').task).toMatchObject({
+      stepwise: true,
+      grid: { columns: 3, rows: 3 },
+      start: { at: [0, 2], facing: 'north' },
+      goal: [1, 0],
+      slots: 5,
+      solution: 'f-r-f-l-f',
+    });
+    // A bridge straight ahead, one square off, along the top of the ground, with water below it.
+    expect(journey(pack, 'demo-across').task).toMatchObject({
+      grid: { columns: 4, rows: 2 },
+      start: { at: [0, 0], facing: 'east' },
+      goal: [3, 0],
+      water: [[2, 1]],
+      bridges: [[2, 0]],
+      whenRight: ['up'],
+      slots: 4,
+      solution: 'f-w-f-f',
+    });
   });
 });
 
@@ -86,6 +108,17 @@ describe('what a journey is for', () => {
     expect(kindOf(journey(pack, 'guided-two-along').task)).toBe('plan');
     expect(kindOf(journey(pack, 'guided-two-twice').task)).toBe('again');
     expect(kindOf(journey(pack, 'demo-wrong-turn').task)).toBe('mend');
+    expect(kindOf(journey(pack, 'guided-five').task)).toBe('long');
+    expect(kindOf(journey(pack, 'demo-across').task)).toBe('bridge');
+  });
+
+  it('is one thing only: what a row is given to mend, or done over, comes before what else it has', () => {
+    const pack = robotRidgePack() as unknown as Loose;
+    const { task } = journey(pack, 'demo-across');
+    expect(kindOf({ ...task, live: true })).toBe('live');
+    expect(kindOf({ ...task, given: 'f-f-f-f' })).toBe('mend');
+    expect(kindOf({ ...task, repeats: 2 })).toBe('again');
+    expect(kindOf({ ...task, stepwise: true })).toBe('bridge');
   });
 
   it('is said by its picture, with the grid the picture is of', () => {
@@ -105,6 +138,25 @@ describe('what a journey is for', () => {
       },
     });
   });
+
+  it('is said with its river and its bridge, where it has them, and with no word of them where it has not', () => {
+    const pack = robotRidgePack() as unknown as Loose;
+    expect(sceneOf(journey(pack, 'demo-across').task).of).toEqual({
+      game: 'bridge',
+      columns: 4,
+      rows: 2,
+      start: [0, 0],
+      facing: 'east',
+      goal: [3, 0],
+      rocks: [],
+      water: [2, 1],
+      bridges: [2, 0],
+    });
+    const long = sceneOf(journey(pack, 'guided-five').task).of;
+    expect(long.game).toBe('long');
+    expect(Object.keys(long)).not.toContain('water');
+    expect(Object.keys(long)).not.toContain('bridges');
+  });
 });
 
 describe('every Robot Ridge rule fires', () => {
@@ -112,6 +164,13 @@ describe('every Robot Ridge rule fires', () => {
   const plan = (pack: Loose) => journey(pack, 'guided-two-along');
   const again = (pack: Loose) => journey(pack, 'guided-two-twice');
   const mend = (pack: Loose) => journey(pack, 'demo-wrong-turn');
+  const longer = (pack: Loose) => journey(pack, 'guided-five');
+  const bridge = (pack: Loose) => journey(pack, 'demo-across');
+  /** A journey changed, with its picture changed to match: so that only the rule meant is broken. */
+  const remade = (challenge: Loose, task: Loose) => {
+    Object.assign(challenge.task, task);
+    challenge.prompt.stimulus = sceneOf(challenge.task);
+  };
 
   const BREAK: Record<string, (pack: Loose) => void> = {
     'robot-question': (pack) => {
@@ -165,6 +224,31 @@ describe('every Robot Ridge rule fires', () => {
     },
     'robot-mend-distance': (pack) => {
       mend(pack).task.given = 'l-l-f';
+    },
+    'robot-long-short': (pack) => {
+      // The star one square nearer: up, turn, across. Three steps is a short plan.
+      remade(longer(pack), { goal: [1, 1], slots: 3, solution: 'f-r-f' });
+    },
+    'robot-long-places': (pack) => {
+      longer(pack).task.slots = 6;
+    },
+    'robot-long-many-ways': (pack) => {
+      // A rock straight ahead, and as far round it one way as the other.
+      remade(longer(pack), {
+        start: { at: [1, 2], facing: 'north' },
+        goal: [1, 0],
+        rocks: [[1, 1]],
+        slots: 7,
+        solution: 'l-f-r-f-f-r-f',
+      });
+    },
+    'robot-bridge-waits': (pack) => {
+      // A wait too many: one at the start, where there is nothing to wait for.
+      remade(bridge(pack), { slots: 5, solution: 'w-f-w-f-f' });
+    },
+    'robot-bridge-unneeded': (pack) => {
+      // The star on the near bank: the bridge is not on the way to it.
+      remade(bridge(pack), { goal: [1, 1] });
     },
   };
 
@@ -223,6 +307,37 @@ describe('every Robot Ridge rule fires', () => {
     expect(long(again, MOST_PLACES_AGAIN + 1)).toContain('robot-row-too-long');
     // Power is looked at, not pressed: it may be as long as the journey needs.
     expect(long(live, MOST_PLACES + 3)).not.toContain('robot-row-too-long');
+    // A longer plan's tiles are looked at too, and a row holds ten of them. A bridge's row is pressed.
+    expect(long(longer, LONG_TO)).not.toContain('robot-row-too-long');
+    expect(long(longer, LONG_TO + 1)).toContain('robot-row-too-long');
+    expect(long(bridge, MOST_PLACES + 1)).toContain('robot-row-too-long');
+  });
+
+  it('a longer plan has only itself to blame for a loose row: its rule is its own, and exact', () => {
+    // One place more than the way needs would pass for a short plan. Not for a long one.
+    const loose = codes(
+      broken((pack) => {
+        longer(pack).task.slots = 6;
+      }),
+    );
+    expect(loose).toContain('robot-long-places');
+    expect(loose).not.toContain('robot-slots-loose');
+    // And one place fewer than the way needs cannot hold the answer: the general lint says that.
+    expect(
+      codes(
+        broken((pack) => {
+          longer(pack).task.slots = 4;
+        }),
+      ),
+    ).toContain('program-solution-unbuildable');
+  });
+
+  it('a bridge that can be gone round is refused even where the way round is the long one', () => {
+    // The water under the bridge is somewhere else: the robot can go down, along and up, in twice the steps.
+    const issues = broken((pack) => {
+      remade(bridge(pack), { water: [[0, 1]], slots: 8, solution: 'f-w-f-f' });
+    });
+    expect(codes(issues)).toContain('robot-bridge-unneeded');
   });
 
   it('the pack keeps inside both, with a journey at each limit', () => {
@@ -237,6 +352,12 @@ describe('every Robot Ridge rule fires', () => {
     expect(rows('mend')).toBe(MOST_PLACES);
     expect(rows('again')).toBe(MOST_PLACES_AGAIN);
     expect(rows('plan')).toBeLessThanOrEqual(MOST_PLACES);
+    expect(rows('bridge')).toBe(MOST_PLACES);
+    // The longer plans go from the shortest a long one may be to the longest a row holds.
+    const longs = tasks.filter((task) => kindOf(task) === 'long').map((task) => task.slots);
+    expect(Math.min(...longs)).toBe(LONG_FROM);
+    expect(Math.max(...longs)).toBe(LONG_TO);
+    expect(new Set(longs)).toEqual(new Set([4, 5, 6, 7, 8, 9, 10]));
   });
 
   it('has a case here for every rule Robot Ridge has', async () => {

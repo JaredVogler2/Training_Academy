@@ -6,6 +6,7 @@ import { updateProfile } from '@/game/profiles';
 import { WORLDS, isOpen, lessonsOf, worldById, type WorldInfo } from '@/game/worlds';
 import { ActionButton, ActionLink } from '@/ui/controls';
 import { IconPlay } from '@/ui/icons';
+import { Select } from './Select';
 import { grownUpText as text } from './text';
 import styles from './GrownUps.module.css';
 
@@ -53,9 +54,8 @@ export function WhereToBegin({ profile }: { profile: Profile | null }) {
           return (
             <li key={what} className={styles.observation} data-observation={what} data-seen={seen}>
               <label htmlFor={`${id}-${what}`}>{text.observations[what]}</label>
-              <select
+              <Select
                 id={`${id}-${what}`}
-                className={styles.input}
                 value={seen ?? ''}
                 onChange={(event) => {
                   const value = SEEN.find((each: Seen) => each === event.target.value) ?? null;
@@ -68,7 +68,7 @@ export function WhereToBegin({ profile }: { profile: Profile | null }) {
                     {text.seen[each]}
                   </option>
                 ))}
-              </select>
+              </Select>
               {watch && (
                 <ActionLink
                   to={{ name: 'play', world: watch.world, lessonId: watch.lesson }}
@@ -103,13 +103,13 @@ export function WhereToBegin({ profile }: { profile: Profile | null }) {
         {open.map((world) => {
           const [first, ...later] = lessonsOf(world);
           const start = settings.startAt?.[world.id];
+          const chosen = start !== undefined && later.includes(start) ? start : first;
           return (
             <li key={world.id} className={styles.field} data-world={world.id}>
               <label htmlFor={`${id}-${world.id}`}>{text.startOf(world.name)}</label>
-              <select
+              <Select
                 id={`${id}-${world.id}`}
-                className={styles.input}
-                value={start !== undefined && later.includes(start) ? start : ''}
+                value={chosen === first ? '' : chosen}
                 onChange={(event) =>
                   save(withStart(settings, world.id, event.target.value || null))
                 }
@@ -124,7 +124,13 @@ export function WhereToBegin({ profile }: { profile: Profile | null }) {
                     {labelOf(world, lesson)}
                   </option>
                 ))}
-              </select>
+              </Select>
+              {/* The list's own words are cut short where they are longer than a phone is wide: here in full. */}
+              {chosen !== undefined && (
+                <p className={styles.small} data-begins-at={chosen}>
+                  {text.beginsAt(labelOf(world, chosen))}
+                </p>
+              )}
             </li>
           );
         })}

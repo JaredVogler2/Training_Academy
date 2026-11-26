@@ -20,6 +20,57 @@ export function fetchNotLoaded(message: string): string | null {
 }
 
 /**
+ * Which page asked for what. A download still under way when one page gives way to another is cancelled by the
+ * browser, and that is not a failure of anything; a download cancelled with no page after it is. So the guard has
+ * to know which page began each download.
+ *
+ * Counting the pages asked for is not enough. A page that is being left goes on living until the next one has
+ * arrived, and can begin a download in between: the voice starts a line a moment after an answer, and a test that
+ * has seen the answer is already asking for the next page. That download belongs to the page being left. Counted
+ * by pages asked for, it was taken for the new page's own, and its being cancelled failed a test in CI twice
+ * (WebKit, the same clip both times) that passed on its second attempt.
+ *
+ * So two things are kept: how many pages have been asked for, and which of them is there now.
+ */
+export class Pages {
+  private asked = 0;
+  private here = 0;
+  /** The address of the page asked for and not yet arrived, without what follows a #. */
+  private awaited: string | null = null;
+
+  private static plain(address: string): string {
+    return address.replace(/#.*$/, '');
+  }
+
+  /** A page has been asked for (each hop of a redirect is asked for in its turn). Returns its number. */
+  ask(address: string): number {
+    this.asked += 1;
+    this.awaited = Pages.plain(address);
+    return this.asked;
+  }
+
+  /**
+   * The browser says a page has arrived at an address. Moving about inside a page is reported the same way, so
+   * it counts only if it is the address being waited for.
+   */
+  arrive(address: string): void {
+    if (this.awaited === null || Pages.plain(address) !== this.awaited) return;
+    this.here = this.asked;
+    this.awaited = null;
+  }
+
+  /** The page that is there now: whatever is asked for, other than a page, is asked for by it. */
+  get current(): number {
+    return this.here;
+  }
+
+  /** Whether another page has been asked for since this one: what it left unfinished was cancelled by leaving. */
+  left(page: number): boolean {
+    return page < this.asked;
+  }
+}
+
+/**
  * The preview server's own note of each page it was asked for and when it answered, kept only while the browser
  * tests run (scripts/vite/vercel-parity.ts writes it when PREVIEW_PAGE_LOG names a file).
  *

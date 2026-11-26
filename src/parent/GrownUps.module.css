@@ -177,6 +177,48 @@
   font-size: 1rem;
 }
 
+/*
+ * A select, in a box of its own that cuts off whatever runs past it: Safari lays a select's words out at their full
+ * length under the control, and the page would be as wide as they are (see Select.tsx). The edge and the ring that
+ * says where the keyboard is belong to the box, where nothing cuts them off.
+ */
+.select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 2px solid var(--ink-faint);
+  border-radius: var(--radius-s);
+  background: var(--white);
+}
+
+.select > select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-height: calc(var(--tap-small) - 4px);
+  padding: 8px 14px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  color: var(--ink);
+  background: transparent;
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select:has(:focus-visible) {
+  outline: 4px solid var(--ink);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--white);
+}
+
+.select > select:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 .avatars {
   display: flex;
   flex-wrap: wrap;

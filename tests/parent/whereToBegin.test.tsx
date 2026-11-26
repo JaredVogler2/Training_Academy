@@ -120,6 +120,34 @@ describe('where to begin', () => {
     await waitFor(async () => expect(await settingsOf(id)).toEqual({ sessionMinutes: null }));
   });
 
+  it('says in full where Play begins, beneath each list: a list may cut its own words short', async () => {
+    await open();
+    const world = WORLDS.filter(isOpen).find((each) => lessonsOf(each).length > 2);
+    if (!world) throw new Error('No world has three activities to choose among.');
+    const [first, , third] = lessonsOf(world);
+    const { placeOfLesson } = await import('@/game/placement');
+    const nameOf = (lesson: string) => {
+      const place = placeOfLesson(world, lesson);
+      if (!place) throw new Error(`${lesson} is in no activity.`);
+      return place.parts > 1 ? text.partOf(place.title, place.part) : place.title;
+    };
+    const said = () => startBox(world.name).closest('li')?.querySelector('[data-begins-at]');
+    // At the beginning it names the first activity, whole.
+    expect(said()?.getAttribute('data-begins-at')).toBe(first);
+    expect(said()?.textContent).toBe(text.beginsAt(nameOf(first ?? '')));
+    // And it follows what is chosen.
+    fireEvent.change(startBox(world.name), { target: { value: third } });
+    await waitFor(() => expect(said()?.getAttribute('data-begins-at')).toBe(third));
+    expect(said()?.textContent).toBe(text.beginsAt(nameOf(third ?? '')));
+    // Every list has one, and each list is in a box of its own that can cut off what runs past it.
+    for (const each of WORLDS.filter(isOpen)) {
+      const box = startBox(each.name);
+      expect(box.closest('li')?.querySelector('[data-begins-at]'), each.id).not.toBeNull();
+      expect(box.parentElement?.tagName, each.id).toBe('SPAN');
+      expect(box.parentElement?.children).toHaveLength(1);
+    }
+  });
+
   it('writes nothing into what the child has shown, whatever is said here', async () => {
     const { id } = await open();
     for (const what of OBSERVATIONS) {

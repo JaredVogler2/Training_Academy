@@ -6,7 +6,7 @@ their briefs' last optional parts; phases 07 to 10 are each partly done. All of 
 owner has merged each one soon after its checks went green, three times now without a word, so every push is
 kept fit to go live. The one that is open is [#11](https://github.com/JaredVogler2/Training_Academy/pull/11).**
 
-- **Date:** 2026-11-25
+- **Date:** 2026-11-26
 - **What is live:** `main`, at `https://training-academy-dun.vercel.app`: the six islands and the Music Lab,
   62 activities. The owner merged pull request #10 on 2026-11-25, thirteen minutes after the last of its
   checks went green: Reading Cove's six later activities (rhyme, the beats of a word, building a word, sh ch
@@ -70,17 +70,20 @@ answer is right. Everything is saved on the device.
 
 ## Verified
 
-- Locally: format, lint, typecheck, **1971 unit tests**, the production build and its **1459 build checks**.
-  The whole browser suite in Chromium on seven screen shapes was run in one go on this tree: **1212 tests,
-  1025 passed, 186 skipped by design, 1 failed** (42.5 minutes). The one was a fault in the game (Glim's hand
-  hung two pixels below the foot of a phone held sideways) and is fixed; the tests that touch the first-visit
-  help were then run again on all seven screens: **133 passed, 3 skipped, none failed**. The suite is now 1221
-  tests. WebKit is CI's: `docs/TEST_RESULTS.md` says what CI made of the push before this one.
-- **CI's last complete run, on the push before this one, was green in all seven jobs**, with no test needing
-  a second attempt: the first time Reading Cove's later activities, the tests that listen to what the voice
-  says and a sentence set on two lines ran in Safari's engine. The WebKit job for phones took 28.8 of the 40
-  minutes it is allowed, and "how to play" is shown in real time on each of its screens, so from this push it
-  is two halves: CI has eight jobs.
+- Locally: format, lint, typecheck, **1977 unit tests**, the production build and its **1459 build checks**.
+  The whole browser suite in Chromium on seven screen shapes was run in one go on the tree with the first-visit
+  help: **1212 tests, 1025 passed, 186 skipped by design, 1 failed** (42.5 minutes). The one was a fault in
+  the game (Glim's hand hung two pixels below the foot of a phone held sideways) and is fixed. After CI's run
+  43 and the two fixes it led to, the four files that touch what changed were run on all seven screens, twice:
+  **71 passed, 1 skipped by design, none failed**. The whole suite was not run again on every screen first: it was started on the desktop and the phone as the push went, and what it said is recorded with the next push. What changed is the grown-ups' area and the tests' own guard, whose rule can only have become more forgiving than it was. The suite is now 1225 tests. WebKit is CI's.
+- **CI's last complete run, run 43, was of the push before this one, and it was red**: six of eight jobs
+  passed and both halves of WebKit's phones failed, on one fault. In Safari's engine the grown-ups' area was
+  440 pixels wide on an iPhone's 390, because Safari lays a select's words out at their full length beneath
+  the control and "where to begin" has long ones. Every list there is now in a box that cuts off what runs
+  past it, and what was chosen is written in full beneath it. One test also needed a second attempt, for a
+  reason in the tests' own guard, which gave a cancelled sound clip to the wrong page; that is put right and
+  tested. **Whether the page now fits an iPhone only CI's WebKit can say**: read the run on this push before
+  believing it. `docs/TEST_RESULTS.md` has all of it under _Run 43_.
 - **The tests that passed first time were made to fail.** For the first-visit help, eighty-six faults were put
   back one at a time (fifty-three against the unit tests, thirty-three in a browser). Seventy-nine were caught
   at once by the test meant for them. The other seven were each a fault in a test, and each test was put right

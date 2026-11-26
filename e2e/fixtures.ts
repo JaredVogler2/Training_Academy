@@ -1,7 +1,7 @@
 import { test as base, expect, type Locator, type Page } from '@playwright/test';
 import { CHOOSE, PLACE, type Phase, type Step } from '../src/game/howto/steps';
 import { WORLDS, isOpen } from '../src/game/worlds';
-import { fetchNotLoaded, pagesServed } from './diagnosis';
+import { Pages, fetchNotLoaded, pagesServed } from './diagnosis';
 
 /**
  * What every browser test gets:
@@ -32,6 +32,8 @@ interface Guard {
   allow(pattern: RegExp): void;
   /** Everything requested so far, as paths. */
   requested(): string[];
+  /** What would be held against the test if it ended now: for testing the guard itself. */
+  problems(): string[];
 }
 
 interface Fixtures {
@@ -116,8 +118,12 @@ export const test = base.extend<Fixtures>({
 
       // A download still under way when the page starts loading another document is cancelled by the browser. That
       // is not a failure of anything, so a cancelled request counts only if no other document was asked for after
-      // it began. (Every other kind of failed request counts, always.)
-      let documents = 0;
+      // the page that began it. (Every other kind of failed request counts, always.) Which page began it is the
+      // page that was there, not the last one asked for: see `Pages`.
+      const pages = new Pages();
+      page.on('framenavigated', (frame) => {
+        if (frame === page.mainFrame()) pages.arrive(frame.url());
+      });
       const startedIn = new WeakMap<object, number>();
       const cancelled: { line: string; document: number }[] = [];
       // WebKit says the same of a download begun by `fetch()` a second time, as an uncaught error. It is the same
@@ -136,20 +142,22 @@ export const test = base.extend<Fixtures>({
         const reason = request.failure()?.errorText ?? 'unknown';
         const line = `request failed: ${request.url()} (${reason})`;
         if (/cancell?ed|ERR_ABORTED/i.test(reason)) {
-          cancelled.push({ line, document: startedIn.get(request) ?? documents });
+          cancelled.push({ line, document: startedIn.get(request) ?? pages.current });
         } else {
           problems.push(line);
         }
       });
       page.on('request', (request) => {
         // In-app navigation asks for no document; only a real page load does.
-        if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
-          documents += 1;
+        const loads = request.isNavigationRequest() && request.frame() === page.mainFrame();
+        if (loads) {
           loading.parsed = false;
           loading.finished = false;
         }
-        startedIn.set(request, documents);
-        begun.push({ url: request.url(), document: documents });
+        // A page belongs to itself; anything else belongs to the page that is there to ask for it.
+        const by = loads ? pages.ask(request.url()) : pages.current;
+        startedIn.set(request, by);
+        begun.push({ url: request.url(), document: by });
         const url = new URL(request.url());
         if (url.protocol === 'data:' || url.protocol === 'blob:') return;
         unanswered.set(request, {
@@ -170,14 +178,18 @@ export const test = base.extend<Fixtures>({
         }
       });
 
+      const unexpectedAmong = (lines: string[]) =>
+        lines.filter((line) => !allowed.some((pattern) => pattern.test(line)));
+      // A cancelled download is held against a test only while the page that began it is the last one asked for.
+      const cancelledForNothing = () =>
+        cancelled.filter(({ document }) => !pages.left(document)).map(({ line }) => line);
       await use({
         allow: (pattern) => allowed.push(pattern),
         requested: () => [...requested],
+        problems: () => unexpectedAmong([...problems, ...cancelledForNothing()]),
       });
 
-      for (const { line, document } of cancelled) {
-        if (document >= documents) problems.push(line);
-      }
+      problems.push(...cancelledForNothing());
       // A test that ran out of time has failed already; this adds what it was waiting for to what is reported.
       if (testInfo.status === 'timedOut') {
         const now = Date.now();
@@ -222,10 +234,10 @@ export const test = base.extend<Fixtures>({
         );
       }
       ranBefore = `[${testInfo.project.name}] ${testInfo.titlePath.slice(1).join(' › ')}`;
-      const unexpected = problems.filter(
-        (problem) => !allowed.some((pattern) => pattern.test(problem)),
-      );
-      expect(unexpected, `Unexpected browser problems in "${testInfo.title}"`).toEqual([]);
+      expect(
+        unexpectedAmong(problems),
+        `Unexpected browser problems in "${testInfo.title}"`,
+      ).toEqual([]);
     },
     { auto: true },
   ],
@@ -334,8 +346,40 @@ export async function screenFit(page: Page): Promise<ScreenFit> {
     const sideways: string[] = [];
     const root = document.documentElement;
     if (root.scrollWidth > width) {
+      // What makes it so: the innermost things that run past the screen's edge, and the things whose own words
+      // are wider than they are (a select in Safari is one: its box fits and its words do not).
+      const naming = (element: Element) => {
+        const words = (element.getAttribute('aria-label') ?? element.textContent).trim();
+        const kind = element.tagName.toLowerCase();
+        return words === '' ? kind : `${kind} "${words.slice(0, 40)}"`;
+      };
+      const past = [...document.body.querySelectorAll('*')].filter((element) => {
+        const box = element.getBoundingClientRect();
+        return box.width >= 2 && box.height >= 2 && box.right > width + 0.5;
+      });
+      const culprits = [
+        ...past
+          .filter((element) => !past.some((other) => other !== element && element.contains(other)))
+          .map(
+            (element) =>
+              `${naming(element)} ends at ${element.getBoundingClientRect().right.toFixed(0)} px`,
+          ),
+        ...[...document.body.querySelectorAll('*')]
+          .filter((element) => {
+            const box = element.getBoundingClientRect();
+            return (
+              element.scrollWidth > element.clientWidth + 1 &&
+              box.left + element.scrollWidth > width + 0.5
+            );
+          })
+          .map(
+            (element) =>
+              `${naming(element)} holds ${String(element.scrollWidth)} px in ${String(element.clientWidth)}`,
+          ),
+      ].slice(0, 6);
       sideways.push(
-        `the page is ${String(root.scrollWidth)} px wide on a ${String(width)} px screen`,
+        `the page is ${String(root.scrollWidth)} px wide on a ${String(width)} px screen` +
+          (culprits.length === 0 ? '' : ` (${culprits.join('; ')})`),
       );
     }
     const controls = document.querySelectorAll<HTMLElement>(

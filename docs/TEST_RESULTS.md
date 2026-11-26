@@ -28,7 +28,7 @@ Result of the last local run: **passed.**
 | `npm run format:check` | clean                                                                                                                                                                              |
 | `npm run lint`         | no errors, no warnings                                                                                                                                                             |
 | `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                                                                     |
-| `npm test`             | **1971 tests in 67 files, all passed**                                                                                                                                             |
+| `npm test`             | **1977 tests in 67 files, all passed**                                                                                                                                             |
 | `npm run build`        | built; 659 files in `dist/`, 564 of them the voice's recordings                                                                                                                    |
 | `npm run verify:dist`  | **1459 checks, all passed** (sizes below)                                                                                                                                          |
 | `npm run test:e2e`     | **1212 browser tests in one go: 1025 passed, 186 skipped by design, 1 failed** (Chromium, seven screen shapes, 42.5 minutes). The one was a fault in the game, since fixed; see on |
@@ -50,6 +50,15 @@ After those fixes the tests that touch the first-visit help (`howto`, `help`, `b
 (7.5 minutes). The suite is now 1221 tests: the test that watches "how to play" with the clock held is run on
 every screen shape, where it was on two, and there are two more, at 640×256 and 320×568. The unit tests, the
 build and its checks in the table are of the final tree. **WebKit is CI's**, as always.
+
+**And after CI had its say.** CI's first run of that tree (run 43, under _Continuous integration_) failed in
+Safari's engine on a page of the grown-ups' area that was wider than an iPhone, and one test there needed a
+second attempt. Both were looked into and put right. Before the push that carries the fixes, the four files
+that touch what changed (`smoke`, `grownups`, `begin`, `a11y`) were run on all seven screens, twice: **71
+passed, 1 skipped by design, none failed**, both times; and the smoke tests, with the two new ones of the
+guard, once more after the guard's last change: 14 of 14 on the desktop and the phone. The whole suite was not run again on every screen first: it was started on the desktop and the phone as the push went, and what it said is recorded with the next push. What changed is the grown-ups' area and the tests' own guard, whose rule can only have become more forgiving than it was. The suite is now
+1225 tests: two more, of the guard that every test runs under, on the desktop and on the phone. The 1977
+unit tests in the table are of this tree. Whether the page now fits an iPhone is for WebKit to say, in CI.
 
 The 186 that were skipped skip themselves, and say why. On the desktop, 124: the 112 measurements of what a
 child presses (28 boards on four screens), which are made once, as a touch phone, at screen sizes of their own;
@@ -643,13 +652,14 @@ met 47-point bars. The dialog is live, as it has been all along.
 
 **And two runs after those. The second ran everything, and everything passed.**
 
-| Run | What                                                          | Chromium, desktop and tablet    | Chromium, phones                 | WebKit, desktop and tablet                 | WebKit, phones |
-| --- | ------------------------------------------------------------- | ------------------------------- | -------------------------------- | ------------------------------------------ | -------------- |
-| 38  | pull request #9, Number Garden's numerals (`30d47ae`)         | cancelled by the next push      | cancelled                        | cancelled                                  | cancelled      |
-| 39  | pull request #9, the place kept through an update (`0afde1b`) | 17.9 and 8.6 for the two halves | 12.3 and 18.5 for the two halves | 15.3 minutes, after 12.8 installing WebKit | 22.1 minutes   |
-| 40  | `main` after the owner merged pull request #9 (`dbbdbc3`)     | passed, both halves             | passed, both halves              | passed                                     | passed         |
-| 41  | pull request #10, Reading Cove's later activities (`563f46c`) | 17.1 and 10.8                   | 17.4 and 21.2                    | 22.6 minutes                               | 28.8 minutes   |
-| 42  | `main` after the owner merged pull request #10 (`8288833`)    | passed, both halves             | passed, both halves              | passed                                     | passed         |
+| Run | What                                                          | Chromium, desktop and tablet    | Chromium, phones                 | WebKit, desktop and tablet                 | WebKit, phones                         |
+| --- | ------------------------------------------------------------- | ------------------------------- | -------------------------------- | ------------------------------------------ | -------------------------------------- |
+| 38  | pull request #9, Number Garden's numerals (`30d47ae`)         | cancelled by the next push      | cancelled                        | cancelled                                  | cancelled                              |
+| 39  | pull request #9, the place kept through an update (`0afde1b`) | 17.9 and 8.6 for the two halves | 12.3 and 18.5 for the two halves | 15.3 minutes, after 12.8 installing WebKit | 22.1 minutes                           |
+| 40  | `main` after the owner merged pull request #9 (`dbbdbc3`)     | passed, both halves             | passed, both halves              | passed                                     | passed                                 |
+| 41  | pull request #10, Reading Cove's later activities (`563f46c`) | 17.1 and 10.8                   | 17.4 and 21.2                    | 22.6 minutes                               | 28.8 minutes                           |
+| 42  | `main` after the owner merged pull request #10 (`8288833`)    | passed, both halves             | passed, both halves              | passed                                     | passed                                 |
+| 43  | pull request #11, the help for a first visit (`4fce12e`)      | 25.4 and 12.6                   | 20.4 and 24.3                    | 21.8 minutes                               | **failed**, both halves: 13.3 and 16.8 |
 
 Run 39 is the first to have Number Garden's numerals, the room at its three sizes and the dialog test in
 Safari's engine, and all of them passed there. No test in any job needed a second attempt: the six artifacts
@@ -674,6 +684,110 @@ after run 41 that job is two halves, as Chromium's phones already were, and CI h
 The owner merged pull request #10 thirteen minutes after run 41's last job finished. **Run 42** is the same
 tree on `main`: green in all seven jobs in 25.5 minutes, the six artifacts between 0.54 and 1.10 MB, so no test
 in it needed a second attempt either.
+
+**Run 43** is pull request #11's first (`4fce12e`): the help for a first visit, in eight jobs for the first
+time, and "how to play", the help with the screen and "where to begin" in Safari's engine for the first time.
+**Six jobs passed and two failed: both halves of WebKit's phones**, on the same two tests, on each of two
+phones. One more test there needed a second attempt. Neither had anything to do with the job being split.
+
+| Job                            | Result                                                                      | The whole job |
+| ------------------------------ | --------------------------------------------------------------------------- | ------------- |
+| Lint, types, unit tests, build | passed                                                                      | 1.8 minutes   |
+| Chromium, desktop and tablet   | passed, both halves                                                         | 25.4 and 12.6 |
+| Chromium, phones               | passed, both halves                                                         | 20.4 and 24.3 |
+| WebKit, desktop and tablet     | passed                                                                      | 21.8          |
+| WebKit, phones, first half     | **failed**: 221 passed, 72 skipped, 2 failed                                | 13.3          |
+| WebKit, phones, second half    | **failed**: 173 passed, 119 skipped, 2 failed, 1 more at its second attempt | 16.8          |
+
+The five artifacts of the browser jobs that passed are between 0.62 and 1.05 MB, so no test in them was run
+twice. The two that failed are 13 MB each: a failed test's trace is in them, and they were read.
+
+**The failure: the grown-ups' area was 440 pixels wide on an iPhone's 390.** `begin.spec.ts` ("is the
+grown-up's to say") and `grownups.spec.ts` ("is readable and usable on this screen") both said "the page is
+440 px wide on a 390 px screen", on WebKit's phone and on the iPhone 13, at the first attempt and at the
+second, and named no control that ran off the screen. CI's picture of the page showed nothing out of place in
+the part of it that fits a screen. So something that is not a control was too wide, further down, in Safari's
+engine and not in Chromium's.
+
+It was a select's own words. "Where to begin" has a list for each world, and Reading Cove's says "The
+beginning: Listening for sounds all around, part 1". The control is as wide as its card, and its words are
+longer than that. Chromium cuts a select's words off at the control's edge; WebKit lays them out at their full
+length beneath it and counts them in the width of the page. Measured in Chromium, where they are cut off,
+those words would end 435 pixels from the left if they were not; no other list's reach 420. WebKit, whose
+letters are a hair wider, said 440. A page wider than its screen slides sideways under a finger, and on a real
+iPhone a grown-up would have met that at once: **the test was right, and the fault was in the game.**
+
+Every list in the grown-ups' area is now in a box of its own that cuts off whatever runs past it
+(`src/parent/Select.tsx`); the edge that is seen, and the ring that says where the keyboard is, belong to the
+box. And because a list's words are still cut short wherever they are longer than a phone is wide, in every
+browser, and it is the end that goes ("part 1" or "part 2"), what was chosen is now written in full beneath
+each list: "Play begins at “Listening for sounds all around, part 1”."
+
+Only WebKit can show that the page is no longer too wide, and WebKit runs only in CI: the two tests that
+failed there are the proof, when they pass there. What can be checked anywhere is checked as well: every list
+is in a box that cuts off, fills it, and the box is on the screen. And the measure itself says more now. It
+said that a page was too wide and not what made it so; it now names the innermost things that end past the
+screen's edge and anything that holds more than it is wide, so the next failure of this kind says what it is.
+
+**The second attempt: a sound clip put down to the wrong page.** `robot.spec.ts`, "the way is marked instead
+of walked, and a faulty row is shown where it went wrong", failed its first attempt on WebKit's phone with
+`uncaught: /127.0.0.1:4173/immutable/rr.steps.correct-BoltnQ2G.mp3 due to access control checks.` and passed
+its second. It is the same test and the same recording as in run 30 (below), and what was done then was right
+as far as it went: that sentence is WebKit's second report of a download cancelled by leaving a page, and it
+is judged by the rule for the first, that a cancelled download is held against a test only if no other page
+was asked for after it began.
+
+What the rule had wrong was _whose_ a download is. It gave each request to the last page asked for. But a page
+that is being left lives on until the next one has arrived. The test sees "Yes. Your steps took the robot to
+the star" and asks for the next activity; a moment later the page it is leaving begins the recording of that
+line; the next page arrives and the recording is cancelled. Counted as the new page's own, cancelled with
+nothing after it, it failed the test. In run 30 the recording had begun before the next page was asked for;
+this time it began after. The guard now keeps two things, the pages asked for and the page that is there
+(`Pages`, in `e2e/diagnosis.ts`), and a request belongs to the page that is there to make it.
+
+It could not be made to happen in Chromium. Chromium says nothing at all of a download it cancels by leaving a
+page: that was tried with the download held back by the test, and again with the network slowed until the
+download was truly under way when the page was left. So the two new browser tests stage it. One makes the same
+things happen in the same order (the next page asked for, and slow to come; a request from the page being
+left; that request cancelled; the next page arriving) and the guard must hold it against nobody. The other is
+the other half of the rule: a download cancelled with no page after it is held against the page that began
+it, and no longer once another page is asked for. Both are for Chromium alone, because the cancelling is done
+by the test in the words Chromium uses.
+
+**Thirteen faults were put back**, seven against the unit tests and six in a browser, each written so that
+everything still builds. All thirteen were caught, but not all at the first time of asking: see after the
+table.
+
+| The fault                                                          | Caught by                                                                       |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| A request is given to the last page asked for (the rule as it was) | three unit tests; and in a browser by the first staged test, with CI's own line |
+| Moving about inside a page counts as the next page arriving        | its unit test                                                                   |
+| What follows a `#` in an address is not ignored                    | its unit test                                                                   |
+| A cancelled download is held against nobody, ever                  | two unit tests; in a browser, the second staged test                            |
+| A cancelled download is always held against the test               | both staged tests                                                               |
+| The guard is never told that a page has arrived                    | the second staged test                                                          |
+| The line beneath a list always names the first activity            | its unit test                                                                   |
+| The line beneath a list is left out                                | its unit test                                                                   |
+| A list has no box of its own                                       | its unit test                                                                   |
+| The box round a list does not cut off what runs past it            | the grown-ups' screen test, as a phone                                          |
+| A list does not fill its box                                       | the same                                                                        |
+
+(Two of the thirteen are one fault tried both ways, in a unit test and in a browser.)
+
+**Three things were wrong with the new tests before they were right**, and each was found by putting a fault
+back or by running a test more than once.
+
+1. **The staged test passed with the old rule put back.** Its first version held the old page's download back
+   in the test's own hands, to keep it under way; and a download held there is never reported as cancelled at
+   all. So nothing was held against anyone, under either rule. (The first fault written to show it did not
+   build, either: it left a field unread. A fault that does not build proves nothing.) The test now cancels
+   the request itself and checks the order in which things happened.
+2. **The lists were found in one step and measured in the next.** The card is drawn afresh when the player
+   changes, a moment after a new player's name appears; once in six runs the lists that were measured were no
+   longer on the page, and what cuts them off read as nothing at all. They are found and measured in one go.
+3. **The second staged test failed without any fault in it**, on a warning that every test is allowed, and its
+   failing was at first read as four faults caught. What the guard reports to a test now passes through the
+   same allowances as its verdict, the test passes as it stands, and the four faults were put back again.
 
 **And the time, a third time.** The two halves of the desktop took 15.5 and 11.3 minutes, where the one job
 had taken 29.2: that worked. But the phones took 32.5 of their 40: the phone is the screen everything pressed
@@ -807,7 +921,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 1970)
+## What the unit tests cover (Vitest, 1977)
 
 | Area                                                              | Files                                                                                                                                                   | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

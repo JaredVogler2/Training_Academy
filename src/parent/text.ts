@@ -89,6 +89,7 @@ export const grownUpText = {
     'Once everything from there on has been finished, Play goes back to what was passed over.',
   startOf: (world: string) => `${world}: Play begins at`,
   atTheBeginning: 'The beginning',
+  beginsAt: (activity: string) => `Play begins at “${activity}”.`,
   partOf: (activity: string, part: number) => `${activity}, part ${part}`,
   beginSaved: 'Saved.',
   togetherTitle: 'Playing together',

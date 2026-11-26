@@ -1,10 +1,12 @@
 import type { CSSProperties } from 'react';
 import type { Command } from '@/engine';
+import type { Game } from './run';
 import styles from './robotRidge.module.css';
 
 /**
- * Robot Ridge's drawings: the robot, the ground it drives on, the rocks in its way, the star it is going to, and
- * the arrows it is told with. All drawn here, by hand, as shapes; nothing is a picture file.
+ * Robot Ridge's drawings: the robot, the ground it drives on, the rocks in its way, the river and the bridge over
+ * it, the star it is going to, and the arrows it is told with. All drawn here, by hand, as shapes; nothing is a
+ * picture file.
  *
  * The robot is seen from above, like a toy on the floor, because which way it is facing is the whole of the game:
  * its eyes, its light and the ball on its aerial are all at its front, and turning it on the screen turns all of
@@ -15,6 +17,9 @@ const INK = '#22304f';
 const BLUE = '#62b4f3';
 const BLUE_DEEP = '#2a6fb5';
 const SUN = '#ffd35c';
+const WATER = '#bfe4fa';
+const PLANK = '#dba76c';
+const PLANK_DEEP = '#a8733b';
 
 /** One square of ground is this many units across. */
 export const CELL = 100;
@@ -60,12 +65,29 @@ export interface Standing {
   degrees: number;
 }
 
+/** A bridge as it is to be drawn. */
+export interface BridgeShown {
+  at: readonly [number, number];
+  /** It lies across the screen, for a robot going left or right, or down it. */
+  lies: 'across' | 'down';
+  /**
+   * Up, down, or not known yet. Before a run begins nobody knows which it will be, and it is drawn going up and
+   * down (or, where nothing moves, half open).
+   */
+  state: 'up' | 'down' | 'maybe';
+}
+
 export interface SceneProps {
   columns: number;
   rows: number;
   goal: readonly [number, number];
   rocks: readonly (readonly [number, number])[];
+  /** Squares of water, and the bridges over it. */
+  water?: readonly (readonly [number, number])[];
+  bridges?: readonly BridgeShown[];
   robot: Standing;
+  /** The robot is waiting for a bridge to come down. */
+  waiting?: boolean;
   /** The robot's shadow, showing the way: where it would be. */
   ghost?: Standing | null;
   /** Squares to mark as passed over. */
@@ -77,54 +99,56 @@ export interface SceneProps {
   won?: boolean;
   /**
    * With the ground, a few small tiles that say which game this journey is for: one arrow to tap; a row of
-   * steps; a step and "again"; a row with one step that is not right. For a picture of an activity, not the board.
+   * steps; a step and "again"; a row with one step that is not right; two rows of steps, for a long way; a row
+   * with the step that waits in it. For a picture of an activity, not the board.
    */
-  strip?: 'live' | 'plan' | 'again' | 'mend';
+  strip?: Game;
   className?: string;
 }
 
 const LOOP = ['M38 24a14 14 0 1 1-4.500-10.300', 'M35.500 4.500v10h-10'];
 
-const STRIPS: Record<
-  NonNullable<SceneProps['strip']>,
-  { tiles: (Command | 'again')[]; wrong?: number }
-> = {
+const STRIPS: Record<Game, { tiles: (Command | 'again')[]; wrong?: number; perRow?: number }> = {
   live: { tiles: ['forward'] },
   plan: { tiles: ['forward', 'right', 'forward'] },
   again: { tiles: ['forward', 'again'] },
   mend: { tiles: ['forward', 'left', 'forward'], wrong: 1 },
+  long: { tiles: ['forward', 'right', 'forward', 'forward', 'left', 'forward'], perRow: 3 },
+  bridge: { tiles: ['forward', 'wait', 'forward'] },
 };
 
 const STRIP_TILE = 52;
 const STRIP_GAP = 10;
-/** The room the tiles take under a ground, and the room left between a ground and the tiles beside it. */
-const STRIP_UNDER = 74;
+/** The room left above the tiles under a ground and below them, and between a ground and the tiles beside it. */
+const STRIP_ABOVE = 12;
+const STRIP_BELOW = 10;
 const STRIP_ASIDE = 22;
 
-/** How wide a game's row of tiles is. */
-const stripSpan = (game: NonNullable<SceneProps['strip']>): number => {
-  const { length } = STRIPS[game].tiles;
-  return length * STRIP_TILE + (length - 1) * STRIP_GAP;
+const tilesAcross = (game: Game): number => STRIPS[game].perRow ?? STRIPS[game].tiles.length;
+
+/** How wide a game's tiles are, and how high: a long way's are in two rows. */
+const stripSpan = (game: Game): number => {
+  const across = tilesAcross(game);
+  return across * STRIP_TILE + (across - 1) * STRIP_GAP;
+};
+const stripRise = (game: Game): number => {
+  const lines = Math.ceil(STRIPS[game].tiles.length / tilesAcross(game));
+  return lines * STRIP_TILE + (lines - 1) * STRIP_GAP;
 };
 
 /** The small tiles that go with a picture of a journey, with their top left corner at (`left`, `top`). */
-function Strip({
-  game,
-  left,
-  top,
-}: {
-  game: NonNullable<SceneProps['strip']>;
-  left: number;
-  top: number;
-}) {
+function Strip({ game, left, top }: { game: Game; left: number; top: number }) {
   const { tiles, wrong } = STRIPS[game];
+  const across = tilesAcross(game);
   return (
     <g transform={`translate(${String(left)} ${String(top)})`}>
       {tiles.map((tile, index) => {
         const again = tile === 'again';
         const marked = wrong === index;
+        const x = (index % across) * (STRIP_TILE + STRIP_GAP);
+        const y = Math.floor(index / across) * (STRIP_TILE + STRIP_GAP);
         return (
-          <g key={index} transform={`translate(${String(index * (STRIP_TILE + STRIP_GAP))} 0)`}>
+          <g key={index} transform={`translate(${String(x)} ${String(y)})`}>
             {!again && (
               <rect
                 width={STRIP_TILE}
@@ -160,13 +184,63 @@ const standing = ({ at, degrees }: Standing): CSSProperties => {
   return { transform: `translate(${String(x)}px, ${String(y)}px) rotate(${String(degrees)}deg)` };
 };
 
-/** The ground, the rocks, the star and the robot. It moves when what it is given changes. */
+const WAVE = 'q9-9 18 0t18 0 18 0 18 0';
+
+/** One square of water, with its top left corner at (0, 0): squares side by side run together as a river. */
+function Water() {
+  return (
+    <>
+      <rect width={CELL} height={CELL} fill={WATER} />
+      <g fill="none" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" opacity="0.85">
+        <path d={`M14 36${WAVE}`} />
+        <path d={`M14 68${WAVE}`} />
+      </g>
+    </>
+  );
+}
+
+/**
+ * A bridge, drawn round (0, 0) lying across: two leaves of planks, one from each bank. Down, they meet in the
+ * middle. Up, each is drawn back to its bank and there is open water between them, which is what says that there
+ * is no way over. (How far they are drawn back is the stylesheet's, so that they move.)
+ */
+function Bridge({ state }: { state: BridgeShown['state'] }) {
+  const leaf = (side: 'Left' | 'Right') => {
+    const from = side === 'Left' ? -50 : 0;
+    return (
+      <g className={side === 'Left' ? styles.leafLeft : styles.leafRight}>
+        <rect x={from} y="-27" width="50" height="54" fill={PLANK} />
+        <path
+          d={[12, 25, 38].map((x) => `M${String(from + x)}-27v54`).join('')}
+          stroke={PLANK_DEEP}
+          strokeWidth="3"
+        />
+        <path
+          d={`M${String(from)}-27h50M${String(from)} 27h50`}
+          stroke={PLANK_DEEP}
+          strokeWidth="6"
+        />
+      </g>
+    );
+  };
+  return (
+    <g className={styles.bridge} data-state={state}>
+      {leaf('Left')}
+      {leaf('Right')}
+    </g>
+  );
+}
+
+/** The ground, the rocks, the water, the star and the robot. It moves when what it is given changes. */
 export function Scene({
   columns,
   rows,
   goal,
   rocks,
+  water = [],
+  bridges = [],
   robot,
+  waiting = false,
   ghost = null,
   trail = [],
   bumped = false,
@@ -180,13 +254,15 @@ export function Scene({
     for (let column = 0; column < columns; column++) cells.push([column, row]);
   }
   const [goalX, goalY] = middle(goal);
+  const [robotX, robotY] = middle(robot.at);
   const ground = { width: columns * CELL, height: rows * CELL };
   // The tiles go under a ground of one row and beside a taller one. A picture of a journey is shown small, in a
   // place wider than it is tall; tiles under a tall ground would make the whole of it smaller still.
   const span = strip ? stripSpan(strip) : 0;
+  const rise = strip ? stripRise(strip) : 0;
   const aside = strip !== undefined && rows > 1;
   const width = ground.width + 8 + (aside ? STRIP_ASIDE + span : 0);
-  const height = ground.height + 8 + (strip && !aside ? STRIP_UNDER : 0);
+  const height = ground.height + 8 + (strip && !aside ? STRIP_ABOVE + rise + STRIP_BELOW : 0);
   return (
     <svg
       className={[styles.scene, className].filter(Boolean).join(' ')}
@@ -208,6 +284,26 @@ export function Scene({
           strokeWidth="3"
         />
       ))}
+
+      {[...water, ...bridges.map((bridge) => bridge.at)].map(([column, row]) => (
+        <g
+          key={`water-${String(column)}-${String(row)}`}
+          transform={`translate(${String(column * CELL)} ${String(row * CELL)})`}
+        >
+          <Water />
+        </g>
+      ))}
+      {bridges.map((bridge) => {
+        const [x, y] = middle(bridge.at);
+        return (
+          <g
+            key={`bridge-${String(bridge.at[0])}-${String(bridge.at[1])}`}
+            transform={`translate(${String(x)} ${String(y)})${bridge.lies === 'down' ? ' rotate(90)' : ''}`}
+          >
+            <Bridge state={bridge.state} />
+          </g>
+        );
+      })}
 
       {trail.map((cell) => {
         const [x, y] = middle(cell);
@@ -280,24 +376,54 @@ export function Scene({
         </g>
       </g>
 
+      {/* Waiting: three dots over the robot, the same three that are on the step that waits. */}
+      {waiting && (
+        <g
+          className={styles.waiting}
+          transform={`translate(${String(robotX)} ${String(robotY - 40)})`}
+        >
+          <rect
+            x="-25"
+            y="-11"
+            width="50"
+            height="22"
+            rx="11"
+            fill="#ffffff"
+            stroke={INK}
+            strokeWidth="3"
+          />
+          <circle cx="-12" r="4" fill={INK} />
+          <circle r="4" fill={INK} />
+          <circle cx="12" r="4" fill={INK} />
+        </g>
+      )}
+
       {strip && (
         <Strip
           game={strip}
           left={aside ? ground.width + STRIP_ASIDE : (ground.width - span) / 2}
-          top={aside ? (ground.height - STRIP_TILE) / 2 : ground.height + 12}
+          top={aside ? (ground.height - rise) / 2 : ground.height + STRIP_ABOVE}
         />
       )}
     </svg>
   );
 }
 
+/** A dot, as a path: a small ring that the thick line of these pictures fills in. */
+const dot = (x: number) => `M${String(x - 2)} 24a2 2 0 1 0 4 0a2 2 0 1 0-4 0`;
+
 const ARROWS: Record<Command, string[]> = {
   forward: ['M24 40V11', 'M11.500 22 24 9.500 36.500 22'],
   left: ['M33 40V25a9 9 0 0 0-9-9h-9', 'M22.500 6.500 13 16l9.500 9.500'],
   right: ['M15 40V25a9 9 0 0 1 9-9h9', 'M25.500 6.500 35 16l-9.500 9.500'],
+  // Waiting is three dots: what a screen shows while something is on its way.
+  wait: [dot(9.5), dot(24), dot(38.5)],
 };
 
-/** A command as a picture: an arrow straight on, or an arrow that bends the way the robot turns. */
+/**
+ * A command as a picture: an arrow straight on, an arrow that bends the way the robot turns, or three dots for the
+ * step that waits.
+ */
 export function Arrow({ command, className }: { command: Command; className?: string }) {
   return (
     <svg
@@ -315,6 +441,48 @@ export function Arrow({ command, className }: { command: Command; className?: st
       {ARROWS[command].map((path) => (
         <path key={path} d={path} />
       ))}
+    </svg>
+  );
+}
+
+/** One step on, or one step back: the triangle of "go" and a bar it stops at. */
+export function StepArrow({ back = false, className }: { back?: boolean; className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 48 48"
+      fill="currentColor"
+      stroke="currentColor"
+      strokeWidth="5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g transform={back ? 'translate(48 0) scale(-1 1)' : undefined}>
+        <path d="M11 12v24l19-12z" />
+        <path d="M38 11v26" fill="none" />
+      </g>
+    </svg>
+  );
+}
+
+/** Take the last step out: a tile with its corner to the left and a cross on it. */
+export function TakeOut({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 48 48"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M19 11h20a3 3 0 0 1 3 3v20a3 3 0 0 1-3 3H19L6 24z" />
+      <path d="M23.500 18.500l11 11M34.500 18.500l-11 11" />
     </svg>
   );
 }

@@ -2,24 +2,30 @@
 
 **Seven worlds are built: the six islands, and the Music Lab in the lighthouse. Phases 01 to 03 are complete;
 phase 04 is built (the voice, and help for a child's first visit); phases 05, 06 and 11 are built as far as
-their briefs' last optional parts; phases 07 to 10 are each partly done. All of it is unheard. The rest of the plan is being built on one branch, a pull request at a time: the
-owner has merged each one soon after its checks went green, three times now without a word, so every push is
-kept fit to go live. The one that is open is [#11](https://github.com/JaredVogler2/Training_Academy/pull/11).**
+their briefs' last optional parts, and phase 07, Robot Ridge, as far as its brief goes; phases 08 to 10 are
+each partly done. All of it is unheard. The rest of the plan is being built on one branch, a pull request at a time: the
+owner has merged each one soon after its checks went green, four times now without a word, so every push is
+kept fit to go live. The one that is open is [#12](https://github.com/JaredVogler2/Training_Academy/pull/12).**
 
 - **Date:** 2026-11-26
 - **What is live:** `main`, at `https://training-academy-dun.vercel.app`: the six islands and the Music Lab,
-  62 activities. The owner merged pull request #10 on 2026-11-25, thirteen minutes after the last of its
-  checks went green: Reading Cove's six later activities (rhyme, the beats of a word, building a word, sh ch
-  th, words with those in them, a sentence). The update had been rehearsed before that push (18 of 18). The
-  live site was checked afterwards: Vercel's production deployment of `8288833` was ready; 65 of 65 browser
-  tests passed against the address as a desktop, a phone and a Pixel 7, five of Reading Cove's new ones among
-  them; its page offers sixteen activities; and a sentence is set on two lines on a phone held upright, its
-  shortest word 18 pixels high on the narrowest. CI on `main` was green in all seven jobs, with no test run
-  twice.
-- **What is not live:** the help for a first visit, on pull request #11: "how to play", help when taps land on
-  nothing, the switch a grown-up holds to say they are helping, and "where to begin" in the grown-ups' area.
-  The update from what is live to this tree was rehearsed: 18 of 18. When it goes live, **a child who has
-  never begun an activity is shown "how to play" at their next visit; one who has, is not**.
+  62 activities, and since 2026-11-26 the help for a first visit ("how to play", help when taps land on
+  nothing, the switch a grown-up holds to say they are helping, and "where to begin" in the grown-ups' area).
+  The owner merged pull request #11 that day, four minutes after the last of its checks went green. The
+  update had been rehearsed (18 of 18). The live site was checked an hour and a half afterwards: Vercel's
+  production deployment of `ed3efd6` was ready, and 69 of 69 browser tests passed against the address as a
+  desktop, a phone and a Pixel 7, with "how to play" shown and done from the front door, passed by, and not
+  shown again. CI on `main` was green in all eight jobs, with two tests passing only at a second attempt
+  (below). **A child who has never begun an activity is shown "how to play" at their next visit; one who has,
+  is not.**
+- **One small fault went live with it.** A child who passes "how to play" by (the house, top left), and whose
+  page is closed or loaded again in that same moment, is shown it again at the next visit: passing it by was
+  written down as the page was left, not before. Nothing is lost and nothing looks wrong. It is put right on
+  pull request #12.
+- **What is not live**, on pull request #12: **Robot Ridge's three later activities** (a longer way, a long
+  way round, wait for the bridge), and the fix above. The update from what is live to this tree was
+  rehearsed: 18 of 18. When it goes live, Robot Ridge has seven activities where it had four, the new ones
+  after the old.
 - **The owner's instruction for this stretch of work** (2026-11-25): build all that is left, in the order
   recommended, and the owner will review all of it at once, sounds included, when it is complete. The order:
   the Music Lab; numerals and the number line in Number Garden; rhyme, syllables, letter pairs and sentences in
@@ -28,7 +34,7 @@ kept fit to go live. The one that is open is [#11](https://github.com/JaredVogle
 
 ## The one thing that matters most now
 
-**Nobody has listened to anything, and nobody has played.** The game talks — 564 recordings, made by a speech
+**Nobody has listened to anything, and nobody has played.** The game talks — 573 recordings, made by a speech
 synthesiser ahead of time and shipped with it, each checked by a speech recogniser, which is a machine's
 opinion of the words and nothing more — and it also plays notes, which are made by arithmetic at the moment
 they sound and which no ear has checked at all. The briefs call the accuracy of the audio a release gate. That
@@ -56,10 +62,10 @@ and no child has seen one.
 A static React and TypeScript app builds to `dist/` and runs under the same headers and routing that `vercel.json`
 gives it. A visit opens on a front door, and someone who has never played is shown how before anything else;
 behind it is the map, six islands round a lighthouse, and all seven places are open. A place's page offers the next thing to play as one large button and every activity as a
-picture. There are **62 activities and 714 challenges**: sounds, rhyme, the beats of a word, first sounds,
+picture. There are **65 activities and 744 challenges**: sounds, rhyme, the beats of a word, first sounds,
 letters, blending, building a word, pairs of letters and a sentence in Reading Cove; amounts, counting and
-comparing, then numerals, the numbers in order and adding and taking away in Number Garden; a robot to steer
-and a row of steps to mend in Robot Ridge; pairs, hidden things, orders and three ways to remember in Memory
+comparing, then numerals, the numbers in order and adding and taking away in Number Garden; a robot to steer,
+a row of steps to mend, a long way to plan and a bridge to wait for in Robot Ridge; pairs, hidden things, orders and three ways to remember in Memory
 Forest; guesses that are tested and things to mend
 in Inventor Island; stories to put in order, why things happen and a map to answer on in Explorer Harbor; and in
 the Music Lab high and low, the same or different, a beat to tap, notes to play back, a tune to know again and a
@@ -70,21 +76,26 @@ answer is right. Everything is saved on the device.
 
 ## Verified
 
-- Locally: format, lint, typecheck, **1977 unit tests**, the production build and its **1459 build checks**.
-  The whole browser suite in Chromium on seven screen shapes was run in one go on the tree with the first-visit
-  help: **1212 tests, 1025 passed, 186 skipped by design, 1 failed** (42.5 minutes). The one was a fault in
-  the game (Glim's hand hung two pixels below the foot of a phone held sideways) and is fixed. After CI's run
-  43 and the two fixes it led to, the four files that touch what changed were run on all seven screens, twice:
-  **71 passed, 1 skipped by design, none failed**. The whole suite was not run again on every screen first: it was started on the desktop and the phone as the push went, and what it said is recorded with the next push. What changed is the grown-ups' area and the tests' own guard, whose rule can only have become more forgiving than it was. The suite is now 1225 tests. WebKit is CI's.
-- **CI's last complete run, run 43, was of the push before this one, and it was red**: six of eight jobs
-  passed and both halves of WebKit's phones failed, on one fault. In Safari's engine the grown-ups' area was
-  440 pixels wide on an iPhone's 390, because Safari lays a select's words out at their full length beneath
-  the control and "where to begin" has long ones. Every list there is now in a box that cuts off what runs
-  past it, and what was chosen is written in full beneath it. One test also needed a second attempt, for a
-  reason in the tests' own guard, which gave a cancelled sound clip to the wrong page; that is put right and
-  tested. **Whether the page now fits an iPhone only CI's WebKit can say**: read the run on this push before
-  believing it. `docs/TEST_RESULTS.md` has all of it under _Run 43_.
-- **The tests that passed first time were made to fail.** For the first-visit help, eighty-six faults were put
+- Locally: format, lint, typecheck, **2135 unit tests**, the production build and its **1477 build checks**.
+  The whole suite was run in one go in Chromium on all seven screens: **1288 tests, 1086 passed, 202 skipped
+  by design, none failed** (48.8 minutes). After it the tests' guard was changed and a test added for Safari's
+  engine (1290 now). The specs in which a request fails, a page is left with something under way, or the guard is itself tested were then run on all seven screens (smoke, the hub, resilience, the voice, the journey, Robot Ridge and "how to play"): **284 tests, 263 passed, 21 skipped by design, none failed** (18.5 minutes). WebKit is CI's.
+- **CI's last run, run 46, was the first on pull request #12: seven jobs passed and one was cancelled at its
+  forty-minute limit.** No test failed and none was run twice. The job that was cancelled, WebKit's desktop
+  and tablet, had 566 of its 567 tests done: putting the browser on that machine had taken 17 minutes, where
+  it takes half a minute, because the mirror it fetched Ubuntu's packages from was slow. The jobs are now
+  dealt out in more parts (eleven jobs, none needing more than about half its forty minutes for its tests).
+  **What that run settled:** the guard's reading of WebKit is right (its test that stages nothing ran for the
+  first time and passed on both screens; see _Run 45_ and _Run 46_ in `docs/TEST_RESULTS.md`), and Robot
+  Ridge's three later activities pass in Safari's engine.
+- **The two runs before it, 44 and 45, were green and not clean**: eight tests passed only at a second
+  attempt. Four were one fault in the game, live until pull request #12 is merged (passing "how to play" by
+  was written down as the page was left). One was a test that read one moment in two steps. One was the
+  tests' own guard, wrong for the third time about the same sentence of WebKit's. Two were the page that
+  never comes in CI's WebKit, the fifth and sixth times, still not explained.
+- **The tests that passed first time were made to fail.** For Robot Ridge's three later activities, sixty-one
+  faults were put back one at a time; all that could be caught were, and the two that were not were checks that
+  can never fire, since removed. For the way out of "how to play", five; for the guard's rule, thirteen. For the first-visit help, eighty-six faults were put
   back one at a time (fifty-three against the unit tests, thirty-three in a browser). Seventy-nine were caught
   at once by the test meant for them. The other seven were each a fault in a test, and each test was put right
   until it failed: `docs/TEST_RESULTS.md` says what was wrong with each, and it is worth reading before writing another
@@ -95,9 +106,9 @@ answer is right. Everything is saved on the device.
 - Every content pack is exactly what its generator writes, and every rule that can refuse a challenge has been
   shown to fire (`tests/content/`): 32 of them are the Music Lab's.
 - Every browser test also fails on any console error or warning, failed request, or request to another origin.
-- **The live site**, as above: `main` after pull request #10. `docs/DEPLOYMENT.md` has the check.
+- **The live site**, as above: `main` after pull request #11. `docs/DEPLOYMENT.md` has the check.
 - **The update from what is live to this tree was rehearsed** (`npm run rehearse:update -- origin/main`), in
-  Chromium: 18 of 18, on the final tree, from the build that pull request #10's merge made live. (For the push before, it had found a fault at 16 of 18, which was
+  Chromium: 18 of 18, on the final tree, from the build that pull request #11's merge made live. (For the push before, it had found a fault at 16 of 18, which was
   fixed.) Rehearse it again after any later change to content or to what is stored.
 
 ## Not verified — read this before relying on anything
@@ -157,22 +168,27 @@ or sooner if there is a moment:
    (or hand it to a child and watch). Then, in any activity, tap the picture three times instead of an answer.
    Then pause, hold the grown-up's mark, and look at **Grown-ups → Where _name_ begins**.
 
-Pull request #11 has a preview on Vercel (behind the owner's Vercel login) for looking at the first-visit help
-before it is merged.
+8. **Play Robot Ridge's last three activities** (on the preview of pull request #12, or on the site once it
+   is merged). In _A longer way_, put a step in and press the small arrow beside the row: does the robot
+   showing each step make a long way findable? In _Wait for the bridge_: do three dots read as "wait", and
+   is the bridge seen to be up?
+
+Pull request #12 has a preview on Vercel (behind the owner's Vercel login) for looking at Robot Ridge's three
+later activities before they are merged.
 
 ## The next action
 
 If this session is the one still building: carry on down the order above. The Music Lab, Number Garden's
-numerals, Reading Cove's later activities and the first-visit help of phase 04 are done; **next is the gaps in
-the other four worlds** (longer programs and conditions in Robot Ridge; a choice of strategy and recall in a
-later sitting in Memory Forest; a wind shelter and a portfolio in Inventor Island; making up a story, stories
+numerals, Reading Cove's later activities, the first-visit help of phase 04 and Robot Ridge's longer plans and
+bridge are done; **next is the gaps in the other three worlds** (a choice of strategy and recall in a later
+sitting in Memory Forest; a wind shelter and a portfolio in Inventor Island; making up a story, stories
 that branch, and a globe in Explorer Harbor), and then phases 12 to 17. `docs/PROGRESS.md` → the table at the top says which phases are done; its _Known
 gaps_ table says what each world still lacks.
 
 If it is a new session:
 
 > Read prompt-series/README.md and prompt-series/00_MASTER_BRIEF.md, then docs/CONTINUE_HERE.md,
-> docs/PROGRESS.md, docs/CURRICULUM.md and docs/ARCHITECTURE.md. Pull request #11 is open: carry on with what
+> docs/PROGRESS.md, docs/CURRICULUM.md and docs/ARCHITECTURE.md. Pull request #12 is open: carry on with what
 > docs/CONTINUE_HERE.md says is next, on the same branch. It must work on Android and iOS devices on a Vercel
 > deployment.
 

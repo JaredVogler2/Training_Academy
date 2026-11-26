@@ -148,8 +148,18 @@ test.describe('numbers one to five', () => {
     await expect(right.locator('svg')).toHaveAttribute('data-numeral', '3');
     await expect(wrong.locator('svg')).toHaveAttribute('data-numeral', '1');
     // Glim counts the snails with the child first. All the while, and after, no numeral shows a single dot.
-    const dots = async () =>
-      `${String(await wrong.locator('[data-dot]').count())} on 1, ${String(await right.locator('[data-dot]').count())} on 3`;
+    // (Both numerals are read in one go. Read one after the other, as they were, the two counts could be of two
+    // moments: in CI, in WebKit, the test once saw one dot on the 1 and three on the 3 together, which the page
+    // never showed.)
+    const dots = () =>
+      lesson(page).evaluate((frame) => {
+        const on = (numeral: string) =>
+          frame
+            .querySelector(`svg[data-numeral="${numeral}"]`)
+            ?.closest('[data-choice]')
+            ?.querySelectorAll('[data-dot]').length ?? -1;
+        return `${String(on('1'))} on 1, ${String(on('3'))} on 3`;
+      });
     const counted = async () =>
       (await asked(page).locator('svg').getAttribute('data-counting')) ?? '';
     await expect.poll(counted).toBe('true');

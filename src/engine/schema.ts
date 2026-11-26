@@ -310,9 +310,16 @@ const CellSchema = v.tuple([
 export const FACINGS = ['north', 'east', 'south', 'west'] as const;
 export type Facing = (typeof FACINGS)[number];
 
-/** What a robot can be told to do: one step forward, or a quarter turn where it stands. */
-export const COMMANDS = ['forward', 'left', 'right'] as const;
+/**
+ * What a robot can be told to do: one step forward, a quarter turn where it stands, or to wait for a bridge that
+ * is up in front of it (and to do nothing where none is).
+ */
+export const COMMANDS = ['forward', 'left', 'right', 'wait'] as const;
 export type Command = (typeof COMMANDS)[number];
+
+/** How a bridge stands when a run begins. */
+export const BRIDGE_STATES = ['up', 'down'] as const;
+export type BridgeState = (typeof BRIDGE_STATES)[number];
 
 /**
  * A program as it is written down: commands by their first letter, joined with "-", and in front of them, where
@@ -320,7 +327,7 @@ export type Command = (typeof COMMANDS)[number];
  */
 const ProgramTextSchema = v.pipe(
   v.string(),
-  v.regex(/^(?:x[2-4]-)?[flr](?:-[flr])*$/, 'a program is commands f, l and r, joined by "-"'),
+  v.regex(/^(?:x[2-4]-)?[flrw](?:-[flrw])*$/, 'a program is commands f, l, r and w, joined by "-"'),
 );
 
 /** Tell a robot how to get to where it is going: build a program, run it, mend it. */
@@ -334,14 +341,33 @@ const ProgramTaskSchema = v.strictObject({
   goal: CellSchema,
   /** Squares the robot cannot enter. */
   rocks: v.pipe(v.array(CellSchema), v.maxLength(12)),
+  /** Squares of water, which it cannot enter either: a river to be crossed by a bridge. */
+  water: v.optional(v.pipe(v.array(CellSchema), v.minLength(1), v.maxLength(12))),
+  /**
+   * Bridges over the water. A bridge is up or down when a run begins, and which is not known while the program is
+   * being made: a program is right only if it arrives however the bridges stand. A bridge that is up cannot be
+   * crossed; the robot can wait in front of it, and it comes down.
+   */
+  bridges: v.optional(v.pipe(v.array(CellSchema), v.minLength(1), v.maxLength(2))),
+  /**
+   * How the bridges stand in the run that is shown for a program that works, one for each bridge. (A program that
+   * does not work is shown the run it fails in, which is the one with every bridge up.) Showing a bridge down to a
+   * program that waits for it is what shows that waiting is only for when there is something to wait for.
+   */
+  whenRight: v.optional(v.pipe(v.array(v.picklist(BRIDGE_STATES)), v.minLength(1), v.maxLength(2))),
   /** The commands there are to use. */
-  commands: v.pipe(v.array(v.picklist(COMMANDS)), v.minLength(1), v.maxLength(3)),
+  commands: v.pipe(v.array(v.picklist(COMMANDS)), v.minLength(1), v.maxLength(4)),
   /** How many commands a program may hold. */
-  slots: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(8)),
+  slots: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(10)),
   /** The most times the whole program may be done over; 1 where there is no doing it again. */
   repeats: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(4)),
   /** Each command is carried out as it is tapped, with nothing to build first: for meeting the commands. */
   live: v.boolean(),
+  /**
+   * A plan too long for each step of it to be a thing to press: the row is changed from its end, and it can be
+   * run a step at a time, forwards and back, as well as all at once.
+   */
+  stepwise: v.optional(v.literal(true)),
   /** A program to start from that has a mistake in it, for finding and mending. */
   given: v.optional(ProgramTextSchema),
   /** A program that gets there: the one shown when the answer is shown. Any program that gets there is right. */

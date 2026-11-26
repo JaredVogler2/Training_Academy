@@ -409,6 +409,32 @@ describe('every lint rule fires', () => {
     'program-given-works': (pack) => {
       made(pack, 'mend-it').task.given = 'f-f-f';
     },
+    'program-square-twice': (pack) => {
+      // Water where the rock is.
+      made(pack, 'round-the-rock').task.water = [[1, 1]];
+    },
+    'program-in-the-river': (pack) => {
+      // The star in the water.
+      made(pack, 'round-the-rock').task.water = [[2, 0]];
+    },
+    'program-bridge-no-wait': (pack) => {
+      const { task } = made(pack, 'round-the-rock');
+      task.bridges = [[1, 0]];
+      task.whenRight = ['up'];
+    },
+    'program-wait-no-bridge': (pack) => {
+      made(pack, 'round-the-rock').task.commands = ['forward', 'left', 'right', 'wait'];
+    },
+    'program-bridges-shown': (pack) => {
+      // A bridge, a way to wait for it, and no word of how it stands for a program that works.
+      const { task } = made(pack, 'round-the-rock');
+      task.commands = ['forward', 'left', 'right', 'wait'];
+      task.bridges = [[1, 0]];
+    },
+    'program-stepwise-plain': (pack) => {
+      // A row to mend is pressed step by step: it cannot also be a row that is changed from its end.
+      made(pack, 'mend-it').task.stepwise = true;
+    },
     'design-control-duplicate': (pack) => {
       const { controls } = made(pack, 'ramp').task;
       controls.push(structuredClone(controls[0]));

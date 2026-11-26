@@ -27,7 +27,7 @@ models, no texture packs, no icon sets and no audio libraries.
 
 ## Made here, with tools and a voice model from elsewhere
 
-The voice is 564 recordings that this project made and owns. They were made with other people's tools and with a
+The voice is 573 recordings that this project made and owns. They were made with other people's tools and with a
 voice model that this project did not train. None of the tools or the model is shipped; the recordings are.
 
 | What was used                          | Where it comes from                                                                                                | Licence, as far as it was read                                                                              | Used for                                                                                                                                            |
@@ -229,9 +229,9 @@ run it; it needs tools the game does not ship and CI does not install).
   as other words is reworded and made again; none is shipped. `npm test` fails if a clip is missing, stale, left
   over, changed since it was made, or heard differently.
 - **What that is worth.** It catches a wrong word, a cut-off ending, noise. It says nothing about whether a clip
-  sounds clear, natural or kind. **No person has listened to any of the 564**, and nobody has checked a mark against the sound it marks. Each has `reviewed: null` in the
+  sounds clear, natural or kind. **No person has listened to any of the 573**, and nobody has checked a mark against the sound it marks. Each has `reviewed: null` in the
   manifest, and the grown-ups' area lists them all to be played and marked.
-- **Size.** 564 clips, 6.1 MB in all, the largest under 60 kB; budgets in `scripts/verify-dist.mjs`. A clip is
+- **Size.** 573 clips, 6.3 MB in all, the largest under 60 kB; budgets in `scripts/verify-dist.mjs`. A clip is
   fetched the first time its line is wanted, never with the first screen.
 
 No recording of a real person is in the game. If one is ever added, it needs that person's written consent on

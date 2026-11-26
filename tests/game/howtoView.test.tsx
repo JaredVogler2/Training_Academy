@@ -43,20 +43,31 @@ vi.mock('@/voice/common', () => ({ commonVoice: { urls: {}, seconds: {} } }));
 const went = vi.hoisted(() => ({ to: [] as unknown[] }));
 vi.mock('@/app/navigation', () => ({
   navigate: (...where: unknown[]) => went.to.push(where),
-  Link: ({ children }: { children?: unknown }) => <a href="/">{children as never}</a>,
+  // A link that tells whoever asked of a click, as the real one does, and goes nowhere by itself here.
+  Link: ({ children, to: _to, ...rest }: { children?: unknown; to?: unknown }) => (
+    <a href="/" {...rest}>
+      {children as never}
+    </a>
+  ),
 }));
 
 const players = vi.hoisted(() => ({
   playing: null as { id: string; settings: Record<string, unknown> } | null,
   updates: [] as unknown[],
+  /** What writing a player down comes to: at once and well, unless a test holds it or makes it fail. */
+  written: (): Promise<void> => Promise.resolve(),
 }));
 vi.mock('@/game/profiles', () => ({
   refreshProfiles: () => Promise.resolve({ profiles: [], activeId: null }),
   activeProfile: () => players.playing,
   updateProfile: (...update: unknown[]) => {
     players.updates.push(update);
-    return Promise.resolve();
+    return players.written();
   },
+}));
+const recorded = vi.hoisted(() => ({ errors: [] as unknown[] }));
+vi.mock('@/app/diagnostics', () => ({
+  recordError: (...error: unknown[]) => recorded.errors.push(error),
 }));
 
 beforeEach(() => {
@@ -68,6 +79,8 @@ beforeEach(() => {
   went.to = [];
   players.playing = { id: 'p1', settings: { sessionMinutes: null } };
   players.updates = [];
+  players.written = () => Promise.resolve();
+  recorded.errors = [];
 });
 
 afterEach(() => {
@@ -168,6 +181,52 @@ describe('leaving how to play', () => {
         { settings: { sessionMinutes: 15, startAt: { 'number-garden': 'x' }, howTo: 'seen' } },
       ],
     ]);
+  });
+
+  it('passed by, by the house: writes it down first, and leaves only when it has been written', async () => {
+    // Writing is slow this time: the test says when it is done. (One writing, however often it is asked for.)
+    let done: () => void = () => undefined;
+    const held = new Promise<void>((resolve) => {
+      done = resolve;
+    });
+    players.written = () => held;
+    await open();
+    const house = screen.getByRole('link', { name: 'Skip: go to the islands' });
+    fireEvent.click(house);
+    await vi.advanceTimersByTimeAsync(50);
+    // It is being written, and the page has not been left: a page that is left can be closed before it is.
+    expect(players.updates).toEqual([
+      ['p1', { settings: { sessionMinutes: null, howTo: 'seen' } }],
+    ]);
+    expect(went.to).toEqual([]);
+    // A second tap while it waits is not a second writing, and will not be a second leaving.
+    fireEvent.click(house);
+    await vi.advanceTimersByTimeAsync(50);
+    expect(players.updates).toHaveLength(1);
+    expect(went.to).toEqual([]);
+    done();
+    await vi.advanceTimersByTimeAsync(50);
+    expect(went.to).toEqual([[{ name: 'home' }]]);
+  });
+
+  it('passed by, where it cannot be written: says so to the diagnostics, and still goes to the islands', async () => {
+    players.written = () => Promise.reject(new Error('The disk is full.'));
+    await open();
+    fireEvent.click(screen.getByRole('link', { name: 'Skip: go to the islands' }));
+    await vi.advanceTimersByTimeAsync(50);
+    expect(went.to).toEqual([[{ name: 'home' }]]);
+    expect(recorded.errors).toHaveLength(1);
+  });
+
+  it('opened in another tab, the house is an ordinary link: nothing is written and nothing is held', async () => {
+    await open();
+    const house = screen.getByRole('link', { name: 'Skip: go to the islands' });
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true, ctrlKey: true });
+    house.dispatchEvent(click);
+    await vi.advanceTimersByTimeAsync(50);
+    expect(click.defaultPrevented).toBe(false);
+    expect(players.updates).toEqual([]);
+    expect(went.to).toEqual([]);
   });
 
   it('writes it down as soon as the last of the three is done, before anyone leaves', async () => {

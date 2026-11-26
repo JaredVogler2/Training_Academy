@@ -105,17 +105,17 @@ test.describe('the guard that every one of these tests runs under', () => {
     page,
     browserName,
   }) => {
-    // What failed a test in CI, twice, in WebKit. The voice begins a line a moment after an answer; a test that has
-    // seen the answer is already asking for the next page; the page being left begins its download in between, and
-    // it is cancelled when the next page arrives. The guard counted that download as the new page's own, cancelled
-    // with nothing after it.
+    // A page that is being left lives on until the next one has arrived, and what it asks for in between is its
+    // own: the voice begins a line a moment after an answer, and a test that has seen the answer is already
+    // asking for the next page. Whatever becomes of such a download is not to be held against the page that
+    // follows.
     //
-    // It is staged here, because it cannot be made to happen in the browser these tests are written with: Chromium
-    // says nothing at all of a download it cancels by leaving a page (tried with the download held back and with
-    // the network slowed until it was truly under way), and WebKit, which does say so, runs only in CI. So the
-    // same things are made to happen in the same order: the next page is asked for and is slow to come; the page
-    // being left asks for something; that is cancelled; the next page arrives. Cancelling it is done by the test,
-    // in words Chromium uses, which is why this is for Chromium alone.
+    // It is staged, because Chromium says nothing at all of a download it cancels by leaving a page (tried with
+    // the download held back and with the network slowed until it was truly under way). So the things are made to
+    // happen in order: the next page is asked for and is slow to come; the page being left asks for something;
+    // that is cancelled; the next page arrives. Cancelling it is done by the test, in words Chromium uses, which
+    // is why this is for Chromium alone. (WebKit does something else with such a download, and has a test of its
+    // own below.)
     test.skip(browserName !== 'chromium', 'staged with a cancellation worded as Chromium words it');
     await page.goto('/');
     await expect(page.getByRole('navigation', { name: 'Worlds' })).toBeVisible();
@@ -169,6 +169,53 @@ test.describe('the guard that every one of these tests runs under', () => {
     await page.unrouteAll({ behavior: 'ignoreErrors' });
     await page.goto('/world/number-garden');
     await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
+    expect(guard.problems()).toEqual([]);
+  });
+
+  test('in Safari’s engine, a file asked for while the next page is on its way is never fetched, and that is held against nobody', async ({
+    page,
+    guard,
+    browserName,
+  }) => {
+    // What failed a test in CI three times, each time at its first attempt only (robot.spec.ts, "the way is marked
+    // instead of walked"): the test goes to another activity the moment an answer is right, and the page it is
+    // leaving asks for the recording of "Yes" a moment later. From the moment another page has been asked for
+    // until it arrives, WebKit will not begin a download for the page that is still there. It makes no request,
+    // so there is none to report, and says only, on the console, that it "cannot load" the file "due to access
+    // control checks" (e2e/diagnosis.ts has where that is in WebKit's source). Twice the guard was mended on a
+    // wrong reading of that sentence, as a second report of a download begun and then cancelled.
+    //
+    // Nothing is staged here: the next page is held back by the test, the page that is still there asks for a
+    // file, and WebKit does the rest. It is the test of that reading, as much as of the guard: if WebKit fetched
+    // the file after all, or said nothing, this fails and says which.
+    test.skip(
+      browserName !== 'webkit',
+      'Chromium asks for the file, and says nothing if it is then cancelled',
+    );
+    await page.goto('/');
+    await expect(page.getByRole('navigation', { name: 'Worlds' })).toBeVisible();
+    let outcome = 'never asked for';
+    await page.route('**/world/number-garden', async (route) => {
+      // The next page has been asked for, and waits here while the page being left asks for a file.
+      outcome = await page
+        .evaluate(() =>
+          fetch('/robots.txt').then(
+            () => 'fetched',
+            () => 'refused',
+          ),
+        )
+        .catch((error: unknown) => `could not be asked for: ${String(error)}`);
+      await route.continue().catch(() => undefined);
+    });
+    await page.goto('/world/number-garden');
+    await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+    expect(outcome).toBe('refused');
+    // Nothing was asked of the server, and what WebKit said of it was let pass: the page that asked has been left.
+    expect(guard.requested()).not.toContain('/robots.txt');
+    expect(guard.letPass()).toEqual([
+      expect.stringMatching(/^uncaught: .*\/robots\.txt due to access control checks\.$/),
+    ]);
     expect(guard.problems()).toEqual([]);
   });
 });

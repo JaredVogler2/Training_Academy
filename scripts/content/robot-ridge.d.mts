@@ -29,3 +29,31 @@ export interface DrawnJourney {
 }
 
 export function makeJourney(seed: number, asking: JourneyAsking): DrawnJourney;
+
+/** What `makeLongJourney` is asked for: all of it is needed. */
+export interface LongJourneyAsking {
+  columns: number;
+  rows: number;
+  /** How many commands the one shortest way takes, exactly. */
+  steps: number;
+  /** How many rocks stand on the ground; they are in the way, or the ground is not kept. */
+  rocks: number;
+}
+
+/** A longer journey drawn from a seed: a plan whose row can be run a step at a time. */
+export interface DrawnLongJourney extends DrawnJourney {
+  stepwise: true;
+}
+
+export function makeLongJourney(seed: number, asking: LongJourneyAsking): DrawnLongJourney;
+
+/** A little map read into its parts: S the robot, G the star, # a rock, ~ water, = a bridge, a dot for ground. */
+export function readMap(lines: string[]): {
+  columns: number;
+  rows: number;
+  start: [number, number];
+  goal: [number, number];
+  rocks: [number, number][];
+  water: [number, number][];
+  bridges: [number, number][];
+};

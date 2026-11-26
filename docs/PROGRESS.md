@@ -11,7 +11,7 @@ have been run and passed; the evidence is linked. `docs/CONTINUE_HERE.md` has th
 | 04    | Audio and pre-reader onboarding                | **Built** (2026-11-25): the voice, and first-visit help. Unheard, untried |
 | 05    | Phonics                                        | **Built** (2026-11-25) to a short sentence; the last step, P6, is not     |
 | 06    | Math                                           | **Built** (2026-11-25) to adding within ten; the optional M7 is not       |
-| 07    | Robots (visual programming)                    | **Partly done**: Robot Ridge's four activities; no conditionals           |
+| 07    | Robots (visual programming)                    | **Built** (2026-11-26): Robot Ridge's seven activities. Untried           |
 | 08    | Memory                                         | **Partly done**: Memory Forest's four activities; no second-day recall    |
 | 09    | Inventors' lab                                 | **Partly done**: Inventor Island's four activities; no wind shelter       |
 | 10    | Storytelling and geography                     | **Partly done**: Explorer Harbor's four activities; no globe              |
@@ -142,16 +142,16 @@ are live.**
 
 ### Phase 07 — Robot Ridge
 
-| Asked for                                                  | What there is                                                                                                                      |
-| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| R0: one arrow, one move                                    | One arrow, one move: each tap is carried out at once                                                                               |
-| R1: two or three commands in a row; run, change, run again | Two and three steps in order                                                                                                       |
-| R2: plans of 4 to 10 commands                              | **Not built**: rows are short, to fit a small phone                                                                                |
-| R3: "do it again", with counts shown                       | Do it again: a short row done two, three or four times, shown as dots                                                              |
-| R4: find the broken step                                   | Find the step that went wrong: the row runs wrong first, and one step is changed                                                   |
-| R5: conditionals                                           | **Not built**                                                                                                                      |
-| An interpreter, a solver, puzzles with a checked solution  | `src/engine/robot.ts`; every puzzle is solved by the solver when the pack is built, and a repeat puzzle cannot be done without one |
-| 10 authored puzzles and a tested generator                 | 43 puzzles, three of them drawn from seeds                                                                                         |
+| Asked for                                                  | What there is                                                                                                                                                                |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R0: one arrow, one move                                    | One arrow, one move: each tap is carried out at once                                                                                                                         |
+| R1: two or three commands in a row; run, change, run again | Two and three steps in order                                                                                                                                                 |
+| R2: plans of 4 to 10 commands; play-by-play, and back      | A longer way (four to six steps) and A long way round (seven to ten): small tiles changed from the end, "go", and two buttons that run the row one step on and one step back |
+| R3: "do it again", with counts shown                       | Do it again: a short row done two, three or four times, shown as dots                                                                                                        |
+| R4: find the broken step                                   | Find the step that went wrong: the row runs wrong first, and one step is changed                                                                                             |
+| R5: conditionals (optional)                                | Wait for the bridge: one step that waits if the bridge is up and passes on if it is down. One rule, one thing sensed; there is no "or else"                                  |
+| An interpreter, a solver, puzzles with a checked solution  | `src/engine/robot.ts`; every puzzle is solved by the solver when the pack is built, and a repeat puzzle cannot be done without one                                           |
+| 10 authored puzzles and a tested generator                 | 73 puzzles, seventeen of them drawn from seeds; a second solver that walks the ground checks the first                                                                       |
 
 ### Phase 08 — Memory Forest
 
@@ -377,7 +377,7 @@ to put it on a phone.
 | A nudge comes after three taps on nothing within eight seconds, and a tick is pointed out after eight seconds: numbers chosen at a desk. A child who taps a picture because tapping is fun is told what to press, once for each step                                                                                                                                                                               | owner       |
 | "A grown-up is helping" lasts the visit. Left on, a child's later answers alone are written down as helped, and the only sign is the mark on the pause button                                                                                                                                                                                                                                                      | owner       |
 | The voice is synthesised and unheard: no person has listened to any recording, and no single letter-sound is recorded                                                                                                                                                                                                                                                                                              | 04, 05      |
-| 62 activities and 714 challenges that no early-years teacher has reviewed and no child has played                                                                                                                                                                                                                                                                                                                  | 05–11       |
+| 65 activities and 744 challenges that no early-years teacher has reviewed and no child has played                                                                                                                                                                                                                                                                                                                  | 05–11       |
 | A word said slowly, a word clapped in its beats and a sentence read aloud are followed on the screen (a place, a clap, a finger) at times the synthesiser gives for its own speech. No person has checked that they fall where they should, and the cuts between the beats of a word have been checked by nothing at all                                                                                           | 04, 05      |
 | Nothing shows that a child can read a word they have not met: every word read in Reading Cove is one whose picture has been seen and named. The brief's last step (P6) is not built                                                                                                                                                                                                                                | 05, 12      |
 | **Nobody has heard the Music Lab**: its notes are made by arithmetic as they are played, and whether they sound like chime bars, a pipe and a drum, or sound pleasant at all, is not known                                                                                                                                                                                                                         | owner       |
@@ -397,6 +397,36 @@ to put it on a phone.
 
 ## Log
 
+- **2026-11-26** — Robot Ridge, as far as its brief goes. Three activities after the four that are live. **A
+  longer way** and **A long way round**: plans of four to ten steps, round rocks, on grounds drawn from seeds so
+  that there is one shortest way and the rocks are what make it long. The row is small tiles changed from its
+  end; "go" runs it, and two buttons run it one step on and one step back, with the robot staying where the
+  steps so far have taken it. What is handed in is the run of a full row carried to its end. **Wait for the
+  bridge**: a river, a bridge that may be up or down and is not known until a run begins, and one step that
+  waits for it. A program is judged with the bridge up and, when it works, shown with the bridge as its journey
+  says, so that the wait is seen both to wait and to be passed over. Nine new recordings. A second way of
+  finding the shortest way, by walking the ground, checks the first and is what lets long grounds be drawn.
+  Seventy-nine faults were put back to see the tests fail. Two were not caught and could not have been: each was
+  a check in the generator that can never fire, because what it asked for follows from the rest, and both were
+  taken out. A test that was already there found a fault in the new work: the picture of an activity on the
+  world's page is its first journey, and a ground three rows high made the robot in it sixteen pixels across
+  on a phone; the two demonstrations are on grounds of two rows. **CI on the first-visit help**: its first run
+  failed in Safari's engine, on a page of the grown-ups' area 50 pixels wider than an iPhone (a select's words
+  run on under the control there), and that is put right and confirmed by CI. The run that confirmed it was
+  green and had six tests pass only at a second attempt; three were one fault in the game (passing "how to
+  play" by wrote that down as the page was left, and a page refreshed at once had not been written), one was a
+  test that read two things in two steps and reported a moment the page never showed, and two were the page
+  that never comes in CI's WebKit, which is still not explained. **The owner merged pull request #11 while
+  this was being tested**, four minutes after its checks went green: the help for a first visit is live, and
+  the site was checked afterwards (Vercel's deployment ready; 69 of 69 of that commit's own tests against the
+  address). CI on `main` after the merge was green with two more tests passing only at a second attempt. One
+  was the fault of passing "how to play" by again, which is therefore live until this is merged. The other
+  was the tests' own guard failing the same test over the same sentence of WebKit's for the third time; twice
+  it had been mended on a reading of that sentence that was wrong. This time the sentence was found in
+  WebKit's source: a page that is being left is not allowed to begin a download, no request is made, and the
+  sentence is all that is said. The guard's rule is rewritten to that, and a test in Safari's engine itself
+  now holds the reading to account. `docs/TEST_RESULTS.md` has all of it. This work is pull request
+  [#12](https://github.com/JaredVogler2/Training_Academy/pull/12).
 - **2026-11-25** — Help for a first visit: the rest of phase 04. Four things, none of them a world. **How to
   play**: someone who has never played is taken from the front door to a page where Glim shows three things and
   the child does each — tap the one that is asked for; tap a picture and it goes to its place, then the tick;

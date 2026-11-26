@@ -2,6 +2,7 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_MAX_TRIES,
+  allRaised,
   cardIdsOf,
   getHint,
   getNextChallenge,
@@ -285,6 +286,159 @@ describe("a robot's program", () => {
         expect(run.pose.at).not.toEqual([1, 1]);
       }),
     );
+  });
+});
+
+describe('a bridge that may be up or down', () => {
+  /**
+   * A river down the screen with a bridge over it. The robot is on the left bank,     . . ~ .
+   * facing the bridge, one square from it; the star is on the far bank.               R . = *
+   *                                                                                    . . ~ .
+   */
+  const river: ProgramTask = {
+    type: 'program',
+    grid: { columns: 4, rows: 3 },
+    start: { at: [0, 1], facing: 'east' },
+    goal: [3, 1],
+    rocks: [],
+    water: [
+      [2, 0],
+      [2, 2],
+    ],
+    bridges: [[2, 1]],
+    whenRight: ['down'],
+    commands: ['forward', 'left', 'right', 'wait'],
+    slots: 4,
+    repeats: 1,
+    live: false,
+    solution: 'f-w-f-f',
+  };
+  const go = (text: string, raised?: boolean[]) => runProgram(river, parseProgram(text)!, raised);
+
+  it('is written with the step that waits, and is up unless it is said to be down', () => {
+    expect(parseProgram('f-w-f')).toEqual({ times: 1, commands: ['forward', 'wait', 'forward'] });
+    expect(writeProgram(parseProgram('w-f-w')!)).toBe('w-f-w');
+    expect(allRaised(river)).toEqual([true]);
+    expect(allRaised({ ...river, bridges: undefined })).toEqual([]);
+    expect(go('f-w-f-f')).toEqual(go('f-w-f-f', [true]));
+  });
+
+  it('cannot be crossed while it is up, nor can the water: the robot is stopped where it stands', () => {
+    const up = go('f-f-f');
+    expect(up.outcome).toBe('bridge-up');
+    expect(up.moves.at(-1)).toMatchObject({
+      index: 1,
+      moved: false,
+      pose: { at: [1, 1] },
+      raised: [true],
+    });
+    const wet = go('f-l-f-r-f');
+    expect(wet.outcome).toBe('reached-water');
+    expect(wet.pose).toEqual({ at: [1, 0], facing: 'east' });
+    expect(wet.moves.at(-1)?.moved).toBe(false);
+  });
+
+  it('comes down for a robot that waits in front of it, and stays down', () => {
+    const run = go('f-w-f-f');
+    expect(run.outcome).toBe('arrived');
+    expect(run.moves.map((move) => move.raised[0])).toEqual([true, false, false, false]);
+    expect(run.moves[1]).toMatchObject({
+      command: 'wait',
+      moved: true,
+      lowered: 0,
+      pose: { at: [1, 1], facing: 'east' },
+    });
+    // Waiting twice is waiting once: the second time there is nothing to wait for.
+    const twice = go('f-w-w-f-f');
+    expect(twice.outcome).toBe('arrived');
+    expect(twice.moves[2]).toMatchObject({ command: 'wait', moved: true, raised: [false] });
+    expect(twice.moves[2]?.lowered).toBeUndefined();
+  });
+
+  it('is waited for only from right in front of it, and facing it', () => {
+    // A square too soon.
+    expect(go('w-f-f-f').outcome).toBe('bridge-up');
+    expect(go('w-f-f-f').moves[0]).toMatchObject({ moved: true, raised: [true] });
+    // Beside it, but looking up the bank.
+    expect(go('f-l-w-r-f').outcome).toBe('bridge-up');
+  });
+
+  it('is passed over when it is down already: the same program arrives either way', () => {
+    const down = go('f-w-f-f', [false]);
+    expect(down.outcome).toBe('arrived');
+    expect(down.moves[1]).toMatchObject({ command: 'wait', moved: true, raised: [false] });
+    expect(down.moves[1]?.lowered).toBeUndefined();
+    // Without the wait it arrives only if the bridge happens to be down, and that is not a program that works.
+    expect(go('f-f-f', [false]).outcome).toBe('arrived');
+    expect(go('f-f-f', [true]).outcome).toBe('bridge-up');
+  });
+
+  it('is judged with the bridge up: right means right however it stands', () => {
+    expect(judgeTask(river, 'f-w-f-f')).toEqual({ correct: true, clean: true });
+    expect(judgeTask(river, 'f-f-f')).toMatchObject({ correct: false, misconception: 'bridge-up' });
+    expect(judgeTask(river, 'f-w-f')).toMatchObject({
+      correct: false,
+      misconception: 'stopped-short',
+    });
+    expect(judgeTask({ ...river, slots: 5 }, 'f-l-f-r-f')).toMatchObject({
+      correct: false,
+      misconception: 'reached-water',
+    });
+    // The step that waits is one this task offers; a task without a bridge does not.
+    expect(judgeTask({ ...river, commands: ['forward', 'left', 'right'] }, 'f-w-f-f')).toBeNull();
+  });
+
+  it('is found by the solver, and cannot be done without waiting', () => {
+    expect(writeProgram(solveProgram(river)!)).toBe('f-w-f-f');
+    expect(solveProgram({ ...river, commands: ['forward', 'left', 'right'], slots: 8 })).toBeNull();
+  });
+
+  it('whatever the program: one that arrives with every bridge up arrives however they stand', () => {
+    // Two bridges in a row, and every program of up to eight steps there is: 87,380 of them.
+    const twin: ProgramTask = {
+      ...river,
+      grid: { columns: 6, rows: 1 },
+      start: { at: [0, 0], facing: 'east' },
+      goal: [5, 0],
+      water: undefined,
+      bridges: [
+        [2, 0],
+        [4, 0],
+      ],
+      whenRight: ['up', 'down'],
+      slots: 8,
+      solution: 'f-w-f-f-w-f-f',
+    };
+    const stands = [
+      [true, false],
+      [false, true],
+      [false, false],
+    ];
+    const LETTERS = ['forward', 'left', 'right', 'wait'] as const;
+    let arrived = 0;
+    let onlyWhenDown = 0;
+    const each = (commands: (typeof LETTERS)[number][]) => {
+      if (commands.length > 0) {
+        const program = { times: 1, commands };
+        if (runProgram(twin, program).outcome === 'arrived') {
+          arrived += 1;
+          for (const stand of stands) {
+            if (runProgram(twin, program, stand).outcome !== 'arrived') {
+              throw new Error(
+                `${writeProgram(program)} arrives with both up and not with ${String(stand)}`,
+              );
+            }
+          }
+        } else if (runProgram(twin, program, [false, false]).outcome === 'arrived') {
+          onlyWhenDown += 1;
+        }
+      }
+      if (commands.length < 8) for (const letter of LETTERS) each([...commands, letter]);
+    };
+    each([]);
+    // It is not a rule that holds for want of cases; and the other way about, it does not hold at all.
+    expect(arrived).toBeGreaterThan(4);
+    expect(onlyWhenDown).toBeGreaterThan(0);
   });
 });
 

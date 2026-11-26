@@ -77,15 +77,30 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   a rhyme, clap a word, build one, meet sh ch th and read a sentence among them; Reading Cove's page offers 16
   activities; "Read the sentence" is set on two lines on a phone held upright, its shortest word 18 pixels
   high on a phone 320 wide; and CI's run on `main` was green in all seven jobs with no test run twice.
-- **What is on pull request [#11](https://github.com/JaredVogler2/Training_Academy/pull/11) is not live**: the
-  help for a first visit ("how to play", help when taps land on nothing, the switch a grown-up holds, and
-  "where to begin"), and whatever else that pull request gains. Its own description says how far it has got.
-  The update from what is live to it was rehearsed on 2026-11-25 and passed, 18 of 18. It should be rehearsed
-  again after anything more is added (_Before a release_, below). On the live site today a new player goes
-  from the front door straight to the islands.
-- **When the first-visit help goes live, some children are shown "how to play" at their next visit and some
-  are not.** A player who has begun any activity is not: they know how. A player who has only ever chosen a
-  picture, and anyone new, is, once; the house at the top left passes it by. Nothing is asked of the owner.
+- **The help for a first visit went live on 2026-11-26**, when the owner merged pull request
+  [#11](https://github.com/JaredVogler2/Training_Academy/pull/11), four minutes after the last of its checks
+  went green: "how to play", help when taps land on nothing, the switch a grown-up holds, and "where to
+  begin". **The update had been rehearsed** before its first push and passed, 18 of 18; its second commit
+  changed nothing a child sees and nothing that is stored. **Checked on the live site an hour and a half
+  after the merge:** Vercel's record of the production deployment of the merge commit `ed3efd6` said "Ready";
+  of 69 browser tests run against the address as a desktop, a phone and a Pixel 7 (that commit's own tests:
+  the smoke tests, and the Pixel's tests that play something in every world), 69 passed, with "how to play"
+  where the front door leads, each of its three things shown and then done, passed by and not shown again,
+  and "where to begin" among them; and CI's run on `main` was green in all eight jobs, with two tests passing
+  only at a second attempt (`docs/TEST_RESULTS.md` → _Run 45_).
+- **Since then, some children are shown "how to play" at their next visit and some are not.** A player who
+  has begun any activity is not: they know how. A player who has only ever chosen a picture, and anyone new,
+  is, once; the house at the top left passes it by. Nothing is asked of the owner.
+- **One small fault went live with it, and its fix is not live.** A child who passes "how to play" by with the
+  house, and whose page is closed or loaded again in that same moment, is shown it again at the next visit:
+  passing it by was written down as the page was left, where it should have been written first. Nothing is
+  lost and nothing looks wrong. CI's tests met it four times in two runs, each time passing at a second
+  attempt, which is how it was found.
+- **What is on pull request [#12](https://github.com/JaredVogler2/Training_Academy/pull/12) is not live**: Robot Ridge's three later activities (a longer way,
+  a long way round, wait for the bridge), the fix for the fault above, and whatever else that pull request
+  gains. Its own description says how far it has got. The update from what is live (`ed3efd6`) to it was
+  rehearsed on 2026-11-26 and passed, 18 of 18. It should be rehearsed again after anything more is added
+  (_Before a release_, below).
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The

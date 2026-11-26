@@ -2,16 +2,17 @@
 
 **Status: seven worlds, a first pass through each.** Every activity the six islands' pages promised is authored
 and playable, and so are the Music Lab's six. Counts in this document are of real content in the repository,
-and the tests pin the ones quoted most. (All of it is live. The help for a first visit, which is described at
-the end of this document under _Where a child begins_, is on a pull request that is not merged, and is not.)
+and the tests pin the ones quoted most. (All of it is live but Robot Ridge's three later activities, which are
+on a pull request that is not merged. The help for a first visit, described at the end of this document under
+_Where a child begins_, went live on 2026-11-26.)
 
 |                              | Authored and tested |
 | ---------------------------- | ------------------- |
 | Worlds with playable content | 7 of 7              |
-| Activities (lessons)         | 62                  |
-| Challenges                   | 714                 |
-| Skills                       | 67                  |
-| Spoken lines and words       | 564 recordings      |
+| Activities (lessons)         | 65                  |
+| Challenges                   | 744                 |
+| Skills                       | 70                  |
+| Spoken lines and words       | 573 recordings      |
 
 **Nothing here has been reviewed by an early-years teacher or tried with a child, and no person has listened to
 the recordings.** All three are required before any claim about what the game teaches. Each world's brief in
@@ -365,19 +366,49 @@ report and for the mastery engine to come. Most are how far off the choice is (`
 `counted-those-that-came` or `-left` in a story; `counted-the-full-places` where the empty ones were asked for;
 and `looks-alike`, a 6 taken for a 9 or a 9 for a 6.
 
-### Robot Ridge — `robot-ridge.v1.json` (contentVersion 1)
+### Robot Ridge — `robot-ridge.v2.json` (contentVersion 2)
 
-4 activities, 43 challenges, 4 skills, 18 spoken lines. Written by `scripts/content/robot-ridge.mjs`.
+7 activities, 73 challenges, 7 skills, 25 spoken lines (and two more that Glim says of the bridge, kept with the
+lines every world shares). Written by `scripts/content/robot-ridge.mjs`. The first four activities are the
+world as it went live, and they are byte for byte what they were; the other three come after them.
 
 **How it teaches.** A robot, a star, and arrows: forward, turn left, turn right. First each tap is carried out at
 once. Then a row of steps is planned and run. Then a short row is done over, two to four times. Then a row with
 one wrong step is run, seen to go wrong, and mended. A bump costs nothing; a run that does not arrive stays where
 it stopped; nothing is timed.
 
+**A longer way, and a long way round** (the brief's R2: four to ten steps, run a step at a time and back). Rocks
+stand between the robot and the star, and there is one shortest way round them. The row has exactly as many
+places as that way has steps, so the row itself says how long the way is. It is too long for each step to be a
+button: the steps are small tiles, in two lines on a phone, and the row is changed from its end, with a key that
+takes the last step out. "Go" runs it. Two buttons beside the row run it one step on and one step back, and the
+robot stays where the steps so far have taken it while more are put in. **What is handed in is the run of a
+full row carried out to its end, however it was run.** A row with places still empty can be run and looked at
+as often as a child likes and is nobody's answer; a full row gone over again after it was handed in is not
+handed in twice.
+
+**Wait for the bridge** (the brief's R5, its optional last step: a rule that depends on what the robot finds).
+There is a river, and a bridge that may be up or down: nobody knows which until a run begins, and until then it
+is drawn going up and down. One more arrow, three dots, says "if the bridge is up, wait for it". A program is
+right only if it gets over however the bridge stands, so it is **judged with the bridge up**. One that works is
+then shown with the bridge as its journey says: up, where the robot is seen to wait and the bridge to come down;
+or down, where the same step is seen to be passed over. One that does not work is shown the run it fails in. In
+the demonstration Glim runs the same row twice, once each way.
+
 **What the rules check** (`src/content/rules/robotRidge.ts`): every puzzle is solved by the engine's own solver
 when the pack is built; a puzzle about doing it again cannot be done in the row without doing it again; a row to
-mend is one step away from working; no grid is taller than three rows or longer than five places, so that it
-fits a small phone.
+mend is one step away from working; no grid is taller than three rows, and no row that is pressed is longer
+than five places, so that it fits a small phone. A longer plan has four steps or more and ten at most, a row
+exactly as long as its way, and one way only that short (help that shows "the" way must not take a child's own
+good steps out of the row). A bridge cannot be gone round, cannot be got over without waiting, and the program
+shown waits once. Every journey that is done once is also measured a second time, by other code that walks the
+ground instead of trying programs (`src/content/robot-ridge/ways.ts`), and the two must agree.
+
+**What the record cannot tell.** A child can make a long row a step at a time, putting one step in and watching
+the robot do it before choosing the next. What is written down is that the first full row arrived; it does not
+tell that from a row planned whole and then run. The two skills are worded to match ("may run the plan a step
+at a time"), and nothing here claims that a child plans ten steps ahead. And whether a child of four or five
+reads three dots as "wait", or a bridge drawn from above as up or down, nobody knows: no child has seen it.
 
 | Activity       | Title                         | Challenges | A sitting                        | The child's part |
 | -------------- | ----------------------------- | ---------- | -------------------------------- | ---------------- |
@@ -385,13 +416,19 @@ fits a small phone.
 | `rr-steps-01`  | Two and three steps in order  | 14         | 1 shown, 2 guided, 3 of 11 alone | a row of steps   |
 | `rr-repeat-01` | Do it again                   | 10         | 1 shown, 2 guided, 3 of 7 alone  | a row of steps   |
 | `rr-mend-01`   | Find the step that went wrong | 9          | 1 shown, 2 guided, 3 of 6 alone  | a row of steps   |
+| `rr-plan-01`   | A longer way                  | 10         | 1 shown, 2 guided, 3 of 7 alone  | a row of steps   |
+| `rr-bridge-01` | Wait for the bridge           | 10         | 1 shown, 2 guided, 3 of 7 alone  | a row of steps   |
+| `rr-plan-02`   | A long way round              | 10         | 1 shown, 2 guided, 3 of 7 alone  | a row of steps   |
 
-| Skill                        | For grown-ups              | What it means                                                                                                                                                             |
-| ---------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `coding.commands.one-move`   | Know what each arrow does  | Takes the robot to a goal one command at a time: knows that forward moves it one square the way it is facing, and that a turn changes the way it faces without moving it. |
-| `coding.sequence.plan-short` | Plan two or three steps    | Puts two or three commands in order before any of them is carried out, so that the robot reaches the goal when the program is run.                                        |
-| `coding.repeat.do-again`     | Make steps happen again    | Uses "do it again" so that a short program takes the robot a long way, on journeys that are too long for the program without it.                                          |
-| `coding.debug.mend-one-step` | Find and mend a wrong step | Watches a program go wrong, finds the one step that sends the robot the wrong way, and changes that step so that the robot arrives.                                       |
+| Skill                              | For grown-ups                                   | What it means                                                                                                                                                                                                                               |
+| ---------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `coding.commands.one-move`         | Know what each arrow does                       | Takes the robot to a goal one command at a time: knows that forward moves it one square the way it is facing, and that a turn changes the way it faces without moving it.                                                                   |
+| `coding.sequence.plan-short`       | Plan two or three steps                         | Puts two or three commands in order before any of them is carried out, so that the robot reaches the goal when the program is run.                                                                                                          |
+| `coding.repeat.do-again`           | Make steps happen again                         | Uses "do it again" so that a short program takes the robot a long way, on journeys that are too long for the program without it.                                                                                                            |
+| `coding.debug.mend-one-step`       | Find and mend a wrong step                      | Watches a program go wrong, finds the one step that sends the robot the wrong way, and changes that step so that the robot arrives.                                                                                                         |
+| `coding.sequence.plan-to-six`      | Plan a way of four to six steps                 | Puts four, five or six commands in order before the robot sets off, round rocks that are in the way, so that it reaches the goal. May run the plan a step at a time to see where it goes.                                                   |
+| `coding.sequence.plan-to-ten`      | Plan a long way, up to ten steps                | Puts seven to ten commands in order for a way that winds between rocks, and when the robot does not arrive finds the step that went wrong and changes the plan from there.                                                                  |
+| `coding.condition.wait-for-bridge` | Use a step that depends on what the robot finds | Puts \"wait for the bridge\" where it belongs in a row of steps, so that the robot reaches the goal whether the bridge turns out to be up or down: the same step waits when there is something to wait for and passes on when there is not. |
 
 ### Memory Forest — `memory-forest.v1.json` (contentVersion 1)
 
@@ -665,7 +702,7 @@ From the briefs in `prompt-series/`; `docs/PROGRESS.md` has each brief set again
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
 | Reading Cove    | a sound on its own; a word never met before, or a made-up one, to show that a word can be read and not only known again; reading aloud that is listened to; sentences with a verb; words with two consonants together; more than three pairs of letters; capitals; letter names | 05    |
 | Number Garden   | giving out a number that is written (the giving games stop before numerals); patterns, shapes, measuring, estimating and coins (the brief's optional M7); counting in twos or beyond ten                                                                                        | 06    |
-| Robot Ridge     | plans of four to ten steps; conditions ("if the bridge is up")                                                                                                                                                                                                                  | 07    |
+| Robot Ridge     | a condition other than waiting for a bridge (no "if … or else", and nothing is sensed but the bridge); doing a part of a row again (the whole row is done again); steps that are dragged (they are tapped, by decision)                                                         | 07    |
 | Memory Forest   | a choice of strategy; recall in a later sitting; more than four things                                                                                                                                                                                                          | 08    |
 | Inventor Island | a wind shelter; a record that the away-from-screen challenge was done; a portfolio card                                                                                                                                                                                         | 09    |
 | Explorer Harbor | making up a story; stories that branch; a globe, continents, countries, flags, people and places                                                                                                                                                                                | 10    |

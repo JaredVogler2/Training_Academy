@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { Stage } from '@/engine';
 import type { Beat, Script, ScriptEvent } from '@/game/lesson/script';
+import { PAUSE } from '@/game/lesson/script';
 import { GHOST_MS, STEP_MS, type Mode } from '@/game/worlds/robot-ridge/run';
 import {
+  BRIDGE_LINES,
+  BRISK_MS,
+  PART_MS,
   robotScript,
   showingOf,
   showsTheWay,
@@ -26,6 +30,10 @@ function situation(
     parts: mode === 'mend' ? 1 : mode === 'again' ? 4 : 3,
     fault: mode === 'mend' ? 2 : 0,
     faultBumps: mode === 'mend',
+    stepwise: false,
+    waits: [],
+    down: 0,
+    passes: [],
     lines: { instruction: 'r.ask', feedback: 'r.feedback', hint: 'r.hint' },
     seconds: () => 0,
     ...extra,
@@ -42,6 +50,21 @@ const shown = (script: Script): string[] =>
     if (own) return own.show === 'pick' ? 'pick' : `${own.show}:${String(own.frame)}`;
     return beat.show === 'do' ? `do:${String(beat.parts)}` : beat.show;
   });
+
+/** The frames of the answer's run that a script shows, each with the button Glim got it there by, if any. */
+const stepped = (script: Script): string[] =>
+  beats(script).flatMap((beat) => {
+    const own = showingOf(beat);
+    return own?.show === 'run' ? [`${String(own.frame)}${own.by ? ` ${own.by}` : ''}`] : [];
+  });
+
+/** A longer plan: five steps, run a step at a time. */
+const LONG = { way: 5, parts: 5, stepwise: true } as const;
+/**
+ * A plan with a bridge on the way: forward, wait, forward, forward. With the bridge up the run has five frames
+ * and the robot stands waiting at the second; with it down it has four, and the step is passed over at the second.
+ */
+const BRIDGE = { way: 5, parts: 4, waits: [2], down: 4, passes: [2] } as const;
 
 const said = (script: Script): string[] =>
   script.moments.flatMap((moment) => (moment.sound?.kind === 'say' ? [moment.sound.key] : []));
@@ -63,6 +86,11 @@ describe('reading a beat', () => {
     const cases: [string, Showing | null][] = [
       ['shadow:2', { show: 'shadow', frame: 2 }],
       ['run:5', { show: 'run', frame: 5 }],
+      ['run:2:on', { show: 'run', frame: 2, by: 'on' }],
+      ['run:1:back', { show: 'run', frame: 1, by: 'back' }],
+      ['run:3:sideways', { show: 'run', frame: 3 }],
+      ['down:0', { show: 'down', frame: 0 }],
+      ['down:4', { show: 'down', frame: 4 }],
       ['fault:1', { show: 'fault', frame: 1 }],
       ['astray:4', { show: 'astray', frame: 4 }],
       ['pick', { show: 'pick' }],
@@ -149,6 +177,157 @@ describe('a plan', () => {
           const all = shown(robotScript(situation(mode, stage, event)));
           expect(all.filter((beat) => /^(do|run):/.test(beat))).toEqual([]);
         }
+      }
+    }
+  });
+});
+
+describe('a longer plan', () => {
+  it('is demonstrated by putting the steps in briskly and running them a step at a time, with one step back', () => {
+    const script = robotScript(situation('plan', 'demo', 'new', LONG));
+    // No shadow goes first: the run that follows is the way.
+    expect(shown(script).some((beat) => beat.startsWith('shadow'))).toBe(false);
+    expect(shown(script).filter((beat) => beat.startsWith('do'))).toEqual([
+      'do:0',
+      'do:1',
+      'do:2',
+      'do:3',
+      'do:4',
+      'do:5',
+    ]);
+    // Two steps on, one back to show that it goes back too, and on to the end.
+    expect(stepped(script)).toEqual(['1 on', '2 on', '1 back', '2 on', '3 on', '4 on', '5 on']);
+    expect(script.settled).toEqual({ show: 'same' });
+    expect(said(script)).toEqual(['lesson.watch', 'r.ask']);
+  });
+
+  it('goes straight on where there are too few steps to go back among', () => {
+    expect(
+      stepped(robotScript(situation('plan', 'demo', 'new', { ...LONG, way: 2, parts: 2 }))),
+    ).toEqual(['1 on', '2 on']);
+  });
+
+  it('gives each step put in less time than a short plan’s, and each step of the run its own', () => {
+    const at = (script: Script, which: Beat) =>
+      script.moments.find((m) => JSON.stringify(m.beat) === JSON.stringify(which))?.at ?? -1;
+    const long = robotScript(situation('plan', 'demo', 'new', LONG));
+    const short = robotScript(situation('plan', 'demo', 'new'));
+    const part = (script: Script) =>
+      at(script, { show: 'do', parts: 2 }) - at(script, { show: 'do', parts: 1 });
+    expect(part(long)).toBe(BRISK_MS);
+    expect(part(short)).toBe(PAUSE + PART_MS);
+    expect(BRISK_MS).toBeLessThan(PAUSE + PART_MS);
+    const frame = (which: string) => at(long, { show: 'name', which });
+    expect(frame('run:2:on') - frame('run:1:on')).toBe(STEP_MS);
+    expect(frame('run:1:back') - frame('run:2:on')).toBe(STEP_MS);
+  });
+
+  it('sounds a note for each step on, and a tap for the step back', () => {
+    const script = robotScript(situation('plan', 'demo', 'new', LONG));
+    const sounds = script.moments.flatMap((moment) =>
+      moment.sound && moment.sound.kind !== 'say' ? [moment.sound] : [],
+    );
+    // Five taps for the five steps put in, one more for the step back, and "there" at the end.
+    expect(sounds.filter((sound) => sound.kind === 'cue' && sound.cue === 'tap')).toHaveLength(6);
+    expect(sounds.filter((sound) => sound.kind === 'count').map((sound) => sound.index)).toEqual([
+      0, 1, 1, 2, 3, 4,
+    ]);
+    expect(sounds.at(-1)).toEqual({ kind: 'cue', cue: 'same' });
+  });
+
+  it('is asked like any plan: with support the shadow goes the way, alone nothing is shown', () => {
+    expect(shown(robotScript(situation('plan', 'guided', 'new', LONG)))).toEqual([
+      'shadow:1',
+      'shadow:2',
+      'shadow:3',
+      'shadow:4',
+      'shadow:5',
+      'rest',
+    ]);
+    expect(shown(robotScript(situation('plan', 'independent', 'new', LONG)))).toEqual([
+      'ask',
+      'rest',
+    ]);
+    // Nothing that is run a step at a time is ever shown on a step that is being asked.
+    for (const stage of ['guided', 'independent'] as const) {
+      for (const event of EVENTS) {
+        expect(
+          stepped(robotScript(situation('plan', stage, event, LONG))),
+          `${stage} ${event}`,
+        ).toEqual([]);
+      }
+    }
+  });
+});
+
+describe('a plan with a bridge on the way', () => {
+  it('is demonstrated twice over: with the bridge up, where the robot waits, and with it down', () => {
+    const script = robotScript(situation('plan', 'demo', 'new', BRIDGE));
+    expect(shown(script)).toEqual([
+      'do:0',
+      'do:1',
+      'do:2',
+      'do:3',
+      'do:4',
+      'run:1',
+      'run:2',
+      'run:3',
+      'run:4',
+      'run:5',
+      // Back at the start, and the bridge is seen to be down before anything moves.
+      'down:0',
+      'down:1',
+      'down:2',
+      'down:3',
+      'down:4',
+      'same',
+    ]);
+    expect(script.settled).toEqual({ show: 'same' });
+  });
+
+  it('says what the bridge makes of the step as it happens, once each, and stands still while it is said', () => {
+    const quiet = robotScript(situation('plan', 'demo', 'new', BRIDGE));
+    expect(said(quiet)).toEqual(['lesson.watch', 'r.ask', BRIDGE_LINES.waits, BRIDGE_LINES.passes]);
+    const heard = robotScript(situation('plan', 'demo', 'new', { ...BRIDGE, seconds: () => 2 }));
+    const at = (script: Script, which: string) =>
+      script.moments.find((m) => m.beat?.show === 'name' && m.beat.which === which)?.at ?? -1;
+    const when = (script: Script, key: string) =>
+      script.moments.find((m) => m.sound?.kind === 'say' && m.sound.key === key)?.at ?? -1;
+    // Each line begins at the very moment it is about.
+    expect(when(heard, BRIDGE_LINES.waits)).toBe(at(heard, 'run:2'));
+    expect(when(heard, BRIDGE_LINES.passes)).toBe(at(heard, 'down:2'));
+    // Unheard, the robot waits a step's time; heard, it waits for the words as well.
+    expect(at(quiet, 'run:3') - at(quiet, 'run:2')).toBe(STEP_MS);
+    expect(at(heard, 'run:3') - at(heard, 'run:2')).toBeGreaterThanOrEqual(STEP_MS + 2000);
+    expect(at(heard, 'down:3') - at(heard, 'down:2')).toBeGreaterThanOrEqual(STEP_MS + 2000);
+  });
+
+  it('says a line once, however many bridges there are to wait for', () => {
+    const two = { ...BRIDGE, way: 8, parts: 6, waits: [2, 5], down: 6, passes: [2, 4] };
+    const script = robotScript(situation('plan', 'demo', 'new', two));
+    expect(said(script).filter((key) => key === BRIDGE_LINES.waits)).toHaveLength(1);
+    expect(said(script).filter((key) => key === BRIDGE_LINES.passes)).toHaveLength(1);
+  });
+
+  it('is asked like any plan, and nothing of either run is shown on a step that is being asked', () => {
+    expect(shown(robotScript(situation('plan', 'guided', 'new', BRIDGE)))).toEqual([
+      'shadow:1',
+      'shadow:2',
+      'shadow:3',
+      'shadow:4',
+      'shadow:5',
+      'rest',
+    ]);
+    for (const stage of ['guided', 'independent'] as const) {
+      for (const event of EVENTS) {
+        const what = shown(robotScript(situation('plan', stage, event, BRIDGE)));
+        expect(
+          what.some((beat) => beat.startsWith('run') || beat.startsWith('down')),
+          `${stage} ${event}`,
+        ).toBe(false);
+        expect(said(robotScript(situation('plan', stage, event, BRIDGE)))).not.toContain(
+          BRIDGE_LINES.waits,
+        );
       }
     }
   });
@@ -265,9 +444,15 @@ describe('showing the way', () => {
 });
 
 describe('every script', () => {
-  const all = MODES.flatMap((mode) =>
-    STAGES.flatMap((stage) => EVENTS.map((event) => situation(mode, stage, event))),
-  );
+  const all = [
+    ...MODES.flatMap((mode) =>
+      STAGES.flatMap((stage) => EVENTS.map((event) => situation(mode, stage, event))),
+    ),
+    // A plan run a step at a time, and a plan with a bridge on the way.
+    ...[LONG, BRIDGE].flatMap((kind) =>
+      STAGES.flatMap((stage) => EVENTS.map((event) => situation('plan', stage, event, kind))),
+    ),
+  ];
 
   it('runs forwards in time and ends on its settled beat, whether or not anything is heard', () => {
     for (const now of all) {

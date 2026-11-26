@@ -18,7 +18,9 @@
         "howto.done": "When you have finished, tap the tick.",
         "howto.again": "Tap me, and I will say it again.",
         "howto.yes": "Yes. Like that.",
-        "howto.end": "Now you know how to play."
+        "howto.end": "Now you know how to play.",
+        "robot.waits": "The bridge is up, so the robot waits.",
+        "robot.passes": "Now the bridge is down. There is nothing to wait for."
       },
       "words": {
         "count.0": "zero",

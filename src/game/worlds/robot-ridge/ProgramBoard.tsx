@@ -16,27 +16,34 @@ import { useScript } from '@/game/lesson/useScript';
 import lesson from '@/game/lesson/Lesson.module.css';
 import { ActionButton } from '@/ui/controls';
 import { IconPlay, IconPointer } from '@/ui/icons';
-import { Arrow, Loop, Scene } from './art';
+import { Arrow, Loop, Scene, StepArrow, TakeOut, type BridgeShown } from './art';
 import {
   HOLD_MS,
   STEP_MS,
+  bridgeLies,
+  carriedOver,
   degreesOf,
   emptyTray,
   fixedBy,
   framesOf,
+  isFull,
+  lastOpen,
   liveStep,
   modeOf,
   oneMoreTime,
   placed,
   programOf,
+  runsOf,
+  standingFor,
   taken,
   trailOf,
   trayOf,
+  undone,
   withFixed,
   type Frame,
   type Tray,
 } from './run';
-import { robotScript, showingOf, showsTheWay, type RobotSituation } from './script';
+import { robotScript, showingOf, showsTheWay, situationOf } from './script';
 import { robotText } from './text';
 import styles from './robotRidge.module.css';
 
@@ -53,6 +60,33 @@ interface OwnRun {
   /** How much help had been asked for when it was run, and whether the answer was being shown. */
   hints: number;
   shown: boolean;
+  /** It goes on by itself, a step at a time ("Go"). Otherwise it is moved by hand, one step on or one back. */
+  auto: boolean;
+  /**
+   * It is the run of a row with every place used. Of a longer plan only such a run is handed in; a row with
+   * places still empty can be run and looked at, and is nobody's answer yet. (Every other row is whole as it is.)
+   */
+  whole: boolean;
+  /** It has been carried out to its end, by "Go" or by hand, and is to be handed in. */
+  over: boolean;
+}
+
+/** A run moved one frame on, or one back. Carried on to its end, the run of a whole row is over. */
+function moved(run: OwnRun, by: 1 | -1): OwnRun {
+  const last = run.frames.length - 1;
+  const at = Math.max(0, Math.min(last, run.at + by));
+  return { ...run, at, over: run.over || (by > 0 && run.whole && at === last) };
+}
+
+/**
+ * The sound of the robot arriving at a frame: a soft knock where it could not go, a tap where it stands waiting,
+ * and otherwise the next note up.
+ */
+function sound(frame: Frame | undefined, index: number): void {
+  if (!frame) return;
+  if (frame.bumped) playCue('off');
+  else if (frame.waiting) playCue('tap');
+  else playCount(index - 1);
 }
 
 interface Work {
@@ -86,6 +120,15 @@ const letterOf = (command: Command) => command.charAt(0);
  *                       on the board, the robot where it stopped, until the row is changed.
  *   done again          the same, with a button that says how many times the row is done, in dots.
  *   to be mended        the same, with the row already filled in and one step of it wrong.
+ *   a longer plan       a plan whose row is too long to press: small tiles, changed from the end, with a key that
+ *                       takes the last step out. "Go" runs it; the two buttons beside the row run it a step at a
+ *                       time, on and back, and the robot stays where the steps so far have taken it while more
+ *                       are put in. The run of a full row, carried out to its end either way, is what is handed
+ *                       in. A row with places still empty can be run and looked at, and is nobody's answer yet.
+ *   over a bridge       a plan with one more arrow, three dots: wait. Nobody knows whether the bridge is up until
+ *                       a run begins, and it is drawn going up and down. A program is judged with every bridge
+ *                       up; one that works is then shown with the bridge as its journey says: up, to see the
+ *                       robot wait for it, or down, to see the same step passed over.
  *
  * What moves is worked out by the engine's own interpreter (run.ts); this draws it and decides nothing.
  */
@@ -97,19 +140,17 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
   }
   const { task } = challenge;
   const mode = modeOf(task);
+  const stepwise = task.stepwise === true;
   const demo = view.stage === 'demo';
   const revealed = !demo && view.shownAnswer !== null;
   const { asked, again, ask } = useAgain(view.stepIndex);
   const seconds = useSeconds();
   usePreparedLines(state);
 
-  // The answer, and the two runs there are to show: the way there, and the faulty row's way wrong.
-  const answer = useMemo(() => parseProgram(task.solution), [task.solution]);
-  const way = useMemo(() => framesOf(task, answer), [task, answer]);
-  const fault = useMemo(
-    () => (task.given === undefined ? null : framesOf(task, parseProgram(task.given))),
-    [task],
-  );
+  // The answer, and the runs there are to show: the way there (with every bridge up, where there are bridges, and
+  // again with every bridge down), and the faulty row's way wrong.
+  const runs = useMemo(() => runsOf(task), [task]);
+  const { answer, way, down, fault } = runs;
   const parts = task.solution.split('-');
   const answerTray = trayOf(task.solution, task.slots);
 
@@ -126,18 +167,13 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
   });
 
   const event = eventOf(state);
-  const situation: RobotSituation = {
+  const situation = situationOf(task, runs, {
     stage: view.stage,
     event,
     again,
-    mode,
-    way: way.frames.length - 1,
-    parts: mode === 'live' ? (answer?.commands.length ?? 0) : mode === 'mend' ? 1 : parts.length,
-    fault: fault ? fault.frames.length - 1 : 0,
-    faultBumps: fault?.frames.at(-1)?.bumped === true,
     lines: linesOf(state),
     seconds,
-  };
+  });
   const script = useMemo(
     () => robotScript(situation),
     // `state` changes with every tap; the script depends only on what is listed.
@@ -152,8 +188,9 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
 
   // ---- The child's own run: a step at a time, then handed in ------------------------------------------------------
   const own = work.run;
-  const stepping = own !== null && own.at < own.frames.length - 1;
-  const handing = own !== null && !stepping && !own.handedIn;
+  // Going on by itself; and over, with a moment to stand where it ended before it is handed in.
+  const stepping = own !== null && own.auto && own.at < own.frames.length - 1;
+  const handing = own !== null && own.over && !own.handedIn;
   const running = stepping || handing;
   // When it is over, the run stays on the board — the robot where it stopped — until help is asked for, or the
   // answer begins to be shown: either redraws the row, and a run belongs to the row that was run. (Changing the
@@ -179,10 +216,9 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
   useEffect(() => {
     if (!own || !stepping || paused) return;
     const timer = window.setTimeout(() => {
-      // A step sounds as it is taken; a step that could not be taken sounds like a soft knock instead.
-      if (own.frames[own.at + 1]?.bumped === true) playCue('off');
-      else playCount(own.at);
-      setWork((now) => (now.run ? { ...now, run: { ...now.run, at: now.run.at + 1 } } : now));
+      // A step sounds as it is taken.
+      sound(own.frames[own.at + 1], own.at + 1);
+      setWork((now) => (now.run ? { ...now, run: moved(now.run, 1) } : now));
     }, STEP_MS);
     return () => window.clearTimeout(timer);
     // One timer for each step: how far the run has got is what moves it on.
@@ -236,7 +272,7 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
       return withFixed(base, view.given);
     }
     // In a demonstration the row is as far along as Glim has got with it.
-    const whole = showing?.show === 'run' || beat.show === 'same';
+    const whole = showing?.show === 'run' || showing?.show === 'down' || beat.show === 'same';
     if (mode === 'mend') {
       const given = trayOf(task.given ?? task.solution, task.slots);
       if (showing?.show === 'pick') {
@@ -255,10 +291,14 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
   const program = programOf(built);
 
   // ---- Where the robot is, and which run it is in the middle of ---------------------------------------------------
-  const shownRun = ((): { frames: Frame[]; at: number } => {
+  // (`real`: it is a run, and not only the robot standing where it starts. How a bridge stands is known in a run.)
+  const shownRun = ((): { frames: Frame[]; at: number; real?: true } => {
     const start = { frames: way.frames, at: 0 };
-    const end = { frames: way.frames, at: way.frames.length - 1 };
-    if (showing?.show === 'run') return { frames: way.frames, at: showing.frame };
+    const end = { frames: way.frames, at: way.frames.length - 1, real: true as const };
+    if (showing?.show === 'run') return { frames: way.frames, at: showing.frame, real: true };
+    if (showing?.show === 'down' && down) {
+      return { frames: down.frames, at: showing.frame, real: true };
+    }
     if (demo) {
       if (beat.show === 'same') return end;
       if (mode === 'live')
@@ -276,7 +316,7 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
       );
       return { frames: lived.frames, at: lived.frames.length - 1 };
     }
-    if (kept) return { frames: kept.frames, at: kept.at };
+    if (kept) return { frames: kept.frames, at: kept.at, real: true };
     // A faulty row runs, and the robot is left standing where it went astray, until the child begins to change it.
     if (fault && faulty && asGiven) return { frames: fault.frames, at: showing.frame };
     return start;
@@ -303,14 +343,40 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
 
   const won = feedback?.outcome === 'correct' || (demo && beat.show === 'same');
   const liveBump = mode === 'live' && !demo && work.bumped;
-  const moving = kept !== null || showing?.show === 'run' || faulty;
+  const moving = kept !== null || showing?.show === 'run' || showing?.show === 'down' || faulty;
+
+  // The river and its bridges. Until a run begins nobody knows how a bridge stands.
+  const lie = {
+    columns: task.grid.columns,
+    rows: task.grid.rows,
+    rocks: task.rocks,
+    water: task.water ?? [],
+    bridges: task.bridges ?? [],
+  };
+  const bridges: BridgeShown[] = lie.bridges.map((at, index) => ({
+    at,
+    lies: bridgeLies(lie, at),
+    state: shownRun.real !== true ? 'maybe' : frame.raised[index] === true ? 'up' : 'down',
+  }));
   // Which place of the row the step the robot has just carried out is in: gaps are passed over, so it is counted.
   const filled = built.slots.flatMap((slot, place) => (slot === null ? [] : [place]));
   const stepPlace = moving && frame.step ? (filled[frame.step.index] ?? null) : null;
   // A step is lit while it is being carried out, and no longer: when a run is over, the last step done is not
   // "the one", and in a row to mend it is usually not the wrong one. A step the robot could not carry out is
   // marked, and stays marked.
-  const carrying = running || showing?.show === 'run' || showing?.show === 'fault';
+  // (A longer plan that is part-way through by hand keeps its last step lit: that is what there is to look at.)
+  const byHand =
+    stepwise &&
+    kept !== null &&
+    !kept.auto &&
+    kept.at > 0 &&
+    !(kept.handedIn && kept.at === kept.frames.length - 1);
+  const carrying =
+    running ||
+    byHand ||
+    showing?.show === 'run' ||
+    showing?.show === 'down' ||
+    showing?.show === 'fault';
   const nowPlace = carrying && !frame.bumped ? stepPlace : null;
   const stoppedPlace = frame.bumped ? stepPlace : null;
   const round = carrying && frame.step ? frame.step.round : null;
@@ -327,13 +393,42 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
   // ---- What a tap does --------------------------------------------------------------------------------------------
   const busy = demo || answered || running;
 
-  /** The row changed by the child: whatever was being shown of an earlier run goes, and the robot is at the start. */
+  /** A run of a row, from its start. */
+  const begin = (tray: Tray, auto: boolean): OwnRun | null => {
+    const made = programOf(tray);
+    if (!made) return null;
+    return {
+      frames: framesOf(task, made, standingFor(task, made)).frames,
+      text: writeProgram(made),
+      at: 0,
+      handedIn: false,
+      hints: view.hintsUsed,
+      shown: revealed,
+      auto,
+      whole: !stepwise || isFull(tray),
+      over: false,
+    };
+  };
+
+  /**
+   * The row changed by the child: whatever was being shown of an earlier run goes, and the robot is at the start.
+   * A longer plan is changed from its end, and there the robot stays where the steps that are still in the row
+   * have taken it.
+   */
   const change = (tray: Tray) => {
+    let carried: OwnRun | null = null;
+    if (stepwise && kept) {
+      const next = begin(tray, false);
+      const before = parseProgram(kept.text)?.commands ?? [];
+      const after = programOf(tray)?.commands ?? [];
+      const at = next ? carriedOver(kept.at, before, after, next.frames) : 0;
+      carried = next && at > 0 ? { ...next, at } : null;
+    }
     setWork({
       ...work,
       tray,
       mended: work.mended || revealed,
-      run: null,
+      run: carried,
       touched: run,
       hintsAt: view.hintsUsed,
     });
@@ -381,24 +476,54 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
     change(oneMoreTime(built, task.repeats));
   };
 
-  const go = () => {
-    if (busy || !program) return;
-    playCue('step');
+  /** The row as it is drawn becomes the row that was run, with this run of it. */
+  const ran = (next: OwnRun | null) => {
     setWork({
       ...work,
       tray: built,
       mended: work.mended || revealed,
       touched: run,
       hintsAt: view.hintsUsed,
-      run: {
-        frames: framesOf(task, program).frames,
-        text: writeProgram(program),
-        at: 0,
-        handedIn: false,
-        hints: view.hintsUsed,
-        shown: revealed,
-      },
+      run: next,
     });
+  };
+
+  const go = () => {
+    if (busy || !program) return;
+    playCue('step');
+    ran(begin(built, true));
+  };
+
+  // ---- A longer plan: its last step taken out, and its run a step at a time -----------------------------------------
+  const lastStep = stepwise ? lastOpen(built, fixed.commands.length) : -1;
+  const takeLast = () => {
+    const next = busy ? null : undone(built, fixed.commands.length);
+    if (!next) return;
+    playCue('off');
+    change(next);
+  };
+
+  // One step on: there is a step not yet carried out; or the run of a full row stands at its end (it was stopped
+  // there by a rock) and has not been handed in, and one more press says "that is my answer".
+  const canStepOn =
+    stepwise &&
+    !busy &&
+    program !== null &&
+    (kept === null || kept.at < kept.frames.length - 1 || (kept.whole && !kept.handedIn));
+  const stepOn = () => {
+    if (!canStepOn) return;
+    const from = kept ?? begin(built, false);
+    if (!from) return;
+    const next = moved({ ...from, auto: false }, 1);
+    sound(next.frames[next.at], next.at);
+    ran(next);
+  };
+
+  const canStepBack = stepwise && !busy && kept !== null && kept.at > 0;
+  const stepBack = () => {
+    if (!canStepBack) return;
+    playCue('tap');
+    setWork({ ...work, run: { ...kept, at: kept.at - 1, auto: false } });
   };
 
   // ---- Where the hand points, when the answer is being shown ------------------------------------------------------
@@ -430,7 +555,22 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
     demo && mode === 'again' && beat.show === 'do' && (parts[beat.parts - 1] ?? '').startsWith('x');
 
   const used = mode === 'live' ? (demo ? shownRun.at : shownRun.frames.length - 1) : 0;
-  const rocks = task.rocks.map(([column, row]) => `${String(column)},${String(row)}`).join(';');
+  const squares = (list: readonly (readonly [number, number])[]) =>
+    list.map(([column, row]) => `${String(column)},${String(row)}`).join(';');
+  const rocks = squares(task.rocks);
+  // A longer row is two lines of tiles where one line of them would be too small to make out.
+  const perLine = task.slots > 5 ? Math.ceil(task.slots / 2) : task.slots;
+  // What Glim says of the bridge stays written while the rest of that run is shown.
+  const [firstWait] = situation.waits;
+  const [firstPass] = situation.passes;
+  const said =
+    !demo || !showing
+      ? undefined
+      : showing.show === 'run' && firstWait !== undefined && showing.frame >= firstWait
+        ? robotText.waits
+        : showing.show === 'down' && firstPass !== undefined && showing.frame >= firstPass
+          ? robotText.passes
+          : undefined;
 
   return (
     <>
@@ -443,9 +583,15 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
         data-start={`${String(task.start.at[0])},${String(task.start.at[1])},${task.start.facing}`}
         data-goal={`${String(task.goal[0])},${String(task.goal[1])}`}
         data-rocks={rocks}
+        data-water={task.water ? squares(task.water) : undefined}
+        data-bridges={task.bridges ? squares(task.bridges) : undefined}
+        data-raised={task.bridges ? bridges.map((bridge) => bridge.state).join(',') : undefined}
         data-slots={task.slots}
         data-repeats={task.repeats}
+        data-stepwise={stepwise || undefined}
+        data-at={stepwise ? (kept?.at ?? 0) : undefined}
         data-robot={`${String(frame.at[0])},${String(frame.at[1])},${frame.facing}`}
+        data-waiting={frame.waiting || undefined}
         data-running={running}
         inert={paused}
       >
@@ -458,17 +604,26 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
               facing: task.start.facing,
               goal: task.goal,
               rocks: task.rocks,
+              water: lie.water,
+              bridges,
             })}{' '}
             {robotText.robotNow(frame.at, frame.facing)}
           </p>
           <p className="sr-only" role="status">
-            {liveBump || (frame.bumped && !running) ? robotText.stopped : ''}
+            {liveBump || (frame.bumped && !running)
+              ? robotText.stopped
+              : frame.waiting
+                ? robotText.waits
+                : ''}
           </p>
           <Scene
             columns={task.grid.columns}
             rows={task.grid.rows}
             goal={task.goal}
             rocks={task.rocks}
+            water={lie.water}
+            bridges={bridges}
+            waiting={frame.waiting}
             robot={{ at: frame.at, degrees: degreesOf(task, frame) }}
             ghost={
               shadowFrame ? { at: shadowFrame.at, degrees: degreesOf(task, shadowFrame) } : null
@@ -490,6 +645,59 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
             {Array.from({ length: task.slots }, (_, cell) => (
               <i key={cell} data-spent={cell >= task.slots - used} />
             ))}
+          </div>
+        ) : stepwise ? (
+          <div className={styles.tray} data-stepwise="true">
+            <button
+              type="button"
+              className={styles.stepKey}
+              data-step="back"
+              data-now={demo && showing?.show === 'run' && showing.by === 'back'}
+              aria-label={robotText.stepBack}
+              aria-disabled={!canStepBack}
+              onClick={stepBack}
+            >
+              <StepArrow back />
+            </button>
+            <ol
+              className={styles.strip}
+              aria-label={robotText.steps}
+              style={{ '--per-line': perLine, '--all': task.slots } as CSSProperties}
+            >
+              {built.slots.map((slot, place) => {
+                const wanted = revealed && slot === null ? (answerTray.slots[place] ?? null) : null;
+                return (
+                  <li
+                    key={place}
+                    className={styles.tile}
+                    data-tile={place}
+                    data-command={slot ?? undefined}
+                    data-filled={slot !== null}
+                    data-fixed={!demo && place < fixed.commands.length}
+                    data-now={nowPlace === place}
+                    data-stopped={stoppedPlace === place}
+                  >
+                    <span className="sr-only">{robotText.tile(place + 1, slot)}</span>
+                    {slot !== null ? (
+                      <Arrow command={slot} />
+                    ) : (
+                      wanted !== null && <Arrow command={wanted} className={styles.wanted} />
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+            <button
+              type="button"
+              className={styles.stepKey}
+              data-step="on"
+              data-now={demo && showing?.show === 'run' && showing.by === 'on'}
+              aria-label={robotText.stepOn}
+              aria-disabled={!canStepOn}
+              onClick={stepOn}
+            >
+              <StepArrow />
+            </button>
           </div>
         ) : (
           <div
@@ -603,6 +811,22 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
               </button>
             );
           })}
+          {/* A longer plan's row is not pressed: this takes its last step out. Tapped with no room in the row, an
+              arrow makes this stir, which is how the row says "take one out first". */}
+          {stepwise && (
+            <button
+              type="button"
+              className={`${styles.key} ${styles.takeOut}`}
+              style={{ '--order': task.commands.length } as CSSProperties}
+              data-key="out"
+              data-stir={work.full === 0 || demo ? undefined : work.full % 2 === 0 ? 'a' : 'b'}
+              aria-label={robotText.takeOut}
+              aria-disabled={busy || lastStep < 0}
+              onClick={takeLast}
+            >
+              <TakeOut />
+            </button>
+          )}
         </div>
       </div>
 
@@ -615,6 +839,7 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
         aim={aim}
         after={calm ? 0 : script.length}
         onAgain={ask}
+        caption={said}
       >
         {mode !== 'live' && !demo && !answered && (
           <ActionButton
@@ -623,7 +848,8 @@ export function ProgramBoard({ state, runner, pack, paused, calm }: BoardProps) 
             className={lesson.done}
             icon={<IconPlay size={32} />}
             disabled={program === null || running}
-            data-ready={program !== null && !running}
+            // A longer plan is ready when its row is full: until then "Go" only shows how far it gets.
+            data-ready={program !== null && !running && (!stepwise || isFull(built))}
             onClick={go}
           >
             {robotText.go}

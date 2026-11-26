@@ -351,12 +351,15 @@ test.describe('how many, at a glance', () => {
     await holdClock(page);
     await press(myTurn(page));
     const group = lesson(page).locator('[data-same]');
-    const choice = lesson(page).locator('[data-choice]').first();
     const sayAgain = page.getByRole('button', { name: 'Show me again' });
-    const state = async () =>
-      `${(await group.getAttribute('data-covered')) === 'true' ? 'covered' : 'in view'}, choices ${
-        (await choice.getAttribute('data-turned-away')) === 'true' ? 'turned away' : 'offered'
-      }`;
+    // (The group and the choices are read in one go, so that what is said of them is of one moment.)
+    const state = () =>
+      lesson(page).evaluate((frame) => {
+        const covered = frame.querySelector('[data-same]')?.getAttribute('data-covered') === 'true';
+        const away =
+          frame.querySelector('[data-choice]')?.getAttribute('data-turned-away') === 'true';
+        return `${covered ? 'covered' : 'in view'}, choices ${away ? 'turned away' : 'offered'}`;
+      });
     const theLook = [
       'covered, choices turned away',
       'in view, choices turned away',

@@ -6,22 +6,24 @@ hosted on Vercel. There is no account, no server, no advertising and no tracking
 
 ## Where it stands
 
-**Seven places have something to do: 62 short activities, 714 challenges, a voice, and music.** Six islands, and
-a music room in the lighthouse between them. Phases 01 to 03 of 17 are done (the foundation, the look, the
-journey in); phase 04 is built (the voice, and help for a child's first visit); phases 07 to 10 are each partly
-done, which here means that every activity the islands' pages promised is built and tested, and that each
-phase's brief asks for more than that; phase 05, Reading Cove, is built as far as a short sentence, and phase
-06, Number Garden, as far as adding and taking away within ten; and phase 11, the Music Lab, is built.
+**Seven places have something to do: 65 short activities, 744 challenges, a voice, and music.** Six islands, and
+a music room in the lighthouse between them. (62 of the activities are live; the other three, Robot Ridge's
+longer plans and its bridge, are on a pull request.) Phases 01 to 03 of 17 are done (the foundation, the look,
+the journey in); phase 04 is built (the voice, and help for a child's first visit); phase 07, Robot Ridge, is
+built as far as its brief goes; phases 08 to 10 are each partly done, which here means that every activity the
+islands' pages promised is built and tested, and that each phase's brief asks for more than that; phase 05,
+Reading Cove, is built as far as a short sentence, and phase 06, Number Garden, as far as adding and taking
+away within ten; and phase 11, the Music Lab, is built.
 [`docs/PROGRESS.md`](docs/PROGRESS.md) sets each brief against what exists. It is built from the plan in
 [`prompt-series/`](prompt-series/README.md).
 
-**Three things to know before relying on it.** No person has listened to any of it: the voice's 564 recordings
+**Three things to know before relying on it.** No person has listened to any of it: the voice's 573 recordings
 were made by a speech synthesiser and checked by a speech recogniser, and the Music Lab's notes are made by
 arithmetic as they are played and have been checked by nothing with ears. No child and no teacher has seen any
 of it. And not all of it is live: the owner's Vercel deployment serves `main`, which has had the six islands
-since 2026-11-23 and, since 2026-11-25, the Music Lab with its room to play in, Number Garden's numerals and
-Reading Cove's six later activities (rhyme to a sentence); the help for a first visit is on an open pull
-request and reaches the site only when that is merged.
+since 2026-11-23, since 2026-11-25 the Music Lab with its room to play in, Number Garden's numerals and
+Reading Cove's six later activities (rhyme to a sentence), and since 2026-11-26 the help for a first visit;
+Robot Ridge's three later activities are on an open pull request and reach the site only when that is merged.
 [`docs/CONTINUE_HERE.md`](docs/CONTINUE_HERE.md) says exactly what was and was not verified.
 
 ![The home screen: a lighthouse and six small islands in a turquoise sea, each with its name under it, and a small glowing guide in a rowing boat pointing at the one that is open](docs/review/phase-02/hub-3d-1366x768.jpg)

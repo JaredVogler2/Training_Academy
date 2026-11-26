@@ -1,4 +1,5 @@
 import { parseProgram, solveProgram, type ProgramTask, type Stimulus } from '@/engine';
+import { shortestWays } from '../robot-ridge/ways';
 import type { Report, WorldRules } from './types';
 
 /**
@@ -10,18 +11,23 @@ import type { Report, WorldRules } from './types';
  *   a plan               room for the journey and at most one step more: a plan cannot be padded with guesses
  *   done again           cannot be done without doing it again, and the program shown does
  *   to be mended         one step away from a program that works, and exactly as long
+ *   a longer plan        four steps or more, a row exactly as long as the way, and only one way that short: help
+ *                        that shows "the" way must not take a child's own good steps out of the row
+ *   over a bridge        cannot be done without waiting, and the program shown waits once for each bridge
  *
  * that the picture of the journey, which is what the world's page shows, is the journey; and that the journey can
  * be played on a phone: a grid low enough to be seen on one held sideways, a row short enough to be pressed.
  */
 
-type Kind = 'live' | 'plan' | 'again' | 'mend';
+type Kind = 'live' | 'plan' | 'again' | 'mend' | 'long' | 'bridge';
 
 /** What a journey is for, from how it is set up. */
 export function kindOf(task: ProgramTask): Kind {
   if (task.live) return 'live';
   if (task.given !== undefined) return 'mend';
-  return task.repeats > 1 ? 'again' : 'plan';
+  if (task.repeats > 1) return 'again';
+  if (task.bridges !== undefined) return 'bridge';
+  return task.stepwise === true ? 'long' : 'plan';
 }
 
 /** The skill each kind of journey is evidence of: the beginning of its id. */
@@ -30,6 +36,8 @@ const SKILLS: Record<Kind, string> = {
   plan: 'coding.sequence.',
   again: 'coding.repeat.',
   mend: 'coding.debug.',
+  long: 'coding.sequence.',
+  bridge: 'coding.condition.',
 };
 
 /** The most moves a robot may have to spare when each tap is carried out at once. */
@@ -49,6 +57,13 @@ export const MOST_ROWS = 3;
 export const MOST_PLACES = 5;
 export const MOST_PLACES_AGAIN = 4;
 
+/**
+ * A longer plan: from four steps, which is one more than a short plan has, to ten, which is all a row holds. Its
+ * steps are small tiles that are looked at and not pressed, in two lines on a phone.
+ */
+export const LONG_FROM = 4;
+export const LONG_TO = 10;
+
 /** The journey as its picture should describe it: the grid, and which game it is for. */
 export function sceneOf(task: ProgramTask): Extract<Stimulus, { type: 'scene' }> {
   return {
@@ -62,6 +77,8 @@ export function sceneOf(task: ProgramTask): Extract<Stimulus, { type: 'scene' }>
       facing: task.start.facing,
       goal: [...task.goal],
       rocks: task.rocks.flat(),
+      ...(task.water ? { water: task.water.flat() } : {}),
+      ...(task.bridges ? { bridges: task.bridges.flat() } : {}),
     },
   };
 }
@@ -108,6 +125,42 @@ function lintMend(task: ProgramTask, given: string, report: Report): void {
   }
 }
 
+function lintLong(task: ProgramTask, shortest: number, report: Report): void {
+  if (shortest < LONG_FROM) {
+    report(
+      'robot-long-short',
+      `a way of ${String(shortest)} steps is not a long one: it belongs with the short plans`,
+    );
+  }
+  // The row says how long the way is, and a full row is how a long plan is known to be finished.
+  if (task.slots !== shortest) {
+    report(
+      'robot-long-places',
+      `${String(task.slots)} places for a way of ${String(shortest)} steps: a long plan's row is exactly as long as its way`,
+    );
+  }
+  const ways = shortestWays(task);
+  if (ways && ways.steps === shortest && ways.count !== 1) {
+    report(
+      'robot-long-many-ways',
+      `there are ${String(ways.count)} ways as short as the one shown: help that shows the way would take a child's own good steps out of the row`,
+    );
+  }
+}
+
+function lintBridge(task: ProgramTask, report: Report): void {
+  const waits = (parseProgram(task.solution)?.commands ?? []).filter(
+    (command) => command === 'wait',
+  ).length;
+  if (waits !== (task.bridges?.length ?? 0)) {
+    report('robot-bridge-waits', 'the program shown does not wait once for each bridge');
+  }
+  const without = task.commands.filter((command) => command !== 'wait');
+  if (without.length > 0 && solveProgram({ ...task, commands: without })) {
+    report('robot-bridge-unneeded', 'the star can be reached without waiting for any bridge');
+  }
+}
+
 export const robotRidgeRules: WorldRules = (challenge, _lesson, report) => {
   if (challenge.kind !== 'make' || challenge.task.type !== 'program') {
     report('robot-question', 'Robot Ridge asks only for programs');
@@ -138,12 +191,15 @@ export const robotRidgeRules: WorldRules = (challenge, _lesson, report) => {
       `a grid of ${String(task.grid.rows)} rows: on a phone held sideways its squares are too small to see which way the robot is facing`,
     );
   }
-  // Taken one tap at a time, the places are power, which is only looked at; otherwise each is a step to press.
-  const places = kind === 'again' ? MOST_PLACES_AGAIN : MOST_PLACES;
+  // Taken one tap at a time, the places are power, which is only looked at; in a longer plan they are small tiles,
+  // looked at too; otherwise each is a step to press.
+  const places = kind === 'again' ? MOST_PLACES_AGAIN : kind === 'long' ? LONG_TO : MOST_PLACES;
   if (kind !== 'live' && task.slots > places) {
     report(
       'robot-row-too-long',
-      `a row of ${String(task.slots)} places: on a narrow phone each would be too small to press (at most ${String(places)} here)`,
+      kind === 'long'
+        ? `a row of ${String(task.slots)} places: a row holds ${String(places)} at most`
+        : `a row of ${String(task.slots)} places: on a narrow phone each would be too small to press (at most ${String(places)} here)`,
     );
   }
 
@@ -151,6 +207,7 @@ export const robotRidgeRules: WorldRules = (challenge, _lesson, report) => {
   // With no way there at all, the general lint has said so already.
   if (!shortest) return;
   if (kind === 'live') lintLive(task, shortest.commands.length, report);
+  else if (kind === 'long') lintLong(task, shortest.commands.length, report);
   else if (task.slots > shortest.commands.length + 1) {
     report(
       'robot-slots-loose',
@@ -166,4 +223,5 @@ export const robotRidgeRules: WorldRules = (challenge, _lesson, report) => {
     }
   }
   if (kind === 'mend' && task.given !== undefined) lintMend(task, task.given, report);
+  if (kind === 'bridge') lintBridge(task, report);
 };

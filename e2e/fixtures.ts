@@ -1,7 +1,7 @@
 import { test as base, expect, type Locator, type Page } from '@playwright/test';
 import { CHOOSE, PLACE, type Phase, type Step } from '../src/game/howto/steps';
 import { WORLDS, isOpen } from '../src/game/worlds';
-import { Pages, fetchNotLoaded, pagesServed } from './diagnosis';
+import { LeftUndone, Pages, fetchNotLoaded, onSite, pagesServed } from './diagnosis';
 
 /**
  * What every browser test gets:
@@ -34,6 +34,8 @@ interface Guard {
   requested(): string[];
   /** What would be held against the test if it ended now: for testing the guard itself. */
   problems(): string[];
+  /** What a page left undone and the guard has let pass, because that page has been left: for the same. */
+  letPass(): string[];
 }
 
 interface Fixtures {
@@ -116,25 +118,22 @@ export const test = base.extend<Fixtures>({
         loading.finished = true;
       });
 
-      // A download still under way when the page starts loading another document is cancelled by the browser. That
-      // is not a failure of anything, so a cancelled request counts only if no other document was asked for after
-      // the page that began it. (Every other kind of failed request counts, always.) Which page began it is the
-      // page that was there, not the last one asked for: see `Pages`.
+      // A download still under way when the page starts loading another document is cancelled by the browser, and
+      // in WebKit one asked for while the next document is on its way is never begun. Neither is a failure of
+      // anything, so each counts only if no other document was asked for after the page it belongs to. (Every
+      // other kind of failed request counts, always.) Whose it is, and why, is in `Pages` and `LeftUndone`.
       const pages = new Pages();
+      const undone = new LeftUndone(pages);
       page.on('framenavigated', (frame) => {
         if (frame === page.mainFrame()) pages.arrive(frame.url());
       });
       const startedIn = new WeakMap<object, number>();
-      const cancelled: { line: string; document: number }[] = [];
-      // WebKit says the same of a download begun by `fetch()` a second time, as an uncaught error. It is the same
-      // cancelled download, and is judged by the same rule: found by its address among what was asked for.
-      const begun: { url: string; document: number }[] = [];
       page.on('pageerror', (error) => {
         const line = `uncaught: ${error.message}`;
+        // WebKit's words for a download it would not begin: see `fetchNotLoaded`. Only for a file of this site;
+        // of anything else, the same words would be a real refusal.
         const address = browserName === 'webkit' ? fetchNotLoaded(error.message) : null;
-        const download =
-          address === null ? undefined : begun.filter((each) => each.url.endsWith(address)).at(-1);
-        if (download) cancelled.push({ line, document: download.document });
+        if (address !== null && onSite(address, origin)) undone.refused(line);
         else problems.push(line);
       });
       page.on('requestfailed', (request) => {
@@ -142,7 +141,7 @@ export const test = base.extend<Fixtures>({
         const reason = request.failure()?.errorText ?? 'unknown';
         const line = `request failed: ${request.url()} (${reason})`;
         if (/cancell?ed|ERR_ABORTED/i.test(reason)) {
-          cancelled.push({ line, document: startedIn.get(request) ?? pages.current });
+          undone.cancelled(line, startedIn.get(request) ?? pages.current);
         } else {
           problems.push(line);
         }
@@ -157,7 +156,6 @@ export const test = base.extend<Fixtures>({
         // A page belongs to itself; anything else belongs to the page that is there to ask for it.
         const by = loads ? pages.ask(request.url()) : pages.current;
         startedIn.set(request, by);
-        begun.push({ url: request.url(), document: by });
         const url = new URL(request.url());
         if (url.protocol === 'data:' || url.protocol === 'blob:') return;
         unanswered.set(request, {
@@ -180,16 +178,14 @@ export const test = base.extend<Fixtures>({
 
       const unexpectedAmong = (lines: string[]) =>
         lines.filter((line) => !allowed.some((pattern) => pattern.test(line)));
-      // A cancelled download is held against a test only while the page that began it is the last one asked for.
-      const cancelledForNothing = () =>
-        cancelled.filter(({ document }) => !pages.left(document)).map(({ line }) => line);
       await use({
         allow: (pattern) => allowed.push(pattern),
         requested: () => [...requested],
-        problems: () => unexpectedAmong([...problems, ...cancelledForNothing()]),
+        problems: () => unexpectedAmong([...problems, ...undone.held()]),
+        letPass: () => undone.passed(),
       });
 
-      problems.push(...cancelledForNothing());
+      problems.push(...undone.held());
       // A test that ran out of time has failed already; this adds what it was waiting for to what is reported.
       if (testInfo.status === 'timedOut') {
         const now = Date.now();
@@ -520,6 +516,11 @@ export async function holdClock(page: Page): Promise<void> {
 /**
  * Move a held clock on by `milliseconds`, a little at a time, and say what was seen on the way: `look` is asked
  * before each move, and each answer that differs from the one before it is kept, in order.
+ *
+ * `look` has to read everything it reports in one go: one function run in the page. Two readings, one after
+ * the other, can be of two moments even with the clock held (the page may still be drawing what the last tick
+ * set going), and then what is reported is something the page never showed. A test failed in CI for exactly
+ * that, once, and passed when it was run again.
  */
 export async function watchFor(
   page: Page,

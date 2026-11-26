@@ -1,17 +1,83 @@
 # Quality report
 
-This file has seven parts. The first is the review of the help for a first visit (the rest of phase 04). The
-second is the review of Reading Cove's later activities, from rhyme to a sentence (the second half of phase
-05). The third is the review of Number Garden's later activities, the ones that bring numerals in (the second
-half of phase 06). The fourth is the review of the Music Lab (phase 11). The fifth is the review of the six
-worlds and the voice (phases 04 to 10). The sixth is Phase 03's review of what Phase 03 built. The seventh is
-Phase 02's report on the home screen, kept as it was written, because it is still the assessment of the hub.
+This file has eight parts. The first is the review of Robot Ridge's three later activities (the rest of phase
+07). The second is the review of the help for a first visit (the rest of phase 04). The third is the review of
+Reading Cove's later activities, from rhyme to a sentence (the second half of phase 05). The fourth is the
+review of Number Garden's later activities, the ones that bring numerals in (the second half of phase 06). The
+fifth is the review of the Music Lab (phase 11). The sixth is the review of the six worlds and the voice
+(phases 04 to 10). The seventh is Phase 03's review of what Phase 03 built. The eighth is Phase 02's report on
+the home screen, kept as it was written, because it is still the assessment of the hub.
 
 All are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
 reading of screenshots and of the running game in headless Chromium. Nobody else has reviewed it, no child has
 played it, **no person has listened to the voice**, and it has never run on a real graphics card. The owner has
 opened the live site (Phase 03) on an iPhone; nothing in this file comes from a device. The standard it is rated
 against is `docs/ART_DIRECTION.md`.
+
+## Phase 07, the rest (2026-11-26): a longer way, a long way round, and the bridge
+
+### Summary
+
+Three activities after Robot Ridge's four. In two of them a child plans four to ten steps round rocks and can
+run the plan all at once or a step at a time, on and back. In the third there is a river with a bridge that may
+be up or down, and one more step, which waits for it. Fourteen pictures are in `docs/review/robot-ridge/`.
+
+**My reading: the boards work and fit, on every screen I can try; whether a child of four or five can do what
+they ask, I do not know, and for the long way I doubt it for most.** Ten turns and moves, each turn told from
+where the robot is facing, is hard for an adult to plan whole. That is why the row can be made a step at a
+time with the robot showing each step as it is put in, and why these activities come last and nothing waits
+on them.
+
+### How it was made, which bears on how far to trust it
+
+The rules were written first and tested without a screen: what a step that waits does, what a bridge that is
+up stops, where the robot stands when a row is changed under it. The grounds of the long ways are drawn from
+seeds and kept only if there is one shortest way and the rocks are what make it long; a second piece of code
+finds every shortest way by other means and must agree with the first. Sixty-one faults were put back in this
+work. All that could be caught were; the two that were not were checks that can never fire, and they are gone.
+
+Nothing here was tried by a child, and no person has heard the nine new lines.
+
+### The review
+
+Looked at on a phone upright (390 by 844 and 320 by 568), on its side (844 by 390, and 640 by 256, which is
+all a browser leaves the narrowest), and on a desktop.
+
+| What                         | How it is                                                                                                                                                                                                                                           |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A long row on a phone        | Two lines of small tiles between the two buttons that step. The tiles are looked at and not pressed: 53 by 27 on a phone 390 wide, 37 by 26 on one 320 wide, 47 by 27 at 640 by 256. Each arrow in them can be told from the others; they are small |
+| Everything that is pressed   | 56 pixels or more each way on every screen measured: the arrows, the key that takes a step out, the two that step, "go"                                                                                                                             |
+| The ground                   | A square is 30 pixels across at 640 by 256, on a ground six squares wide, and 52 or more upright. The robot's eyes and light still say which way it faces at 30; only just                                                                          |
+| One step on, one step back   | The step just carried out is lit in the row, and the robot stays where it is while more steps are put in. This is the best thing in the three activities: it turns a long plan into something that can be found out                                 |
+| The bridge                   | Seen from above: planks from bank to bank when it is down, drawn back to each bank with water between when it is up, going up and down while nobody knows. It reads to me. I drew it, so that is worth little                                       |
+| The step that waits          | Three dots, and the same three dots stand over the robot while it waits. Chosen because a pair of bars is already the pause button                                                                                                                  |
+| Glim's showing of the bridge | The same row run twice, with the bridge up and then down, with what is happening said and written at the moment it happens. Under eight seconds with nothing said                                                                                   |
+
+### Seen — cause — fix
+
+| Seen                                                                                    | Cause                                                                                                        | Fix                                                                                                                   |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| On the world's page, the robot in the bridge's picture could not be made out on a phone | The picture is an activity's first journey, and that was on a ground three rows high in a box 48 pixels high | Both demonstrations are on grounds of two rows                                                                        |
+| A test could not press an arrow when the row was full                                   | The arrow says it is waiting, and it is; a finger can still land on it                                       | Nothing in the game: the tap makes the key that takes a step out stir, as it should. The test taps where the arrow is |
+
+### What is still wrong or weak
+
+- **No child has tried any of it.** Whether three dots mean "wait" to a five-year-old, whether the bridge is
+  seen to be up, and whether a key with a cross on it is seen to take a step out, are all guesses.
+- **Ten steps is very likely too many for most children of this age to plan.** The activity lets the row be
+  built a step at a time, which is a way through, and it is the last one in the world.
+- **The record does not tell a plan from a row found out step by step.** What is written down is that the
+  first full row arrived. The skill is worded to match. The mastery engine to come should not read it as
+  planning ahead.
+- **Left and right are still the robot's, not the child's.** A robot facing down the screen turns "left"
+  towards the child's right. Nothing new helps with that, and a long way has more of it.
+- **The tiles of a long row are small on the smallest phones**, 26 pixels high. They are not pressed, and they
+  can be told apart; a child who looks closely at a small thing may still try to press it, and nothing happens.
+- **A row gone over after it failed can only be looked at.** Stepping back and on does not hand it in again,
+  which is right, and nothing on the screen says so.
+- **One condition, one thing sensed.** There is no "or else", and nothing but the bridge is ever waited for.
+  It is the beginning of "if", and no more.
+- **Nobody has heard the nine new lines.**
 
 ## Phase 04, the rest (2026-11-25): help for a first visit
 

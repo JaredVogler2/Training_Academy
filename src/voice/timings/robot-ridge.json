@@ -1,5 +1,12 @@
 {
+  "rr.bridge.correct": 3.17,
+  "rr.bridge.hint.wait": 3.94,
+  "rr.bridge.incorrect": 5.05,
+  "rr.bridge.instruction": 4.44,
   "rr.hint.route": 1.85,
+  "rr.long.correct": 3.14,
+  "rr.long.hint.step": 1.9,
+  "rr.long.instruction": 4.4,
   "rr.mend.correct": 3.08,
   "rr.mend.hint.model": 2.29,
   "rr.mend.hint.reveal": 1.77,

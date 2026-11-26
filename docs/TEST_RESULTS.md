@@ -2,10 +2,10 @@
 
 Everything in this file was actually run. Where something was not run, it says so.
 
-- **Date:** 2026-11-25
-- **Code under test:** `main` as the owner merged it on 2026-11-25 (pull request #10: Reading Cove's six
-  later activities), with the pull request this document came with (#11): the help for a first visit. The
-  release check below was run on that tree, in the parts it says. What was run on the live site was run on
+- **Date:** 2026-11-26
+- **Code under test:** `main` as the owner merged it on 2026-11-26 (pull request #11: the help for a first
+  visit), with the pull request this document came with (#12): Robot Ridge's three later activities, and what
+  CI's last two runs led to. The release check below was run on that tree, in the parts it says. What was run on the live site was run on
   what was live, and says so.
 - **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright 1.63.0
   with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
@@ -28,9 +28,9 @@ Result of the last local run: **passed.**
 | `npm run format:check` | clean                                                                                                                                                                              |
 | `npm run lint`         | no errors, no warnings                                                                                                                                                             |
 | `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                                                                     |
-| `npm test`             | **1977 tests in 67 files, all passed**                                                                                                                                             |
-| `npm run build`        | built; 659 files in `dist/`, 564 of them the voice's recordings                                                                                                                    |
-| `npm run verify:dist`  | **1459 checks, all passed** (sizes below)                                                                                                                                          |
+| `npm test`             | **2135 tests in 68 files, all passed**                                                                                                                                             |
+| `npm run build`        | built; 668 files in `dist/`, 573 of them the voice's recordings                                                                                                                    |
+| `npm run verify:dist`  | **1477 checks, all passed** (sizes below)                                                                                                                                          |
 | `npm run test:e2e`     | **1212 browser tests in one go: 1025 passed, 186 skipped by design, 1 failed** (Chromium, seven screen shapes, 42.5 minutes). The one was a fault in the game, since fixed; see on |
 
 **What the browser tests were run on, exactly.** The whole suite was run in one go on the tree with the
@@ -57,8 +57,19 @@ second attempt. Both were looked into and put right. Before the push that carrie
 that touch what changed (`smoke`, `grownups`, `begin`, `a11y`) were run on all seven screens, twice: **71
 passed, 1 skipped by design, none failed**, both times; and the smoke tests, with the two new ones of the
 guard, once more after the guard's last change: 14 of 14 on the desktop and the phone. The whole suite was not run again on every screen first: it was started on the desktop and the phone as the push went, and what it said is recorded with the next push. What changed is the grown-ups' area and the tests' own guard, whose rule can only have become more forgiving than it was. The suite is now
-1225 tests: two more, of the guard that every test runs under, on the desktop and on the phone. The 1977
-unit tests in the table are of this tree. Whether the page now fits an iPhone is for WebKit to say, in CI.
+1225 tests: two more, of the guard that every test runs under, on the desktop and on the phone. Whether the
+page now fits an iPhone is for WebKit to say, in CI.
+
+That run, started as the push went, finished clean: **972 tests on the desktop and the phone, 784 passed, 188
+skipped by design, none failed** (27.9 minutes). And CI's WebKit said the page fits: run 44, under _Continuous
+integration_.
+
+**With Robot Ridge's three later activities.** The suite is 1288 tests: 63 more. The whole suite was run in
+one go in Chromium on all seven screens: **1288 tests, 1086 passed, 202 skipped by design, none failed** (48.8
+minutes). After that run the tests' own guard was changed (run 45, under _Continuous integration_) and one
+test was added that only Safari's engine can run, which makes 1290. The specs in which a request fails, a page is left with something under way, or the guard is itself tested were then run on all seven screens (smoke, the hub, resilience, the voice, the journey, Robot Ridge and "how to play"): **284 tests, 263 passed, 21 skipped by design, none failed** (18.5 minutes). The whole suite was not run a
+second time: in Chromium the guard does what it did, by other code, and that code has unit tests of its own.
+The unit tests, the build and its checks in the table are of the final tree.
 
 The 186 that were skipped skip themselves, and say why. On the desktop, 124: the 112 measurements of what a
 child presses (28 boards on four screens), which are made once, as a touch phone, at screen sizes of their own;
@@ -460,14 +471,70 @@ phone the note lay across the very arrow it was pointing at. They are written in
 recogniser heard "Tap the arrow when you want a turn" as "…when you want to turn"; the line is "Tap the arrow,
 and then it is your turn."
 
+### What Robot Ridge's longer plans and its bridge added to the tests, and what the tests found
+
+148 unit tests and 63 browser tests. The unit tests are of the engine (a step that waits, water, a bridge that
+is up or down, and every program of up to eight steps tried on two bridges to show that one which arrives with
+both up arrives however they stand); of the run as frames (waiting for something is two moments, waiting for
+nothing is one); of a row changed from its end and where the robot stands when it is; of the script (a long
+row run by Glim a step at a time with one step back, a bridge shown twice over, each line said once and at its
+moment); of the rules (every new rule broken by a pack made to break it); of the journeys in the pack (each
+long way has one shortest way and rocks that make it long, each bridge is got over however it stands and cannot
+be gone round); of the generator of long journeys; and of the second way of finding a shortest way, by walking
+the ground, which is held to the engine's own trying of every program on three hundred grounds of every shape.
+The browser tests play the three activities as a child would, by working out what to do from what the board
+says is on it; watch both demonstrations with the clock held; and measure every board of each on a phone 360
+wide and on one 640 by 256.
+
+**What the tests found in the new work.**
+
+- **The picture of an activity was too small to make out.** A test that was there already says that a square
+  of ground in an activity's picture on the world's page is at least 20 pixels across on a phone, so that the
+  robot in it can be seen. The picture is the activity's first journey, and the bridge's first journey was on
+  a ground three rows high: 15.7 pixels. Both demonstrations are now on grounds of two rows (22.6 and 23.3
+  pixels), and the generator says why beside each.
+- **Two checks that could never fire.** Of 43 faults put back against the unit tests, 41 were caught at once.
+  The other two were both in the generator of long journeys: "the way must have two corners" and "the way must
+  not begin by turning right round". With either taken out every test passed, and every journey drawn came out
+  the same. Neither can fire: a way with fewer than two corners is as short as open ground allows, so the rocks
+  would not have made it longer, which is asked for; and turning right round can be done to the left or to the
+  right, so there would be two ways as short, which is refused. Both checks are gone, the generator says why
+  each follows, and the tests still say both.
+
+**What was wrong with the new tests, found by running them and by putting faults back.** Of 18 faults put back
+in a browser, 17 were caught at once by the test meant for them. The eighteenth did not build (it compared a
+bridge's state with a word no state can be), which proves nothing; written so that it builds, it was caught.
+And three mistakes of the tests' own were found by their first run: a key that says it is waiting cannot be
+pressed by Playwright, and the test now taps where the key is, as a finger would; a count of the world's
+activities was still four; and a reading of three things in three steps was made one reading before it was
+ever run in CI, for the reason told under run 44 below.
+
+| The fault                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Caught by                                                                                               |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| A raised bridge can be driven onto; water is ground; a wait lowers a bridge from anywhere; every bridge begins down; the step that waits is read as forward                                                                                                                                                                                                                                                                                                                                                                                                                                                            | the engine's tests of a bridge (2 to 7 each)                                                            |
+| Waiting for something is one moment; the robot is drawn waiting with the bridge already down                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | the run's tests                                                                                         |
+| A program that works is always shown the bridge up; one that fails is shown it as the journey says                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | the run's tests; and in a browser, the bridge's own test (nothing was seen to wait the second time)     |
+| A bridge always lies across                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | two tests, one for each way of telling                                                                  |
+| A row is full as soon as it has places; the last step taken out may be help's; the first open step is taken, not the last                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | the tests of a row changed from its end; and in a browser                                               |
+| The robot never comes back when its row changes; always goes back to the start; one step too far is counted as shared                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | the tests of where the robot stands; and in a browser (a step put on the end sent it back to the start) |
+| A picture's bridges are read as its water; half a square of water is taken                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | the tests of a journey's picture                                                                        |
+| Glim never steps back; a longer plan is shown like a short one; the bridge is shown once; a line is said at every bridge, or a step late; which button was pressed is not read; the steps are put in slowly                                                                                                                                                                                                                                                                                                                                                                                                            | the script's tests                                                                                      |
+| The script is not told that a row is stepped, or where the robot waits                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | the tests of the pack's journeys                                                                        |
+| What is written of the bridge is not what is said; how a bridge stands is not said in words                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | the words' tests                                                                                        |
+| A long way with two ways as short is let through; a bridge that can be gone round; a bridge taken for a plain plan; a row to mend that is stepped                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | the rules' tests                                                                                        |
+| A drawn long way may have two ways as short, or rocks that are not in the way; a map with ragged rows is read                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | the generator's tests                                                                                   |
+| Walking the ground does not see a bridge is up; counts one way to the star, or one way to each place                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | the tests that hold it to the engine                                                                    |
+| In a browser: a row with places empty is handed in; going back over a run hands it in again; one step on is offered where there is none; the step just carried out is not lit; "go" is ready before the row is full; nothing stirs when there is no room; Glim is shown pressing the wrong button; the bridge is drawn before any run; no dots over a robot that waits; a long row is one line on a phone; what Glim says is not written; the bridge is not in the world page's picture; a screen reader is told nothing of it; the bridge is drawn up whatever the board says; the new activities come before the old | the browser test meant for each                                                                         |
+
 ## Continuous integration
 
-Every push to a pull request, and to `main`, runs five jobs (`.github/workflows/ci.yml`): lint, types, unit tests
-and build; the browser tests in Chromium on seven screen shapes, shared between two jobs; and the browser tests in
-WebKit on five, likewise. The machine they run on has four processor cores and no graphics card, and runs two
-tests at a time. (Until the six worlds there was one job for each engine. With twice the tests, one Chromium job
-would have run close to its forty-minute limit, so each engine's screens are now split between a job for the
-desktop and tablets and a job for phones.)
+Every push to a pull request, and to `main`, runs eleven jobs (`.github/workflows/ci.yml`): lint, types, unit
+tests and build; the browser tests in Chromium on seven screen shapes, dealt out between six jobs; and the
+browser tests in WebKit on five, between four. The machine they run on has four processor cores and no
+graphics card, and runs two tests at a time. (Until the six worlds there was one job for each engine. The
+jobs have been divided as the suite grew, each time one came near its forty-minute limit, and once after one
+reached it: run 46, below. A job's forty minutes also have to cover putting the browser and what it needs on
+the machine, which is usually half a minute and has taken seventeen.)
 
 **For the six worlds.** Pull request #5, which carried the engine for every kind of game, the voice and Number
 Garden's seven activities, passed on its head commit `9cb3dda` (run 26; the run on the commit before it was
@@ -527,7 +594,8 @@ of the four was put down to chance before it had been looked at.
    hands on as an uncaught error, having taken the text up to the first colon for the error's name (read in
    Playwright's source). The second report is now judged by the same rule as the first: it passes only if the
    download it names began before the page moved on (`fetchNotLoaded` in `e2e/diagnosis.ts`, tested with CI's
-   own text).
+   own text). **That reading was wrong**, and the same test failed for the same sentence twice more: the
+   sentence is not a second report of a cancelled download. Run 45, below, has what it is.
 4. **As an iPad, a page that never came.** "The page does not bounce, reload when pulled down, or zoom on two
    quick taps" asked for the home page at its first line and waited the whole minute; at its second attempt
    the page came in two seconds. This was the third time (the first two are under Phase 03, below), and the
@@ -652,14 +720,17 @@ met 47-point bars. The dialog is live, as it has been all along.
 
 **And two runs after those. The second ran everything, and everything passed.**
 
-| Run | What                                                          | Chromium, desktop and tablet    | Chromium, phones                 | WebKit, desktop and tablet                 | WebKit, phones                         |
-| --- | ------------------------------------------------------------- | ------------------------------- | -------------------------------- | ------------------------------------------ | -------------------------------------- |
-| 38  | pull request #9, Number Garden's numerals (`30d47ae`)         | cancelled by the next push      | cancelled                        | cancelled                                  | cancelled                              |
-| 39  | pull request #9, the place kept through an update (`0afde1b`) | 17.9 and 8.6 for the two halves | 12.3 and 18.5 for the two halves | 15.3 minutes, after 12.8 installing WebKit | 22.1 minutes                           |
-| 40  | `main` after the owner merged pull request #9 (`dbbdbc3`)     | passed, both halves             | passed, both halves              | passed                                     | passed                                 |
-| 41  | pull request #10, Reading Cove's later activities (`563f46c`) | 17.1 and 10.8                   | 17.4 and 21.2                    | 22.6 minutes                               | 28.8 minutes                           |
-| 42  | `main` after the owner merged pull request #10 (`8288833`)    | passed, both halves             | passed, both halves              | passed                                     | passed                                 |
-| 43  | pull request #11, the help for a first visit (`4fce12e`)      | 25.4 and 12.6                   | 20.4 and 24.3                    | 21.8 minutes                               | **failed**, both halves: 13.3 and 16.8 |
+| Run | What                                                                   | Chromium, desktop and tablet    | Chromium, phones                 | WebKit, desktop and tablet                             | WebKit, phones                         |
+| --- | ---------------------------------------------------------------------- | ------------------------------- | -------------------------------- | ------------------------------------------------------ | -------------------------------------- |
+| 38  | pull request #9, Number Garden's numerals (`30d47ae`)                  | cancelled by the next push      | cancelled                        | cancelled                                              | cancelled                              |
+| 39  | pull request #9, the place kept through an update (`0afde1b`)          | 17.9 and 8.6 for the two halves | 12.3 and 18.5 for the two halves | 15.3 minutes, after 12.8 installing WebKit             | 22.1 minutes                           |
+| 40  | `main` after the owner merged pull request #9 (`dbbdbc3`)              | passed, both halves             | passed, both halves              | passed                                                 | passed                                 |
+| 41  | pull request #10, Reading Cove's later activities (`563f46c`)          | 17.1 and 10.8                   | 17.4 and 21.2                    | 22.6 minutes                                           | 28.8 minutes                           |
+| 42  | `main` after the owner merged pull request #10 (`8288833`)             | passed, both halves             | passed, both halves              | passed                                                 | passed                                 |
+| 43  | pull request #11, the help for a first visit (`4fce12e`)               | 25.4 and 12.6                   | 20.4 and 24.3                    | 21.8 minutes                                           | **failed**, both halves: 13.3 and 16.8 |
+| 44  | pull request #11, the page that was too wide for an iPhone (`1decf66`) | 19.5 and 12.1                   | 17.4 and 24.8                    | 24.1 minutes                                           | 14.1 and 18.6, **passed**              |
+| 45  | `main` after the owner merged pull request #11 (`ed3efd6`)             | 24.5 and 12.4                   | 19.5 and 26.1                    | 24.2 minutes                                           | 15.0 and 16.9                          |
+| 46  | pull request #12, Robot Ridge's longer plans and bridge (`e9cdb5c`)    | 25.4 and 18.1                   | 22.2 and 34.7                    | **cancelled** at its 40 minutes, 566 of 567 tests done | 16.2 and 21.2                          |
 
 Run 39 is the first to have Number Garden's numerals, the room at its three sizes and the dialog test in
 Safari's engine, and all of them passed there. No test in any job needed a second attempt: the six artifacts
@@ -745,6 +816,10 @@ nothing after it, it failed the test. In run 30 the recording had begun before t
 this time it began after. The guard now keeps two things, the pages asked for and the page that is there
 (`Pages`, in `e2e/diagnosis.ts`), and a request belongs to the page that is there to make it.
 
+**This was half right, and did not mend it.** Whose a download is was wrong, and `Pages` is kept. But the
+recording was never begun, so there was no request to give to anybody: the same test failed the same way in
+run 45, with this change in place. Run 45, below, has the cause, read in WebKit's source and not guessed.
+
 It could not be made to happen in Chromium. Chromium says nothing at all of a download it cancels by leaving a
 page: that was tried with the download held back by the test, and again with the network slowed until the
 download was truly under way when the page was left. So the two new browser tests stage it. One makes the same
@@ -788,6 +863,148 @@ back or by running a test more than once.
 3. **The second staged test failed without any fault in it**, on a warning that every test is allowed, and its
    failing was at first read as four faults caught. What the guard reports to a test now passes through the
    same allowances as its verdict, the test passes as it stands, and the four faults were put back again.
+
+**Run 44** is the push with those two fixes (`1decf66`). **Green in all eight jobs, and WebKit's phones passed
+the two tests that had failed**: the grown-ups' area fits an iPhone's screen in Safari's engine. The times, by
+each job's start and end: lint, types, unit tests and build 1.2 minutes; Chromium's desktop and tablet 19.5 and
+12.1; Chromium's phones 17.4 and 24.8; WebKit's desktop and tablet 24.1; WebKit's phones 14.1 and 18.6.
+
+It was green, and it was not clean. Five artifacts are between 0.61 and 1.06 MB. Three are 6.6, 8.6 and 24.5
+MB, and a large one means a test's first attempt failed and its trace was kept: **six tests passed only at
+their second attempt**, in three jobs. Each was read.
+
+1. **Three of the six are one test, and one fault in the game.** `journey.spec.ts`, "is asked who is playing
+   only once in a visit, and is known by their picture the next time", on the phone, the Pixel 7 and the Pixel
+   7 on its side: a child who had passed "how to play" by was, at the next visit, shown it again. Passing it by
+   wrote down that the player had been shown as the page was left, and went on without waiting for the
+   writing. The test refreshes the page the moment the islands are there; a page refreshed, or closed, in that
+   moment had not been written. (The same was found and put right for the end of "how to play" before it was
+   ever pushed, and the way out by the house was left as it was.) The house now writes it down first and
+   leaves when it has been written, or when it has turned out that it cannot be; so "the islands are there"
+   means "it is written". Five faults were put back against three new unit tests, which hold the writing in
+   the test's hands to see that the page is not left while it waits. Four were caught at once. The fifth, a
+   second tap being a second leaving, passed: the test held each writing separately, so the second tap's
+   leaving never came. It holds one writing for both taps now, and the fault fails.
+2. **One was a test that read one moment in two steps.** `numbers.spec.ts`, "a numeral shows its amount in dots
+   only while it is being counted", in WebKit: with the clock held it saw one dot on the 1 and three on the 3
+   together, which the page never shows. It counted the dots on one numeral and then, in a second step, on the
+   other; between the two the page finished drawing what the last tick of the clock had set going. The clock
+   was held, and the page was still not standing still. Everything such a test reports is now read in one go,
+   by one function run in the page. Two more tests read two things in two steps and had not yet been caught
+   out (`garden.spec.ts`, the look that is asked for again; `music.spec.ts`, the same or different), and they
+   are mended the same way. `watchFor` says so where it is written.
+3. **Two were the page that never comes**, in WebKit, in the accessibility checks of two worlds' pages. A
+   test's first page is asked for and nothing arrives for a whole minute; at the second attempt it is there in
+   a second or two. These are the fifth and sixth times, and the first time there have been two in one job.
+   The note each left is the same as before: "the last page asked for had not been read yet; 1 unanswered:
+   document /world/memory-forest (asked for 59.8 s before; the browser reported no answer at all; requests
+   for /world/memory-forest that reached the server after that: at +0.0 s from Macintosh, answered in 1 ms);
+   the page stood at about:blank". The server had the request at once and answered it in a millisecond, and
+   the browser never read the answer. **Not explained**, and nothing in the game is asked for at that moment.
+   It costs a minute and a second attempt each time, in CI's WebKit only; it has never been seen in Chromium,
+   here or there.
+
+The owner merged pull request #11 four minutes after run 44's last job finished. **Run 45** is the same tree
+on `main` (`ed3efd6`): **green in all eight jobs**, in 26.1 minutes; lint, types, unit tests and build 1.6. It
+was not clean either. Five artifacts are between 0.59 and 1.04 MB; Chromium's phones, second half, left 5.0 MB
+and WebKit's phones, second half, 3.0 MB. **Two tests passed only at their second attempt**, and both were
+read: the log for each, and for the second the report CI kept, which has every step of the failed attempt
+with its time.
+
+1. **The fault of passing "how to play" by, a fourth time.** `journey.spec.ts`, "is asked who is playing only
+   once in a visit, and is known by their picture the next time", on the Pixel 7: the islands did not come
+   after the page was loaded again, because "how to play" had come back instead. It is the fault under run 44,
+   in the tree that run 44 tested and the owner merged, so **it is live**; the fix is in this push.
+2. **The guard, wrong about WebKit a third time.** `robot.spec.ts`, "the way is marked instead of walked, and
+   a faulty row is shown where it went wrong", on WebKit's phone, failed for
+   `uncaught: /127.0.0.1:4173/immutable/rr.steps.correct-BoltnQ2G.mp3 due to access control checks.` The same
+   test, the same recording and the same sentence as in runs 30 and 43, each of which ended with the guard
+   mended and the matter thought closed.
+
+   **What the sentence is, read in WebKit's source** (`Source/WebCore`, its main branch on 2026-11-26). From
+   the moment another page has been asked for until it arrives, WebKit will not begin a download for the page
+   that is still there: `CachedResource::load` fails it before it starts ("Failed security check -- state is
+   provisional"; the same while the page's loader is stopping, or there is no active document).
+   `CachedResourceLoader::requestResource` turns a load that failed at once into an error of the
+   access-control kind, under the comment "Synchronous cancellations are likely due to access control". And
+   `ThreadableLoader::logError` puts that on the console as "Fetch API cannot load … due to access control
+   checks." The same function returns without a word for a download that was begun and then cancelled.
+
+   So the sentence was never a second report of a cancelled download, which is how it was read after run 30,
+   and there was never a request to put down to the wrong page, which is how it was read after run 43. **No
+   request is made at all**, so the browser reports none, and the sentence is the only thing said. The guard
+   looked for the download among the requests it had seen, did not find it, and held the sentence against the
+   test. It could not have found it. In all three runs the failure was the sentence alone, with no cancelled
+   request beside it, which the first two readings should have had to explain and did not.
+
+   **Why this test, and why now and then.** It goes to another activity the moment "Yes. Your steps took the
+   robot to the star" is on the screen, and the page asks for that line's recording at about the same moment.
+   What was seen: in the attempt that passed, CI's trace has the recording asked for 13 ms before the test
+   asked for the next page, and fetched in 1.3 ms; in the attempt that failed, the report has the next page
+   asked for 4 ms after the check of the caption began, where the other attempt took 9. What is inferred from
+   that, since no trace is kept of a first attempt: that time, the recording was asked for just after the
+   next page, and was refused.
+
+   **What was done.** WebKit's sentence, about a file of this site, is now put down to the page that is there
+   when it is said, and judged as a cancelled download is: held against a test only if no other page is asked
+   for after that page (`LeftUndone`, in `e2e/diagnosis.ts`). It is judged when the test ends, so it does not
+   matter which the browser reports first, the sentence or the next page. A sentence that is held says which
+   page was there and how many had been asked for, so that the next reader is not left to guess. The lookup
+   among requests is gone.
+
+   **How it is known to be right this time.** By unit tests of the rule, against which ten faults were put
+   back and all caught; by three faults put back in the guard's wiring and caught by the two staged tests in
+   Chromium; and by a new test that stages nothing: in Safari's engine, the next page is held back, the page
+   that is still there asks for a file, and the test requires that the file is refused, that the server is
+   never asked for it, that WebKit's sentence is what the guard let pass, and that nothing is held against the
+   test. **That test runs only in CI, and has not run yet.** If the reading above is wrong, it fails, and says
+   which part.
+
+**Run 46** is pull request #12's first (`e9cdb5c`): Robot Ridge's three later activities, the fixes above, and
+the guard's new rule, in Safari's engine for the first time. **Seven jobs passed and one was cancelled at its
+forty-minute limit**: WebKit's desktop and tablet. No test failed in any job, and none needed a second
+attempt: the six artifacts are between 0.65 and 1.03 MB, and no log has a failed or retried line.
+
+| Job                            | Result                                                      | The whole job |
+| ------------------------------ | ----------------------------------------------------------- | ------------- |
+| Lint, types, unit tests, build | passed                                                      | 2.1 minutes   |
+| Chromium, desktop and tablet   | passed, both halves                                         | 25.4 and 18.1 |
+| Chromium, phones               | passed, both halves                                         | 22.2 and 34.7 |
+| WebKit, desktop and tablet     | **cancelled at 40 minutes**, with 566 of 567 tests done     | 40.2          |
+| WebKit, phones                 | passed, both halves: 239 and 183 passed, 73 and 128 skipped | 16.2 and 21.2 |
+
+**Why it was cancelled: the tests had 23 minutes and needed a few seconds more.** Putting WebKit on the machine
+took 16 minutes 40 seconds, where it takes half a minute. The log has where the time went: 16 minutes 15
+seconds of it was fetching the 185 packages of Ubuntu's that WebKit needs, 129 MB at 133 kB a second, from the
+mirror that runner was given (five packages were given up on twice there and fetched from Ubuntu's own
+archive instead). The other two WebKit jobs, started in the same second on other machines, fetched the same
+packages from a mirror of the same name in three and four seconds. WebKit itself came in 2.4 seconds. The
+tests then ran for 23 minutes: 566 of the 567 had a result when the job was stopped, 357 passed, 209 skipped by
+design, none failed, none run twice; the last was nine seconds from its end.
+
+So nothing in the game or its tests failed, and the cause is outside the repository. What is in the
+repository is how little room there was for it: a job whose tests take 23 of its 40 minutes fails whenever
+the machine takes 17 to get ready, and it has taken 13 before (run 39). **The same was waiting to happen in
+Chromium:** in this run the second half of the phones took 34.7 of its 40 minutes, 5.7 of them the same slow
+fetching, and its tests alone take 29.
+
+**What was done.** The jobs are dealt out in more parts: Chromium's desktop and tablet in three (the two took
+25 and 18 minutes of tests), Chromium's phones in three (22 and 29), WebKit's desktop and tablet in two (23.5
+as one). No part should now need more than about half of its forty minutes for its tests. The limit itself is
+left at forty: it is there to stop a job that hangs.
+
+**What that run showed that was waited for.**
+
+- **The guard's reading of WebKit is right.** The test that stages nothing ran for the first time, in both of
+  WebKit's screens that run it, and passed (1.3 and 1.1 seconds): the file asked for while the next page was on
+  its way was refused, the server was never asked for it, WebKit's sentence was what the guard let pass, and
+  nothing was held against the test. And "the way is marked instead of walked", which had failed over that
+  sentence in runs 30, 43 and 45, passed at its first attempt on both.
+- **Robot Ridge's three later activities passed in Safari's engine**, on every screen that reached them: the
+  desktop, the tablet, the phone and the iPhone upright and on its side.
+- **The fault of passing "how to play" by did not show**: the test that it failed four times in the two runs
+  before passed at its first attempt on all nine screens that run it. That is what the fix should do; it is
+  not proof, since the fault showed only now and then.
 
 **And the time, a third time.** The two halves of the desktop took 15.5 and 11.3 minutes, where the one job
 had taken 29.2: that worked. But the phones took 32.5 of their 40: the phone is the screen everything pressed
@@ -921,7 +1138,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 1977)
+## What the unit tests cover (Vitest, 2135)
 
 | Area                                                              | Files                                                                                                                                                   | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -947,7 +1164,7 @@ failures were the useful part:
 | **What has been finished** (after the six worlds)                 | `tests/game/progress.test.tsx`                                                                                                                          | A page that is the first thing opened finds out who is playing by itself, once, and then says what they have finished; on a device nobody has played on it says nothing and stays so; the next thing to do in a world, and on the map                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **Asking again** (after the six worlds)                           | `tests/game/again.test.tsx`                                                                                                                             | It belongs to one step, and the next starts as if nothing had been asked; an asking that comes before a showing is over starts the step again and is not "again"; the event of a tap is not taken for "not yet"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | **Music** (Phase 11)                                              | `tests/engine/music.test.ts`, `tests/content/musicLabRules.test.ts`, `tests/game/musicLab.test.tsx`, `musicRoom.test.tsx`, `tests/app/audio.test.ts`    | Notes and their pitches; a tune's shape; keeping time, as sums; the Music Lab's 32 rules; what is played and in what order; the instruments' make-up and timing; the room to play in                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| **What the browser tests decide by** (after the six worlds)       | `tests/config/e2eDiagnosis.test.ts`                                                                                                                     | WebKit's words for a download it could not load are recognised, cut short or whole, and nothing else is taken for them; the preview server notes each page as it arrives and again when it has answered, and nothing else, and only when told where; and what a test that ran out of time is told about its page                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **What the browser tests decide by** (after the six worlds)       | `tests/config/e2eDiagnosis.test.ts`                                                                                                                     | WebKit's words for a download it would not begin are recognised, cut short or whole, nothing else is taken for them, and they count as this site's only for an address on it; what a page left undone (a download cancelled, or in WebKit never begun) is held against a test only while no other page has been asked for since, whichever the browser reports first; the preview server notes each page as it arrives and again when it has answered, and nothing else, and only when told where; and what a test that ran out of time is told about its page                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | **Numbers** (Phase 06, second half)                               | `tests/engine/numbers.test.ts`, `tests/content/numberGardenRules.test.ts`, `tests/game/numberScripts.test.ts`, `numberPictures.test.tsx`                | What each of Number Garden's number pictures stands for, and which are refused; every rule for the later questions, with a case that breaks it; what is counted, named and lifted, in order, for a right answer and a wrong one; that a numeral shows no dots, a gap no tower and a bare stone no number until each is found; that nobody in a story overlaps anybody                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **When a script's beats arrive** (Phase 06, second half)          | `tests/game/useScript.test.tsx`                                                                                                                         | A script that opens with something shows it from the first frame; nothing moves for someone who has asked for less movement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | **A dialog** (after the Music Lab)                                | `tests/ui/modal.test.tsx`                                                                                                                               | A late "closed" from before a dialog was opened again does not close it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -1014,22 +1231,22 @@ phone 360 pixels wide leaves a page about 264 to 280. `phones.spec.ts` tests bot
 
 | What                                                    | Size (gzip) | Budget  |
 | ------------------------------------------------------- | ----------- | ------- |
-| Script for the first screen                             | 105.8 kB    | 110 kB  |
+| Script for the first screen                             | 105.9 kB    | 110 kB  |
 | Styles for the first screen                             | 7.4 kB      | 12 kB   |
 | Fonts                                                   | 67.2 kB     | 80 kB   |
 | The hub's pictures (WebP, not gzipped)                  | 284.0 kB    | 330 kB  |
 | 3D hub (on demand)                                      | 260.1 kB    | 290 kB  |
 | Largest other on-demand part (Number Garden's content)  | 12.4 kB     | 30 kB   |
-| The game: everything but the voice and the content, raw | 2532.4 kB   | 2700 kB |
-| The content: seven packs, raw                           | 573.9 kB    | 900 kB  |
-| The voice: 564 recordings (MP3, not gzipped)            | 6246 kB     | 9000 kB |
+| The game: everything but the voice and the content, raw | 2552.6 kB   | 2700 kB |
+| The content: seven packs, raw                           | 598.8 kB    | 900 kB  |
+| The voice: 573 recordings (MP3, not gzipped)            | 6440 kB     | 9000 kB |
 | The largest recording                                   | 32.8 kB     | 60 kB   |
 
 A world's code is 2.5 to 12.2 kB and its content 3.5 to 12.4 kB, each fetched on entering that world (Reading
 Cove's are 11.0 and 11.2); the lesson frame is 8.5 kB and the part of the engine that judges answers 5.6 kB,
 fetched with the first activity; and a recording is fetched when the step that may say it arrives.
 
-**Two of these are worth watching.** The script for the first screen is 105.8 kB of the 110 it is allowed, and
+**Two of these are worth watching.** The script for the first screen is 105.9 kB of the 110 it is allowed, and
 it has grown with every activity: what each world offers, with the grown-ups' words about it, is in it. (Six
 more activities in Reading Cove added a tenth of a kilobyte; the first-visit help added seven tenths, for
 what a player's settings may now hold and for the front door's knowing who is new. "How to play" itself is a
@@ -1276,6 +1493,16 @@ time, a word built with each place lit in turn, sh ch th met a pair at a time, a
 finger under each word. A probe counted 16 activities on Reading Cove's page; found "Read the sentence" set on
 two lines on a phone held upright, with its shortest word 18 pixels high at 320×568 and 26 at 390×844; and
 found that a new player goes from the front door to the islands, as they must: "how to play" is not live.
+
+**After the owner merged pull request #11** (2026-11-26, `ed3efd6`), an hour and a half after the merge:
+Vercel's own record of the production deployment said "Ready". The tests of that commit, not of this tree,
+were run against the address (the tests here expect seven activities in Robot Ridge, and four are live): 69
+passed of 69, eight smoke tests as a desktop and as a phone and 53 as a Pixel 7, which play something in
+every world. Among them: "how to play" is where the front door leads, with each of its three things shown and
+then done; it is shown one moment after another, and nothing can be tapped until Glim has shown it; it can be
+passed by and is not shown again; and in the grown-ups' area Play begins where a grown-up says. The test that
+the live fault (above, run 45) makes fail now and then passed there, as it mostly does. No probe was made
+beyond those tests.
 
 That is evidence that Vercel serves what was built, with the headers and routing the tests expect, and that the
 voice's files arrive. It is not a phone, and nobody has heard those recordings play. Nor is it evidence that

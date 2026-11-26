@@ -8,6 +8,7 @@ import {
   Pages,
   fetchNotLoaded,
   onSite,
+  openingInWords,
   pageLogPath,
   pagesServed,
 } from '../../e2e/diagnosis';
@@ -205,6 +206,29 @@ describe('what a page left undone', () => {
     undone.cancelled(late, 1);
     expect(undone.held()).toEqual([own]);
     expect(undone.passed()).toEqual([CANCELLED, late]);
+  });
+});
+
+describe('what a page that is opening an activity says it is waiting for', () => {
+  it('is nothing where the page is opening nothing', () => {
+    expect(openingInWords(null)).toBeNull();
+    expect(openingInWords('')).toBeNull();
+  });
+
+  it('is put into words for each of the three things an activity waits for, in the order it waits', () => {
+    expect(openingInWords('content')).toBe('the world’s content and the code that draws it');
+    expect(openingInWords('store')).toBe(
+      'the store on the device to open, and to say who is playing',
+    );
+    expect(openingInWords('sitting')).toBe(
+      'the sitting to be found or begun in the store on the device',
+    );
+  });
+
+  it('passes on a word it does not know, and says that it does not', () => {
+    expect(openingInWords('something-new')).toBe(
+      '“something-new”, which these tests have no words for',
+    );
   });
 });
 

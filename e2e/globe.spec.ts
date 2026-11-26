@@ -10,7 +10,13 @@ import {
 } from '../src/content/explorer-harbor/globe';
 import places from '../src/content/explorer-harbor/places.json' with { type: 'json' };
 import type { Challenge } from '../src/engine';
-import { SLOP, TIP_STEP, TURN_STEP } from '../src/game/worlds/explorer-harbor/turning';
+import {
+  BACK_AFTER_MS,
+  SLOP,
+  TIP_STEP,
+  TURN_MS,
+  TURN_STEP,
+} from '../src/game/worlds/explorer-harbor/turning';
 import { arrived, expect, myTurn, next, screenFit, test, type Page } from './fixtures';
 import { answer, challengeOnScreen } from './play';
 
@@ -652,6 +658,95 @@ test.describe('turning the globe', () => {
     expect(ringed).toEqual({ pins: [true, true, true], turns: [false, false] });
   });
 
+  test('a turn by a button is finished however long the page stops in the middle of it, and the wait before it turns back begins when it has got there', async ({
+    page,
+    press,
+  }) => {
+    await page.goto(play('eh-lands-01'));
+    await press(myTurn(page));
+    const question = await asked(page);
+    await looksAt(page, question.home);
+    // A step to the left from here puts a pin out of sight: the globe will turn back by itself.
+    const to = { lon: question.home.lon - TURN_STEP, lat: question.home.lat };
+    expect(question.pins.some((pin) => !inSight(to, pin.at))).toBe(true);
+
+    // The page writes down everywhere the globe looks, with the time. And the first time it sees the globe on
+    // its way after the press, and not yet there, it stops, for longer than a turn and the wait put together:
+    // a phone that has something else to do. (The wait used to be counted from the press. The page then woke to
+    // find it was time to turn back, and turned back from half-way: CI's run 54 met it once, on a busy machine,
+    // as a globe that never got where it was sent.)
+    //
+    // It stops when the turn is seen to be under way, and not so long after the press: how many pictures a
+    // browser draws in a tenth of a second is its own affair. (This test first waited a tenth of a second and
+    // then asked for three pictures to have been drawn by then. WebKit, on a phone's screen in CI, drew two.)
+    await page.evaluate(
+      ({ busy, there }) => {
+        const drawing = document.querySelector<SVGSVGElement>(
+          '[data-testid="globe"] svg[data-scene="globe"]',
+        );
+        const turn = {
+          looked: [] as { at: number; view: string }[],
+          pressed: false,
+          /** How many places had been looked at when the page stopped: none while it has not. */
+          stoppedAfter: 0,
+        };
+        (window as unknown as { globeTurn: typeof turn }).globeTurn = turn;
+        if (!drawing) return;
+        new MutationObserver(() => {
+          const view = `${drawing.dataset.lon ?? ''},${drawing.dataset.lat ?? ''}`;
+          turn.looked.push({ at: performance.now(), view });
+          if (!turn.pressed || turn.stoppedAfter > 0 || view === there) return;
+          turn.stoppedAfter = turn.looked.length;
+          const until = performance.now() + busy;
+          while (performance.now() < until) {
+            // Nothing: the page is busy.
+          }
+        }).observe(drawing, { attributes: true, attributeFilter: ['data-lon', 'data-lat'] });
+        document.querySelector('[data-turn="left"]')?.addEventListener(
+          'click',
+          () => {
+            turn.pressed = true;
+          },
+          { once: true },
+        );
+      },
+      { busy: TURN_MS.step + BACK_AFTER_MS + 300, there: written(to) },
+    );
+
+    await press(page.getByRole('button', { name: 'Turn the globe to the left' }));
+    const theTurn = () =>
+      page.evaluate(
+        () =>
+          (
+            window as unknown as {
+              globeTurn: { looked: { at: number; view: string }[]; stoppedAfter: number };
+            }
+          ).globeTurn,
+      );
+    // It gets where it was sent, although the page was stopped for longer than that takes. (This is waited for
+    // before anything else is asked: straight after the press the globe has not yet begun to turn, and is
+    // still where the question is asked from.)
+    await expect
+      .poll(async () => (await theTurn()).looked.map((each) => each.view), { timeout: 8000 })
+      .toContain(written(to));
+    // In the end it is back where the question is asked from, as after any turn that loses a pin.
+    await looksAt(page, question.home);
+    const { looked, stoppedAfter } = await theTurn();
+    const there = looked.findIndex((each) => each.view === written(to));
+    // The page did stop, when the turn was under way and before it had got there: the turn was not made in one
+    // jump, and the page was stopped for as long as was meant.
+    expect(stoppedAfter).toBeGreaterThan(0);
+    expect(there).toBeGreaterThanOrEqual(stoppedAfter);
+    const stoppedFor = (looked[stoppedAfter]?.at ?? 0) - (looked[stoppedAfter - 1]?.at ?? 0);
+    expect(stoppedFor).toBeGreaterThanOrEqual(TURN_MS.step + BACK_AFTER_MS);
+    // ...and it was left there for the whole of the wait before it turned back.
+    const arrivedAt = looked[there]?.at ?? 0;
+    const leftAt = looked[there + 1]?.at ?? 0;
+    expect(leftAt - arrivedAt).toBeGreaterThanOrEqual(BACK_AFTER_MS - 50);
+    // Turning is not answering, however it went.
+    await expect(lesson(page).locator('[data-choice][data-state="open"]')).toHaveCount(3);
+  });
+
   test('the arrow keys turn it from any pin or button, the keyboard is never left with nothing, and Enter on a pin answers', async ({
     page,
     hasTouch,
@@ -719,7 +814,7 @@ test.describe('turning the globe', () => {
     await expect(caption(page)).toHaveText(`Yes. That is ${MIDDLES[question.want]?.name ?? ''}.`);
   });
 
-  test('held the other way, the globe and its pins are laid out again and are still right @layout', async ({
+  test('held the other way, the globe and its pins are laid out again and are still right', async ({
     page,
     press,
   }, testInfo) => {

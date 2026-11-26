@@ -11,6 +11,12 @@ export interface Playing {
    * offers nothing to answer with.
    */
   glanced: boolean;
+  /**
+   * This run of the script has played to its end: everything it shows has been shown, and the board is where it
+   * comes to rest. A board says so on the page (`data-shown`), for anything that would measure the board or
+   * read it: until then one of its pictures may be lifted, lit or half-way somewhere.
+   */
+  over: boolean;
 }
 
 /**
@@ -36,6 +42,7 @@ export function useScript(
     beat: REST,
     turn: 0,
     glanced: false,
+    over: false,
   });
   const still = calm && !(essential || script.essential === true);
 
@@ -54,9 +61,20 @@ export function useScript(
         if (beat && !still) {
           turn += 1;
           glanced ||= beat.show === 'glance';
-          setShown({ run, beat, turn, glanced });
+          setShown({ run, beat, turn, glanced, over: false });
         }
       }, moment.at),
+    );
+    // After the last of them, at the moment the script comes to rest: this run is over. (Asked for last, so that
+    // of two things due at the same moment it is the later.)
+    timers.push(
+      window.setTimeout(() => {
+        setShown((now) =>
+          now.run === run
+            ? { ...now, over: true }
+            : { run, beat: script.settled, turn, glanced, over: true },
+        );
+      }, script.length),
     );
     return () => {
       for (const timer of timers) window.clearTimeout(timer);
@@ -66,7 +84,7 @@ export function useScript(
   }, [script, run, active, still]);
 
   // Standing still, nothing will be uncovered: whatever a look would have shown is not waited for.
-  if (still) return { beat: script.settled, turn: 0, glanced: true };
+  if (still) return { beat: script.settled, turn: 0, glanced: true, over: true };
   if (active && shown.run === run) return shown;
   // Until this run's first moment arrives, the board shows what the script opens with, if it opens with
   // anything at its very start (a story as it stood before anyone moved), and otherwise is at rest. That moment
@@ -75,5 +93,5 @@ export function useScript(
   const opening = active
     ? script.moments.find((moment) => moment.at === 0 && moment.beat !== undefined)?.beat
     : undefined;
-  return { beat: opening ?? REST, turn: 0, glanced: false };
+  return { beat: opening ?? REST, turn: 0, glanced: false, over: false };
 }

@@ -10,6 +10,8 @@ import { useScript } from '@/game/lesson/useScript';
  */
 
 const seen: Beat[] = [];
+/** Whether the run was over, each time the board was drawn. */
+const overs: boolean[] = [];
 
 function Board({
   script,
@@ -22,8 +24,9 @@ function Board({
   active?: boolean;
   calm?: boolean;
 }) {
-  const { beat } = useScript(script, run, active, calm);
+  const { beat, over } = useScript(script, run, active, calm);
   seen.push(beat);
+  overs.push(over);
   return <output data-beat={JSON.stringify(beat)} />;
 }
 
@@ -37,6 +40,7 @@ const question = () => new Writer().wait(250).beat({ show: 'ask' }).wait(1100).e
 
 beforeEach(() => {
   seen.length = 0;
+  overs.length = 0;
   vi.useFakeTimers();
 });
 afterEach(() => {
@@ -85,5 +89,55 @@ describe('playing a script', () => {
     expect(seen).toEqual([REST]);
     act(() => void vi.advanceTimersByTime(2000));
     expect(seen.at(-1)).toEqual(REST);
+  });
+
+  it('says a run is over when the script has come to rest, and not a moment before', () => {
+    // A question: a pause, the asking, and rest 1350 thousandths of a second after it began.
+    render(<Board script={question()} />);
+    expect(overs).toEqual([false]);
+    act(() => void vi.advanceTimersByTime(250));
+    expect(seen.at(-1)).toEqual({ show: 'ask' });
+    act(() => void vi.advanceTimersByTime(1099));
+    // Still being asked: an answer may be lifted at this moment.
+    expect(seen.at(-1)).toEqual({ show: 'ask' });
+    expect(overs).not.toContain(true);
+    act(() => void vi.advanceTimersByTime(1));
+    expect(seen.at(-1)).toEqual(REST);
+    expect(overs.at(-1)).toBe(true);
+    // And it stays over.
+    act(() => void vi.advanceTimersByTime(5000));
+    expect(overs.at(-1)).toBe(true);
+  });
+
+  it('is not over from the first frame of a new run, though the run before it was', () => {
+    const script = question();
+    const { rerender } = render(<Board script={script} />);
+    act(() => void vi.advanceTimersByTime(1350));
+    expect(overs.at(-1)).toBe(true);
+    overs.length = 0;
+    rerender(<Board script={script} run="two" />);
+    // Not one drawing of the new run with the old run's word that it was over.
+    expect(overs).not.toContain(true);
+    act(() => void vi.advanceTimersByTime(1349));
+    expect(overs).not.toContain(true);
+    act(() => void vi.advanceTimersByTime(1));
+    expect(overs.at(-1)).toBe(true);
+  });
+
+  it('is over at once where nothing moves, and never while nothing is playing', () => {
+    render(<Board script={question()} calm />);
+    expect(overs).toEqual([true]);
+    cleanup();
+    overs.length = 0;
+    render(<Board script={question()} active={false} />);
+    act(() => void vi.advanceTimersByTime(5000));
+    expect(overs).not.toContain(true);
+  });
+
+  it('is over for a script with nothing in it but where it rests', () => {
+    render(<Board script={new Writer().end(REST)} />);
+    act(() => void vi.advanceTimersByTime(0));
+    expect(seen.at(-1)).toEqual(REST);
+    expect(overs.at(-1)).toBe(true);
   });
 });

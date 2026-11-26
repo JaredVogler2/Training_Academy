@@ -92,7 +92,7 @@ export function GuessBoard({ state, runner, pack, paused, calm }: BoardProps) {
     [view.key, view.hintsUsed, event, seenBefore, shown, asked, seconds],
   );
   const run = `${view.key}/${String(view.hintsUsed)}/${event}/${String(asked)}`;
-  const { beat } = useScript(script, run, !paused, calm);
+  const { beat, over } = useScript(script, run, !paused, calm);
 
   const testing = beat.show === 'count';
   useEffect(() => {
@@ -136,6 +136,7 @@ export function GuessBoard({ state, runner, pack, paused, calm }: BoardProps) {
         data-count={view.choices.length}
         data-prompt="scene"
         data-testid="guess-board"
+        data-shown={over}
         inert={paused}
       >
         <div

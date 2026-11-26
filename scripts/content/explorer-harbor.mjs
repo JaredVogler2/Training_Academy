@@ -23,6 +23,10 @@
 // one is found that a single view shows well: every pin plainly facing, and far enough from the others for a
 // small finger on the smallest screen. The world's rules work each one out again.
 //
+// A story to make up is not in the pack at all: it is no lesson, and nothing in it is right or wrong. What it is
+// made of is src/content/explorer-harbor/storymaker.json; the lines it is told with are written from that file
+// here, for the voice, beside the lines of the stories that are put in order.
+//
 // Nothing here scores a story a child makes up. Nothing here is about people, and no border is drawn.
 
 import { readFileSync } from 'node:fs';
@@ -31,6 +35,9 @@ import { rng, root } from './lib.mjs';
 
 const storybook = JSON.parse(
   readFileSync(join(root, 'src/content/explorer-harbor/storybook.json'), 'utf8'),
+);
+const storymaker = JSON.parse(
+  readFileSync(join(root, 'src/content/explorer-harbor/storymaker.json'), 'utf8'),
 );
 const NAMES = storybook.pictures;
 const LETTERS = ['a', 'b', 'c', 'd'];
@@ -1122,7 +1129,46 @@ export function buildExplorerHarborPack() {
   };
 }
 
-/** What the voice needs here beside the pack's lines: the line each picture of a story is told with. */
+/**
+ * Every line there is to say in the room for making a story, by key: the questions, and the lines each page of
+ * each story is told with. src/content/explorer-harbor/storymaker.ts makes the same lines from the same file
+ * for the game, and a test holds the two to one another.
+ */
+function storymakerLines() {
+  const { characters, settings, seeds, asks } = storymaker;
+  const lines = {
+    'eh.make.who': asks.who,
+    'eh.make.where': asks.where,
+    'eh.make.trouble': asks.trouble,
+    'eh.make.ending': asks.ending,
+    'eh.make.told': asks.told,
+    'eh.make.whole': asks.whole,
+  };
+  for (const [who, { name }] of Object.entries(characters)) {
+    lines[`eh.make.want.${who}`] = asks.want.replace('{name}', name);
+    lines[`eh.make.happy.${who}`] = asks.happy.replace('{name}', name);
+    for (const [where, setting] of Object.entries(settings)) {
+      lines[`eh.make.went.${who}.${where}`] = `One day, ${name} ${setting.went}.`;
+    }
+    for (const [seed, { want }] of Object.entries(seeds)) {
+      lines[`eh.make.wanted.${who}.${seed}`] = `${name} ${want}.`;
+    }
+  }
+  for (const [seed, { troubles }] of Object.entries(seeds)) {
+    for (const [trouble, { but, endings }] of Object.entries(troubles)) {
+      lines[`eh.make.but.${seed}.${trouble}`] = but;
+      for (const [ending, { so }] of Object.entries(endings)) {
+        lines[`eh.make.so.${seed}.${trouble}.${ending}`] = so;
+      }
+    }
+  }
+  return lines;
+}
+
+/**
+ * What the voice needs here beside the pack's lines: the line each picture of a story is told with, and
+ * everything that is said in the room for making a story.
+ */
 export function buildExplorerHarborVoice() {
   const lines = {};
   for (const story of Object.values(storybook.stories)) {
@@ -1130,9 +1176,10 @@ export function buildExplorerHarborVoice() {
       lines[`eh.panel.${panel}`] = story.told[index];
     });
   }
+  Object.assign(lines, storymakerLines());
   return {
     about:
-      'What the voice says for Explorer Harbor beside the lines of its pack: the line each picture of a story is told with. Written by scripts/content/explorer-harbor.mjs from the storybook; do not edit by hand.',
+      'What the voice says for Explorer Harbor beside the lines of its pack: the line each picture of a story is told with, and everything said in the room for making a story. Written by scripts/content/explorer-harbor.mjs from the storybook and from storymaker.json; do not edit by hand.',
     groups: { 'explorer-harbor': { lines } },
   };
 }

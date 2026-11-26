@@ -1,0 +1,237 @@
+{
+  "about": "What a story is made of in Explorer Harbor's room, Make a story: who it is about, where it happens, what they want, what goes wrong and how it comes right. Six beginnings, each with two things that can go wrong, each of those with two ways it can come right: twenty-four ways through for every one of the three it can be about. Every way ends well. Nothing here is right or wrong to choose.",
+  "characters": {
+    "fox": { "name": "Fox" },
+    "bear": { "name": "Bear" },
+    "rabbit": { "name": "Rabbit" }
+  },
+  "settings": {
+    "beach": { "name": "The beach", "went": "went to the beach", "seeds": ["kite", "sandcastle"] },
+    "forest": {
+      "name": "The forest",
+      "went": "went into the forest",
+      "seeds": ["berries", "stream"]
+    },
+    "garden": {
+      "name": "The garden",
+      "went": "went out into the garden",
+      "seeds": ["picnic", "apple"]
+    }
+  },
+  "seeds": {
+    "kite": {
+      "name": "Fly a kite",
+      "want": "wanted to fly a kite",
+      "troubles": {
+        "no-wind": {
+          "name": "The wind stops",
+          "but": "But the wind stopped, and the kite fell down.",
+          "endings": {
+            "run": {
+              "name": "Run with it",
+              "so": "So it was time to run! Along the sand, as fast as the wind, and up went the kite."
+            },
+            "wait": {
+              "name": "Wait for the wind",
+              "so": "So there was nothing to do but wait. Then the wind came back, and up went the kite."
+            }
+          }
+        },
+        "tangle": {
+          "name": "The string is in a tangle",
+          "but": "But the string was all in a tangle.",
+          "endings": {
+            "crab": {
+              "name": "A crab snips the knots",
+              "so": "Along came a little crab. Snip, snip, and the knots were gone. Up went the kite."
+            },
+            "slowly": {
+              "name": "Undo the knots one by one",
+              "so": "Slowly, slowly, one knot at a time, the string came free. Up went the kite."
+            }
+          }
+        }
+      }
+    },
+    "sandcastle": {
+      "name": "Build a sandcastle",
+      "want": "wanted to build a sandcastle",
+      "troubles": {
+        "wave": {
+          "name": "A wave washes it away",
+          "but": "But a big wave came, and washed the castle away.",
+          "endings": {
+            "higher": {
+              "name": "Build it higher up the beach",
+              "so": "So a new castle was built, high up the beach, where no wave could reach."
+            },
+            "ditch": {
+              "name": "Dig a ditch round it",
+              "so": "So a ditch was dug all round a new castle. The next wave filled the ditch, and the castle stood."
+            }
+          }
+        },
+        "dry": {
+          "name": "The sand is too dry",
+          "but": "But the sand was too dry, and the castle fell down.",
+          "endings": {
+            "bucket": {
+              "name": "Fetch a bucket of water",
+              "so": "A bucket of sea water made the sand wet, and the new castle stood up tall."
+            },
+            "dig": {
+              "name": "Dig down to the wet sand",
+              "so": "Deep down, the sand was wet. That sand made a castle that stood up tall."
+            }
+          }
+        }
+      }
+    },
+    "berries": {
+      "name": "Pick berries",
+      "want": "wanted to pick some berries",
+      "troubles": {
+        "high": {
+          "name": "The berries are too high",
+          "but": "But the best berries were too high to reach.",
+          "endings": {
+            "log": {
+              "name": "Stand on a log",
+              "so": "So a log was rolled under the bush. One step up, and the basket was full."
+            },
+            "stick": {
+              "name": "Pull the branch down with a stick",
+              "so": "A long stick pulled the branch down low, and soon the basket was full."
+            }
+          }
+        },
+        "hole": {
+          "name": "The basket has a hole",
+          "but": "But the basket had a hole, and the berries fell out.",
+          "endings": {
+            "leaf": {
+              "name": "Mend it with a leaf",
+              "so": "A big leaf went into the basket, over the hole. Not one more berry fell out."
+            },
+            "eat": {
+              "name": "Eat them straight away",
+              "so": "So the berries were eaten then and there. Yum, yum, yum!"
+            }
+          }
+        }
+      }
+    },
+    "stream": {
+      "name": "Cross the stream",
+      "want": "wanted to get across the stream",
+      "troubles": {
+        "broken": {
+          "name": "The bridge is broken",
+          "but": "But the little bridge was broken.",
+          "endings": {
+            "stones": {
+              "name": "Step across on the stones",
+              "so": "Three flat stones lay in the water. Step, step, step, and over the stream."
+            },
+            "log": {
+              "name": "Lay a log across",
+              "so": "A fallen log lay near. Pushed across the water, it made a new bridge."
+            }
+          }
+        },
+        "deep": {
+          "name": "The water is too deep",
+          "but": "But the water was too deep to walk across.",
+          "endings": {
+            "along": {
+              "name": "Find where it is not deep",
+              "so": "A little way along, it was not deep at all. Splash, splash, and over the stream."
+            },
+            "boat": {
+              "name": "Row across in a boat",
+              "so": "A little boat was tied to a tree. Row, row, row, and over the stream."
+            }
+          }
+        }
+      }
+    },
+    "picnic": {
+      "name": "Have a picnic",
+      "want": "wanted to have a picnic",
+      "troubles": {
+        "rain": {
+          "name": "It begins to rain",
+          "but": "But then it began to rain.",
+          "endings": {
+            "tree": {
+              "name": "Sit under the big tree",
+              "so": "Under the big tree it was dry. The picnic was eaten there, to the sound of the rain."
+            },
+            "umbrella": {
+              "name": "Put up an umbrella",
+              "so": "Up went a big umbrella, and the picnic stayed dry."
+            }
+          }
+        },
+        "ants": {
+          "name": "Ants come for the cake",
+          "but": "But a line of ants came marching for the cake.",
+          "endings": {
+            "share": {
+              "name": "Give every ant a crumb",
+              "so": "So every ant was given a crumb, and there was plenty of cake for all."
+            },
+            "move": {
+              "name": "Move to the top of the hill",
+              "so": "So the picnic was moved to the top of the hill, and the ants went home."
+            }
+          }
+        }
+      }
+    },
+    "apple": {
+      "name": "Get the big red apple",
+      "want": "wanted the big red apple at the top of the tree",
+      "troubles": {
+        "high": {
+          "name": "The apple is too high",
+          "but": "But the apple was much too high to reach.",
+          "endings": {
+            "ladder": {
+              "name": "Climb a ladder",
+              "so": "A ladder stood by the shed. Up, up, up, and the apple was picked."
+            },
+            "shake": {
+              "name": "Shake the tree gently",
+              "so": "One gentle shake of the tree, and down came the apple, plop, into the grass."
+            }
+          }
+        },
+        "rolled": {
+          "name": "The apple rolls away",
+          "but": "But the apple fell, and rolled away down the hill.",
+          "endings": {
+            "chase": {
+              "name": "Run after it",
+              "so": "After it! Down the hill and round the pond, and there was the apple, by the gate."
+            },
+            "duck": {
+              "name": "A duck brings it back",
+              "so": "It rolled all the way to the pond. A duck pushed it back to the bank with its beak."
+            }
+          }
+        }
+      }
+    }
+  },
+  "asks": {
+    "who": "Let us make a story. Who is it about?",
+    "where": "Where does the story happen?",
+    "want": "What does {name} want to do?",
+    "trouble": "Oh dear. Something goes wrong. What is it?",
+    "ending": "What happens now? You choose.",
+    "told": "Here is your story, from the beginning.",
+    "whole": "That is your story. You can hear it again, or make a new one.",
+    "happy": "{name} was happy. The end."
+  }
+}

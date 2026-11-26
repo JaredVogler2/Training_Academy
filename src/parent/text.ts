@@ -46,6 +46,9 @@ export const grownUpText = {
   shown: (name: string) => `What ${name} has shown`,
   shownHelp:
     'Only answers given at the first try, with no hint and no help, count as doing something independently. Watching, hints and second tries never do. These are plain counts, not a test score.',
+  shownReading: 'Reading what has been recorded…',
+  shownTrouble:
+    'What has been recorded could not be read just now, so nothing is said here about any skill. Try opening this page again.',
   status: {
     'not-yet-observed': 'Not yet observed',
     exploring: 'Exploring',

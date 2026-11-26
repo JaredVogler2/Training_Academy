@@ -32,6 +32,7 @@ export function ChooseBoard(props: BoardProps) {
     turnedAway,
     unseen,
     standingOf,
+    over,
   } = useChoosing(props);
   const { Picture } = module;
 
@@ -43,6 +44,10 @@ export function ChooseBoard(props: BoardProps) {
         data-count={view.choices.length}
         data-prompt={stimulus.type}
         data-asks-about={stimulus.type === 'scene' ? stimulus.scene : undefined}
+        // Whether what this step shows of itself has been shown: the question said, each answer offered in its
+        // turn, and everything back at rest. Until then an answer may be lifted or lit, and is not where it
+        // will be: whatever measures the board waits for this.
+        data-shown={over}
         inert={paused}
       >
         <div

@@ -58,13 +58,18 @@ function useTurning(rest: View, calm: boolean) {
     setTurning(false);
   }, []);
 
+  /**
+   * Turn to a view, gently. `then` is what follows the turn, and is called when the globe has got there, however
+   * long that took: a turn that something else takes over (another turn, a finger) is not followed by anything.
+   */
   const turnTo = useCallback(
-    (to: View, ms: number) => {
+    (to: View, ms: number, then?: () => void) => {
       stop();
       const from = now.current;
       const end = steady(to);
       if (calm || ms <= 0 || (from.lon === end.lon && from.lat === end.lat)) {
         show(end);
+        then?.();
         return;
       }
       setTurning(true);
@@ -78,6 +83,7 @@ function useTurning(rest: View, calm: boolean) {
         } else {
           frame.current = 0;
           setTurning(false);
+          then?.();
         }
       };
       frame.current = requestAnimationFrame(step);
@@ -168,6 +174,7 @@ export function GlobeBoard(props: BoardProps) {
     aim,
     same,
     standingOf,
+    over,
   } = useChoosing(props);
   const { stimulus } = challenge.prompt;
   const of = stimulus.type === 'scene' ? stimulus.of : {};
@@ -207,6 +214,11 @@ export function GlobeBoard(props: BoardProps) {
     if (lost) back.current = window.setTimeout(() => turnTo(rest, TURN_MS.back), BACK_AFTER_MS);
   };
   useEffect(() => () => window.clearTimeout(back.current), []);
+  // What follows a turn by a button or a key is decided when the turn is over, by the board as it is then.
+  const settleNow = useRef(settle);
+  useEffect(() => {
+    settleNow.current = settle;
+  });
   // A new question, or a place found: the globe is on its way there, and nothing is owed to where it was.
   useEffect(() => {
     window.clearTimeout(back.current);
@@ -227,16 +239,13 @@ export function GlobeBoard(props: BoardProps) {
   const turnBy = (lon: number, lat: number) => {
     if (lon !== 0) lastTurned.current = lon < 0 ? 'left' : 'right';
     window.clearTimeout(back.current);
-    turnTo({ lon: now.current.lon + lon, lat: now.current.lat + lat }, TURN_MS.step);
-    // Where it will be when it has turned is where it is judged from.
-    const after = steady({ lon: now.current.lon + lon, lat: now.current.lat + lat });
-    const lost = open.some((at) => !inSight(after, at));
-    if (lost) {
-      back.current = window.setTimeout(
-        () => turnTo(rest, TURN_MS.back),
-        BACK_AFTER_MS + TURN_MS.step,
-      );
-    }
+    // Whether a pin has gone out of sight is asked when the globe has got there, and the wait before it turns
+    // back is counted from then. (It was counted from the press, as the time a turn takes and then the wait. A
+    // page that stopped for two seconds in the middle of a turn then woke to find it was time to turn back, and
+    // turned back from half-way: the turn was never finished. CI's run 54 met it once, on a busy machine.)
+    turnTo({ lon: now.current.lon + lon, lat: now.current.lat + lat }, TURN_MS.step, () =>
+      settleNow.current(),
+    );
   };
 
   /** The pin a press landed on, if it landed on one: the one that holds what was touched. */
@@ -360,7 +369,13 @@ export function GlobeBoard(props: BoardProps) {
 
   return (
     <>
-      <div className={styles.globeBoard} data-testid="globe-board" data-ask={ask} inert={paused}>
+      <div
+        className={styles.globeBoard}
+        data-testid="globe-board"
+        data-ask={ask}
+        data-shown={over}
+        inert={paused}
+      >
         <div className={styles.globeLayout}>
           <span className="sr-only">{module.describe(stimulus, 'prompt')}</span>
 

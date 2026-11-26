@@ -18,6 +18,7 @@ const GrownUps = lazyView('grown-ups', () => import('@/parent/GrownUps'));
 const HowToPlay = lazyView('how-to', () => import('@/game/howto/HowToPlay'));
 const MusicRoom = lazyView('music-room', () => import('@/game/worlds/music-lab/Room'));
 const Portfolio = lazyView('portfolio', () => import('@/game/worlds/inventor-island/Portfolio'));
+const StoryRoom = lazyView('story-room', () => import('@/game/worlds/explorer-harbor/StoryRoom'));
 const Studio = lazyView('studio', () => import('@/render/hub3d/Studio'));
 const GuideSheet = lazyView('guide-sheet', () => import('@/ui/GuideSheet'));
 
@@ -49,8 +50,10 @@ function RouteView({ route }: { route: Route }) {
     case 'play':
       return <LessonView world={route.world} lessonId={route.lessonId} />;
     case 'room':
-      // The route table says which worlds have one: the Music Lab's is for playing, Inventor Island's for looking.
-      return route.world === 'inventor-island' ? <Portfolio /> : <MusicRoom />;
+      // The route table says which worlds have one: the Music Lab's is for playing, Inventor Island's for
+      // looking, Explorer Harbor's for making up a story.
+      if (route.world === 'inventor-island') return <Portfolio />;
+      return route.world === 'explorer-harbor' ? <StoryRoom /> : <MusicRoom />;
     case 'how-to':
       return <HowToPlay />;
     case 'grown-ups':

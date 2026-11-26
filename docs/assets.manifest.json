@@ -85,7 +85,7 @@
       "id": "world-pictures",
       "kind": "vector",
       "origin": "original",
-      "what": "Each world's own drawings: Reading Cove's sound cards and word tiles, its claps, its line of print and its pictures of one thing on or in another (put together from the picture kit); Memory Forest's scenes; Robot Ridge's robot and ground; Inventor Island's bridge, ramp, beam and tub; Explorer Harbor's 37 story pictures, its maps, flags, islands and boat, its globe (drawn from the atlas's outlines) and its fifteen famous places; the Music Lab's chime bars, bird, drum and signs",
+      "what": "Each world's own drawings: Reading Cove's sound cards and word tiles, its claps, its line of print and its pictures of one thing on or in another (put together from the picture kit); Memory Forest's scenes; Robot Ridge's robot and ground; Inventor Island's bridge, ramp, beam and tub; Explorer Harbor's 37 story pictures, its maps, flags, islands and boat, its globe (drawn from the atlas's outlines), its fifteen famous places, and the pictures of a story to make up (three animals, three places and forty-two scenes, put together into a page); the Music Lab's chime bars, bird, drum and signs",
       "paths": [
         "src/game/worlds/reading-cove/index.tsx",
         "src/game/worlds/reading-cove/scenes.tsx",
@@ -98,6 +98,8 @@
         "src/game/worlds/explorer-harbor/Globe.tsx",
         "src/game/worlds/explorer-harbor/GlobeBoard.tsx",
         "src/game/worlds/explorer-harbor/landmarks.tsx",
+        "src/game/worlds/explorer-harbor/storyParts.tsx",
+        "src/game/worlds/explorer-harbor/storyScenes.tsx",
         "src/game/worlds/music-lab/pictures.tsx",
         "src/game/worlds/music-lab/BeatBoard.tsx",
         "src/game/worlds/music-lab/TuneBoard.tsx",
@@ -201,10 +203,11 @@
       "id": "curriculum",
       "kind": "content",
       "origin": "original",
-      "what": "The content packs: every activity's challenges, written out in full, one file for each world; the storybook they draw on; and the list of the seven continents and fifteen famous places for the globe, with where each is",
+      "what": "The content packs: every activity's challenges, written out in full, one file for each world; the storybook they draw on; what a story to make up can be, and the lines it is told with; and the list of the seven continents and fifteen famous places for the globe, with where each is",
       "paths": [
         "src/content/packs/*.json",
         "src/content/explorer-harbor/storybook.json",
+        "src/content/explorer-harbor/storymaker.json",
         "src/content/explorer-harbor/places.json",
         "src/art/lexicon.json"
       ],

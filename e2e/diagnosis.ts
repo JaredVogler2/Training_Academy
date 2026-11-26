@@ -144,6 +144,28 @@ export const pageLogPath = (port: number): string =>
   join(tmpdir(), `training-academy-preview-${String(port)}.pages.log`);
 
 /**
+ * What a page that is opening an activity says it is still waiting for, in words. The page writes one word on
+ * itself while it waits (`data-opening`, see `waitingFor` in the lesson's view); a test that fails with an
+ * activity still at "Getting ready…" says which, so that the next one to do so explains itself. `null` when the
+ * page is opening nothing.
+ */
+export function openingInWords(opening: string | null): string | null {
+  switch (opening) {
+    case null:
+    case '':
+      return null;
+    case 'content':
+      return 'the world’s content and the code that draws it';
+    case 'store':
+      return 'the store on the device to open, and to say who is playing';
+    case 'sitting':
+      return 'the sitting to be found or begun in the store on the device';
+    default:
+      return `“${opening}”, which these tests have no words for`;
+  }
+}
+
+/**
  * How long a page is waited for before the test that asked for it gives up: half a minute, where it was as long
  * as the test had. A page comes or it does not. Of 2859 page loads in the reports of thirteen of CI's jobs (run
  * 49's twelve and one each of runs 50 and 51), the slowest that came took 4.7 seconds, the next 1.7, and every

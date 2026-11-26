@@ -153,6 +153,29 @@ test.describe('when the browser will not let the game save', () => {
   });
 });
 
+test.describe('while an activity is getting ready', () => {
+  test('the page says what it is waiting for, and stops saying it when the activity is there', async ({
+    page,
+  }) => {
+    // The world's content and the code that draws it are held back: the activity cannot open without them.
+    const waiting: (() => void)[] = [];
+    let held = true;
+    await page.route(/\/immutable\/number-garden[.-][^/]*\.js$/, async (route) => {
+      if (held) await new Promise<void>((resolve) => waiting.push(resolve));
+      await route.continue().catch(() => undefined);
+    });
+    await page.goto(LESSON_PATH);
+    const root = page.locator('html');
+    await expect(root).toHaveAttribute('data-opening', 'content');
+    await expect(page.getByTestId('lesson')).toHaveCount(0);
+    // Let through, the activity opens; and the page is waiting for nothing.
+    held = false;
+    for (const go of waiting) go();
+    await expect(myTurn(page)).toBeVisible();
+    await expect(root).not.toHaveAttribute('data-opening');
+  });
+});
+
 test.describe('when part of the game cannot be downloaded', () => {
   test('a calm message replaces that part, and the way home still works', async ({
     page,

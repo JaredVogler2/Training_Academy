@@ -119,6 +119,18 @@ test.describe('on a phone with a notch', () => {
     await expect(page.getByTestId('portfolio').locator('li')).toHaveCount(5);
     await clear('the portfolio');
     expect((await screenFit(page)).sideways).toEqual([]);
+
+    // And the room for making a story, which has the whole screen too and does not scroll: with nothing chosen,
+    // and with the first page being put together.
+    await page.goto('/world/explorer-harbor/room');
+    const story = page.getByTestId('story-room');
+    await expect(story.locator('button[data-choice]')).toHaveCount(3);
+    await clear('the room for making a story');
+    expect(await screenFit(page)).toEqual({ sideways: [], taller: 0 });
+    await press(story.locator('button[data-choice="bear"]'));
+    await expect(story).toHaveAttribute('data-turn', 'where');
+    await clear('the room for making a story, with someone chosen');
+    expect(await screenFit(page)).toEqual({ sideways: [], taller: 0 });
   });
 
   test('the page does not bounce, reload when pulled down, or zoom on two quick taps @layout', async ({

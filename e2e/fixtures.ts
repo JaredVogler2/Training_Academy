@@ -1,7 +1,14 @@
 import { test as base, expect, type Locator, type Page } from '@playwright/test';
 import { CHOOSE, PLACE, type Phase, type Step } from '../src/game/howto/steps';
 import { WORLDS, isOpen } from '../src/game/worlds';
-import { LeftUndone, Pages, fetchNotLoaded, onSite, pagesServed } from './diagnosis';
+import {
+  LeftUndone,
+  Pages,
+  fetchNotLoaded,
+  onSite,
+  openingInWords,
+  pagesServed,
+} from './diagnosis';
 
 /**
  * What every browser test gets:
@@ -43,6 +50,8 @@ interface Fixtures {
   /** Arrive as a new visit does: at the front door. Off by default, so most specs start on the map. */
   frontDoor: boolean;
   guard: Guard;
+  /** A slower machine, when one is asked for: see `SLOW_CPU`. */
+  slowly: undefined;
   /** Tap on a touch screen, click otherwise; `position` is measured from the target's top-left corner. */
   press: (target: Locator, options?: { position?: { x: number; y: number } }) => Promise<void>;
 }
@@ -96,6 +105,18 @@ export function nearItsLimit(taken: number, limit: number): string | null {
     'would have run out of time. Give the test a limit that fits what it does (test.setTimeout), or make it shorter'
   );
 }
+
+/**
+ * How many times slower than this machine's the processor every page is given is: `SLOW_CPU=6 npx playwright
+ * test …`. One, which is no slower, unless it is asked for.
+ *
+ * It is for meeting here what is otherwise met only in CI. CI's machines are slower than this one, and WebKit on
+ * them slower again: a test that counts on something having happened "by now" passes here every time and fails
+ * there (the first test of a globe turn that the page stops in the middle of asked for three pictures to have
+ * been drawn in a tenth of a second; WebKit, on a phone's screen in CI, drew two: run 55). It is asked of
+ * Chromium's own tools, so it does nothing in WebKit; and it slows the page's own work, not the network.
+ */
+export const SLOW_CPU = Math.max(1, Number(process.env.SLOW_CPU ?? 1) || 1);
 
 /**
  * The test that had this worker's browser before the one now running: a browser is kept from test to test, so a
@@ -213,7 +234,23 @@ export const test = base.extend<Fixtures>({
       // So has one whose page did not come in the time a page is given (PAGE_LIMIT), which is the same thing
       // found out sooner: it failed with a page asked for and still not answered.
       const pageOwed = [...unanswered.values()].some(({ kind }) => kind === 'document');
-      if (testInfo.status === 'timedOut' || (testInfo.status === 'failed' && pageOwed)) {
+      // And so has one that failed with an activity still being opened: the page says what it was waiting for,
+      // and that is said here with whatever had been asked for and not answered. (Run 56: an activity stood at
+      // "Getting ready…" for ten seconds after the page was loaded again, the test gave up on it, and nothing
+      // said what it had been waiting for. It opened at once at the second attempt, and ninety times here.)
+      let opening: string | null = null;
+      if (testInfo.status === 'timedOut' || testInfo.status === 'failed') {
+        opening = openingInWords(
+          await Promise.race([
+            page.evaluate(() => document.documentElement.dataset.opening ?? null).catch(() => null),
+            new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000)),
+          ]),
+        );
+      }
+      if (
+        testInfo.status === 'timedOut' ||
+        (testInfo.status === 'failed' && (pageOwed || opening !== null))
+      ) {
         const now = Date.now();
         // Tests against a deployment have no server of their own to ask.
         const port =
@@ -244,11 +281,18 @@ export const test = base.extend<Fixtures>({
           : loading.parsed
             ? 'had been read but had not finished loading'
             : 'had not been read yet';
+        const how =
+          testInfo.status === 'timedOut' || pageOwed
+            ? 'out of time'
+            : 'failed with an activity still being opened';
         problems.push(
-          `out of time: the last page asked for ${reached}; ` +
+          `${how}: the last page asked for ${reached}; ` +
             (waiting.length === 0
               ? 'no request was unanswered'
               : `${String(waiting.length)} unanswered: ${waiting.join('; ')}`) +
+            (opening === null
+              ? ''
+              : `; the page said it was still opening an activity, and waiting for ${opening}`) +
             `; the page stood at ${stoodAt}` +
             (ranBefore === null
               ? '; this was the first test in its browser'
@@ -290,6 +334,17 @@ export const test = base.extend<Fixtures>({
     await use(page);
   },
 
+  slowly: [
+    async ({ page, browserName }, use) => {
+      if (SLOW_CPU > 1 && browserName === 'chromium') {
+        const tools = await page.context().newCDPSession(page);
+        await tools.send('Emulation.setCPUThrottlingRate', { rate: SLOW_CPU });
+      }
+      await use(undefined);
+    },
+    { auto: true },
+  ],
+
   press: async ({ hasTouch }, use) => {
     await use((target, options) => (hasTouch ? target.tap(options) : target.click(options)));
   },
@@ -311,6 +366,24 @@ export async function arrived(page: Page): Promise<void> {
     });
     await Promise.all(ending.map((animation) => animation.finished.catch(() => undefined)));
   });
+}
+
+/**
+ * Wait until a step has shown what it shows of itself, and everything has then arrived: its question has been
+ * said, each thing to answer with has been offered in its turn, and the board is where it comes to rest. (A board
+ * with answers to choose from, a map, the globe, a guess and a robot's row of steps say so on the page.)
+ *
+ * `arrived` alone is not enough for measuring what a child answers with. It waits for whatever is moving when it
+ * is asked; and the answers are offered, each lifted and grown a little for half a second, only once the question
+ * has been said, which is two or three seconds after the step appears. A test that measured straight away
+ * measured before that on a fast machine, and in the middle of it on a slow one: run 56 found two towers "on the
+ * same ground" with one of them six points higher, at both attempts.
+ */
+export async function shown(page: Page): Promise<void> {
+  await expect(page.locator('[data-shown]')).toHaveAttribute('data-shown', 'true', {
+    timeout: 20_000,
+  });
+  await arrived(page);
 }
 
 /**

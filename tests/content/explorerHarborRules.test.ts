@@ -110,7 +110,13 @@ describe('Explorer Harbor, as it is shipped', () => {
         expect(card.label, card.id).toBe(lines[`eh.panel.${card.id}`]);
       }
     }
-    expect(Object.keys(lines)).toHaveLength(24);
+    // Eight stories of three pictures. Everything else the voice has here beside the pack's lines is said in
+    // the room for making a story (tests/content/storymaker.test.ts holds those to their source).
+    const keys = Object.keys(lines);
+    expect(keys.filter((key) => key.startsWith('eh.panel.'))).toHaveLength(24);
+    expect(
+      keys.filter((key) => !key.startsWith('eh.panel.') && !key.startsWith('eh.make.')),
+    ).toEqual([]);
   });
 
   it.each(['water', 'land'] as const)(

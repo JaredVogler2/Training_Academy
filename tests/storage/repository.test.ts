@@ -162,12 +162,28 @@ describe.each(BACKEND_NAMES)('repository on %s', (name) => {
       expect(cleared.settings).toEqual({ sessionMinutes: null });
     });
 
+    it('keeps what a grown-up says was tried away from the screen, with the day they said it', async () => {
+      const profile = await repo.createProfile({ name: 'Sam', avatar: 'sun' });
+      const settings = {
+        sessionMinutes: null,
+        tried: { 'ii-bridge-01': '2026-11-26', 'ii-shelter-01': '2026-12-01' },
+      } as const;
+      const updated = await repo.updateProfile(profile.id, { settings });
+      expect(updated.settings).toEqual(settings);
+      expect((await repo.getProfile(profile.id))?.settings).toEqual(settings);
+    });
+
     it.each([
       ['something seen that is not on the list', { observed: { 'reads-novels': 'seen' } }],
       ['something seen in a word that is not one of the two', { observed: { taps: 'mastered' } }],
       ['a beginning in a world there is not', { startAt: { 'maths-mountain': 'ng-give-02' } }],
       ['a beginning that is not the name of an activity', { startAt: { 'number-garden': 7 } }],
       ['"how to play" in any state but shown', { howTo: 'skipped' }],
+      ['a thing tried on a day that is not a day', { tried: { 'ii-bridge-01': 'last Tuesday' } }],
+      [
+        'a thing tried that is not the name of an activity',
+        { tried: { 'Not A Lesson': '2026-11-26' } },
+      ],
     ])('refuses %s, and keeps the player as they were', async (_label, extra) => {
       const profile = await repo.createProfile({ name: 'Kit', avatar: 'sun' });
       await expect(

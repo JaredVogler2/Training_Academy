@@ -6,8 +6,10 @@ import {
   startOf,
   suggestedStarts,
   suggestionsFor,
+  triedOn,
   withObserved,
   withStart,
+  withTried,
 } from '@/game/placement';
 import { WORLDS, lessonsOf, worldById } from '@/game/worlds';
 
@@ -133,6 +135,59 @@ describe('what a grown-up says', () => {
     const back = withStart(two, 'number-garden', null);
     expect(back.startAt).toEqual({ 'reading-cove': 'rc-letters-01' });
     expect('startAt' in withStart(back, 'reading-cove', null)).toBe(false);
+  });
+
+  it('keeps what was tried away from the screen by activity, with the day it was said', () => {
+    const one = withTried(NOTHING, 'ii-bridge-01', '2026-11-26');
+    const two = withTried(one, 'ii-float-01', '2026-11-27');
+    expect(one).toEqual({ sessionMinutes: null, tried: { 'ii-bridge-01': '2026-11-26' } });
+    expect(two.tried).toEqual({ 'ii-bridge-01': '2026-11-26', 'ii-float-01': '2026-11-27' });
+    // Said again on a later day, it is the later day that is kept.
+    expect(withTried(two, 'ii-bridge-01', '2026-12-01').tried).toEqual({
+      'ii-bridge-01': '2026-12-01',
+      'ii-float-01': '2026-11-27',
+    });
+    // Taken back, it is not written at all; and the last one taken back leaves no word behind.
+    const back = withTried(two, 'ii-bridge-01', null);
+    expect(back.tried).toEqual({ 'ii-float-01': '2026-11-27' });
+    expect('tried' in withTried(back, 'ii-float-01', null)).toBe(false);
+    expect(withTried(NOTHING, 'ii-bridge-01', null)).toEqual({ sessionMinutes: null });
+    // What was given is not changed.
+    expect(one.tried).toEqual({ 'ii-bridge-01': '2026-11-26' });
+  });
+
+  it('says of a player what was tried, and of nobody, nothing', () => {
+    const settings = withTried(NOTHING, 'ii-bridge-01', '2026-11-26');
+    const profile = { settings } as Profile;
+    expect(triedOn(profile, 'ii-bridge-01')).toBe('2026-11-26');
+    expect(triedOn(profile, 'ii-ramp-01')).toBeUndefined();
+    expect(triedOn(null, 'ii-bridge-01')).toBeUndefined();
+  });
+
+  it('keeps what was tried apart from everything else a grown-up says', () => {
+    const settings = withTried(
+      withStart(
+        withObserved({ sessionMinutes: 15, howTo: 'seen' }, 'taps', 'seen'),
+        'number-garden',
+        'ng-give-02',
+      ),
+      'ii-bridge-01',
+      '2026-11-26',
+    );
+    expect(settings).toEqual({
+      sessionMinutes: 15,
+      howTo: 'seen',
+      observed: { taps: 'seen' },
+      startAt: { 'number-garden': 'ng-give-02' },
+      tried: { 'ii-bridge-01': '2026-11-26' },
+    });
+    // And saying it moves nothing: where Play begins is as it was.
+    expect(withTried(settings, 'ii-bridge-01', null)).toEqual({
+      sessionMinutes: 15,
+      howTo: 'seen',
+      observed: { taps: 'seen' },
+      startAt: { 'number-garden': 'ng-give-02' },
+    });
   });
 
   it('keeps the two apart, and everything else that is in the settings', () => {

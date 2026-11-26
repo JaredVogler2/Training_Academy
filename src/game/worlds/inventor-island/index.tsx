@@ -38,6 +38,7 @@ const inventorIsland: WorldModule = {
     'scene:balance': GuessBoard,
     'scene:boat': GuessBoard,
     'scene:tub': GuessBoard,
+    'scene:shelter': GuessBoard,
   },
   voice,
 };

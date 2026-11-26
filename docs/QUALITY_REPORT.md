@@ -1,19 +1,112 @@
 # Quality report
 
-This file has nine parts. The first is the review of Memory Forest's two later activities (the rest of phase
-08). The second is the review of Robot Ridge's three later activities (the rest of phase 07). The third is the
-review of the help for a first visit (the rest of phase 04). The fourth is the review of Reading Cove's later
-activities, from rhyme to a sentence (the second half of phase 05). The fifth is the review of Number Garden's
-later activities, the ones that bring numerals in (the second half of phase 06). The sixth is the review of the
-Music Lab (phase 11). The seventh is the review of the six worlds and the voice (phases 04 to 10). The eighth
-is Phase 03's review of what Phase 03 built. The ninth is Phase 02's report on the home screen, kept as it was
-written, because it is still the assessment of the hub.
+This file has ten parts. The first is the review of Inventor Island's shelter, of the record a grown-up keeps
+and of the portfolio (the rest of phase 09). The second is the review of Memory Forest's two later activities
+(the rest of phase 08). The third is the review of Robot Ridge's three later activities (the rest of phase
+07). The fourth is the review of the help for a first visit (the rest of phase 04). The fifth is the review
+of Reading Cove's later activities, from rhyme to a sentence (the second half of phase 05). The sixth is the
+review of Number Garden's later activities, the ones that bring numerals in (the second half of phase 06).
+The seventh is the review of the Music Lab (phase 11). The eighth is the review of the six worlds and the
+voice (phases 04 to 10). The ninth is Phase 03's review of what Phase 03 built. The tenth is Phase 02's
+report on the home screen, kept as it was written, because it is still the assessment of the hub.
 
 All are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
 reading of screenshots and of the running game in headless Chromium. Nobody else has reviewed it, no child has
 played it, **no person has listened to the voice**, and it has never run on a real graphics card. The owner has
 opened the live site (Phase 03) on an iPhone; nothing in this file comes from a device. The standard it is rated
 against is `docs/ART_DIRECTION.md`.
+
+## Phase 09, the rest (2026-11-26): a shelter from the wind, a grown-up's word, and "My inventions"
+
+### Summary
+
+A fifth activity on Inventor Island, a switch, and a room. In the activity a wall is stood up to keep the
+wind off a plant. The wind comes from the left in some questions and from the right in others, and a prop is
+on one side of the wall or the other; a child says whether the wall will stand before it is tested, and then
+mends walls that do not. Under each thing to try together away from the screen is a switch a grown-up holds
+to say it was tried. And "My inventions" is a page with the last thing mended at each workbench, drawn from
+the answer itself. Twenty-one pictures are in `docs/review/inventor-island/`.
+
+**My reading: the shelter reads, on a phone and on anything larger.** Which way the wind blows is said three
+times over, by where the pole stands, by which way its pennant flies and by the streaks; a wall standing and a
+wall lying flat cannot be mistaken for each other; a prop is on one side or the other. **What I do not know
+is whether a child of four or five takes from it what it is about**: that a thing is held from the side it
+would fall to. That is a harder idea than "more posts hold more", and here it is carried by watching a prop
+come down that held nothing. The record and the portfolio are plain, and say nothing they do not know.
+
+### How it was made, which bears on how far to trust it
+
+The model was written first and tested without a screen: set-ups worked out by hand, the same set-up with
+left and right changed over, the directions it claims, and what it must refuse. Then the picture's own
+arithmetic, then the content's rules, then the screen. Seventy faults were put back in this work: fifty-nine
+in the island's own (ten in the model, ten in the picture and its words, six in the content's rules, nine in
+the record and the portfolio, twenty-four in a browser) and eleven in what CI's two runs led to. Sixty-seven
+were caught at once by the test meant for them. One was caught by nothing, and the model was wrong to allow
+it; one was caught only by the linter; one did not build, and so showed nothing. `docs/TEST_RESULTS.md` has
+each.
+
+The pictures were looked at and then measured, and again the measuring found what the looking had passed: the
+portfolio's pictures were smallest where there was most room.
+
+Nothing here was tried by a child, and no person has heard the ten new lines.
+
+### The review
+
+Looked at on a phone upright (390 by 844), on its side (844 by 390, and 640 by 256), and on a desk (1366 by
+768); measured on seven sizes, and the portfolio on twelve.
+
+| What                           | How it is                                                                                                                                                                                                                                                                                        |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| What is asked about            | A meadow. A pole on the side the wind comes from, its pennant flying with the wind: straight out in a gust, drooping in a breeze. Blue streaks, two for a breeze and four for a gust, each curled at its leading end. A wall in the middle, low or tall; a seedling or a sunflower behind it     |
+| The two answers to a guess     | The wall standing, and the wall lying flat, away from the wind, with two streaks past it and the plant bent over. On a phone each is 366 by 184; the smallest they are is 192 by 107                                                                                                             |
+| The test                       | The streaks move; a wall that goes over goes over away from the wind; a prop that held nothing comes down after it; the plant bends. About two and a half seconds, and the picture stays as it ended                                                                                             |
+| A guess that did not come true | Kept beside what happened, as at every workbench here: the child's card keeps its mark, and the other card is the one lit                                                                                                                                                                        |
+| A mend                         | The picture, and beside or under it what can be changed, as pictures: a wall alone, a wall with a prop on its left, a wall with a prop on its right; a low wall or a tall one where the wall is the trouble. Each is 93 pixels wide or more. Then "Test"                                         |
+| A mend shown                   | Glim's words, about six and a half seconds of them, then the trouble tested so that the wall is seen to fall, the prop put on the far side, and the test again. 13.4 seconds in all, and "My turn" comes when it is over                                                                         |
+| The switch                     | Under each thing to try, in the part of the island's page written for grown-ups: a round button with a tick and "Hold to say you tried this together." Held for a little over a second it turns yellow and says "Tried on 26 November 2026. That is your word: the game did not see it."         |
+| "My inventions"                | Five cards. A bench where nothing has been mended shows what is waiting there, faint, inside a dashed edge, and leads to it. A bench where something has is in full colour, and a tap tests it again. Under each, for the grown-up: when it was mended, how the guesses went, and what was tried |
+
+### Seen — cause — fix
+
+| Seen                                                                                                                                    | Cause                                                                                                     | Fix                                                                                                              |
+| --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| In the first drawing the wind could not be seen, and the whole scene was small in its frame                                             | White streaks on a cream ground; everything drawn smaller than its frame had room for                     | Blue streaks with a curl at the leading end; everything drawn larger                                             |
+| On a desk, each of the portfolio's pictures was 146 pixels across, with half the page empty under them; on a tablet, four cards and one | "As many as fit", each at least 150 wide, on a page at most 920 wide                                      | Set out for the screen: five in a row at 218, three and two at 209 to 299, two by two and one, one under another |
+| A tap on a picture, in Safari's engine, seen by nothing as the sound came on (twice in CI)                                              | The game told its listeners the audio had woken in the middle of the press, and the page drew again there | They are told when the press has been delivered                                                                  |
+
+### What is still wrong or weak
+
+- **No child has tried any of it.** Above all, whether "held from the side it would fall to" is something a
+  child of this age takes from watching. If it is not, the guesses are a coin tossed and the mends are trying
+  each picture in turn, which the activity allows and cannot tell from understanding.
+- **Left and right are pictures.** A child who cannot say which is which can still choose rightly by matching
+  the prop to the side the wall fell to. Nothing shows that this is how a choice was made.
+- **The model is a toy, and in one thing it is the opposite of a tent.** A prop here holds only from the side
+  away from the wind. A peg and a rope hold from the side the wind comes from, and a child who has put up a
+  tent knows it. The table in `docs/CURRICULUM.md` says so, and the portfolio says the models are toys; the
+  activity itself says nothing.
+- **A wall that stands and is too low is only ever met in a mend.** A guess offers two endings, stands or
+  blows over, and never the third.
+- **On the narrowest phone held sideways the wall is 6 pixels by 25**, and the prop about 20 long. It is the
+  scale every workbench here is drawn to on that screen.
+- **On a desk, the picture that is asked about is drawn smaller than the two answers under it**: about 350
+  pixels across in a frame 841 wide, over answers whose cards are 430 wide. So it is at all five workbenches,
+  and has been since the island went live.
+- **The island's page is long**: 3660 pixels on a phone, twice Memory Forest's. Five things to try, each with
+  what is needed, the mess, two questions and what to watch for, is a lot of words; all of it is for the
+  grown-up, and Play is at the top.
+- **A grown-up's word is only that.** The game cannot know whether anything was tried, and says so wherever
+  it shows the word. A child who holds the button for a second can say so too. It counts towards nothing,
+  which is the only reason that does not matter.
+- **The portfolio keeps one thing for each workbench**, the last mended, and an earlier one is gone from it
+  (not from the record). Nothing can be built freely, so nothing a child made up is ever there.
+- **On a desk its pictures are 218 pixels across**: better than 146, and still modest on a large screen.
+- **Nothing asks the child what changed.** The brief's last step, saying what was different by choosing a
+  picture, is not built; the thing to try together asks it aloud.
+- **A test may now fail for being slow though everything it checked was so**: one that uses more than three
+  quarters of its time limit. That is deliberate, and on a machine slow enough it will be a nuisance before
+  it is a help.
+- **Nobody has heard the ten new lines.**
 
 ## Phase 08, the rest (2026-11-26): your own way to remember, and keeping it for next time
 

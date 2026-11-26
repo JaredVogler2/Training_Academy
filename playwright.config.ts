@@ -101,7 +101,13 @@ if (webkitInstalled()) {
 export default defineConfig({
   testDir: 'e2e',
   outputDir: 'test-results',
-  timeout: 60_000,
+  // Two minutes for a test, where it was one. A test here plays a game at the game's own pace, and the longest
+  // play a whole activity through: measured over CI's run 49, of the tests that had the one minute, 55 took 30
+  // to 42 seconds, 17 took 42 to 55, and two took 59.5 and 59.4. Those two ran out of time on the next run
+  // (run 50, on `main`), on a machine a fiftieth slower. The limit is there to stop a test that hangs, so it
+  // stands well clear of what any test takes; and a test that still uses three quarters of it fails for that
+  // (`nearItsLimit`, in the fixtures), which is how the next one is found on the day it is written.
+  timeout: 120_000,
   expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: ci,

@@ -110,6 +110,26 @@ export function withObserved(settings: Settings, what: Observation, seen: Seen |
   return observed ? { ...rest, observed } : rest;
 }
 
+/**
+ * A player's settings with what a grown-up says was tried away from the screen: the activity (by its first
+ * lesson) and the day they said it, or (`null`) that they no longer say so.
+ */
+export function withTried(settings: Settings, lesson: string, day: string | null): Settings {
+  const { tried: before, ...rest } = settings;
+  const tried: Record<string, string> = {};
+  for (const [key, value] of Object.entries(before ?? {})) {
+    if (key !== lesson) tried[key] = value;
+  }
+  if (day !== null) tried[lesson] = day;
+  // What is not said is not written down at all, as with everything else a grown-up says.
+  return Object.keys(tried).length > 0 ? { ...rest, tried } : rest;
+}
+
+/** The day a grown-up said an activity's thing-to-try was tried, if they have. */
+export function triedOn(profile: Profile | null, lesson: string): string | undefined {
+  return profile?.settings.tried?.[lesson];
+}
+
 /** A player's settings with where "Play" begins in one world: a lesson, or (`null`) the beginning. */
 export function withStart(settings: Settings, world: WorldId, lesson: string | null): Settings {
   const { startAt: before, ...rest } = settings;

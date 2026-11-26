@@ -142,12 +142,12 @@ All shapes are [valibot](https://valibot.dev) schemas in `src/engine/schema.ts`;
 them, so the compiler and the validator cannot disagree. Valibot was chosen over heavier validators because only the
 functions actually used are bundled.
 
-| Shape                                          | Notes                                                                                                                                                                                                                     |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ContentPack` → `Skill`, `Lesson`, `Challenge` | Strict objects: an unknown field (a typo) fails validation. `schemaVersion` for the file format, `contentVersion` per pack, `version` per lesson.                                                                         |
-| `Profile`                                      | A nickname and a picture. No real name is asked for, no birth date, nothing else.                                                                                                                                         |
-| `LessonSession`                                | One sitting: seed, planned steps, cursor, the current presentation's tries/hints/eliminated choices/parts given, tallies.                                                                                                 |
-| `Attempt`                                      | One response: skill, challenge, variant, stage, try index, hint level, assistance, outcome, the choice, a misconception tag, time, local day, bounded duration, content versions. No free text, no coordinates, no audio. |
+| Shape                                          | Notes                                                                                                                                                                                                                                                                                                                                 |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ContentPack` → `Skill`, `Lesson`, `Challenge` | Strict objects: an unknown field (a typo) fails validation. `schemaVersion` for the file format, `contentVersion` per pack, `version` per lesson.                                                                                                                                                                                     |
+| `Profile`                                      | A nickname and a picture, and what a grown-up has chosen or said for this player (`settings`): a length of sitting to suggest, what they have seen the child do, where Play begins, that how-to-play was shown, what was tried away from the screen. No real name is asked for, no birth date, and nothing is typed but the nickname. |
+| `LessonSession`                                | One sitting: seed, planned steps, cursor, the current presentation's tries/hints/eliminated choices/parts given, tallies.                                                                                                                                                                                                             |
+| `Attempt`                                      | One response: skill, challenge, variant, stage, try index, hint level, assistance, outcome, the choice, a misconception tag, time, local day, bounded duration, content versions. No free text, no coordinates, no audio.                                                                                                             |
 
 IDs: skills are dotted (`math.quantity.match-sets-to-3`); lessons are URL-safe slugs (`ng-same-amount-01`) because they
 appear in addresses; challenges are `lesson-id.local-name`.
@@ -224,7 +224,7 @@ Two tabs are safe but not live-synchronised.
 ## The shell
 
 - **Routing** (`app/router.ts`, `app/navigation.tsx`): a ~100-line History-API router, no library. Routes: `/`,
-  `/world/:world`, `/world/:world/play/:lessonId`, `/world/:world/room` (where a world has a room to play in),
+  `/world/:world`, `/world/:world/play/:lessonId`, `/world/:world/room` (where a world has a room of its own),
   `/how-to-play`, `/grown-ups`, `/studio/:view` (a workbench, linked from nowhere: one island close up, or the
   guide's character sheet) and a not-found page. Links are real anchors. After a
   navigation the page title is set, focus moves to `<main>`, and a live region announces the page. Addresses never
@@ -245,6 +245,10 @@ Two tabs are safe but not live-synchronised.
 - **Audio** (`audio/audioEngine.ts`): the audio context is created on the first touch and woken on later ones (iOS
   suspends it at will). Waking takes a moment, so a cue asked for in that moment waits for it, up to 0.9 seconds —
   otherwise the sound of the very tap that woke the audio is always lost. Any other cue that cannot play is skipped.
+  The audio is woken inside the press, as a browser requires, and whoever listens for a change in it is told a
+  moment later, when the press has been delivered to everything it is for (`installAudioUnlock`). Told at once,
+  the page drew again in the middle of the press, and what was under the finger could be taken out of the page
+  before the game was given the press: found in CI's WebKit, and written up in `docs/TEST_RESULTS.md` → _Run 49_.
   Eleven short synthesised cues and a climbing note for counting; no audio files. While sound is on, the game asks
   Safari to treat it as media (`navigator.audioSession.type = 'playback'`), so that an iPhone's ring/silent switch
   does not silence a game whose sounds are part of how it teaches. Phase 04 adds recorded narration on top of the
@@ -417,9 +421,10 @@ assistive technology everywhere: the caption beside it says the same thing in wo
 lessons that make it up and something to try together away from the screen. An activity with no lessons is not
 built, and a world with none shows a plain "not open yet" page with nothing that looks tappable; every world
 now has lessons for every activity, so no such page is reachable, and the code for it remains. A world may
-also have a room to play in freely (`room`: the Music Lab's, at `/world/music-lab/room`, where nothing is
-asked and nothing is kept) and a list of what could be built there one day and has not been (`later`), which
-its page shows to the grown-up as a list to read and nothing more.
+also have a room of its own (`room`, at `/world/:world/room`) and a list of what could be built there one day
+and has not been (`later`), which its page shows to the grown-up as a list to read and nothing more. There are
+two rooms, and nothing is asked in either: the Music Lab's is to play in freely, and keeps nothing; Inventor
+Island's is a portfolio, made from what is already kept (below).
 
 **A world is not a place on the map.** Six worlds have an island each; the Music Lab is in the lighthouse.
 `placeOf(world)` (`src/render/extents.ts`) says where a world is, and everything that draws or measures the map
@@ -598,6 +603,24 @@ Nothing is marked as done, no activity is closed, and nothing is written into th
 is the only place "what a child has shown" is read from. There is no quiz: beside each thing is a link to the
 real activity in which to watch the child try it.
 
+**What a grown-up says was tried** (`withTried`, `triedOn` in `game/placement.ts`; the switch is in
+`game/world/WorldView.tsx`). Under each thing to try together away from the screen, where somebody is playing,
+is a switch that has to be held, as everything meant for a grown-up on a child's page is. Holding it writes the
+day into the player's settings (`tried`, by the first lesson of the activity); holding it again takes it out. It
+is a third thing of the same kind as `observed` and `startAt`: a grown-up's word, kept beside the record and
+never in it. Nothing reads it but the two places that show it, each in words that say whose word it is, and no
+skill, no count of what is finished and no suggestion of what to do next is changed by it. If it cannot be
+saved, the page says so and the switch stays as it was.
+
+**The portfolio** (`game/worlds/inventor-island/portfolio.ts`, `Portfolio.tsx`). `portfolioOf(pack, attempts)`
+is a pure function of the island's content and a player's record: for each activity, the latest answer that
+mended its workbench, as the set-up that was tested (what the challenge gave, and what the child chose); how
+many guesses were made and how many came true at the first guess; and, where nothing has been mended, the
+set-up that is waiting. The page draws each with the same pictures the activities use, and a tap on one tests
+it again with the same model, so that what is watched is what the child's answer does and not a recording of
+it. Nothing is stored for the portfolio and nothing in it can go out of date: it is the record, read another
+way. Where motion is reduced a tap plays nothing and the picture is of how the test came out.
+
 ### Music
 
 The Music Lab's notes are not files. `AudioEngine.tone(timbre, frequency, { at? })` builds one stroke of an
@@ -656,6 +679,7 @@ the browser tests (`listenIn` in `e2e/fixtures.ts`).
 | the hub's pictures (WebP)                         | with the first screen, as images          |
 | `three`, `r3f`, `harbour`, `Hub3D`                | after the shell, only where 3D is planned |
 | `WorldView`, `LessonView`, `GrownUps`             | on first visit to that route              |
+| the Music Lab's room, Inventor Island's portfolio | on first visit to that room               |
 | `engine-play` (judging, the robot, the models)    | with the first activity                   |
 | a world's code and its content pack, each a chunk | on entering that world                    |
 | a recording                                       | the first time its line is wanted         |

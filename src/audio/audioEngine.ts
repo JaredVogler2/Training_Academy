@@ -290,19 +290,20 @@ export class AudioEngine {
     this.emit();
   }
 
-  /** Call from inside a touch, click or key handler. Creates the context the first time, and wakes it afterwards. */
-  unlock(): void {
+  /**
+   * Call from inside a touch, click or key handler. Creates the context the first time, and wakes it afterwards.
+   *
+   * Whoever is listening is told at once, unless `tell` is false: that is for a caller in the middle of a press
+   * that is still being delivered, which says so itself with `announce` once the press is over
+   * (`installAudioUnlock` has the reason).
+   */
+  unlock(tell = true): void {
     if (!this.enabled || this.failed) return;
     try {
+      this.context ??= this.createContext();
       if (!this.context) {
-        this.context = this.createContext();
-        if (!this.context) {
-          this.failed = true;
-          this.emit();
-          return;
-        }
-      }
-      if (this.context.state !== 'running') {
+        this.failed = true;
+      } else if (this.context.state !== 'running') {
         this.waking = true;
         void this.context.resume().then(
           () => {
@@ -320,6 +321,11 @@ export class AudioEngine {
     } catch {
       this.failed = true;
     }
+    if (tell) this.emit();
+  }
+
+  /** Tell whoever is listening that something may have changed: what `unlock(false)` left unsaid. */
+  announce(): void {
     this.emit();
   }
 

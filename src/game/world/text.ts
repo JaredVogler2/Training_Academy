@@ -18,7 +18,12 @@ export const worldText = {
     'No activity here needs reading: the guide shows what to do first. Play goes to the first one that has not been finished, and any of them can be played again from the pictures below it.',
   partExplain:
     'The activities marked “Later” have not been built yet. Nothing on this page leads to them.',
-  roomHeading: 'A room to play in',
+  roomHeading: 'A room of its own',
+  /** What a grown-up holds to say a thing was tried, and what is written once they have. */
+  tried: 'We tried this',
+  holdToSay: 'Hold to say you tried this together.',
+  triedOn: (day: string) => `Tried on ${day}. That is your word: the game did not see it.`,
+  couldNotSave: 'That could not be saved on this device.',
   laterHeading: 'Rooms that have not been built',
   notBuilt: 'Not built',
   laterRooms:

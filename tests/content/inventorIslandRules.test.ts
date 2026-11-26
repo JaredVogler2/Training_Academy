@@ -1,8 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import inventorIsland from '@/content/packs/inventor-island.v1.json';
+import inventorIsland from '@/content/packs/inventor-island.v2.json';
 import { lintPack, type LintIssue } from '@/content/lint';
 import { guessMisconception } from '@/content/rules/inventorIsland';
-import { OUTCOMES, parseContentPack, testSetup, type ContentPack } from '@/engine';
+import {
+  OUTCOMES,
+  SHELTERED,
+  WALLS,
+  leeOf,
+  parseContentPack,
+  testSetup,
+  type ContentPack,
+} from '@/engine';
 
 /**
  * Inventor Island's own rules: that what a challenge says happens is what the model says happens. Each rule is
@@ -50,12 +58,13 @@ describe('the pack as it is written', () => {
     expect(lintPack(pack)).toEqual([]);
   });
 
-  it('has four lessons, each with things to guess and things to mend', () => {
+  it('has five lessons, each with things to guess and things to mend', () => {
     expect(pack.lessons.map((lesson) => lesson.id)).toEqual([
       'ii-bridge-01',
       'ii-ramp-01',
       'ii-balance-01',
       'ii-float-01',
+      'ii-shelter-01',
     ]);
     for (const lesson of pack.lessons) {
       const kinds = (ids: readonly string[]) =>
@@ -89,6 +98,87 @@ describe('the pack as it is written', () => {
     expect(asked('tub')).toEqual([...(OUTCOMES.tub ?? [])].sort());
     // A boat that is guessed about carries everything, so it floats or it sinks.
     expect(asked('boat')).toEqual(['floated', 'sank']);
+    // And a wall that is guessed about is as tall as what is behind it, so it stands or it blows over.
+    expect(asked('shelter')).toEqual(['blew-over', 'sheltered']);
+  });
+
+  it('asks about a shelter so that only where the prop stands, against the wind, tells whether it holds', () => {
+    const shelters = pack.lessons
+      .flatMap((lesson) => lesson.challenges)
+      .flatMap((asked) =>
+        asked.kind === 'choose-one' &&
+        asked.prompt.stimulus.type === 'scene' &&
+        asked.prompt.stimulus.scene === 'shelter'
+          ? [asked.prompt.stimulus.of as Record<string, string>]
+          : [],
+      );
+    expect(shelters.length).toBeGreaterThanOrEqual(8);
+    const stands = (setup: Record<string, string>) => testSetup('shelter', setup)?.works === true;
+    // Tall enough, every one: whether it stands is the whole question.
+    for (const setup of shelters) {
+      expect((WALLS[setup.wall ?? ''] ?? 0) >= (SHELTERED[setup.plant ?? ''] ?? 9)).toBe(true);
+    }
+    // The wind comes from each side, and for each there is a prop on each side of the wall: four ways, all asked.
+    const propped = shelters.filter((setup) => setup.prop !== 'none');
+    expect(
+      [
+        ...new Set(
+          propped.map(
+            (setup) => `wind from the ${setup.from ?? ''}, prop on the ${setup.prop ?? ''}`,
+          ),
+        ),
+      ].sort(),
+    ).toEqual([
+      'wind from the left, prop on the left',
+      'wind from the left, prop on the right',
+      'wind from the right, prop on the left',
+      'wind from the right, prop on the right',
+    ]);
+    // So "it has a prop" does not tell, and neither does "the prop is on the right", or "on the left".
+    for (const these of [
+      propped,
+      propped.filter((setup) => setup.prop === 'left'),
+      propped.filter((setup) => setup.prop === 'right'),
+    ]) {
+      const standing = these.filter(stands).length;
+      expect(standing).toBeGreaterThan(0);
+      expect(standing).toBeLessThan(these.length);
+    }
+    // And a wall with no prop is asked about in a breeze and in a gust: one stands and one does not.
+    const bare = shelters.filter((setup) => setup.prop === 'none' && setup.wall === 'low');
+    expect(bare.map(stands).sort()).toEqual([false, true]);
+  });
+
+  it('mends a shelter from both sides, and not only by propping it', () => {
+    const mends = pack.lessons
+      .flatMap((lesson) => lesson.challenges)
+      .flatMap((asked) =>
+        asked.kind === 'make' && asked.task.type === 'design' && asked.task.model === 'shelter'
+          ? [asked.task]
+          : [],
+      );
+    expect(mends).toHaveLength(6);
+    const from = mends.map((task) => String(task.given.from));
+    expect(from.filter((side) => side === 'left')).toHaveLength(3);
+    expect(from.filter((side) => side === 'right')).toHaveLength(3);
+    for (const task of mends) {
+      // The design shown as the answer props the wall on the side away from the wind.
+      const at = task.controls.findIndex((control) => control.id === 'prop');
+      expect(at).toBeGreaterThanOrEqual(0);
+      expect(task.solution[at]).toBe(leeOf(String(task.given.from)));
+    }
+    // What is handed over goes wrong in both of the ways a shelter can: it blows over, or it is too low.
+    const troubles = mends.map(
+      (task) => testSetup('shelter', task.given as Record<string, string>)?.outcome,
+    );
+    expect([...new Set(troubles)].sort()).toEqual(['blew-over', 'too-low']);
+    // And a prop already there, on the wrong side, is among them, for a wind from each side: moving it is the mend.
+    for (const side of ['left', 'right']) {
+      expect(
+        mends.some((task) => task.given.from === side && task.given.prop === side),
+        `a wind from the ${side}`,
+      ).toBe(true);
+    }
   });
 
   it('does not let "it works" be the answer nearly always, or nearly never', () => {
@@ -255,7 +345,9 @@ describe('every Inventor Island rule fires', () => {
         tried += 1;
       });
     });
-    expect(tried).toBe(24);
+    // Every lesson has one that Glim shows, one done with help, and four to do alone.
+    expect(tried).toBe(pack.lessons.length * 6);
+    expect(tried).toBeGreaterThanOrEqual(30);
   });
 
   it('has a case here for every rule Inventor Island has', async () => {

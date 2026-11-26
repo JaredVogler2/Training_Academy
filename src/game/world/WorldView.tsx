@@ -5,15 +5,17 @@ import { recordError } from '@/app/diagnostics';
 import { hasPack, loadPack } from '@/content';
 import { lessonCalled } from '@/content/lessonList';
 import type { Challenge, Lesson, Stimulus, WorldId } from '@/engine';
-import { startOf } from '@/game/placement';
-import { activeProfile, useProfiles } from '@/game/profiles';
+import { dayInWords } from '@/game/dates';
+import { startOf, triedOn, withTried } from '@/game/placement';
+import { activeProfile, updateProfile, useProfiles } from '@/game/profiles';
 import { finishedIsKnown, nextLessonIn, useFinishedLessons } from '@/game/progress';
+import { localDay, now } from '@/game/services';
 import { isOpen, lessonsOf, worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds/modules';
 import { IslandPicture } from '@/render/IslandPicture';
 import { placeOf } from '@/render/extents';
 import { WorldEmblem } from '@/ui/art';
-import { ActionLink } from '@/ui/controls';
+import { ActionLink, HoldToggle } from '@/ui/controls';
 import { IconAsleep, IconBack, IconCheck, IconPlay } from '@/ui/icons';
 import { worldText } from './text';
 import styles from './World.module.css';
@@ -121,6 +123,38 @@ function Example({ lesson, module }: { lesson: Lesson; module: WorldModule }) {
 }
 
 /**
+ * A grown-up's word that the thing to try together was tried: a switch that has to be held, because it is on a
+ * page a child taps, and under it the day they said so. It says in so many words that the game did not see it.
+ */
+function Tried({
+  lesson,
+  day,
+  onChange,
+}: {
+  lesson: string;
+  day: string | undefined;
+  onChange: (lesson: string, tried: boolean) => void;
+}) {
+  return (
+    <p
+      className={styles.tried}
+      data-testid="tried"
+      data-lesson={lesson}
+      data-tried={day !== undefined}
+    >
+      <HoldToggle
+        pressed={day !== undefined}
+        onChange={(tried) => onChange(lesson, tried)}
+        label={worldText.tried}
+        stateText={day === undefined ? worldText.holdToSay : worldText.tried}
+        icon={<IconCheck size={22} />}
+      />
+      <span>{day === undefined ? worldText.holdToSay : worldText.triedOn(dayInWords(day))}</span>
+    </p>
+  );
+}
+
+/**
  * A world's front door. A world that has something to play offers the next thing with one large button, and every
  * activity as a picture below it. A world that has not been built says so plainly, tells the grown-up what is
  * planned, and offers nothing that looks tappable.
@@ -133,7 +167,20 @@ export default function WorldView({ world }: { world: WorldId }) {
   // has chosen where this player begins here, the first not yet finished from there on.
   const order = lessonsOf(info);
   const players = useProfiles();
-  const startAt = startOf(activeProfile(players), world);
+  const player = activeProfile(players);
+  const startAt = startOf(player, world);
+  const [unsaved, setUnsaved] = useState(false);
+  // A grown-up says a thing was tried away from the screen, or takes it back. It is written into the player's
+  // settings with the day, beside the other things a grown-up says, and read by nothing that reports what a
+  // child has shown.
+  const sayTried = (lesson: string, tried: boolean) => {
+    if (!player) return;
+    const settings = withTried(player.settings, lesson, tried ? localDay(now()) : null);
+    updateProfile(player.id, { settings }).then(
+      () => setUnsaved(false),
+      () => setUnsaved(true),
+    );
+  };
   // Whether the page knows yet who is playing and what they have finished. Until it does, Play goes where it
   // would for someone new, for the blink that takes; the page says so, for whoever reads it. (A test read
   // Play at once and found "the beginning" whatever a grown-up had chosen.)
@@ -286,10 +333,22 @@ export default function WorldView({ world }: { world: WorldId }) {
                     <em>{activity.together.safety}</em>
                   </p>
                 )}
+                {ready && activity.together && player && (
+                  <Tried
+                    lesson={activity.lessons[0] ?? ''}
+                    day={triedOn(player, activity.lessons[0] ?? '')}
+                    onChange={sayTried}
+                  />
+                )}
               </li>
             );
           })}
         </ol>
+        {unsaved && (
+          <p className={styles.note} role="status">
+            {worldText.couldNotSave}
+          </p>
+        )}
         <p className={styles.note}>
           {open
             ? `${worldText.openExplain}${unbuilt ? ` ${worldText.partExplain}` : ''}`

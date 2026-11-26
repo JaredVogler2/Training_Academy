@@ -1,0 +1,142 @@
+/*
+ * The portfolio: a page to look at. It has the whole screen, as a room has, and unlike a room it may be longer
+ * than the screen: five cards and a few lines under each are read, not played.
+ */
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(12px, 2.4vh, 20px);
+  align-content: start;
+  width: min(100%, 1280px);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: calc(10px + var(--safe-top)) calc(var(--gutter) + var(--safe-right))
+    calc(24px + var(--safe-bottom)) calc(var(--gutter) + var(--safe-left));
+}
+
+.bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.bar > :first-child {
+  justify-self: start;
+}
+
+.barButton.barButton {
+  width: var(--tap);
+  min-width: var(--tap);
+  height: var(--tap);
+}
+
+.title {
+  color: var(--deep);
+  font-size: var(--text-xl);
+  text-align: center;
+}
+
+/*
+ * Five cards. One row of five where there is room for each to be worth looking at; three and two on a tablet or
+ * a phone held sideways; two by two and one on a phone; one under another on the narrowest. Never four and one,
+ * which is what "as many as fit" gave on a tablet, and never five small ones in the middle of a wide screen,
+ * which is what it gave on a desk: each picture was 146 pixels across on a screen 1366 wide, with half the page
+ * empty under them. That was found by measuring the pictures taken for review.
+ */
+.cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(10px, 2vw, 16px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 360px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 520px) {
+  .cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .cards {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  align-content: start;
+  padding: 8px 8px 10px;
+  border-radius: var(--radius-m);
+  background: var(--white);
+  box-shadow:
+    0 var(--lip) 0 rgb(34 48 79 / 14%),
+    0 10px 18px rgb(34 48 79 / 10%);
+}
+
+/* The thing itself: as wide as the card, in the shape every picture of a workbench is drawn in. */
+.picture {
+  display: block;
+  width: 100%;
+  aspect-ratio: 200 / 120;
+  padding: 4px;
+  border: 0;
+  border-radius: var(--radius-s);
+  color: inherit;
+  background: var(--paper-warm);
+  cursor: pointer;
+}
+
+.picture:focus-visible {
+  outline: 4px solid var(--deep);
+  outline-offset: 2px;
+}
+
+/* Nothing made here yet: what is waiting to be mended, faintly, inside a dashed edge. */
+.picture[data-empty='true'] {
+  background: transparent;
+  outline: 3px dashed var(--mid);
+  outline-offset: -3px;
+}
+
+.picture[data-empty='true'] > svg {
+  opacity: 0.45;
+}
+
+.name {
+  color: var(--ink);
+  font-size: var(--text-m);
+  line-height: 1.2;
+  text-align: center;
+}
+
+.lines {
+  display: grid;
+  gap: 2px;
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.lines p {
+  margin: 0;
+}
+
+.about {
+  max-width: 44rem;
+  margin: 0 auto;
+  color: var(--ink-soft);
+  font-size: var(--text-s);
+  line-height: 1.45;
+}

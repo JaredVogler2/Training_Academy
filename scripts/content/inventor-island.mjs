@@ -1,9 +1,10 @@
-// Inventor Island's content pack: four workbenches, each with things to guess and things to mend.
+// Inventor Island's content pack: five workbenches, each with things to guess and things to mend.
 //
 //   bridges that hold     a plank across a gap, and someone to cross it
 //   ramps and rolling     a ball down a ramp, to stop on the star
 //   balancing             blocks on a beam
 //   float or sink         things dropped in a tub, and a boat to carry stones
+//   a shelter             a wall to keep the wind off a plant, and a prop to hold it up
 //
 // Two kinds of challenge, in every lesson:
 //
@@ -35,10 +36,19 @@ const HAPPENS = {
   },
   boat: { floated: 'It floats', sank: 'It sinks' },
   tub: { floated: 'It floats', sank: 'It sinks' },
+  // A wall to guess about is as tall as what is behind it, so that standing is the whole question.
+  shelter: { sheltered: 'The wall stands', 'blew-over': 'It blows over' },
 };
 
 /** Which lines each bench's guesses are asked and answered in. The tub and the boat share theirs. */
-const SAYS = { bridge: 'bridge', ramp: 'ramp', balance: 'balance', boat: 'float', tub: 'float' };
+const SAYS = {
+  bridge: 'bridge',
+  ramp: 'ramp',
+  balance: 'balance',
+  boat: 'float',
+  tub: 'float',
+  shelter: 'shelter',
+};
 
 /** What can be changed at each bench, in the order it is shown. */
 const PARTS = {
@@ -46,6 +56,7 @@ const PARTS = {
   ramp: { height: ['low', 'mid', 'high'], surface: ['rough', 'smooth'] },
   balance: { weight: ['one', 'two', 'three'], at: ['near', 'mid', 'far'] },
   boat: { boat: ['shell', 'bark', 'raft'], cargo: ['one', 'two', 'three'] },
+  shelter: { wall: ['low', 'tall'], prop: ['none', 'left', 'right'] },
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -439,6 +450,124 @@ function floats() {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+// A shelter from the wind
+// ---------------------------------------------------------------------------------------------------------------------
+
+function shelters() {
+  const id = 'ii-shelter-01';
+  const will = (name, variant, [wind, from, plant, wall, prop], happens) =>
+    guess({
+      lesson: id,
+      bench: 'shelter',
+      name,
+      variant,
+      setup: { wind, from, plant, wall, prop },
+      happens,
+    });
+  const fix = (name, variant, fixed, start, mended) =>
+    mend({ lesson: id, bench: 'shelter', name, variant, fixed, start, mended });
+  return lesson({
+    id,
+    says: 'shelter',
+    title: 'A shelter from the wind',
+    summary:
+      'A wall to keep the wind off a plant. Your child guesses whether it will stand, and sees; then mends a wall that blows over or is too low, by changing how tall it is and which side it is propped on. A prop holds only on the side away from the wind.',
+    demo: [
+      will('demo-guess', 'gust-fells-it', ['gust', 'left', 'seedling', 'low', 'none'], 'blew-over'),
+      fix(
+        'demo-mend',
+        'prop-only',
+        { wind: 'gust', from: 'left', plant: 'seedling', wall: 'low' },
+        { prop: 'none' },
+        { prop: 'right' },
+      ),
+    ],
+    guided: [
+      will(
+        'guided-guess',
+        'breeze-leaves-it',
+        ['breeze', 'left', 'seedling', 'low', 'none'],
+        'sheltered',
+      ),
+      fix(
+        'guided-mend',
+        'prop-only',
+        { wind: 'gust', from: 'right', plant: 'seedling', wall: 'low' },
+        { prop: 'none' },
+        { prop: 'left' },
+      ),
+    ],
+    pool: [
+      will(
+        'prop-behind',
+        'prop-behind-holds',
+        ['gust', 'left', 'seedling', 'low', 'right'],
+        'sheltered',
+      ),
+      will(
+        'prop-in-front',
+        'prop-in-front-fails',
+        ['gust', 'left', 'seedling', 'low', 'left'],
+        'blew-over',
+      ),
+      will(
+        'other-way-behind',
+        'prop-behind-holds',
+        ['gust', 'right', 'seedling', 'low', 'left'],
+        'sheltered',
+      ),
+      will(
+        'other-way-in-front',
+        'prop-in-front-fails',
+        ['gust', 'right', 'seedling', 'low', 'right'],
+        'blew-over',
+      ),
+      will(
+        'tall-alone',
+        'tall-catches-more',
+        ['breeze', 'left', 'sunflower', 'tall', 'none'],
+        'blew-over',
+      ),
+      will(
+        'tall-propped',
+        'tall-propped-holds',
+        ['breeze', 'right', 'sunflower', 'tall', 'left'],
+        'sheltered',
+      ),
+      fix(
+        'wrong-side',
+        'one-part',
+        { wind: 'gust', from: 'left', plant: 'seedling', wall: 'low' },
+        { prop: 'left' },
+        { prop: 'right' },
+      ),
+      fix(
+        'wrong-side-other-way',
+        'one-part',
+        { wind: 'gust', from: 'right', plant: 'seedling', wall: 'low' },
+        { prop: 'right' },
+        { prop: 'left' },
+      ),
+      fix(
+        'too-low-in-a-breeze',
+        'both-parts',
+        { wind: 'breeze', from: 'left', plant: 'sunflower' },
+        { wall: 'low', prop: 'none' },
+        { wall: 'tall', prop: 'right' },
+      ),
+      fix(
+        'too-low-in-a-gust',
+        'both-parts',
+        { wind: 'gust', from: 'right', plant: 'sunflower' },
+        { wall: 'low', prop: 'none' },
+        { wall: 'tall', prop: 'left' },
+      ),
+    ],
+    count: 3,
+  });
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 // The pack
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -504,6 +633,19 @@ const SKILLS = [
     'Carries stones across a pond by choosing a boat big enough and loading it with all of them and no more than it can bear.',
     ['engineering.float.predict'],
   ),
+  skill(
+    'shelter',
+    'predict',
+    'Guess whether a wall will stand in the wind',
+    'Looks at which way the wind blows and how hard, how tall the wall is and where it is propped, and says whether it will stand before it is tested.',
+  ),
+  skill(
+    'shelter',
+    'build',
+    'Build a shelter that stands',
+    'Mends a wall that lets the wind through, by making it as tall as what is behind it and propping it on the side away from the wind, testing after each change.',
+    ['engineering.shelter.predict'],
+  ),
 ];
 
 const STRINGS = {
@@ -559,6 +701,20 @@ const STRINGS = {
   'ii.boat.build.correct': 'They all got across!',
   'ii.boat.build.incorrect': 'Not yet. Change one thing and test again.',
   'ii.boat.build.hint.model': 'A bigger boat can carry more. Too many stones and it sinks.',
+
+  'ii.shelter.predict.instruction': 'Will the wall keep the wind off? What do you think?',
+  'ii.shelter.predict.hint.model':
+    'Which way is the wind blowing? Is anything holding the wall up?',
+  'ii.shelter.is.sheltered': 'Yes. The wall stood.',
+  'ii.shelter.is.blew-over': 'Yes. It blew over.',
+  'ii.shelter.look.sheltered': 'Look. The wall stood. Tap what happened.',
+  'ii.shelter.look.blew-over': 'Look. It blew over. Tap what happened.',
+  'ii.shelter.build.instruction':
+    'The wind gets to the plant. Change the wall so it keeps the wind off.',
+  'ii.shelter.build.correct': 'It keeps the wind off! You mended it.',
+  'ii.shelter.build.incorrect': 'Not yet. Look what the wind did. Change one thing and test again.',
+  'ii.shelter.build.hint.model':
+    'The wind pushes the wall over. Put the prop on the side it falls to.',
 };
 
 export function buildInventorIslandPack() {
@@ -567,9 +723,9 @@ export function buildInventorIslandPack() {
     schemaVersion: 1,
     id: WORLD,
     world: WORLD,
-    contentVersion: 1,
+    contentVersion: 2,
     strings: { en: STRINGS },
     skills: SKILLS,
-    lessons: [bridges(), ramps(), balances(), floats()],
+    lessons: [bridges(), ramps(), balances(), floats(), shelters()],
   };
 }

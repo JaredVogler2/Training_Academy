@@ -129,9 +129,27 @@ export function preferMediaPlayback(scope: Navigator, on: boolean): void {
 /**
  * Wake the audio engine on every gesture. Listening for the lifetime of the page (not just once) matters on iOS,
  * where audio is suspended again after an interruption such as a phone call or a tab switch.
+ *
+ * The audio is woken at once, inside the gesture, as a browser requires. Whoever listens for a change in it is
+ * told a moment later, when the press has been delivered to everything it is for, and never in the middle of it.
+ * Told at once, the page re-drew inside the press: React answers a store that has changed by rendering straight
+ * away, and brings with it whatever re-drawing was waiting its turn. That could take the very thing under the
+ * finger out of the page before the game had been given the press, and then the press reached nothing. It was
+ * found in CI, in Safari's engine: of three taps on a picture, the second was seen by nobody (runs 48 and 49;
+ * `e2e/help.spec.ts` stages it).
  */
 export function installAudioUnlock(target: Window): void {
-  const unlock = () => audio().unlock();
+  let owed = false;
+  const tell = () => {
+    owed = false;
+    audio().announce();
+  };
+  const unlock = () => {
+    audio().unlock(false);
+    if (owed) return;
+    owed = true;
+    target.setTimeout(tell, 0);
+  };
   for (const type of ['pointerdown', 'keydown', 'touchend'] as const) {
     target.addEventListener(type, unlock, { capture: true, passive: true });
   }

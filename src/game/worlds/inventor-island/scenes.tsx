@@ -3,26 +3,34 @@ import { testSetup, type Setup } from '@/engine';
 import {
   BALL,
   BEAM_STEP,
+  BEND,
   DECK,
   FAR_BANK,
   GROUND,
   HELD,
+  MEADOW,
   NEAR_BANK,
   PIVOT,
+  POLE_HEIGHT,
   POND,
   POND_FLOOR,
+  PROP_FOOT,
   RAMP_FOOT,
   RAMP_LENGTH,
   STREAM,
   SURFACE,
   TEST_TIME,
   TUB_FLOOR,
+  WALL_AT,
+  WALL_THICK,
   balanceShape,
   boatShape,
   bow,
   bridgeShape,
   dropOf,
+  fallOf,
   rampShape,
+  shelterShape,
   tipOf,
 } from './geometry';
 import styles from './inventor.module.css';
@@ -753,6 +761,145 @@ function boat(setup: Setup): Drawing {
 // ---------------------------------------------------------------------------------------------------------------------
 // Any of them
 // ---------------------------------------------------------------------------------------------------------------------
+// The shelter
+// ---------------------------------------------------------------------------------------------------------------------
+
+const PETALS = Array.from({ length: 12 }, (_, petal) => petal * 30);
+const WIND = '#7fb6e6';
+
+/** What is to be kept out of the wind. Each stands with its foot at (0, 0); geometry.ts says how tall each is. */
+const PLANTS: Readonly<Record<string, ReactNode>> = {
+  seedling: (
+    <>
+      <path d="M0 0v-16" stroke={GRASS_DEEP} strokeWidth="3.200" strokeLinecap="round" />
+      <path d="M0-11c-6-9-15-7-16-1 6 4 12 4 16 1z" fill={GRASS} />
+      <path d="M0-14c6-9 15-8 16-2-6 5-12 5-16 2z" fill={GRASS} />
+    </>
+  ),
+  sunflower: (
+    <>
+      <path d="M0 0v-42" stroke={GRASS_DEEP} strokeWidth="4" strokeLinecap="round" />
+      <path d="M0-14c-8-8-18-6-19 0 7 4 13 4 19 0z" fill={GRASS} />
+      <path d="M0-26c8-8 18-6 19 0-7 4-13 4-19 0z" fill={GRASS} />
+      {PETALS.map((turn) => (
+        <ellipse
+          key={turn}
+          cx="0"
+          cy="-52.500"
+          rx="3"
+          ry="4.500"
+          fill={SUN}
+          transform={`rotate(${String(turn)} 0 -46)`}
+        />
+      ))}
+      <circle cx="0" cy="-46" r="6" fill={BARK} />
+    </>
+  ),
+};
+
+/** A streak of wind `long` across, blowing the way `blows` says, with a little curl where it ends. */
+const streakPath = (x: number, y: number, long: number, blows: number): string =>
+  `M${String(x)} ${String(y)}h${String(long * blows)}q${String(5 * blows)} 0 ${String(5 * blows)}-4`;
+
+function shelter(setup: Setup): Drawing {
+  const shape = shelterShape(setup);
+  const fall = fallOf(shape);
+  const { blows, wall, prop } = shape;
+  const half = WALL_THICK / 2;
+  // Streaks of wind on the side it comes from, one above another, from half way up a low wall upwards.
+  const streaks = Array.from({ length: shape.streaks }, (_, index) => ({
+    y: MEADOW - 16 - index * 15,
+    x: WALL_AT - blows * (72 - (index % 2) * 12),
+  }));
+  // And where the wind gets to when the wall does not keep it off: at the plant.
+  const reached = [MEADOW - shape.plantHeight + 6, MEADOW - shape.plantHeight / 2];
+  return {
+    vars: {
+      '--fall': deg(fall.wall),
+      '--drop': deg(fall.prop),
+      '--bend': deg(BEND * blows),
+      '--blow': px(22 * blows),
+    },
+    body: (
+      <>
+        <rect x="0" y={MEADOW} width="200" height={120 - MEADOW} rx="5" fill={GRASS} />
+        <rect x="3" y={MEADOW} width="194" height="3" rx="1.500" fill={GRASS_DEEP} opacity="0.35" />
+        {/* A pennant on a pole, at the side the wind comes from: it streams the way the wind blows. */}
+        <path
+          d={`M${String(shape.pole)} ${String(MEADOW)}V${String(MEADOW - POLE_HEIGHT)}`}
+          stroke={BARK}
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+        <g
+          transform={`translate(${String(shape.pole)} ${String(MEADOW - POLE_HEIGHT + 7)}) scale(${String(blows)} 1) rotate(${String(90 - shape.lift)})`}
+          data-part="pennant"
+        >
+          <path d="M0-6L26 0 0 6z" fill="#ff8fa3" />
+        </g>
+        <g className={styles.gusts} data-part="wind">
+          {streaks.map((streak) => (
+            <path
+              key={streak.y}
+              d={streakPath(streak.x, streak.y, 22, blows)}
+              fill="none"
+              stroke={WIND}
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          ))}
+        </g>
+        <g className={styles.through} data-part="wind-through">
+          {reached.map((y) => (
+            <path
+              key={y}
+              d={streakPath(shape.plant - blows * 34, y, 14, blows)}
+              fill="none"
+              stroke={WIND}
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          ))}
+        </g>
+        <g transform={`translate(${String(shape.plant)} ${String(MEADOW)})`}>
+          <ellipse cx="0" cy="1.500" rx="12" ry="2.500" fill={INK} opacity="0.12" />
+          <g className={styles.plant} data-part="plant">
+            {PLANTS[String(setup.plant)]}
+          </g>
+        </g>
+        {prop !== null && (
+          <g transform={`translate(${String(prop.foot)} ${String(MEADOW)})`}>
+            <g
+              className={styles.strut}
+              data-part="prop"
+              data-side={prop.side < 0 ? 'left' : 'right'}
+            >
+              <path
+                d={`M0 0L${String(-prop.side * (PROP_FOOT - half))} ${String(-prop.rise)}`}
+                stroke={WOOD_DEEP}
+                strokeWidth="5"
+                strokeLinecap="round"
+              />
+            </g>
+          </g>
+        )}
+        <g transform={`translate(${String(WALL_AT)} ${String(MEADOW)})`}>
+          <g className={styles.wall} data-part="wall">
+            <rect x={-half} y={-wall} width={WALL_THICK} height={wall} rx="2" fill={WOOD} />
+            <path
+              d={`M${String(-half)} ${String(-wall * 0.33)}h${String(WALL_THICK)}M${String(-half)} ${String(-wall * 0.66)}h${String(WALL_THICK)}`}
+              stroke={WOOD_DEEP}
+              strokeWidth="1.600"
+            />
+            <rect x={-half} y={-wall} width={WALL_THICK} height="4" rx="2" fill="#f0c98a" />
+          </g>
+        </g>
+      </>
+    ),
+  };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 function draw(scene: string, setup: Setup, outcome: string | null): Drawing | null {
   switch (scene) {
@@ -766,6 +913,8 @@ function draw(scene: string, setup: Setup, outcome: string | null): Drawing | nu
       return tub(setup, outcome);
     case 'boat':
       return boat(setup);
+    case 'shelter':
+      return shelter(setup);
     default:
       return null;
   }
@@ -915,6 +1064,32 @@ function optionBody(control: string, option: string): ReactNode {
         <>
           <rect x="0" y="21" width="48" height="11" rx="3" fill={WATER} />
           <g transform="translate(24 21)">{hull(option, wide, deep, 4)}</g>
+        </>
+      );
+    }
+    case 'wall': {
+      const tall = option === 'tall' ? 22 : 11;
+      return (
+        <>
+          <rect x="0" y="27" width="48" height="5" rx="2" fill={GRASS} />
+          <rect x="21" y={27 - tall} width="6" height={tall} rx="1.500" fill={WOOD} />
+        </>
+      );
+    }
+    case 'prop': {
+      const side = option === 'left' ? -1 : option === 'right' ? 1 : 0;
+      return (
+        <>
+          <rect x="0" y="27" width="48" height="5" rx="2" fill={GRASS} />
+          {side !== 0 && (
+            <path
+              d={`M${String(24 + side * 15)} 27L${String(24 + side * 3)} 12`}
+              stroke={WOOD_DEEP}
+              strokeWidth="3.400"
+              strokeLinecap="round"
+            />
+          )}
+          <rect x="21" y="6" width="6" height="21" rx="1.500" fill={WOOD} />
         </>
       );
     }

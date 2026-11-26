@@ -1,4 +1,4 @@
-import { BOATS, COUNTS, PLACES, PLANKS, POSTS, rampReach, type Setup } from '@/engine';
+import { BOATS, COUNTS, PLACES, PLANKS, POSTS, WINDS, rampReach, type Setup } from '@/engine';
 
 /**
  * Where things are in Inventor Island's pictures, and how far they move when a set-up is tested. Every picture is
@@ -268,4 +268,77 @@ export function boatShape(setup: Setup): BoatShape {
     sail: FAR_BANK - 4 - hull.wide / 2 - at,
     down: POND_FLOOR - POND - low,
   };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// The shelter
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** The ground the wall and the plant stand on. */
+export const MEADOW = 102;
+/** Where the wall stands, across the picture. */
+export const WALL_AT = 100;
+/**
+ * How tall each wall is drawn, and each plant. A seedling is lower than a low wall; a sunflower is taller than a
+ * low wall and lower than a tall one: what the model says of them can be seen.
+ */
+export const WALL_HEIGHTS: Readonly<Record<string, number>> = { low: 34, tall: 62 };
+export const PLANT_HEIGHTS: Readonly<Record<string, number>> = { seedling: 22, sunflower: 56 };
+/** How far from the wall the plant stands: further than a tall wall is high, so a wall that falls does not land on it. */
+export const PLANT_AWAY = 74;
+/** How far from the wall a prop's foot is, and how far up the wall its top is, as a share of the wall's height. */
+export const PROP_FOOT = 24;
+export const PROP_REACH = 0.72;
+/** How far from the wall the pennant's pole stands, on the side the wind comes from. */
+const POLE_AWAY = 88;
+/** How tall the pole is, and how thick the wall. */
+export const POLE_HEIGHT = 80;
+export const WALL_THICK = 9;
+/** How far a plant leans when the wind reaches it, in degrees. */
+export const BEND = 15;
+
+export interface ShelterShape {
+  /** The way the wind blows across the picture: 1 from left to right, -1 from right to left. */
+  blows: 1 | -1;
+  /** How tall the wall is drawn. */
+  wall: number;
+  /** Where the plant stands, and how tall it is drawn. */
+  plant: number;
+  plantHeight: number;
+  /** The prop, if there is one: which side of the wall it is on (-1 left, 1 right), where its foot is, how high its top. */
+  prop: { side: 1 | -1; foot: number; rise: number } | null;
+  /** Where the pennant's pole stands: near the edge the wind comes from. */
+  pole: number;
+  /** How many streaks of wind are drawn, and how far the pennant is lifted from hanging, in degrees. */
+  streaks: number;
+  lift: number;
+}
+
+export function shelterShape(setup: Setup): ShelterShape {
+  const blows = setup.from === 'right' ? -1 : 1;
+  const wall = WALL_HEIGHTS[String(setup.wall)] ?? 34;
+  const side = setup.prop === 'left' ? -1 : setup.prop === 'right' ? 1 : null;
+  const gust = (WINDS[String(setup.wind)] ?? 1) > 1;
+  return {
+    blows,
+    wall,
+    plant: WALL_AT + blows * PLANT_AWAY,
+    plantHeight: PLANT_HEIGHTS[String(setup.plant)] ?? 22,
+    prop:
+      side === null ? null : { side, foot: WALL_AT + side * PROP_FOOT, rise: wall * PROP_REACH },
+    pole: WALL_AT - blows * POLE_AWAY,
+    streaks: gust ? 4 : 2,
+    lift: gust ? 86 : 46,
+  };
+}
+
+/**
+ * How things turn when a wall goes over: the wall, a quarter turn about its foot, away from the wind; and a prop
+ * that held nothing, down about its own foot until it lies on the ground. In degrees, clockwise as the screen has it.
+ */
+export function fallOf(shape: ShelterShape): { wall: number; prop: number } {
+  const { prop } = shape;
+  const slope = prop === null ? 0 : (Math.atan2(prop.rise, PROP_FOOT) * 180) / Math.PI;
+  // A prop on the left leans to the right, and comes down clockwise; one on the right, the other way.
+  return { wall: 90 * shape.blows, prop: prop === null ? 0 : -prop.side * slope };
 }

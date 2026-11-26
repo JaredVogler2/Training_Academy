@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import inventorIsland from '@/content/packs/inventor-island.v1.json';
+import inventorIsland from '@/content/packs/inventor-island.v2.json';
 import {
   BOATS,
   CONTROLS,
@@ -7,7 +7,13 @@ import {
   DROPPED,
   GAPS,
   OUTCOMES,
+  PROPS,
+  SHELTERED,
+  SIDES,
   TRAVELLERS,
+  WALLS,
+  WINDS,
+  leeOf,
   parseContentPack,
   rampReach,
   testSetup,
@@ -18,16 +24,21 @@ import type { Beat, Script, ScriptEvent } from '@/game/lesson/script';
 import {
   BALL,
   BEAM_STEP,
+  BEND,
   DECK,
   FAR_BANK,
   GROUND,
   HEIGHT,
   HELD,
   HULLS,
+  MEADOW,
   NEAR_BANK,
   PIVOT,
+  PLANT_HEIGHTS,
+  POLE_HEIGHT,
   POND,
   POND_FLOOR,
+  PROP_FOOT,
   STREAM,
   SURFACE,
   TEST_TIME,
@@ -35,6 +46,9 @@ import {
   TIP,
   TRAVELLER_WIDTH,
   TUB_FLOOR,
+  WALL_AT,
+  WALL_HEIGHTS,
+  WALL_THICK,
   WIDTH,
   balanceShape,
   ballRest,
@@ -42,8 +56,10 @@ import {
   bow,
   bridgeShape,
   dropOf,
+  fallOf,
   lengthMiddle,
   rampShape,
+  shelterShape,
   tipOf,
 } from '@/game/worlds/inventor-island/geometry';
 import { guessScript, mendScript } from '@/game/worlds/inventor-island/script';
@@ -550,6 +566,133 @@ describe('the picture of a boat', () => {
   });
 });
 
+describe('the picture of a shelter', () => {
+  const setups = Object.keys(WINDS).flatMap((wind) =>
+    SIDES.flatMap((from) =>
+      Object.keys(SHELTERED).flatMap((plant) =>
+        Object.keys(WALLS).flatMap((wall) =>
+          PROPS.map((prop) => ({ wind, from, plant, wall, prop })),
+        ),
+      ),
+    ),
+  );
+
+  it('draws a taller wall taller, and each plant against it as the model has them', () => {
+    expect(Object.keys(WALL_HEIGHTS).sort()).toEqual(Object.keys(WALLS).sort());
+    expect(Object.keys(PLANT_HEIGHTS).sort()).toEqual(Object.keys(SHELTERED).sort());
+    // What the model says in numbers can be seen: a wall that is tall enough for a plant is drawn taller than it.
+    for (const [wall, tall] of Object.entries(WALLS)) {
+      for (const [plant, high] of Object.entries(SHELTERED)) {
+        const drawnTaller = (WALL_HEIGHTS[wall] ?? 0) >= (PLANT_HEIGHTS[plant] ?? 0);
+        expect(drawnTaller, `${wall} wall, ${plant}`).toBe(tall >= high);
+      }
+    }
+  });
+
+  it('stands the plant on the side away from the wind, where a wall that falls cannot land on it', () => {
+    for (const setup of setups) {
+      const shape = shelterShape(setup);
+      const lee = leeOf(setup.from) === 'right' ? 1 : -1;
+      expect(shape.blows, JSON.stringify(setup)).toBe(lee);
+      expect(Math.sign(shape.plant - WALL_AT)).toBe(lee);
+      // The wall, lying where it fell, ends short of the plant's stem.
+      const reach = shape.wall + WALL_THICK / 2;
+      expect(Math.abs(shape.plant - WALL_AT)).toBeGreaterThan(reach + 4);
+      // And it falls a quarter turn, away from the wind.
+      expect(fallOf(shape).wall).toBe(90 * lee);
+    }
+  });
+
+  it('keeps everything inside the picture: the pole, the wall, the plant upright and bent over', () => {
+    for (const setup of setups) {
+      const shape = shelterShape(setup);
+      expect(shape.pole, JSON.stringify(setup)).toBeGreaterThanOrEqual(6);
+      expect(shape.pole).toBeLessThanOrEqual(WIDTH - 6);
+      expect(MEADOW - POLE_HEIGHT).toBeGreaterThanOrEqual(8);
+      expect(MEADOW - shape.wall).toBeGreaterThanOrEqual(8);
+      expect(MEADOW).toBeLessThan(HEIGHT);
+      // The pole is on the side the wind comes from, further out than anything else.
+      expect(Math.sign(shape.pole - WALL_AT)).toBe(-shape.blows);
+      // A plant bent over by the wind leans away from it; its top, and a flower head on it, stay in the picture.
+      const top = shape.plant + shape.blows * shape.plantHeight * Math.sin((BEND * Math.PI) / 180);
+      expect(top - 10).toBeGreaterThanOrEqual(0);
+      expect(top + 10).toBeLessThanOrEqual(WIDTH);
+    }
+  });
+
+  it('leans a prop against the side it is on: its foot on that side, its top on the wall', () => {
+    for (const setup of setups) {
+      const { prop, wall } = shelterShape(setup);
+      if (setup.prop === 'none') {
+        expect(prop).toBeNull();
+        continue;
+      }
+      expect(prop, JSON.stringify(setup)).not.toBeNull();
+      if (!prop) continue;
+      expect(prop.side).toBe(setup.prop === 'left' ? -1 : 1);
+      expect(prop.foot).toBe(WALL_AT + prop.side * PROP_FOOT);
+      // Its top is on the wall, above half way up and below the top.
+      expect(prop.rise).toBeGreaterThan(wall / 2);
+      expect(prop.rise).toBeLessThan(wall);
+      // Between the wall and the plant there is room for it.
+      expect(PROP_FOOT).toBeLessThan(Math.abs(shelterShape(setup).plant - WALL_AT) - 20);
+    }
+  });
+
+  it('brings a prop that held nothing down flat, towards the wall it was leant on', () => {
+    for (const setup of setups) {
+      const shape = shelterShape(setup);
+      const { prop } = shape;
+      const turn = fallOf(shape).prop;
+      if (!prop) {
+        expect(turn).toBe(0);
+        continue;
+      }
+      // Turned by that much about its foot, its top is on the ground, on the wall's side of the foot.
+      const dx = -prop.side * (PROP_FOOT - WALL_THICK / 2);
+      const dy = -prop.rise;
+      const radians = (turn * Math.PI) / 180;
+      const x = dx * Math.cos(radians) - dy * Math.sin(radians);
+      const y = dx * Math.sin(radians) + dy * Math.cos(radians);
+      // (The prop is drawn to the wall's face, a little steeper than the line the turn is worked out from.)
+      expect(Math.abs(y), JSON.stringify(setup)).toBeLessThan(6);
+      expect(Math.sign(x)).toBe(-prop.side);
+    }
+  });
+
+  it('shows more wind in a gust: more streaks, and the pennant lifted further', () => {
+    const breeze = shelterShape({
+      wind: 'breeze',
+      from: 'left',
+      plant: 'seedling',
+      wall: 'low',
+      prop: 'none',
+    });
+    const gust = shelterShape({
+      wind: 'gust',
+      from: 'left',
+      plant: 'seedling',
+      wall: 'low',
+      prop: 'none',
+    });
+    expect(gust.streaks).toBeGreaterThan(breeze.streaks);
+    expect(gust.lift).toBeGreaterThan(breeze.lift);
+    expect(gust.lift).toBeLessThanOrEqual(90);
+  });
+
+  it('is the same picture turned round when the wind comes from the other side', () => {
+    for (const setup of setups.filter((each) => each.from === 'left')) {
+      const turnedProp = setup.prop === 'none' ? 'none' : leeOf(setup.prop);
+      const one = shelterShape(setup);
+      const other = shelterShape({ ...setup, from: 'right', prop: turnedProp });
+      expect(other.plant - WALL_AT, JSON.stringify(setup)).toBe(-(one.plant - WALL_AT));
+      expect(other.pole - WALL_AT).toBe(-(one.pole - WALL_AT));
+      expect(other.prop?.side ?? 0).toBe(-(one.prop?.side ?? 0) || 0);
+      expect(fallOf(other).wall).toBe(-fallOf(one).wall);
+    }
+  });
+});
+
 // ---------------------------------------------------------------------------------------------------------------------
 // The words
 // ---------------------------------------------------------------------------------------------------------------------
@@ -582,6 +725,28 @@ describe('Inventor Island in words', () => {
     );
     expect(describeSetup('tub', { thing: 'wooden-spoon' })).toBe(
       'A tub of water, and a wooden spoon held over it.',
+    );
+    expect(
+      describeSetup('shelter', {
+        wind: 'gust',
+        from: 'left',
+        plant: 'sunflower',
+        wall: 'tall',
+        prop: 'right',
+      }),
+    ).toBe(
+      'A strong gust blowing from the left, towards a tall sunflower. Between them, a tall wall with a prop on its right.',
+    );
+    expect(
+      describeSetup('shelter', {
+        wind: 'breeze',
+        from: 'right',
+        plant: 'seedling',
+        wall: 'low',
+        prop: 'none',
+      }),
+    ).toBe(
+      'A breeze blowing from the right, towards a little seedling. Between them, a low wall with no prop.',
     );
   });
 

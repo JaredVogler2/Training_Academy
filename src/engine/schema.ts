@@ -415,7 +415,7 @@ const ProgramTaskSchema = v.strictObject({
   solution: ProgramTextSchema,
 });
 
-export const WORKBENCHES = ['bridge', 'ramp', 'balance', 'boat'] as const;
+export const WORKBENCHES = ['bridge', 'ramp', 'balance', 'boat', 'shelter'] as const;
 export type Workbench = (typeof WORKBENCHES)[number];
 
 /**
@@ -661,6 +661,12 @@ export const ProfileSchema = v.object({
     startAt: v.optional(v.record(WorldIdSchema, LessonIdSchema)),
     /** This player has been shown how to play, or has passed it by: it is not shown unasked again. */
     howTo: v.optional(v.literal('seen')),
+    /**
+     * What a grown-up says was tried with this child away from the screen, and on which day they said it: by
+     * the first lesson of the activity it goes with. It is their word. The game saw none of it, says so wherever
+     * it is shown, and counts it as nothing.
+     */
+    tried: v.optional(v.record(LessonIdSchema, v.pipe(v.string(), v.regex(DAY)))),
   }),
 });
 export type Profile = v.InferOutput<typeof ProfileSchema>;

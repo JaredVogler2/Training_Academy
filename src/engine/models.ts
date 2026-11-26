@@ -187,14 +187,69 @@ const tub: Model = (given) => {
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
+// The shelter
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** How hard each wind pushes. */
+export const WINDS: Readonly<Record<string, number>> = { breeze: 1, gust: 2 };
+/** How tall each wall is, which is also how much wind it catches. */
+export const WALLS: Readonly<Record<string, number>> = { low: 1, tall: 2 };
+/** What stands behind the wall, and how tall it is, in walls: a seedling is no taller than a low wall. */
+export const SHELTERED: Readonly<Record<string, number>> = { seedling: 1, sunflower: 2 };
+/** The two sides of a wall, as they are on the screen. */
+export const SIDES: readonly string[] = ['left', 'right'];
+/** Where a prop can be: nowhere, or leant against one side of the wall. */
+export const PROPS: readonly string[] = ['none', 'left', 'right'];
+
+/** The side away from the wind: where a wall falls to, and where what it shelters stands. */
+export function leeOf(from: string): string {
+  return from === 'left' ? 'right' : 'left';
+}
+
+/**
+ * A wall stood up to keep the wind off a plant.
+ *
+ *   given    wind: "breeze" or "gust";  from: "left" or "right", the side the wind blows from;
+ *            plant: "seedling" or "sunflower", which stands on the side away from the wind
+ *   choice   wall: "low" or "tall";  prop: "none", "left" or "right", a stick leant against that side
+ *
+ * The rule. Wind pushes a wall over, away from itself, and pushes a tall wall twice as hard as a low one. A low
+ * wall stands in a breeze by its own weight. Anything more needs a prop, and a prop holds only from the side the
+ * wall would fall to, the side away from the wind, where the wall presses it into the ground. Leant against the
+ * windward side it holds nothing: the wall falls away from it. And a wall keeps the wind off only what is no
+ * taller than itself. So
+ *
+ *   it stands     when  wind × wall ≤ 1,  or the prop is on the side away from the wind
+ *   it shelters   when  it stands, and the wall is at least as tall as the plant
+ *
+ * Left out: wind that swings round, or comes harder and softer (it blows steadily from one side); a prop that
+ * slips, sinks in or snaps; pegs and ropes, which hold from the windward side; the wall's own weight and width;
+ * soft ground; and that wind curls over the top of a real wall and reaches a little way down behind it.
+ */
+const shelter: Model = (given, choice) => {
+  const wall = WALLS[part(given, choice, 'wall')] ?? 0;
+  const push = (WINDS[String(given.wind)] ?? 0) * wall;
+  const held = part(given, choice, 'prop') === leeOf(String(given.from));
+  if (push > 1 && !held) return { works: false, outcome: 'blew-over' };
+  const covers = wall >= (SHELTERED[String(given.plant)] ?? 0);
+  return { works: covers, outcome: covers ? 'sheltered' : 'too-low' };
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
 // All of them
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** The models, by workbench. A workbench with no model cannot be tested: asking is a fault in the caller. */
-export const MODELS: Partial<Record<DesignTask['model'], Model>> = { bridge, ramp, balance, boat };
+export const MODELS: Partial<Record<DesignTask['model'], Model>> = {
+  bridge,
+  ramp,
+  balance,
+  boat,
+  shelter,
+};
 
 /** Every set-up that can be tested, by the name its picture goes by: the workbenches, and the tub. */
-const SCENES: Readonly<Record<string, Model>> = { bridge, ramp, balance, boat, tub };
+const SCENES: Readonly<Record<string, Model>> = { bridge, ramp, balance, boat, tub, shelter };
 
 /** Everything that can happen at each, in the order it is offered when a child is asked what will. */
 export const OUTCOMES: Readonly<Record<string, readonly string[]>> = {
@@ -203,6 +258,7 @@ export const OUTCOMES: Readonly<Record<string, readonly string[]>> = {
   balance: ['tipped-left', 'balanced', 'tipped-right'],
   boat: ['floated', 'sank', 'left-behind'],
   tub: ['floated', 'sank'],
+  shelter: ['sheltered', 'blew-over', 'too-low'],
 };
 
 /** What each workbench lets a child change, and the values each part can take, in the order they are shown. */
@@ -212,6 +268,7 @@ export const CONTROLS: Readonly<Record<string, Readonly<Record<string, readonly 
   balance: { weight: Object.keys(COUNTS), at: Object.keys(PLACES) },
   boat: { boat: Object.keys(BOATS), cargo: Object.keys(COUNTS) },
   tub: {},
+  shelter: { wall: Object.keys(WALLS), prop: PROPS },
 };
 
 const whole = (value: unknown, from: number, to: number): boolean =>
@@ -230,6 +287,11 @@ const FIXED: Readonly<Record<string, Readonly<Record<string, (value: unknown) =>
   },
   boat: { need: (value) => whole(value, 1, 3) },
   tub: { thing: (value) => typeof value === 'string' && value in DROPPED },
+  shelter: {
+    wind: (value) => typeof value === 'string' && value in WINDS,
+    from: (value) => typeof value === 'string' && SIDES.includes(value),
+    plant: (value) => typeof value === 'string' && value in SHELTERED,
+  },
 };
 
 /**

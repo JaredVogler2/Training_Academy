@@ -46,5 +46,15 @@
   "ii.ramp.look.rolled-past": 3.55,
   "ii.ramp.look.rolled-short": 3.4,
   "ii.ramp.predict.hint.model": 3.09,
-  "ii.ramp.predict.instruction": 2.23
+  "ii.ramp.predict.instruction": 2.23,
+  "ii.shelter.build.correct": 2.81,
+  "ii.shelter.build.hint.model": 4.42,
+  "ii.shelter.build.incorrect": 5.42,
+  "ii.shelter.build.instruction": 4.56,
+  "ii.shelter.is.blew-over": 1.89,
+  "ii.shelter.is.sheltered": 1.85,
+  "ii.shelter.look.blew-over": 3.02,
+  "ii.shelter.look.sheltered": 2.89,
+  "ii.shelter.predict.hint.model": 3.59,
+  "ii.shelter.predict.instruction": 2.88
 }

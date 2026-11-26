@@ -12,6 +12,24 @@ export const benchText = {
   guess: 'My guess',
 } as const;
 
+/** The portfolio: what a child has made here, as a page to look at. Its lines are for the grown-up alongside. */
+export const portfolioText = {
+  back: 'Back to Inventor Island',
+  testAgain: (name: string) => `${name}: test it again`,
+  play: (name: string) => `${name}: nothing mended yet. Play it`,
+  made: (day: string) => `Mended and tested on ${day}.`,
+  notYet: 'Nothing mended here yet.',
+  guesses: (made: number, cameTrue: number) =>
+    made === 0
+      ? 'No guesses yet.'
+      : `Guesses: ${String(cameTrue)} of ${String(made)} came true at the first guess.`,
+  tried: (day: string) => `Tried away from the screen on ${day}: a grown-up said so.`,
+  nobody:
+    'Nobody is playing yet. Choose a player on the first page, and what they make will be here.',
+  about: (name: string) =>
+    `Each picture is the last thing ${name} mended at that workbench, drawn from the answer itself, as it was when it was tested and worked. The models behind the tests are toys: right about which way a change pushes, and not about how much. What was tried away from the screen is a grown-up’s word; the game did not see it.`,
+} as const;
+
 const NUMBERS = ['no', 'one', 'two', 'three', 'four', 'five', 'six'];
 const count = (amount: number, one: string, many: string) =>
   `${NUMBERS[amount] ?? String(amount)} ${amount === 1 ? one : many}`;
@@ -28,6 +46,8 @@ export const CONTROL_NAMES: Readonly<Record<string, string>> = {
   at: 'How far out',
   boat: 'Boat',
   cargo: 'Stones aboard',
+  wall: 'The wall',
+  prop: 'A prop',
 };
 
 /** What each value a part can take is called. */
@@ -40,6 +60,8 @@ export const OPTION_NAMES: Readonly<Record<string, Readonly<Record<string, strin
   at: { near: 'close in', mid: 'half way out', far: 'far out' },
   boat: { shell: 'the little shell', bark: 'the bark boat', raft: 'the big raft' },
   cargo: { one: 'one stone', two: 'two stones', three: 'three stones' },
+  wall: { low: 'a low wall', tall: 'a tall wall' },
+  prop: { none: 'no prop', left: 'a prop on its left', right: 'a prop on its right' },
 };
 
 export function optionName(control: string, option: string): string {
@@ -78,6 +100,17 @@ export const OUTCOME_WORDS: Readonly<Record<string, Readonly<Record<string, stri
     'left-behind': 'it floats across, but a stone is left behind',
   },
   tub: { floated: 'it floats', sank: 'it sinks' },
+  shelter: {
+    sheltered: 'the wall stands and keeps the wind off',
+    'blew-over': 'the wall blows over',
+    'too-low': 'the wall stands, but the wind goes over the top of it',
+  },
+};
+
+const WIND_WORDS: Readonly<Record<string, string>> = { breeze: 'A breeze', gust: 'A strong gust' };
+const PLANT_WORDS: Readonly<Record<string, string>> = {
+  seedling: 'a little seedling',
+  sunflower: 'a tall sunflower',
 };
 
 /** A set-up in words, before anything has happened to it. */
@@ -108,6 +141,12 @@ export function describeSetup(scene: string, setup: Setup): string {
       );
     case 'tub':
       return `A tub of water, and ${THINGS[text('thing')] ?? text('thing')} held over it.`;
+    case 'shelter':
+      return (
+        `${WIND_WORDS[text('wind')] ?? text('wind')} blowing from the ${text('from')}, towards ` +
+        `${PLANT_WORDS[text('plant')] ?? text('plant')}. Between them, ${optionName('wall', text('wall'))} ` +
+        `with ${optionName('prop', text('prop'))}.`
+      );
     default:
       return '';
   }

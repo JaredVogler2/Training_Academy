@@ -1,4 +1,4 @@
-import { expect, holdClock, test } from './fixtures';
+import { SHARE_OF_LIMIT, expect, holdClock, nearItsLimit, test } from './fixtures';
 
 /**
  * The checks that matter on a real deployment as much as locally. Run them against a Vercel preview with
@@ -224,6 +224,33 @@ test.describe('the guard that every one of these tests runs under', () => {
  * The clock that tests hold (fixtures.ts). Like the guard's tests, these stage what they need and belong to no
  * deployment.
  */
+test.describe('the time a test is given', () => {
+  test('is not nearly used up by a test that passes: three quarters of it is the most', () => {
+    // Well inside, and exactly at three quarters: nothing to say.
+    expect(nearItsLimit(30_000, 120_000)).toBeNull();
+    expect(nearItsLimit(90_000, 120_000)).toBeNull();
+    // The two that turned `main` red had passed the run before in 59.5 and 59.4 of their 60 seconds.
+    expect(nearItsLimit(59_500, 60_000)).toContain('59.5 s of the 60 s');
+    expect(nearItsLimit(45_001, 60_000)).toContain('test.setTimeout');
+    // A test with no limit (one being stepped through by hand) is never near it.
+    expect(nearItsLimit(3_600_000, 0)).toBeNull();
+    expect(SHARE_OF_LIMIT).toBe(0.75);
+  });
+
+  test('and a test that does use it up fails for that, though everything it checked was so', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'Once is enough: it is the tests’ own tool.');
+    // This test is meant to fail, and to fail only by the guard: it checks nothing, takes four fifths of a
+    // limit of thirty seconds, and ends well inside it. If the guard says nothing, the test passes, which is
+    // reported as the failure it then is. (Thirty seconds, so that the six it has to spare are far more than a
+    // slow machine takes to hand it a page: run out of time, it would fail for the wrong reason.)
+    test.fail();
+    test.setTimeout(30_000);
+    await page.waitForTimeout(24_000);
+  });
+});
+
 test.describe('the clock that a test holds', () => {
   test('is held even when the machine is slow between reading the time and asking the clock to stop there', async ({
     page,

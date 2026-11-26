@@ -274,6 +274,156 @@
 }
 
 /* ---------------------------------------------------------------------------------------------------------------- */
+/* The shelter: the wind blows. The wall stands, or goes over away from the wind; a plant the wind reaches bends.     */
+/* ---------------------------------------------------------------------------------------------------------------- */
+
+.scene[data-phase='testing'] .gusts {
+  animation: blow calc(var(--t) / 3) linear 3 both;
+}
+
+.through {
+  opacity: 0;
+}
+
+.scene[data-phase='testing'][data-outcome='blew-over'] .through,
+.scene[data-phase='testing'][data-outcome='too-low'] .through {
+  animation: reach var(--t) both;
+}
+
+.scene[data-phase='after'][data-outcome='blew-over'] .through,
+.scene[data-phase='after'][data-outcome='too-low'] .through {
+  opacity: 0.9;
+}
+
+.scene[data-phase='testing'][data-outcome='blew-over'] .wall {
+  animation: blow-over var(--t) both;
+}
+
+.scene[data-phase='after'][data-outcome='blew-over'] .wall {
+  transform: rotate(var(--fall));
+}
+
+.scene[data-phase='testing'][data-outcome='sheltered'] .wall,
+.scene[data-phase='testing'][data-outcome='too-low'] .wall {
+  animation: stand-firm var(--t) both;
+}
+
+.scene[data-phase='testing'][data-outcome='blew-over'] .strut {
+  animation: come-down var(--t) both;
+}
+
+.scene[data-phase='after'][data-outcome='blew-over'] .strut {
+  transform: rotate(var(--drop));
+}
+
+.scene[data-phase='testing'][data-outcome='blew-over'] .plant,
+.scene[data-phase='testing'][data-outcome='too-low'] .plant {
+  animation: bend var(--t) both;
+}
+
+.scene[data-phase='after'][data-outcome='blew-over'] .plant,
+.scene[data-phase='after'][data-outcome='too-low'] .plant {
+  transform: rotate(var(--bend));
+}
+
+@keyframes blow {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  25%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(var(--blow));
+  }
+}
+
+@keyframes reach {
+  0%,
+  55% {
+    opacity: 0;
+  }
+  75%,
+  100% {
+    opacity: 0.9;
+  }
+}
+
+/* It leans, comes back a little, and then goes: about its foot, away from the wind. */
+@keyframes blow-over {
+  0%,
+  22% {
+    transform: rotate(0deg);
+  }
+  34% {
+    transform: rotate(calc(var(--fall) * 0.1));
+  }
+  42% {
+    transform: rotate(calc(var(--fall) * 0.05));
+    animation-timing-function: cubic-bezier(0.5, 0, 1, 0.7);
+  }
+  68% {
+    transform: rotate(var(--fall));
+  }
+  76% {
+    transform: rotate(calc(var(--fall) * 0.95));
+  }
+  84%,
+  100% {
+    transform: rotate(var(--fall));
+  }
+}
+
+/* A wall that holds still feels the wind: it gives a very little, and comes back. */
+@keyframes stand-firm {
+  0%,
+  24%,
+  100% {
+    transform: rotate(0deg);
+  }
+  36% {
+    transform: rotate(calc(var(--fall) * 0.025));
+  }
+  48% {
+    transform: rotate(0deg);
+  }
+  60% {
+    transform: rotate(calc(var(--fall) * 0.018));
+  }
+  72% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes come-down {
+  0%,
+  44% {
+    transform: rotate(0deg);
+    animation-timing-function: cubic-bezier(0.5, 0, 1, 0.7);
+  }
+  72%,
+  100% {
+    transform: rotate(var(--drop));
+  }
+}
+
+@keyframes bend {
+  0%,
+  58% {
+    transform: rotate(0deg);
+  }
+  78% {
+    transform: rotate(calc(var(--bend) * 1.2));
+  }
+  100% {
+    transform: rotate(var(--bend));
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------- */
 /* The tub: the thing is let go. It bobs on the water, or goes on down to the bottom.                                 */
 /* ---------------------------------------------------------------------------------------------------------------- */
 

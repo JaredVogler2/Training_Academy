@@ -12,8 +12,14 @@ import {
   PLACES,
   PLANKS,
   POSTS,
+  PROPS,
+  SHELTERED,
+  SIDES,
   SURFACES,
   TRAVELLERS,
+  WALLS,
+  WINDS,
+  leeOf,
   rampReach,
   setupProblem,
   startingDesign,
@@ -67,6 +73,16 @@ const ponds = fc.record({
   need: fc.integer({ min: 1, max: 3 }),
   boat: fc.constantFrom(...boats),
   cargo: fc.constantFrom(...counts),
+});
+const winds = Object.keys(WINDS);
+const walls = Object.keys(WALLS);
+const plants = Object.keys(SHELTERED);
+const shelters = fc.record({
+  wind: fc.constantFrom(...winds),
+  from: fc.constantFrom(...SIDES),
+  plant: fc.constantFrom(...plants),
+  wall: fc.constantFrom(...walls),
+  prop: fc.constantFrom(...PROPS),
 });
 
 /** The value one step up from this one in a list, or the same value at the top of it. */
@@ -293,6 +309,116 @@ describe('the boat', () => {
   });
 });
 
+describe('the shelter', () => {
+  it.each([
+    // wind, where it blows from, what is behind the wall, the wall, the prop, what happens
+    ['breeze', 'left', 'seedling', 'low', 'none', 'sheltered'],
+    ['breeze', 'left', 'seedling', 'tall', 'none', 'blew-over'],
+    ['breeze', 'left', 'seedling', 'tall', 'right', 'sheltered'],
+    ['breeze', 'left', 'seedling', 'tall', 'left', 'blew-over'],
+    ['breeze', 'left', 'sunflower', 'low', 'none', 'too-low'],
+    ['breeze', 'left', 'sunflower', 'tall', 'right', 'sheltered'],
+    ['gust', 'left', 'seedling', 'low', 'none', 'blew-over'],
+    ['gust', 'left', 'seedling', 'low', 'right', 'sheltered'],
+    ['gust', 'left', 'seedling', 'low', 'left', 'blew-over'],
+    ['gust', 'left', 'sunflower', 'low', 'right', 'too-low'],
+    ['gust', 'left', 'sunflower', 'tall', 'right', 'sheltered'],
+    ['gust', 'left', 'sunflower', 'tall', 'none', 'blew-over'],
+    ['gust', 'right', 'seedling', 'low', 'left', 'sheltered'],
+    ['gust', 'right', 'seedling', 'low', 'right', 'blew-over'],
+    ['breeze', 'right', 'sunflower', 'tall', 'left', 'sheltered'],
+    ['breeze', 'right', 'sunflower', 'tall', 'right', 'blew-over'],
+  ] as const)(
+    'a %s from the %s on a %s behind a %s wall, prop: %s — %s',
+    (wind, from, plant, wall, prop, result) => {
+      expect(outcome('shelter', { wind, from, plant, wall, prop })).toBe(result);
+    },
+  );
+
+  it('is the same thing seen in a mirror: turn the wind and the prop round and nothing changes', () => {
+    const turned = (side: string) => (side === 'none' ? side : leeOf(side));
+    fc.assert(
+      fc.property(shelters, (setup) => {
+        const mirror = { ...setup, from: leeOf(setup.from), prop: turned(setup.prop) };
+        expect(outcome('shelter', mirror)).toBe(outcome('shelter', setup));
+      }),
+    );
+  });
+
+  it('always stands with a prop on the side away from the wind, whatever the wind and the wall', () => {
+    fc.assert(
+      fc.property(shelters, (setup) => {
+        const propped = { ...setup, prop: leeOf(setup.from) };
+        expect(outcome('shelter', propped)).not.toBe('blew-over');
+      }),
+    );
+  });
+
+  it('gets nothing from a prop on the side the wind comes from: it does what it does with none', () => {
+    fc.assert(
+      fc.property(shelters, (setup) => {
+        const windward = { ...setup, prop: setup.from };
+        expect(outcome('shelter', windward)).toBe(outcome('shelter', { ...setup, prop: 'none' }));
+      }),
+    );
+  });
+
+  it('never stands in a stronger wind where it fell in a weaker, or as a taller wall where a lower fell', () => {
+    fc.assert(
+      fc.property(shelters, (setup) => {
+        if (outcome('shelter', setup) !== 'blew-over') return;
+        expect(outcome('shelter', { ...setup, wind: stepUp(winds, setup.wind) })).toBe('blew-over');
+        expect(outcome('shelter', { ...setup, wall: stepUp(walls, setup.wall) })).toBe('blew-over');
+      }),
+    );
+  });
+
+  it('shelters only when it stands and is as tall as what is behind it', () => {
+    fc.assert(
+      fc.property(shelters, (setup) => {
+        const result = outcome('shelter', setup);
+        const tallEnough = (WALLS[setup.wall] ?? 0) >= (SHELTERED[setup.plant] ?? 0);
+        expect(works('shelter', setup)).toBe(result !== 'blew-over' && tallEnough);
+        // What is too low is never said of a wall that is tall enough, or of one that fell.
+        if (result === 'too-low') expect(tallEnough).toBe(false);
+      }),
+    );
+  });
+
+  it('can always be made to shelter: a wall as tall as the plant, propped on the side away from the wind', () => {
+    for (const wind of winds) {
+      for (const from of SIDES) {
+        for (const plant of plants) {
+          const wall = plant === 'sunflower' ? 'tall' : 'low';
+          expect(works('shelter', { wind, from, plant, wall, prop: leeOf(from) })).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('needs the prop to be thought about: with a prop stood anywhere, some walls fall and some stand', () => {
+    // The same prop on the same side holds in one wind and not in the other: it is where the wind is that counts.
+    expect(
+      outcome('shelter', {
+        wind: 'gust',
+        from: 'left',
+        plant: 'seedling',
+        wall: 'low',
+        prop: 'right',
+      }),
+    ).toBe('sheltered');
+    expect(
+      outcome('shelter', {
+        wind: 'gust',
+        from: 'right',
+        plant: 'seedling',
+        wall: 'low',
+        prop: 'right',
+      }),
+    ).toBe('blew-over');
+  });
+});
+
 describe('things dropped in water', () => {
   it('float or sink by what they are made of', () => {
     for (const [thing, { floats, made }] of Object.entries(DROPPED)) {
@@ -328,6 +454,7 @@ describe('every model', () => {
     ramps.map((setup): [string, Setup] => ['ramp', setup]),
     beams.map((setup): [string, Setup] => ['balance', setup]),
     ponds.map((setup): [string, Setup] => ['boat', setup]),
+    shelters.map((setup): [string, Setup] => ['shelter', setup]),
     fc.constantFrom(...things).map((thing): [string, Setup] => ['tub', { thing }]),
   );
 
@@ -357,7 +484,7 @@ describe('every model', () => {
   });
 
   it('has a workbench for everything a child can change, and nothing to change in the tub', () => {
-    expect(Object.keys(MODELS).sort()).toEqual(['balance', 'boat', 'bridge', 'ramp']);
+    expect(Object.keys(MODELS).sort()).toEqual(['balance', 'boat', 'bridge', 'ramp', 'shelter']);
     expect(CONTROLS.tub).toEqual({});
     for (const bench of Object.keys(MODELS)) {
       expect(Object.keys(CONTROLS[bench] ?? {}), bench).toHaveLength(2);
@@ -396,6 +523,19 @@ describe('a set-up that cannot be tested', () => {
     );
     expect(setupProblem('tub', { thing: 'anvil' })).toBe('thing is "anvil"');
     expect(setupProblem('catapult', {})).toBe('"catapult" is not something that can be tested');
+  });
+
+  it('is refused at the shelter too: a wind nobody named, from nowhere, on nothing, held by a prop that is not one', () => {
+    const good = { wind: 'gust', from: 'left', plant: 'seedling', wall: 'low', prop: 'right' };
+    expect(setupProblem('shelter', good)).toBe(null);
+    expect(setupProblem('shelter', { ...good, wind: 'gale' })).toBe('wind is "gale"');
+    expect(setupProblem('shelter', { ...good, from: 'above' })).toBe('from is "above"');
+    expect(setupProblem('shelter', { ...good, plant: 'oak' })).toBe('plant is "oak"');
+    expect(setupProblem('shelter', { ...good, wall: 'huge' })).toBe('wall is "huge"');
+    expect(setupProblem('shelter', { ...good, prop: 'behind' })).toBe('prop is "behind"');
+    expect(setupProblem('shelter', { ...good, roof: 'tiled' })).toBe(
+      'roof is not a part of a shelter',
+    );
   });
 
   it('is never tested: there is no answer to draw', () => {

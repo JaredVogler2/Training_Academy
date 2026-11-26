@@ -178,6 +178,39 @@ describe('the audio engine', () => {
     engine.setEnabled(true);
     expect(listener).toHaveBeenCalledTimes(2);
   });
+
+  it('can be woken without telling anyone, and tells when it is asked to', () => {
+    const { context } = fakeContext('running');
+    const engine = new AudioEngine(() => context, true);
+    const listener = vi.fn();
+    engine.subscribe(listener);
+    // Woken in the middle of a press: it is ready, and nobody has been told.
+    engine.unlock(false);
+    expect(engine.state).toBe('ready');
+    expect(listener).not.toHaveBeenCalled();
+    engine.announce();
+    expect(listener).toHaveBeenCalledTimes(1);
+    // Woken in the ordinary way, it tells at once.
+    engine.unlock();
+    expect(listener).toHaveBeenCalledTimes(2);
+  });
+
+  it('says so when there is no audio to wake, at once or when asked, as it was woken', () => {
+    const none = new AudioEngine(() => null, true);
+    const listener = vi.fn();
+    none.subscribe(listener);
+    none.unlock(false);
+    expect(none.state).toBe('unavailable');
+    expect(listener).not.toHaveBeenCalled();
+    none.announce();
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    const other = new AudioEngine(() => null, true);
+    other.subscribe(listener);
+    other.unlock();
+    expect(other.state).toBe('unavailable');
+    expect(listener).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('the first sound on a phone', () => {

@@ -325,6 +325,21 @@
   line-height: 1.4;
 }
 
+/* A grown-up's word that it was tried: a switch to hold, and what it says. Under the thing it is about. */
+.tried {
+  display: flex;
+  grid-column: 2 / -1;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+  color: var(--ink-soft);
+  font-size: var(--text-s);
+}
+
+.tried[data-tried='true'] {
+  color: var(--ink);
+}
+
 .together em {
   display: block;
   margin-top: 4px;

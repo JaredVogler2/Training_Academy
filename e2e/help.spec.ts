@@ -50,10 +50,11 @@ async function nudgeNow(page: Page): Promise<string | null> {
 }
 
 /**
- * Have the page keep a note of every press it is given: when, on what, and whether inside the lesson. Once in
- * CI, in Safari's engine, three taps on the picture brought no nudge, and at the next attempt they did (run
- * 48). It could not be made to happen here, in Chromium, at any moment after the activity appears or with the
- * processor slowed six times. So the next time it happens, the test says what the page saw.
+ * Have the page keep a note of every press it is given: when, on what, and where that was by the time the
+ * document was given the press. Twice in CI, in Safari's engine, three taps on the picture brought no nudge, and
+ * at the next attempt they did (runs 48 and 49). The second time this note was in place, and said that the
+ * second tap had landed on a picture "outside the lesson": the picture had been taken out of the page while the
+ * press was on its way (the test below stages it). The note stays, and now tells the two apart.
  */
 async function notePresses(page: Page): Promise<void> {
   await page.addInitScript(() => {
@@ -64,16 +65,88 @@ async function notePresses(page: Page): Promise<void> {
       (event) => {
         const target = event.target instanceof Element ? event.target : null;
         const lesson = document.querySelector('[data-testid="lesson"]');
-        const inside = lesson !== null && target !== null && lesson.contains(target);
         const what =
           target?.closest('button, a[href]')?.getAttribute('aria-label') ?? target?.tagName ?? '?';
-        seen.push(
-          `${String(Math.round(performance.now()))} ms: ${what}, ${inside ? 'in' : 'outside'} the lesson`,
-        );
+        const where =
+          target?.isConnected !== true
+            ? 'taken out of the page during the press'
+            : lesson?.contains(target) === true
+              ? 'in the lesson'
+              : 'outside the lesson';
+        seen.push(`${String(Math.round(performance.now()))} ms: ${what}, ${where}`);
       },
       true,
     );
   });
+}
+
+/**
+ * Stage what a busy machine and Safari's audio do between them, and keep a note of each press as the window is
+ * given it and again as the document is.
+ *
+ * Two things have to coincide. The audio says it is running at the very moment of a press, before the game has
+ * been told: here, what the audio says of itself is switched from outside just before each press. And some
+ * re-drawing that has been asked for is still waiting its turn: here, every piece of work React asks its
+ * scheduler for is delivered `late` milliseconds late. With either alone nothing happens (tried: 0 of 115
+ * presses each way). With both, and the game telling its listeners inside the press as it used to, 5 of 115
+ * presses had the picture under them taken out of the page between the window and the document.
+ */
+async function stageAudioWakingAtAPress(page: Page, late: number): Promise<void> {
+  await page.addInitScript((late) => {
+    const scope = window as unknown as {
+      audioSaysRunning: boolean;
+      pressesWhole: { at: number; what: string; atWindow: boolean; atDocument: boolean }[];
+      AudioContext?: { prototype: object };
+      MessageChannel: unknown;
+    };
+    scope.audioSaysRunning = false;
+    if (scope.AudioContext) {
+      Object.defineProperty(scope.AudioContext.prototype, 'state', {
+        get: () => (scope.audioSaysRunning ? 'running' : 'suspended'),
+      });
+      Object.defineProperty(scope.AudioContext.prototype, 'resume', {
+        // Never answered: the game is not told by the audio itself, only by what a press finds.
+        value: () => new Promise<void>(() => undefined),
+      });
+    }
+    const Channel = MessageChannel;
+    scope.MessageChannel = class {
+      port1: MessagePort;
+      port2: { postMessage: (message: unknown) => void };
+      constructor() {
+        const real = new Channel();
+        this.port1 = real.port1;
+        this.port2 = {
+          postMessage: (message: unknown) => {
+            setTimeout(() => real.port2.postMessage(message), late);
+          },
+        };
+      }
+    };
+    scope.pressesWhole = [];
+    let now: (typeof scope.pressesWhole)[number] | null = null;
+    window.addEventListener(
+      'pointerdown',
+      (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        now = {
+          at: Math.round(performance.now()),
+          what: target?.tagName ?? '?',
+          atWindow: target?.isConnected === true,
+          atDocument: false,
+        };
+        scope.pressesWhole.push(now);
+      },
+      true,
+    );
+    document.addEventListener(
+      'pointerdown',
+      (event) => {
+        if (now) now.atDocument = event.target instanceof Element && event.target.isConnected;
+      },
+      true,
+    );
+  }, late);
 }
 
 /** The presses the page has been given since it opened, as `notePresses` noted them. */
@@ -113,6 +186,49 @@ async function holdUntil(page: Page, target: Locator, pressed: boolean) {
   await expect(target).toHaveAttribute('aria-pressed', String(pressed), { timeout: 30_000 });
   await page.mouse.up();
 }
+
+test.describe('a press that comes as the audio wakes', () => {
+  test('is given to the game whole: what is under it stays in the page while the press is on its way', async ({
+    page,
+    press,
+    hasTouch,
+  }) => {
+    test.setTimeout(120_000);
+    await stageAudioWakingAtAPress(page, 150);
+    await page.goto(LESSON_PATH);
+    await expect(myTurn(page)).toBeVisible();
+    const box = await prompt(page).boundingBox();
+    if (!box) throw new Error('The picture is not on the screen.');
+    const x = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+    // Each showing counts the picture afresh, which is when it is drawn anew: four showings, and presses all
+    // through each, with the audio changing what it says of itself before every one.
+    for (let showing = 0; showing < 4; showing++) {
+      await press(lesson(page).getByRole('button', { name: 'Show me again' }));
+      for (let count = 0; count < 16; count++) {
+        await page.evaluate(() => {
+          const scope = window as unknown as { audioSaysRunning: boolean };
+          scope.audioSaysRunning = !scope.audioSaysRunning;
+        });
+        await (hasTouch ? page.touchscreen.tap(x, y) : page.mouse.click(x, y));
+        await page.waitForTimeout(25);
+      }
+    }
+    const presses = await page.evaluate(
+      () =>
+        (
+          window as unknown as {
+            pressesWhole: { at: number; what: string; atWindow: boolean; atDocument: boolean }[];
+          }
+        ).pressesWhole,
+    );
+    const onThePicture = presses.filter((each) => each.what !== 'BUTTON');
+    expect(onThePicture.length).toBeGreaterThanOrEqual(64);
+    // In the page when the window was given the press, and still in it when the document was: every one.
+    expect(onThePicture.filter((each) => !each.atWindow)).toEqual([]);
+    expect(onThePicture.filter((each) => !each.atDocument)).toEqual([]);
+  });
+});
 
 test.describe('taps that land on nothing', () => {
   test('are answered by showing what can be tapped: never an answer, and at no cost', async ({

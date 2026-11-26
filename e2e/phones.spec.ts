@@ -113,6 +113,12 @@ test.describe('on a phone with a notch', () => {
     await page.goto('/grown-ups');
     await expect(page.getByRole('button', { name: 'Press and hold' })).toBeVisible();
     await clear('the grown-ups gate');
+
+    // A page that has the whole screen and no top bar of the app's: its own way back is clear of the notch too.
+    await page.goto('/world/inventor-island/room');
+    await expect(page.getByTestId('portfolio').locator('li')).toHaveCount(5);
+    await clear('the portfolio');
+    expect((await screenFit(page)).sideways).toEqual([]);
   });
 
   test('the page does not bounce, reload when pulled down, or zoom on two quick taps @layout', async ({

@@ -17,7 +17,7 @@ const PACK_LOADERS: Partial<Record<WorldId, () => Promise<{ default: unknown }>>
   'number-garden': () => import('./packs/number-garden.v3.json'),
   'robot-ridge': () => import('./packs/robot-ridge.v2.json'),
   'memory-forest': () => import('./packs/memory-forest.v2.json'),
-  'inventor-island': () => import('./packs/inventor-island.v1.json'),
+  'inventor-island': () => import('./packs/inventor-island.v2.json'),
   'explorer-harbor': () => import('./packs/explorer-harbor.v1.json'),
   'music-lab': () => import('./packs/music-lab.v2.json'),
 };

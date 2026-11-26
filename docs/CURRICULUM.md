@@ -2,17 +2,17 @@
 
 **Status: seven worlds, a first pass through each.** Every activity the six islands' pages promised is authored
 and playable, and so are the Music Lab's six. Counts in this document are of real content in the repository,
-and the tests pin the ones quoted most. (All of it is live but Robot Ridge's three later activities, which are
-on a pull request that is not merged. The help for a first visit, described at the end of this document under
-_Where a child begins_, went live on 2026-11-26.)
+and the tests pin the ones quoted most. (All of it is live but Inventor Island's fifth activity, a shelter
+from the wind, which is on a pull request that is not merged. The help for a first visit, described at the end
+of this document under _Where a child begins_, went live on 2026-11-26.)
 
 |                              | Authored and tested |
 | ---------------------------- | ------------------- |
 | Worlds with playable content | 7 of 7              |
-| Activities (lessons)         | 67                  |
-| Challenges                   | 774                 |
-| Skills                       | 76                  |
-| Spoken lines and words       | 594 recordings      |
+| Activities (lessons)         | 68                  |
+| Challenges                   | 788                 |
+| Skills                       | 78                  |
+| Spoken lines and words       | 604 recordings      |
 
 **Nothing here has been reviewed by an early-years teacher or tried with a child, and no person has listened to
 the recordings.** All three are required before any claim about what the game teaches. Each world's brief in
@@ -487,37 +487,68 @@ needed help is asked again as a pair, with other things.
 | `memory.delayed.same-day`            | Recall them later the same day           | At the start of a later visit on the same day, ten minutes or more after the three things were shown, picks them out with nothing shown again.                                                                 |
 | `memory.delayed.another-day`         | Recall them on another day               | At the start of a visit on a later day, picks out the three things kept, with nothing shown again. Kept apart from the same day: a night between is a different wait.                                          |
 
-### Inventor Island — `inventor-island.v1.json` (contentVersion 1)
+### Inventor Island — `inventor-island.v2.json` (contentVersion 2)
 
-4 activities, 52 challenges, 8 skills, 48 spoken lines. Written by `scripts/content/inventor-island.mjs`.
+5 activities, 66 challenges, 10 skills, 58 spoken lines. Written by `scripts/content/inventor-island.mjs`. The
+first four activities are what they were in `v1`, challenge for challenge; the fifth is new.
 
 **How it teaches.** Each activity is two things. A guess: something is set up — a goat and a plank, a ball and
-a ramp — and the child says what will happen before it is tested in front of them; a guess that did not come
-true is kept beside what did happen, not rubbed out. And a mend: a thing that does not work is on a bench with
-its parts to change, and each change is tested.
+a ramp, a wall in the wind — and the child says what will happen before it is tested in front of them; a guess
+that did not come true is kept beside what did happen, not rubbed out. And a mend: a thing that does not work
+is on a bench with its parts to change, and each change is tested.
 
-**What the models are.** Four small, exact, made-up models (`src/engine/models.ts`): a plank holds or sags by its
-thickness, its posts and who crosses; a ball stops by the height of the ramp and the roughness of the ground;
-a beam balances by blocks and how far out they are; a thing floats by what it is made of and, for a boat, by its
-size and load. They behave the same way every time and they are not physics.
+**A shelter from the wind** is the fifth: a wall stood up to keep the wind off a plant. The wind comes from the
+left in some questions and from the right in others, and a prop is on one side of the wall or the other, so
+that neither "it has a prop" nor "the prop is on the right" tells whether the wall will stand: only where the
+prop is against where the wind comes from. A wall that blows over goes over away from the wind, a prop that
+held nothing comes down after it, and the plant bends. To mend one, the child moves the prop, or makes the
+wall as tall as what is behind it and then finds that a taller wall needs holding.
 
-| Activity        | Title             | Challenges | A sitting                        | The child's part          |
-| --------------- | ----------------- | ---------- | -------------------------------- | ------------------------- |
-| `ii-bridge-01`  | Bridges that hold | 12         | 2 shown, 2 guided, 3 of 8 alone  | a choice, mend on a bench |
-| `ii-ramp-01`    | Ramps and rolling | 12         | 2 shown, 2 guided, 3 of 8 alone  | a choice, mend on a bench |
-| `ii-balance-01` | Balancing         | 12         | 2 shown, 2 guided, 3 of 8 alone  | a choice, mend on a bench |
-| `ii-float-01`   | Float or sink     | 16         | 2 shown, 2 guided, 4 of 12 alone | a choice, mend on a bench |
+| Activity        | Title                   | Challenges | A sitting                        | The child's part          |
+| --------------- | ----------------------- | ---------- | -------------------------------- | ------------------------- |
+| `ii-bridge-01`  | Bridges that hold       | 12         | 2 shown, 2 guided, 3 of 8 alone  | a choice, mend on a bench |
+| `ii-ramp-01`    | Ramps and rolling       | 12         | 2 shown, 2 guided, 3 of 8 alone  | a choice, mend on a bench |
+| `ii-balance-01` | Balancing               | 12         | 2 shown, 2 guided, 3 of 8 alone  | a choice, mend on a bench |
+| `ii-float-01`   | Float or sink           | 16         | 2 shown, 2 guided, 4 of 12 alone | a choice, mend on a bench |
+| `ii-shelter-01` | A shelter from the wind | 14         | 2 shown, 2 guided, 3 of 10 alone | a choice, mend on a bench |
 
-| Skill                         | For grown-ups                            | What it means                                                                                                                                                      |
-| ----------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `engineering.bridge.predict`  | Guess whether a bridge will hold         | Looks at a plank bridge — how wide the gap, how thick the plank, how many posts, who is crossing — and says whether it will hold before it is tested.              |
-| `engineering.bridge.build`    | Mend a bridge that sags                  | Changes a bridge that sags, by a thicker plank or by posts, until it holds, testing after each change.                                                             |
-| `engineering.ramp.predict`    | Guess where a rolling ball will stop     | Looks at how high a ramp is and whether the ground is rough or smooth, and says whether the ball will stop short of the star, on it or past it.                    |
-| `engineering.ramp.build`      | Set a ramp so the ball stops on the star | Changes the height of a ramp and the ground it rolls onto until the ball stops where it is wanted, testing after each change.                                      |
-| `engineering.balance.predict` | Guess which way a beam will tip          | Looks at how many blocks are on each side of a beam and how far out they are, and says which side will go down or that it will balance.                            |
-| `engineering.balance.build`   | Make a beam balance                      | Places blocks on one side of a beam to balance the other, using both how many and how far out.                                                                     |
-| `engineering.float.predict`   | Guess what floats and what sinks         | Says whether a thing will float or sink before it is dropped in water, going by what it is made of and not by how big it is; and whether a loaded boat will float. |
-| `engineering.float.build`     | Choose a boat that carries the load      | Carries stones across a pond by choosing a boat big enough and loading it with all of them and no more than it can bear.                                           |
+| Skill                         | For grown-ups                               | What it means                                                                                                                                                      |
+| ----------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `engineering.bridge.predict`  | Guess whether a bridge will hold            | Looks at a plank bridge — how wide the gap, how thick the plank, how many posts, who is crossing — and says whether it will hold before it is tested.              |
+| `engineering.bridge.build`    | Mend a bridge that sags                     | Changes a bridge that sags, by a thicker plank or by posts, until it holds, testing after each change.                                                             |
+| `engineering.ramp.predict`    | Guess where a rolling ball will stop        | Looks at how high a ramp is and whether the ground is rough or smooth, and says whether the ball will stop short of the star, on it or past it.                    |
+| `engineering.ramp.build`      | Set a ramp so the ball stops on the star    | Changes the height of a ramp and the ground it rolls onto until the ball stops where it is wanted, testing after each change.                                      |
+| `engineering.balance.predict` | Guess which way a beam will tip             | Looks at how many blocks are on each side of a beam and how far out they are, and says which side will go down or that it will balance.                            |
+| `engineering.balance.build`   | Make a beam balance                         | Places blocks on one side of a beam to balance the other, using both how many and how far out.                                                                     |
+| `engineering.float.predict`   | Guess what floats and what sinks            | Says whether a thing will float or sink before it is dropped in water, going by what it is made of and not by how big it is; and whether a loaded boat will float. |
+| `engineering.float.build`     | Choose a boat that carries the load         | Carries stones across a pond by choosing a boat big enough and loading it with all of them and no more than it can bear.                                           |
+| `engineering.shelter.predict` | Guess whether a wall will stand in the wind | Looks at which way the wind blows and how hard, how tall the wall is and where it is propped, and says whether it will stand before it is tested.                  |
+| `engineering.shelter.build`   | Build a shelter that stands                 | Mends a wall that lets the wind through, by making it as tall as what is behind it and propping it on the side away from the wind, testing after each change.      |
+
+#### The models, and where each stops being true
+
+Five small, exact, made-up models (`src/engine/models.ts`) say what happens when a thing is tested. Each is a
+few lines of arithmetic on whole numbers, the same every time, so that a child who changes one part sees what
+that one change did. **They are right about which way a change pushes and not about how much, and none of them
+is physics.** The game never says they are: nothing a child or a grown-up is shown calls a result real, and
+each activity ends with something to try with real things, where the world gets the last word.
+
+Each model's rule and what it leaves out are written beside it in the code, and its tests
+(`tests/engine/models.test.ts`) hold it to set-ups worked out by hand, to the directions it claims (a change
+that should help never hurts), and to doing the same thing every time. This table is the same thing for a
+reader who will not open the code.
+
+| Model       | Its rule                                                                                                                                                                    | Right about                                                                                                      | Wrong about, or silent on                                                                                                                                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The bridge  | Holds when twice the plank's thickness, times one more than the number of posts, is at least the traveller's weight times the gap                                           | A thicker plank, more posts, a lighter traveller and a narrower gap each help, and never hurt                    | A real plank twice as thick is far more than twice as strong; the plank's own weight; bounce; how the ends are held; where the traveller is standing (the worst place is assumed)                                           |
+| The ramp    | The ball rolls one, two or three lengths from a low, middling or high ramp on rough ground, and twice that on smooth                                                        | Higher rolls further; rough ground stops it sooner; how heavy the ball is makes no difference, as nearly in life | Real distance does not double so neatly; the ball's size and what it is made of; bumps; that a ball slows on the ramp as well. No ramp here can reach the fifth length at all, which is arithmetic and not nature           |
+| The balance | Each side pushes down by its blocks times their distance from the middle; the heavier push goes down; equal pushes balance                                                  | This is the law of the lever, and for equal blocks on a stiff beam it is right                                   | The beam's own weight; friction at the middle; blocks sliding as it tips; how far it tips (a real beam goes down until it meets the ground)                                                                                 |
+| The boat    | The shell carries one stone, the bark boat two, the raft three; one more and it goes under. Dropped in a tub, a thing floats or sinks by what it is made of                 | A bigger boat carries more; size does not decide what floats, what a thing is made of does                       | A boat's own weight; where the stones sit (a real boat loaded to one side tips over); waves; that stones differ; a leaf that soaks and sinks in the end; a spoon laid so gently that it sits on the surface for a moment    |
+| The shelter | Wind pushes a wall away from itself, a tall wall twice as hard as a low one. A low wall stands in a breeze alone; anything more needs a prop on the side away from the wind | A wall falls away from the wind; a prop holds from the side it would fall to; a taller wall catches more wind    | Wind that swings round or comes and goes; a prop that slips, sinks or snaps; pegs and ropes, which do hold from the windward side; the wall's weight and width; that wind curls over a real wall and reaches down behind it |
+
+**What a model is never used for.** No model's result is recorded as a fact about the world, and no skill here
+says a child "knows" why bridges hold. What is recorded is what a child guessed about this set-up, and whether
+they mended this one.
 
 ### Explorer Harbor — `explorer-harbor.v1.json` (contentVersion 1)
 
@@ -723,15 +754,15 @@ named beside each thing does the same work, teaches while it does it, and writes
 
 From the briefs in `prompt-series/`; `docs/PROGRESS.md` has each brief set against what exists.
 
-| World           | Not built                                                                                                                                                                                                                                                                       | Brief |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
-| Reading Cove    | a sound on its own; a word never met before, or a made-up one, to show that a word can be read and not only known again; reading aloud that is listened to; sentences with a verb; words with two consonants together; more than three pairs of letters; capitals; letter names | 05    |
-| Number Garden   | giving out a number that is written (the giving games stop before numerals); patterns, shapes, measuring, estimating and coins (the brief's optional M7); counting in twos or beyond ten                                                                                        | 06    |
-| Robot Ridge     | a condition other than waiting for a bridge (no "if … or else", and nothing is sensed but the bridge); doing a part of a row again (the whole row is done again); steps that are dragged (they are tapped, by decision)                                                         | 07    |
-| Memory Forest   | more than five things; a way of remembering that is the child's own (the three ways are the game's, and nothing checks that the way chosen was used); waits told apart beyond "later the same day" and "another day"; anything said aloud by the child                          | 08    |
-| Inventor Island | a wind shelter; a record that the away-from-screen challenge was done; a portfolio card                                                                                                                                                                                         | 09    |
-| Explorer Harbor | making up a story; stories that branch; a globe, continents, countries, flags, people and places                                                                                                                                                                                | 10    |
-| The Music Lab   | tapping a rhythm back; black keys; keeping a tune a child has made; the five other rooms its brief describes                                                                                                                                                                    | 11    |
+| World           | Not built                                                                                                                                                                                                                                                                                                                                                                          | Brief |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| Reading Cove    | a sound on its own; a word never met before, or a made-up one, to show that a word can be read and not only known again; reading aloud that is listened to; sentences with a verb; words with two consonants together; more than three pairs of letters; capitals; letter names                                                                                                    | 05    |
+| Number Garden   | giving out a number that is written (the giving games stop before numerals); patterns, shapes, measuring, estimating and coins (the brief's optional M7); counting in twos or beyond ten                                                                                                                                                                                           | 06    |
+| Robot Ridge     | a condition other than waiting for a bridge (no "if … or else", and nothing is sensed but the bridge); doing a part of a row again (the whole row is done again); steps that are dragged (they are tapped, by decision)                                                                                                                                                            | 07    |
+| Memory Forest   | more than five things; a way of remembering that is the child's own (the three ways are the game's, and nothing checks that the way chosen was used); waits told apart beyond "later the same day" and "another day"; anything said aloud by the child                                                                                                                             | 08    |
+| Inventor Island | saying what changed after a mend (nothing in the game asks; the thing to try together asks it aloud); a heavier and a lighter ball on the ramp; a bridge of anything but a thin or a thick plank; building freely, with nothing to mend; parts that are dragged (they are changed by tapping a picture, by decision); a portfolio of more than the last thing mended at each bench | 09    |
+| Explorer Harbor | making up a story; stories that branch; a globe, continents, countries, flags, people and places                                                                                                                                                                                                                                                                                   | 10    |
+| The Music Lab   | tapping a rhythm back; black keys; keeping a tune a child has made; the five other rooms its brief describes                                                                                                                                                                                                                                                                       | 11    |
 
 Open questions: who reviews the phonics content and the audio; whether a person should record the voice; how
 prerequisites that cross worlds are shown on the map (nothing is locked, and Glim simply points at the next

@@ -76,6 +76,28 @@ const REMOTE_ALLOWED =
   (process.env.BASE_URL ?? process.env.PLAYWRIGHT_BASE_URL) ? [/vercel\.live/] : [];
 
 /**
+ * How much of its time limit a test may take and still pass.
+ *
+ * A limit is there to stop a test that hangs. A test that finishes just inside it has only been lucky with its
+ * machine: two tests here took 59.5 and 59.4 of their 60 seconds in CI and passed, and in the next run, of the
+ * same files, on a machine a fiftieth slower, ran out of time and turned `main` red (run 50). Nothing said so
+ * while they were passing. So a test that takes more than this share of its limit fails, at once and every
+ * time, with the remedy in its message: a limit that fits what the test does.
+ */
+export const SHARE_OF_LIMIT = 0.75;
+
+/** What there is to say of a test that passed in `taken` ms with `limit` ms allowed: nothing, if it had time to spare. */
+export function nearItsLimit(taken: number, limit: number): string | null {
+  // No limit at all is written 0 (a test being stepped through by hand): nothing is near that.
+  if (limit <= 0 || taken <= limit * SHARE_OF_LIMIT) return null;
+  return (
+    `passed with little time to spare: ${(taken / 1000).toFixed(1)} s of the ${(limit / 1000).toFixed(0)} s it is ` +
+    `allowed, which is more than ${String(Math.round(SHARE_OF_LIMIT * 100))} in a hundred of it. A slower machine ` +
+    'would have run out of time. Give the test a limit that fits what it does (test.setTimeout), or make it shorter'
+  );
+}
+
+/**
  * The test that had this worker's browser before the one now running: a browser is kept from test to test, so a
  * test can be late or stuck because of what the one before it left behind. (A worker that has had a failure starts
  * again with a new browser, and with nothing here.)
@@ -88,6 +110,7 @@ export const test = base.extend<Fixtures>({
 
   guard: [
     async ({ page, baseURL, browserName }, use, testInfo) => {
+      const began = Date.now();
       const origin = new URL(baseURL ?? 'http://127.0.0.1').origin;
       const problems: string[] = [];
       const allowed = [
@@ -228,6 +251,11 @@ export const test = base.extend<Fixtures>({
               ? '; this was the first test in its browser'
               : `; the test that had the browser before this one: ${ranBefore}`),
         );
+      }
+      // A test that did everything it set out to, with hardly any of its time left: see `nearItsLimit`.
+      if (testInfo.status === 'passed') {
+        const tight = nearItsLimit(Date.now() - began, testInfo.timeout);
+        if (tight !== null) problems.push(tight);
       }
       ranBefore = `[${testInfo.project.name}] ${testInfo.titlePath.slice(1).join(' › ')}`;
       expect(

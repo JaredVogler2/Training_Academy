@@ -20,8 +20,8 @@ export interface WorldInfo {
   activities: Activity[];
   role: WorldRole;
   /**
-   * A room to play in freely, where the world has one: nothing is asked there and nothing is kept. `note` is for
-   * the grown-up.
+   * A room of the world's own, where it has one: a place to play freely (the Music Lab's), or to look at what
+   * has been made (Inventor Island's). Nothing is asked there. `note` is for the grown-up.
    */
   room?: { title: string; note: string };
   /**
@@ -169,8 +169,21 @@ export const WORLDS: readonly WorldInfo[] = [
             'Never leave a child alone with water, even a little, even for a moment. Stay within reach the whole time and empty the bowl as soon as you finish. Nothing small enough to swallow.',
         },
       },
+      {
+        title: 'A shelter from the wind',
+        lessons: ['ii-shelter-01'],
+        together: {
+          what: 'Stand a piece of card up on the table as a wall, with a paper cup or a folded paper figure behind it, and blow at it gently through a drinking straw, or fan it with a book. Then lean a pencil against the card, first on your side and then on the far side, and blow again. You need: card, a paper cup or a paper figure, a pencil, a straw or a book. Mess: none. Ask: which way did the wall fall? Where did the pencil have to be to hold it up?',
+          safety:
+            'Stay with your child. Blow or fan gently, with breath or a book only: no hair dryer, no electric fan, nothing lit. Sit down to use the straw, and keep the pencil away from faces.',
+        },
+      },
     ],
     role: 'inventor',
+    room: {
+      title: 'My inventions',
+      note: 'The last thing your child mended at each workbench, drawn exactly as they left it, and how their guesses went. Nothing is asked there. It is made from what they did in the game, and from what you say was tried away from the screen: the game saw only the first.',
+    },
   },
   {
     id: 'explorer-harbor',

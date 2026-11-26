@@ -34,6 +34,7 @@ const pages: Route[] = [
   ...WORLD_IDS.map((world): Route => ({ name: 'world', world })),
   { name: 'play', world: 'number-garden', lessonId: 'ng-same-amount-01' },
   { name: 'room', world: 'music-lab' },
+  { name: 'room', world: 'inventor-island' },
 ];
 
 describe('vercel.json', () => {

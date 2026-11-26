@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "id": "inventor-island",
   "world": "inventor-island",
-  "contentVersion": 1,
+  "contentVersion": 2,
   "strings": {
     "en": {
       "ii.predict.hint.eliminate": "Not this one.",
@@ -53,7 +53,17 @@
       "ii.boat.build.instruction": "Take all the stones across. Do not let the boat sink.",
       "ii.boat.build.correct": "They all got across!",
       "ii.boat.build.incorrect": "Not yet. Change one thing and test again.",
-      "ii.boat.build.hint.model": "A bigger boat can carry more. Too many stones and it sinks."
+      "ii.boat.build.hint.model": "A bigger boat can carry more. Too many stones and it sinks.",
+      "ii.shelter.predict.instruction": "Will the wall keep the wind off? What do you think?",
+      "ii.shelter.predict.hint.model": "Which way is the wind blowing? Is anything holding the wall up?",
+      "ii.shelter.is.sheltered": "Yes. The wall stood.",
+      "ii.shelter.is.blew-over": "Yes. It blew over.",
+      "ii.shelter.look.sheltered": "Look. The wall stood. Tap what happened.",
+      "ii.shelter.look.blew-over": "Look. It blew over. Tap what happened.",
+      "ii.shelter.build.instruction": "The wind gets to the plant. Change the wall so it keeps the wind off.",
+      "ii.shelter.build.correct": "It keeps the wind off! You mended it.",
+      "ii.shelter.build.incorrect": "Not yet. Look what the wind did. Change one thing and test again.",
+      "ii.shelter.build.hint.model": "The wind pushes the wall over. Put the prop on the side it falls to."
     }
   },
   "skills": [
@@ -120,6 +130,22 @@
       "title": "Choose a boat that carries the load",
       "objective": "Carries stones across a pond by choosing a boat big enough and loading it with all of them and no more than it can bear.",
       "prerequisites": ["engineering.float.predict"]
+    },
+    {
+      "id": "engineering.shelter.predict",
+      "world": "inventor-island",
+      "strand": "engineering",
+      "title": "Guess whether a wall will stand in the wind",
+      "objective": "Looks at which way the wind blows and how hard, how tall the wall is and where it is propped, and says whether it will stand before it is tested.",
+      "prerequisites": []
+    },
+    {
+      "id": "engineering.shelter.build",
+      "world": "inventor-island",
+      "strand": "engineering",
+      "title": "Build a shelter that stands",
+      "objective": "Mends a wall that lets the wind through, by making it as tall as what is behind it and propping it on the side away from the wind, testing after each change.",
+      "prerequisites": ["engineering.shelter.predict"]
     }
   ],
   "lessons": [
@@ -2424,6 +2450,804 @@
             { "type": "reveal", "caption": "ii.build.hint.reveal" }
           ],
           "feedback": { "correct": "ii.boat.build.correct", "incorrect": "ii.boat.build.incorrect" }
+        }
+      ]
+    },
+    {
+      "id": "ii-shelter-01",
+      "version": 1,
+      "world": "inventor-island",
+      "title": "A shelter from the wind",
+      "summary": "A wall to keep the wind off a plant. Your child guesses whether it will stand, and sees; then mends a wall that blows over or is too low, by changing how tall it is and which side it is propped on. A prop holds only on the side away from the wind.",
+      "skillIds": ["engineering.shelter.predict", "engineering.shelter.build"],
+      "estimatedMinutes": 4,
+      "plan": {
+        "demo": ["ii-shelter-01.demo-guess", "ii-shelter-01.demo-mend"],
+        "guided": ["ii-shelter-01.guided-guess", "ii-shelter-01.guided-mend"],
+        "independent": {
+          "pool": [
+            "ii-shelter-01.prop-behind",
+            "ii-shelter-01.prop-in-front",
+            "ii-shelter-01.other-way-behind",
+            "ii-shelter-01.other-way-in-front",
+            "ii-shelter-01.tall-alone",
+            "ii-shelter-01.tall-propped",
+            "ii-shelter-01.wrong-side",
+            "ii-shelter-01.wrong-side-other-way",
+            "ii-shelter-01.too-low-in-a-breeze",
+            "ii-shelter-01.too-low-in-a-gust"
+          ],
+          "count": 3,
+          "maxReprobes": 1
+        }
+      },
+      "successCriteria": { "independentFirstTryCorrect": 2 },
+      "challenges": [
+        {
+          "id": "ii-shelter-01.demo-guess",
+          "kind": "choose-one",
+          "skillId": "engineering.shelter.predict",
+          "variant": "gust-fells-it",
+          "prompt": {
+            "instruction": "ii.shelter.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "gust",
+                "from": "left",
+                "plant": "seedling",
+                "wall": "low",
+                "prop": "none"
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The wall stands",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "gust",
+                  "from": "left",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "none",
+                  "shown": "sheltered"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It blows over",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "gust",
+                  "from": "left",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "none",
+                  "shown": "blew-over"
+                }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-sheltered" },
+          "feedback": {
+            "correct": "ii.shelter.is.blew-over",
+            "incorrect": "ii.shelter.look.blew-over"
+          }
+        },
+        {
+          "id": "ii-shelter-01.demo-mend",
+          "kind": "make",
+          "skillId": "engineering.shelter.build",
+          "variant": "prop-only",
+          "prompt": {
+            "instruction": "ii.shelter.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "gust",
+                "from": "left",
+                "plant": "seedling",
+                "wall": "low",
+                "prop": "none"
+              }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "shelter",
+            "given": {
+              "wind": "gust",
+              "from": "left",
+              "plant": "seedling",
+              "wall": "low",
+              "prop": "none"
+            },
+            "controls": [{ "id": "prop", "options": ["none", "left", "right"] }],
+            "solution": ["right"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.build.hint.model" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.shelter.build.correct",
+            "incorrect": "ii.shelter.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-shelter-01.guided-guess",
+          "kind": "choose-one",
+          "skillId": "engineering.shelter.predict",
+          "variant": "breeze-leaves-it",
+          "prompt": {
+            "instruction": "ii.shelter.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "breeze",
+                "from": "left",
+                "plant": "seedling",
+                "wall": "low",
+                "prop": "none"
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The wall stands",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "breeze",
+                  "from": "left",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "none",
+                  "shown": "sheltered"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It blows over",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "breeze",
+                  "from": "left",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "none",
+                  "shown": "blew-over"
+                }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-blew-over" },
+          "feedback": {
+            "correct": "ii.shelter.is.sheltered",
+            "incorrect": "ii.shelter.look.sheltered"
+          }
+        },
+        {
+          "id": "ii-shelter-01.guided-mend",
+          "kind": "make",
+          "skillId": "engineering.shelter.build",
+          "variant": "prop-only",
+          "prompt": {
+            "instruction": "ii.shelter.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "gust",
+                "from": "right",
+                "plant": "seedling",
+                "wall": "low",
+                "prop": "none"
+              }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "shelter",
+            "given": {
+              "wind": "gust",
+              "from": "right",
+              "plant": "seedling",
+              "wall": "low",
+              "prop": "none"
+            },
+            "controls": [{ "id": "prop", "options": ["none", "left", "right"] }],
+            "solution": ["left"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.build.hint.model" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.shelter.build.correct",
+            "incorrect": "ii.shelter.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-shelter-01.prop-behind",
+          "kind": "choose-one",
+          "skillId": "engineering.shelter.predict",
+          "variant": "prop-behind-holds",
+          "prompt": {
+            "instruction": "ii.shelter.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "gust",
+                "from": "left",
+                "plant": "seedling",
+                "wall": "low",
+                "prop": "right"
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The wall stands",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "gust",
+                  "from": "left",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "right",
+                  "shown": "sheltered"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It blows over",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "gust",
+                  "from": "left",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "right",
+                  "shown": "blew-over"
+                }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-blew-over" },
+          "feedback": {
+            "correct": "ii.shelter.is.sheltered",
+            "incorrect": "ii.shelter.look.sheltered"
+          }
+        },
+        {
+          "id": "ii-shelter-01.prop-in-front",
+          "kind": "choose-one",
+          "skillId": "engineering.shelter.predict",
+          "variant": "prop-in-front-fails",
+          "prompt": {
+            "instruction": "ii.shelter.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "gust",
+                "from": "left",
+                "plant": "seedling",
+                "wall": "low",
+                "prop": "left"
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The wall stands",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "gust",
+                  "from": "left",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "left",
+                  "shown": "sheltered"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It blows over",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "gust",
+                  "from": "left",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "left",
+                  "shown": "blew-over"
+                }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-sheltered" },
+          "feedback": {
+            "correct": "ii.shelter.is.blew-over",
+            "incorrect": "ii.shelter.look.blew-over"
+          }
+        },
+        {
+          "id": "ii-shelter-01.other-way-behind",
+          "kind": "choose-one",
+          "skillId": "engineering.shelter.predict",
+          "variant": "prop-behind-holds",
+          "prompt": {
+            "instruction": "ii.shelter.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "gust",
+                "from": "right",
+                "plant": "seedling",
+                "wall": "low",
+                "prop": "left"
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The wall stands",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "gust",
+                  "from": "right",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "left",
+                  "shown": "sheltered"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It blows over",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "gust",
+                  "from": "right",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "left",
+                  "shown": "blew-over"
+                }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-blew-over" },
+          "feedback": {
+            "correct": "ii.shelter.is.sheltered",
+            "incorrect": "ii.shelter.look.sheltered"
+          }
+        },
+        {
+          "id": "ii-shelter-01.other-way-in-front",
+          "kind": "choose-one",
+          "skillId": "engineering.shelter.predict",
+          "variant": "prop-in-front-fails",
+          "prompt": {
+            "instruction": "ii.shelter.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "gust",
+                "from": "right",
+                "plant": "seedling",
+                "wall": "low",
+                "prop": "right"
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The wall stands",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "gust",
+                  "from": "right",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "right",
+                  "shown": "sheltered"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It blows over",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "gust",
+                  "from": "right",
+                  "plant": "seedling",
+                  "wall": "low",
+                  "prop": "right",
+                  "shown": "blew-over"
+                }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-sheltered" },
+          "feedback": {
+            "correct": "ii.shelter.is.blew-over",
+            "incorrect": "ii.shelter.look.blew-over"
+          }
+        },
+        {
+          "id": "ii-shelter-01.tall-alone",
+          "kind": "choose-one",
+          "skillId": "engineering.shelter.predict",
+          "variant": "tall-catches-more",
+          "prompt": {
+            "instruction": "ii.shelter.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "breeze",
+                "from": "left",
+                "plant": "sunflower",
+                "wall": "tall",
+                "prop": "none"
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The wall stands",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "breeze",
+                  "from": "left",
+                  "plant": "sunflower",
+                  "wall": "tall",
+                  "prop": "none",
+                  "shown": "sheltered"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It blows over",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "breeze",
+                  "from": "left",
+                  "plant": "sunflower",
+                  "wall": "tall",
+                  "prop": "none",
+                  "shown": "blew-over"
+                }
+              }
+            }
+          ],
+          "answer": "b",
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "a": "predicted-sheltered" },
+          "feedback": {
+            "correct": "ii.shelter.is.blew-over",
+            "incorrect": "ii.shelter.look.blew-over"
+          }
+        },
+        {
+          "id": "ii-shelter-01.tall-propped",
+          "kind": "choose-one",
+          "skillId": "engineering.shelter.predict",
+          "variant": "tall-propped-holds",
+          "prompt": {
+            "instruction": "ii.shelter.predict.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "breeze",
+                "from": "right",
+                "plant": "sunflower",
+                "wall": "tall",
+                "prop": "left"
+              }
+            }
+          },
+          "choices": [
+            {
+              "id": "a",
+              "label": "The wall stands",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "breeze",
+                  "from": "right",
+                  "plant": "sunflower",
+                  "wall": "tall",
+                  "prop": "left",
+                  "shown": "sheltered"
+                }
+              }
+            },
+            {
+              "id": "b",
+              "label": "It blows over",
+              "stimulus": {
+                "type": "scene",
+                "scene": "shelter",
+                "of": {
+                  "wind": "breeze",
+                  "from": "right",
+                  "plant": "sunflower",
+                  "wall": "tall",
+                  "prop": "left",
+                  "shown": "blew-over"
+                }
+              }
+            }
+          ],
+          "answer": "a",
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.predict.hint.model" },
+            { "type": "reveal", "caption": "ii.predict.hint.reveal" }
+          ],
+          "misconceptions": { "b": "predicted-blew-over" },
+          "feedback": {
+            "correct": "ii.shelter.is.sheltered",
+            "incorrect": "ii.shelter.look.sheltered"
+          }
+        },
+        {
+          "id": "ii-shelter-01.wrong-side",
+          "kind": "make",
+          "skillId": "engineering.shelter.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.shelter.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "gust",
+                "from": "left",
+                "plant": "seedling",
+                "wall": "low",
+                "prop": "left"
+              }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "shelter",
+            "given": {
+              "wind": "gust",
+              "from": "left",
+              "plant": "seedling",
+              "wall": "low",
+              "prop": "left"
+            },
+            "controls": [{ "id": "prop", "options": ["none", "left", "right"] }],
+            "solution": ["right"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.build.hint.model" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.shelter.build.correct",
+            "incorrect": "ii.shelter.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-shelter-01.wrong-side-other-way",
+          "kind": "make",
+          "skillId": "engineering.shelter.build",
+          "variant": "one-part",
+          "prompt": {
+            "instruction": "ii.shelter.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "gust",
+                "from": "right",
+                "plant": "seedling",
+                "wall": "low",
+                "prop": "right"
+              }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "shelter",
+            "given": {
+              "wind": "gust",
+              "from": "right",
+              "plant": "seedling",
+              "wall": "low",
+              "prop": "right"
+            },
+            "controls": [{ "id": "prop", "options": ["none", "left", "right"] }],
+            "solution": ["left"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.build.hint.model" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.shelter.build.correct",
+            "incorrect": "ii.shelter.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-shelter-01.too-low-in-a-breeze",
+          "kind": "make",
+          "skillId": "engineering.shelter.build",
+          "variant": "both-parts",
+          "prompt": {
+            "instruction": "ii.shelter.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "breeze",
+                "from": "left",
+                "plant": "sunflower",
+                "wall": "low",
+                "prop": "none"
+              }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "shelter",
+            "given": {
+              "wind": "breeze",
+              "from": "left",
+              "plant": "sunflower",
+              "wall": "low",
+              "prop": "none"
+            },
+            "controls": [
+              { "id": "wall", "options": ["low", "tall"] },
+              { "id": "prop", "options": ["none", "left", "right"] }
+            ],
+            "solution": ["tall", "right"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.shelter.build.correct",
+            "incorrect": "ii.shelter.build.incorrect"
+          }
+        },
+        {
+          "id": "ii-shelter-01.too-low-in-a-gust",
+          "kind": "make",
+          "skillId": "engineering.shelter.build",
+          "variant": "both-parts",
+          "prompt": {
+            "instruction": "ii.shelter.build.instruction",
+            "stimulus": {
+              "type": "scene",
+              "scene": "shelter",
+              "of": {
+                "wind": "gust",
+                "from": "right",
+                "plant": "sunflower",
+                "wall": "low",
+                "prop": "none"
+              }
+            }
+          },
+          "task": {
+            "type": "design",
+            "model": "shelter",
+            "given": {
+              "wind": "gust",
+              "from": "right",
+              "plant": "sunflower",
+              "wall": "low",
+              "prop": "none"
+            },
+            "controls": [
+              { "id": "wall", "options": ["low", "tall"] },
+              { "id": "prop", "options": ["none", "left", "right"] }
+            ],
+            "solution": ["tall", "left"]
+          },
+          "hints": [
+            { "type": "model", "caption": "ii.shelter.build.hint.model" },
+            { "type": "step", "count": 1, "caption": "ii.build.hint.step" },
+            { "type": "reveal", "caption": "ii.build.hint.reveal" }
+          ],
+          "feedback": {
+            "correct": "ii.shelter.build.correct",
+            "incorrect": "ii.shelter.build.incorrect"
+          }
         }
       ]
     }

@@ -1,5 +1,5 @@
 {
-  "about": "What the voice says for Memory Forest beside the lines of its pack: the names of the pictures it names aloud. Written by scripts/content/memory-forest.mjs; do not edit by hand.",
+  "about": "What the voice says for Memory Forest beside the lines of its pack: the names of the pictures it names aloud, and what each way of looking at things to remember is called. Written by scripts/content/memory-forest.mjs; do not edit by hand.",
   "groups": {
     "words": {
       "words": {
@@ -11,6 +11,13 @@
         "word.hen": "hen",
         "word.ram": "ram",
         "word.rat": "rat"
+      }
+    },
+    "memory-forest": {
+      "lines": {
+        "mf.ways.groups": "In two groups.",
+        "mf.ways.story": "As a silly story.",
+        "mf.ways.places": "At places along a path."
       }
     }
   }

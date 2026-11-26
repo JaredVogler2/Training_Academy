@@ -9,10 +9,10 @@ _Where a child begins_, went live on 2026-11-26.)
 |                              | Authored and tested |
 | ---------------------------- | ------------------- |
 | Worlds with playable content | 7 of 7              |
-| Activities (lessons)         | 65                  |
-| Challenges                   | 744                 |
-| Skills                       | 70                  |
-| Spoken lines and words       | 573 recordings      |
+| Activities (lessons)         | 67                  |
+| Challenges                   | 774                 |
+| Skills                       | 76                  |
+| Spoken lines and words       | 594 recordings      |
 
 **Nothing here has been reviewed by an early-years teacher or tried with a child, and no person has listened to
 the recordings.** All three are required before any claim about what the game teaches. Each world's brief in
@@ -430,37 +430,62 @@ reads three dots as "wait", or a bridge drawn from above as up or down, nobody k
 | `coding.sequence.plan-to-ten`      | Plan a long way, up to ten steps                | Puts seven to ten commands in order for a way that winds between rocks, and when the robot does not arrive finds the step that went wrong and changes the plan from there.                                                                  |
 | `coding.condition.wait-for-bridge` | Use a step that depends on what the robot finds | Puts \"wait for the bridge\" where it belongs in a row of steps, so that the robot reaches the goal whether the bridge turns out to be up or down: the same step waits when there is something to wait for and passes on when there is not. |
 
-### Memory Forest — `memory-forest.v1.json` (contentVersion 1)
+### Memory Forest — `memory-forest.v2.json` (contentVersion 2)
 
-6 activities, 63 challenges, 7 skills, 40 spoken lines. Written by `scripts/content/memory-forest.mjs`.
+8 activities, 93 challenges, 13 skills, 61 spoken lines (58 in the pack, and three that name the ways of
+looking). Written by `scripts/content/memory-forest.mjs`. The first six activities are what they were in
+`v1`, challenge for challenge; the last two are new.
 
 **How it teaches.** Pairs, first face up to learn the game and then face down. Things looked at and then covered
-by a leaf, and a question about one of them. An order to repeat. And three ways to remember, each shown and
-then used: grouping, a silly picture of who has what, and places along a path.
+by a leaf, and a question about one of them. An order to repeat. Three ways to remember, each shown and then
+used: grouping, a silly picture of who has what, and places along a path. Then the choice is the child's: four
+things, and three pictures under them that lay the same four out in two groups, as who has what, or each at a
+place. The way they are in when the child puts them away is the way that was chosen, and the question that
+follows has the hint that belongs to it: one of a group, an owner, a place. Straight after, the same four are
+asked for with no hint at all. And last, five things, all new, and three things to keep: picked out once now,
+and asked for again at the start of the next visit with nothing shown.
 
-**What is kept apart.** Knowing a thing again, repeating an order, recalling from a cue and recalling without one
-are seven separate skills, and nothing adds them up or calls the result memory. What is covered is not in the
-page at all, and the cards to answer with are blank while things are on show; asking for another look is help
-and is recorded as help.
+**What is kept apart.** Knowing a thing again, repeating an order, recalling from a hint and recalling with none
+are separate skills, and so are recalling later the same day and recalling on another day. Nothing adds them up
+or calls the result memory. What is covered is not in the page at all, and the cards to answer with are blank
+while things are on show; asking for another look is help and is recorded as help. Which way a child chose is
+written into each answer (`story-drum`), so it can be read later; nothing is made of it now.
 
-| Activity       | Title                   | Challenges | A sitting                                     | The child's part |
-| -------------- | ----------------------- | ---------- | --------------------------------------------- | ---------------- |
-| `mf-pairs-01`  | Find the pairs          | 9          | 1 shown, 2 guided, 3 of 6 alone               | find pairs       |
-| `mf-hidden-01` | Which one was there?    | 12         | 1 shown, 2 guided, 4 of 8 alone, 1 at the end | a choice         |
-| `mf-order-01`  | The same order          | 11         | 1 shown, 2 guided, 4 of 8 alone               | repeat an order  |
-| `mf-groups-01` | Things that go together | 9          | 1 shown, 2 guided, 3 of 6 alone               | pick out         |
-| `mf-story-01`  | Who had what?           | 11         | 1 shown, 2 guided, 4 of 8 alone               | a choice         |
-| `mf-places-01` | What was where?         | 11         | 1 shown, 2 guided, 4 of 8 alone               | a choice         |
+**What "next time" means.** The three things kept are asked for at the start of the next sitting of that
+activity, if at least ten minutes have gone by since the last one ended: sooner than that the sitting simply
+does not ask, because recalling a thing a moment after being told it is no measure of keeping it. A later day
+is a later date on the device's own calendar. The two are different skills. Each sitting keeps a set it did not
+keep the time before.
 
-| Skill                               | For grown-ups                        | What it means                                                                                                                                                                    |
-| ----------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `memory.recognition.find-pairs`     | Find pairs among cards face down     | Finds every pair among six or eight cards lying face down, in no more turns than remembering where things are would need.                                                        |
-| `memory.recognition.what-was-there` | Know again what was just hidden      | After looking at two to four things that are then covered, picks out one that was there from pictures of things that were not.                                                   |
-| `memory.recognition.after-a-while`  | Know again what was seen a while ago | At the end of an activity, picks out a thing shown at its very start and not seen since. One question, kept apart from the others: a longer wait is a different thing to manage. |
-| `memory.serial.repeat-order`        | Remember an order                    | Watches three or four things light up one after another and taps them in the same order.                                                                                         |
-| `memory.strategy.grouping`          | Remember by grouping                 | Looks at four things that fall into two kinds, and after they are put away picks all four out from among others, with nothing to prompt them.                                    |
-| `memory.strategy.linking`           | Remember by linking two things       | Looks at two or three pairs — who had what — and, shown one of them, says what went with it.                                                                                     |
-| `memory.strategy.places`            | Remember by places                   | Looks at things left at two or three places and, shown one place, says what was there.                                                                                           |
+| Activity       | Title                   | Challenges | A sitting                                                        | The child's part                 |
+| -------------- | ----------------------- | ---------- | ---------------------------------------------------------------- | -------------------------------- |
+| `mf-pairs-01`  | Find the pairs          | 9          | 1 shown, 2 guided, 3 of 6 alone                                  | find pairs                       |
+| `mf-hidden-01` | Which one was there?    | 12         | 1 shown, 2 guided, 4 of 8 alone, 1 at the end                    | a choice                         |
+| `mf-order-01`  | The same order          | 11         | 1 shown, 2 guided, 4 of 8 alone                                  | repeat an order                  |
+| `mf-groups-01` | Things that go together | 9          | 1 shown, 2 guided, 3 of 6 alone                                  | pick out                         |
+| `mf-story-01`  | Who had what?           | 11         | 1 shown, 2 guided, 4 of 8 alone                                  | a choice                         |
+| `mf-places-01` | What was where?         | 11         | 1 shown, 2 guided, 4 of 8 alone                                  | a choice                         |
+| `mf-choose-01` | Remember it your way    | 12         | 1 pair shown, 1 pair guided, 2 pairs of 4 alone                  | choose a way; a choice; pick out |
+| `mf-later-01`  | Keep it for next time   | 18         | (what was kept, if any,) 1 shown, 1 guided, 2 of 4 alone, 1 kept | pick out                         |
+
+A pair is a question with a hint and, straight after it, the same things asked for with none. A pair that
+needed help is asked again as a pair, with other things.
+
+| Skill                                | For grown-ups                            | What it means                                                                                                                                                                                                  |
+| ------------------------------------ | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `memory.recognition.find-pairs`      | Find pairs among cards face down         | Finds every pair among six or eight cards lying face down, in no more turns than remembering where things are would need.                                                                                      |
+| `memory.recognition.what-was-there`  | Know again what was just hidden          | After looking at two to four things that are then covered, picks out one that was there from pictures of things that were not.                                                                                 |
+| `memory.recognition.after-a-while`   | Know again what was seen a while ago     | At the end of an activity, picks out a thing shown at its very start and not seen since. One question, kept apart from the others: a longer wait is a different thing to manage.                               |
+| `memory.serial.repeat-order`         | Remember an order                        | Watches three or four things light up one after another and taps them in the same order.                                                                                                                       |
+| `memory.strategy.grouping`           | Remember by grouping                     | Looks at four things that fall into two kinds, and after they are put away picks all four out from among others, with nothing to prompt them.                                                                  |
+| `memory.strategy.linking`            | Remember by linking two things           | Looks at two or three pairs — who had what — and, shown one of them, says what went with it.                                                                                                                   |
+| `memory.strategy.places`             | Remember by places                       | Looks at things left at two or three places and, shown one place, says what was there.                                                                                                                         |
+| `memory.cued.chosen-way`             | Recall from a hint, looking your own way | Chooses how to look at four things (in groups, as a silly story, or at places) and, when they are put away and a hint is given, says what went with it. Which way was chosen is written down with each answer. |
+| `memory.unaided.four-after-choosing` | Recall four things with no hint          | Straight after that, picks all four out from among eight with no hint at all. Counted apart from the question with a hint: what a hint brings back and what comes back by itself are different things.         |
+| `memory.unaided.five-things`         | Recall five things                       | Looks at five things of two kinds, none of them met in the earlier activities, and after they are put away picks all five out from among eight.                                                                |
+| `memory.delayed.keep-three`          | Take in three things to keep             | Looks at three things to keep for next time and picks them out straight away. This shows only that they were taken in; whether they were kept is asked at the next visit.                                      |
+| `memory.delayed.same-day`            | Recall them later the same day           | At the start of a later visit on the same day, ten minutes or more after the three things were shown, picks them out with nothing shown again.                                                                 |
+| `memory.delayed.another-day`         | Recall them on another day               | At the start of a visit on a later day, picks out the three things kept, with nothing shown again. Kept apart from the same day: a night between is a different wait.                                          |
 
 ### Inventor Island — `inventor-island.v1.json` (contentVersion 1)
 
@@ -703,7 +728,7 @@ From the briefs in `prompt-series/`; `docs/PROGRESS.md` has each brief set again
 | Reading Cove    | a sound on its own; a word never met before, or a made-up one, to show that a word can be read and not only known again; reading aloud that is listened to; sentences with a verb; words with two consonants together; more than three pairs of letters; capitals; letter names | 05    |
 | Number Garden   | giving out a number that is written (the giving games stop before numerals); patterns, shapes, measuring, estimating and coins (the brief's optional M7); counting in twos or beyond ten                                                                                        | 06    |
 | Robot Ridge     | a condition other than waiting for a bridge (no "if … or else", and nothing is sensed but the bridge); doing a part of a row again (the whole row is done again); steps that are dragged (they are tapped, by decision)                                                         | 07    |
-| Memory Forest   | a choice of strategy; recall in a later sitting; more than four things                                                                                                                                                                                                          | 08    |
+| Memory Forest   | more than five things; a way of remembering that is the child's own (the three ways are the game's, and nothing checks that the way chosen was used); waits told apart beyond "later the same day" and "another day"; anything said aloud by the child                          | 08    |
 | Inventor Island | a wind shelter; a record that the away-from-screen challenge was done; a portfolio card                                                                                                                                                                                         | 09    |
 | Explorer Harbor | making up a story; stories that branch; a globe, continents, countries, flags, people and places                                                                                                                                                                                | 10    |
 | The Music Lab   | tapping a rhythm back; black keys; keeping a tune a child has made; the five other rooms its brief describes                                                                                                                                                                    | 11    |

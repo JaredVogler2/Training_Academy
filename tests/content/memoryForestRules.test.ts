@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import memoryForest from '@/content/packs/memory-forest.v1.json';
+import memoryForest from '@/content/packs/memory-forest.v2.json';
 import { lintPack } from '@/content/lint';
 import { parseContentPack, type ContentPack } from '@/engine';
 import { breaking, challengeIn, codes, rulesIn, type Loose } from '../helpers/lint';
@@ -36,11 +36,99 @@ describe('Memory Forest, as it is shipped', () => {
       'memory.strategy.grouping',
       'memory.strategy.linking',
       'memory.strategy.places',
+      'memory.cued.chosen-way',
+      'memory.unaided.four-after-choosing',
+      'memory.unaided.five-things',
+      'memory.delayed.keep-three',
+      'memory.delayed.same-day',
+      'memory.delayed.another-day',
     ]);
-    // A lesson practises one of them, and the one question about the start is counted on its own.
+    // A lesson practises one of them, and whatever else it asks is counted on its own: the one question about
+    // the start; a question with a hint and the one with none that follows it; taking three things in, and
+    // having kept them for ten minutes, or overnight.
+    const more: Record<string, number> = { 'mf-hidden-01': 2, 'mf-choose-01': 2, 'mf-later-01': 4 };
     for (const lesson of pack().lessons) {
       const own = new Set(lesson.challenges.map((challenge) => challenge.skillId));
-      expect(own.size, lesson.id).toBe(lesson.id === 'mf-hidden-01' ? 2 : 1);
+      expect(own.size, lesson.id).toBe(more[lesson.id] ?? 1);
+    }
+  });
+
+  it('never counts an answer that had a hint as one that had none: they are different challenges', () => {
+    const lesson = pack().lessons.find((each) => each.id === 'mf-choose-01')!;
+    const then = lesson.plan.then ?? {};
+    expect(Object.keys(then)).toHaveLength(6);
+    for (const [first, next] of Object.entries(then)) {
+      const cued = lesson.challenges.find((each) => each.id === first)!;
+      const unaided = lesson.challenges.find((each) => each.id === next)!;
+      expect(cued.skillId, first).toBe('memory.cued.chosen-way');
+      expect(unaided.skillId, next).toBe('memory.unaided.four-after-choosing');
+      if (cued.kind !== 'make' || cued.task.type !== 'recall') throw new Error(first);
+      if (unaided.kind !== 'make' || unaided.task.type !== 'select') throw new Error(next);
+      // With no hint: nothing is shown again, there is no look to ask for, and all four are asked for.
+      expect(unaided.task.study, next).toBeUndefined();
+      expect(unaided.task.recalled, next).toBe('just-now');
+      expect(
+        unaided.hints.map((hint) => hint.type),
+        next,
+      ).toEqual(['step', 'reveal']);
+      expect([...unaided.task.solution].sort(), next).toEqual([...cued.task.study].sort());
+      // And each way to look asks for a different one of the four.
+      expect(new Set(cued.task.ways.map((way) => way.answer)).size, first).toBe(3);
+      expect(
+        cued.task.ways.map((way) => way.way),
+        first,
+      ).toEqual(['groups', 'story', 'places']);
+    }
+  });
+
+  it('asks for what was kept on the same cards whichever day it is, under a skill for each wait', () => {
+    const lesson = pack().lessons.find((each) => each.id === 'mf-later-01')!;
+    const { keep } = lesson.plan;
+    expect(keep?.pool).toHaveLength(4);
+    const taskOf = (id: string) => {
+      const found = lesson.challenges.find((each) => each.id === id)!;
+      if (found.kind !== 'make' || found.task.type !== 'select') throw new Error(id);
+      return { skillId: found.skillId, task: found.task };
+    };
+    for (const id of keep?.pool ?? []) {
+      const kept = taskOf(id);
+      const back = keep!.recall[id]!;
+      const same = taskOf(back.sameDay);
+      const later = taskOf(back.laterDay);
+      expect(kept.skillId).toBe('memory.delayed.keep-three');
+      expect(same.skillId).toBe('memory.delayed.same-day');
+      expect(later.skillId).toBe('memory.delayed.another-day');
+      expect(kept.task.study).toEqual(kept.task.solution);
+      for (const asked of [same.task, later.task]) {
+        expect(asked.study).toBeUndefined();
+        expect(asked.recalled).toBe('last-time');
+        expect(asked.cards).toEqual(kept.task.cards);
+        expect(asked.solution).toEqual(kept.task.solution);
+      }
+    }
+  });
+
+  it('uses only pictures the first six activities never show, for five things and for things to keep', () => {
+    const lessons = pack().lessons;
+    const seen = new Set<string>();
+    const picturesOf = (value: unknown): string[] => {
+      if (Array.isArray(value)) return value.flatMap(picturesOf);
+      if (value === null || typeof value !== 'object') return [];
+      const entry = value as Record<string, unknown>;
+      const own =
+        entry.type === 'picture' && typeof entry.id === 'string' ? [entry.id] : ([] as string[]);
+      const listed = ['ids', 'owners', 'things'].flatMap((key) =>
+        Array.isArray(entry[key]) ? (entry[key] as string[]) : [],
+      );
+      return [...own, ...listed, ...Object.values(entry).flatMap(picturesOf)];
+    };
+    for (const lesson of lessons.slice(0, 6)) picturesOf(lesson).forEach((id) => seen.add(id));
+    const later = lessons.find((each) => each.id === 'mf-later-01')!;
+    for (const challenge of later.challenges) {
+      if (challenge.kind !== 'make' || challenge.task.type !== 'select') continue;
+      for (const id of challenge.task.solution) {
+        expect(seen.has(id), `${challenge.id}: ${id}`).toBe(false);
+      }
     }
   });
 
@@ -117,6 +205,37 @@ describe('every Memory Forest rule fires', () => {
     'memory-study': (pack) => {
       at(pack, 'mf-groups-01.demo').task.study = ['cat', 'hen'];
     },
+    'memory-ways': (pack) => {
+      at(pack, 'mf-choose-01.demo').task.ways.pop();
+    },
+    'memory-way-answers': (pack) => {
+      // The place asked about is now the one where the story's answer was left.
+      const { ways } = at(pack, 'mf-choose-01.demo').task;
+      ways[2].cue = { type: 'picture', id: ways[2].scene.of.owners[3] };
+      ways[2].answer = ways[1].answer;
+      ways[2].choices = [ways[1].answer, ways[2].choices[0], ways[2].choices[2]];
+    },
+    'memory-way-scene': (pack) => {
+      at(pack, 'mf-choose-01.demo').task.ways[0].scene.scene = 'things';
+    },
+    'memory-way-things': (pack) => {
+      at(pack, 'mf-choose-01.demo').task.ways[1].scene.of.things = ['cup', 'pot'];
+    },
+    'memory-way-choices': (pack) => {
+      // Both of the others were there: nothing offered was never shown.
+      const way = at(pack, 'mf-choose-01.demo').task.ways[0];
+      way.choices = [way.answer, 'cup', 'pan'];
+    },
+    'memory-follow': (pack) => {
+      at(pack, 'mf-choose-01.demo-all').task.solution = ['fox', 'ram', 'cup', 'rat'];
+    },
+    'memory-back': (pack) => {
+      at(pack, 'mf-later-01.back-rocket-moth-seed-same-day').task.solution = [
+        'rocket',
+        'moth',
+        'ship',
+      ];
+    },
   };
 
   it.each(Object.keys(BREAK))('%s', (code) => {
@@ -125,6 +244,9 @@ describe('every Memory Forest rule fires', () => {
 
   it('has a case here for every rule Memory Forest has', async () => {
     const source = (await import('@/content/rules/memoryForest.ts?raw')).default;
-    expect(rulesIn(source, ['choose-one'])).toEqual(Object.keys(BREAK).sort());
+    // A kind of challenge, and the two ways a thing can have been looked at before: not rules.
+    expect(rulesIn(source, ['choose-one', 'just-now', 'last-time'])).toEqual(
+      Object.keys(BREAK).sort(),
+    );
   });
 });

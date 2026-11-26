@@ -10,10 +10,12 @@ export { createRng, hashString, rngFor, type Rng } from './random';
 export {
   DEFAULT_MAX_TRIES,
   EngineError,
+  KEPT_AT_LEAST_MS,
   advanceDemo,
   createSession,
   getHint,
   getNextChallenge,
+  keptBy,
   submitAttempt,
   summarizeSession,
   type ChallengeView,

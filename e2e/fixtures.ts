@@ -282,6 +282,16 @@ export async function arrived(page: Page): Promise<void> {
   });
 }
 
+/**
+ * Wait until a world's page knows who is playing and what they have finished. Until then its Play goes where it
+ * would for someone new, so "Play goes to the first activity" is true of every page for a moment, whatever is
+ * stored: a test that reads it at once has read nothing. (One did. With the choice it was about never written
+ * down at all, it passed.)
+ */
+export async function worldSettled(page: Page): Promise<void> {
+  await expect(page.locator('article[data-world]')).toHaveAttribute('data-settled', 'true');
+}
+
 /** The seven worlds, as the hub names them: six islands, and the Music Lab in the lighthouse. */
 export const WORLD_NAMES = [
   'Reading Cove',
@@ -508,9 +518,29 @@ async function amountIn(picture: Locator): Promise<string | null> {
  * or covered) until the test moves the clock on, so "before the look" and "between two lights" are places a test
  * can stand in, not moments it has to be quick enough to catch. Needs `page.clock.install()` before the page is
  * opened; a tap, and what a tap changes at once, work as usual.
+ *
+ * The clock can only be asked to stop at a time, and it will not stop at one that has gone by. So the page's time
+ * is read, and the clock is asked to stop 20 ms after it: little enough that nothing timed is passed over. The
+ * page's clock runs on meanwhile, and on a busy machine the reading and the asking have taken longer than that:
+ * once in CI (run 47, "Cannot fast-forward to the past"), in one of the few hundred times a run holds the
+ * clock. Then the time is read afresh and the clock is asked again. (As Playwright is written, a clock that has
+ * refused is left held, so the second asking cannot be late; nothing here relies on that.)
+ *
+ * `read` is how the page's time is read. It is there for the test of this function, which makes the reading slow.
  */
-export async function holdClock(page: Page): Promise<void> {
-  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 20);
+export async function holdClock(
+  page: Page,
+  read: () => Promise<number> = () => page.evaluate(() => Date.now()),
+): Promise<void> {
+  for (let asked = 1; ; asked++) {
+    const now = await read();
+    try {
+      await page.clock.pauseAt(now + 20);
+      return;
+    } catch (error) {
+      if (asked === 5 || !String(error).includes('Cannot fast-forward to the past')) throw error;
+    }
+  }
 }
 
 /**

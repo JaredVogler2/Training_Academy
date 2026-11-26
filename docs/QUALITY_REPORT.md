@@ -1,18 +1,104 @@
 # Quality report
 
-This file has eight parts. The first is the review of Robot Ridge's three later activities (the rest of phase
-07). The second is the review of the help for a first visit (the rest of phase 04). The third is the review of
-Reading Cove's later activities, from rhyme to a sentence (the second half of phase 05). The fourth is the
-review of Number Garden's later activities, the ones that bring numerals in (the second half of phase 06). The
-fifth is the review of the Music Lab (phase 11). The sixth is the review of the six worlds and the voice
-(phases 04 to 10). The seventh is Phase 03's review of what Phase 03 built. The eighth is Phase 02's report on
-the home screen, kept as it was written, because it is still the assessment of the hub.
+This file has nine parts. The first is the review of Memory Forest's two later activities (the rest of phase
+08). The second is the review of Robot Ridge's three later activities (the rest of phase 07). The third is the
+review of the help for a first visit (the rest of phase 04). The fourth is the review of Reading Cove's later
+activities, from rhyme to a sentence (the second half of phase 05). The fifth is the review of Number Garden's
+later activities, the ones that bring numerals in (the second half of phase 06). The sixth is the review of the
+Music Lab (phase 11). The seventh is the review of the six worlds and the voice (phases 04 to 10). The eighth
+is Phase 03's review of what Phase 03 built. The ninth is Phase 02's report on the home screen, kept as it was
+written, because it is still the assessment of the hub.
 
 All are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
 reading of screenshots and of the running game in headless Chromium. Nobody else has reviewed it, no child has
 played it, **no person has listened to the voice**, and it has never run on a real graphics card. The owner has
 opened the live site (Phase 03) on an iPhone; nothing in this file comes from a device. The standard it is rated
 against is `docs/ART_DIRECTION.md`.
+
+## Phase 08, the rest (2026-11-26): your own way to remember, and keeping it for next time
+
+### Summary
+
+Two activities after Memory Forest's six. In the first, four things are on show with three pictures under
+them, and a tap on a picture lays the same four out another way: in two groups, as who has what, or each at a
+place. The way they are in when the child puts them away is the way that was chosen; one question follows with
+the hint that belongs to that way, and then the same four are asked for with no hint at all. In the second
+there are five things, all new, and then three to keep, which are asked for again at the start of the next
+visit with nothing shown. Nineteen pictures are in `docs/review/memory-forest/`.
+
+**My reading: the boards work and fit, on every screen I can try, and what each asks is plain to me. Whether a
+child of four or five takes the three pictures for ways of looking, and not for buttons that move things
+about, I do not know, and for most four-year-olds I doubt it.** The activity does not depend on it: whichever
+picture was pressed last, the question that follows fits how the things were lying.
+
+### How it was made, which bears on how far to trust it
+
+The rules were written first and tested without a screen: a question that follows another and is asked again
+with it, a thing kept from one sitting to the next and when it may be asked for, an answer that carries the
+way in it. Eighty-four faults were put back in this work: fifty-one against the unit tests and thirty-three in
+a browser. All but two were caught by the test meant for them. One of the two was a check that could never
+matter, and it is gone; the other is a rule no test holds, and it is said so below.
+
+The pictures were measured as well as looked at, and the measuring found what the looking had missed: on a
+phone held sideways the five things to remember were 33 pixels across.
+
+Nothing here was tried by a child, and no person has heard the twenty-one new lines.
+
+### The review
+
+Looked at on a phone upright (390 by 844 and 320 by 568), on its side (844 by 390, and 640 by 256, which is
+all a browser leaves the narrowest), and on a desktop.
+
+| What                           | How it is                                                                                                                                                                                                                                                            |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The four things as they come   | A row of four. On an upright phone each is a picture about 58 pixels across in a box of 77: the smallest anything is on these boards, for the moment before a way is chosen                                                                                          |
+| In two groups                  | Two rings, two things in each; on an upright phone one above the other, each 90 pixels or more (side by side, four across, they were 71)                                                                                                                             |
+| As a silly story               | Two pairs: who has it, large, and the thing at its side, smaller. It reads as "the bird has the bell"                                                                                                                                                                |
+| At places                      | Four places with a thing on each, two and two on an upright phone. At 640 by 256 a thing on its place is 50 pixels or more; it was 28 when the board shared the width as other boards do                                                                             |
+| The three pictures that choose | Two rings of dots, a face in a hat with a star, a dotted path with a flag. 116 by 238 on a phone 390 wide; 58 by 107 at 640 by 256, in a column of their own. The one chosen is ringed. They are signs, not pictures of anything: I can read them, having drawn them |
+| The question                   | The leaf covers the things, and in front of it is one card: one of a group, an owner, or a place. Three cards to answer with: the right one, one that was there and went with something else, and one that never was                                                 |
+| A wrong answer                 | The card fades and is set aside, and nothing is uncovered. After two, the one left is pointed at, and giving it ends the step as helped                                                                                                                              |
+| All four, with no hint         | The bare leaf, and eight cards: three across on a phone, one row at 640 by 256 where each is 57 wide                                                                                                                                                                 |
+| Five things                    | Three and two, on a phone held either way: 89 pixels or more upright at 390 wide, 66 at 844 by 390 (in one row each was a picture about 47 pixels across upright, and 33 pixels sideways)                                                                            |
+| The next visit                 | The leaf with a sign on it, an arrow going back round a dotted clock, and six cards. "Think back to last time. Which three did you keep?" Nothing else is on the screen, and nothing is shown first                                                                  |
+
+### Seen — cause — fix
+
+| Seen                                                                                                                                                         | Cause                                                                      | Fix                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| On a world's page, every card moved down as the page finished arriving: 15 to 78 pixels                                                                      | A card's name came with the world's content, and some names take two lines | What each activity is called is known at once, from a small list the content build writes; room is kept for the pictures |
+| Things in two groups were 71 pixels across on an upright phone                                                                                               | Four in a row                                                              | The two of a group stand one above the other                                                                             |
+| On the narrowest phone held sideways the four things were 28 pixels across                                                                                   | The board gave them a third of the width, as boards do                     | They have all the width but a thumb's worth for each way's picture                                                       |
+| Nine cards to answer with were 51 pixels wide at 640 by 256                                                                                                  | Nine in one row                                                            | Five things are picked out from eight cards                                                                              |
+| Five things to remember were 33 pixels across on a phone held sideways; four, which is live, are 46 there and 39 on an iPhone 13 (measured on the live site) | One row, in the narrow column a sideways phone gives them                  | Two rows of three for five or six; two and two for four. Tests at 844 by 390, 750 by 342 and 640 by 256                  |
+
+### What is still wrong or weak
+
+- **No child has tried any of it.** Whether choosing how to look means anything to a child of this age is not
+  known. What is written down is which way the things were in when they were put away; nothing shows that the
+  way was used to remember by, and the mastery engine to come should not read it as a strategy used.
+- **The three pictures that choose a way are signs.** A child may press them because they are there. That
+  does no harm, and teaches nothing either.
+- **"Later the same day" means ten minutes or more.** Ten minutes is a guess at where remembering stops being
+  holding on. And a day is the device's date: a visit at five to midnight and one at five past are two days.
+- **A child who does not come back to this activity is never asked.** Nothing reminds anyone, and what was
+  kept is asked for nowhere else. For a family that plays it once, there is no later.
+- **What is asked back is picked out from six cards, not said.** Knowing a thing again is easier than calling
+  it to mind, and the game cannot hear a child say a name. The skill is worded as picking out.
+- **The sign for "last time" is my guess at a picture of the past.** The line that is said carries it; with
+  the sound off, a child who cannot read has the sign and six cards.
+- **Before a way is chosen the four things are at their smallest**, a row of four on an upright phone.
+- **On the smallest screens five things are still small**: a box 49 pixels wide at 320 by 568, where they
+  stay in one row because the leaf is too low for two, and 55 at 640 by 256.
+- **The answer with no hint does not say which way came before it.** It is the next line in the record, so
+  the two can be read together; nothing reads them so.
+- **For a blink, a world's page sends Play to the beginning for everyone.** Until it has read who is playing
+  and what they have finished, it cannot do otherwise, and it now says so in the page (`data-settled`). Nobody
+  taps in that blink. A test did, and for that reason had been passing whatever was stored.
+- **Room is kept for a second line under "Play" on a world's page, and no test holds it.** The note there
+  changes when the page learns what a player has finished, and can go from one line to two. The rule that
+  keeps the page still then was put in on reasoning; taking it out fails nothing.
+- **Nobody has heard the twenty-one new lines.**
 
 ## Phase 07, the rest (2026-11-26): a longer way, a long way round, and the bridge
 

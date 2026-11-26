@@ -1,7 +1,9 @@
-import { KitPicture, wordFor } from '@/art/pictures';
-import type { Stimulus } from '@/engine';
+import { KitPicture } from '@/art/pictures';
+import { WAYS, type Challenge, type Stimulus } from '@/engine';
 import type { PictureProps, WorldModule } from '../modules';
+import { RecallBoard } from './RecallBoard';
 import { chooseScript, makeScript } from './script';
+import { describe, memoryText } from './text';
 import { voice } from './voice';
 import styles from './memoryForest.module.css';
 
@@ -38,7 +40,28 @@ function Earlier() {
   );
 }
 
-/** A scene of this world: things in a row, or things two and two — who had what, what was where. */
+/**
+ * "Think back to last time": the same arrow curling round, with a moon in its heart for the night that may have
+ * gone by. It stands on the leaf that covers the things kept, at the start of the next sitting.
+ */
+function LastTime() {
+  return (
+    <svg className={styles.sign} viewBox="-34 -34 68 68" aria-hidden="true" focusable="false">
+      <path
+        d="M20 8A22 22 0 1 1 14-17"
+        fill="none"
+        stroke="#6b4fd0"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeDasharray="1 9"
+      />
+      <path d="M6-26l12 8-13 6z" fill="#6b4fd0" />
+      <path d="M4-9A11 11 0 1 0 9 10 9 9 0 0 1 4-9z" fill="#f2a93b" />
+    </svg>
+  );
+}
+
+/** A scene of this world: things in a row, in two groups, or two and two — who had what, what was where. */
 function Scene({ stimulus }: { stimulus: Extract<Stimulus, { type: 'scene' }> }) {
   const { scene, of } = stimulus;
   if (scene === 'things') {
@@ -50,10 +73,25 @@ function Scene({ stimulus }: { stimulus: Extract<Stimulus, { type: 'scene' }> })
       </span>
     );
   }
+  if (scene === 'groups') {
+    // Two and two: each two that go together share a ring, with room between the rings.
+    const ids = listOf(of.ids);
+    return (
+      <span className={styles.groups} data-scene="groups">
+        {[ids.slice(0, 2), ids.slice(2)].map((group) => (
+          <span key={group.join('-')} className={styles.group}>
+            {group.map((id) => (
+              <KitPicture key={id} id={id} className={styles.picture} />
+            ))}
+          </span>
+        ))}
+      </span>
+    );
+  }
   const owners = listOf(of.owners);
   const things = listOf(of.things);
   return (
-    <span className={styles.pairs} data-scene={scene}>
+    <span className={styles.pairs} data-scene={scene} data-count={owners.length}>
       {owners.map((owner, index) => (
         // Each pair is one picture: the two overlap, so that they are seen together and not side by side.
         <span key={owner} className={styles.pair}>
@@ -76,7 +114,7 @@ function Picture({ stimulus, sounding = false }: PictureProps) {
     case 'scene':
       return <Scene stimulus={stimulus} />;
     case 'sign':
-      return <Earlier />;
+      return stimulus.id === 'last-time' ? <LastTime /> : <Earlier />;
     // Things other worlds draw.
     case 'quantity':
     case 'sound':
@@ -86,33 +124,19 @@ function Picture({ stimulus, sounding = false }: PictureProps) {
   }
 }
 
-const sentence = (words: readonly string[]) =>
-  words.length < 2 ? words.join('') : `${words.slice(0, -1).join(', ')} and ${words.at(-1) ?? ''}`;
-
-export function describe(stimulus: Stimulus): string {
-  switch (stimulus.type) {
-    case 'picture':
-      return wordFor(stimulus.id);
-    case 'sign':
-      return 'Think back to the very start';
-    case 'scene': {
-      const { scene, of } = stimulus;
-      if (scene === 'things') return `To remember: ${sentence(listOf(of.ids).map(wordFor))}`;
-      const things = listOf(of.things);
-      const joined = listOf(of.owners).map((owner, index) =>
-        scene === 'places'
-          ? `${wordFor(things[index] ?? '')} at the ${wordFor(owner)}`
-          : `the ${wordFor(owner)} has the ${wordFor(things[index] ?? '')}`,
-      );
-      return `To remember: ${sentence(joined)}`;
-    }
-    case 'quantity':
-    case 'sound':
-    case 'letter':
-    case 'word':
-      return '';
-  }
+/** The lines a challenge is told with beside its own: what each way of looking is called, and what each asks. */
+function linesFor(challenge: Challenge): string[] {
+  if (challenge.kind !== 'make' || challenge.task.type !== 'recall') return [];
+  return [...challenge.task.ways.map((way) => way.ask), ...WAYS.map(memoryText.wayLine)];
 }
 
-const memoryForest: WorldModule = { Picture, describe, chooseScript, makeScript, voice };
+const memoryForest: WorldModule = {
+  Picture,
+  describe,
+  chooseScript,
+  makeScript,
+  boards: { recall: RecallBoard },
+  linesFor,
+  voice,
+};
 export default memoryForest;

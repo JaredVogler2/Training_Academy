@@ -3,10 +3,10 @@
 Everything in this file was actually run. Where something was not run, it says so.
 
 - **Date:** 2026-11-26
-- **Code under test:** `main` as the owner merged it on 2026-11-26 (pull request #11: the help for a first
-  visit), with the pull request this document came with (#12): Robot Ridge's three later activities, and what
-  CI's last two runs led to. The release check below was run on that tree, in the parts it says. What was run on the live site was run on
-  what was live, and says so.
+- **Code under test:** `main` as the owner merged it on 2026-11-26 (pull request #12: Robot Ridge's three
+  later activities), with the pull request this document came with (#13): Memory Forest's two later
+  activities, a world's page that keeps still, and what CI's last two runs led to. The release check below was
+  run on that tree, in the parts it says. What was run on the live site was run on what was live, and says so.
 - **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright 1.63.0
   with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
 - **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium and WebKit builds that Playwright 1.63.0 installs.
@@ -23,17 +23,49 @@ npm run verify:release
 
 Result of the last local run: **passed.**
 
-| Step                   | Result                                                                                                                                                                             |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run format:check` | clean                                                                                                                                                                              |
-| `npm run lint`         | no errors, no warnings                                                                                                                                                             |
-| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                                                                     |
-| `npm test`             | **2135 tests in 68 files, all passed**                                                                                                                                             |
-| `npm run build`        | built; 668 files in `dist/`, 573 of them the voice's recordings                                                                                                                    |
-| `npm run verify:dist`  | **1477 checks, all passed** (sizes below)                                                                                                                                          |
-| `npm run test:e2e`     | **1212 browser tests in one go: 1025 passed, 186 skipped by design, 1 failed** (Chromium, seven screen shapes, 42.5 minutes). The one was a fault in the game, since fixed; see on |
+| Step                   | Result                                                                                                                                                                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run format:check` | clean                                                                                                                                                                                                                                                   |
+| `npm run lint`         | no errors, no warnings                                                                                                                                                                                                                                  |
+| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                                                                                                                                          |
+| `npm test`             | **2205 tests in 69 files, all passed**                                                                                                                                                                                                                  |
+| `npm run build`        | built; 689 files in `dist/`, 594 of them the voice's recordings                                                                                                                                                                                         |
+| `npm run verify:dist`  | **1519 checks, all passed** (sizes below)                                                                                                                                                                                                               |
+| `npm run test:e2e`     | **1372 browser tests in one go: 1151 passed, 220 skipped by design, 1 failed** (Chromium, seven screen shapes, 51.0 minutes). The one was a fault in a test, which left a page too soon and then read the next too soon; both put right, and told below |
 
-**What the browser tests were run on, exactly.** The whole suite was run in one go on the tree with the
+**What the browser tests were run on, exactly.** The whole suite was run in one go, in Chromium on all seven
+screens, on the tree with Memory Forest's two later activities in it: **1372 tests, 1151 passed, 220 skipped
+by design, and one failed** (51.0 minutes). By screen: desktop 387 passed, phone 476, the tablet, the small
+phone and the phone held sideways 56 each, and the two Android shapes 60 each. The 220 skip themselves and say
+why: 154 on the desktop, which are measurements made once, as a touch phone, and the tests only Safari's
+engine can run; and 66 on the phone, which are the activities played to their ends once, on the desktop, and
+the keyboard journeys.
+
+The one that failed was on the desktop: "where to begin: can be any activity of a world, and the beginning
+again". **It was a fault in the test, twice over, and the second half of it had been hiding the first since
+the test was written.** The test chooses "the beginning" in the grown-ups' area and goes straight to the
+world's page, to see that Play goes there. It did not wait for "Saved.", as it does the first time it changes
+something, and this once the page was left before the choice had been written down: Play was where it had
+been. That is the failure. Why it had never failed before is the other half: a world's page sends Play to the
+beginning until it knows who is playing, so "Play goes to the beginning" is true of every world's page for
+its first moment, whatever is stored. With the save slowed by four tenths of a second, so that the choice was
+certainly never written, **the test as it was passed.**
+
+A world's page now says when it knows who is playing and what they have finished (`data-settled`); the three
+tests that expect Play at the beginning wait for that first (`worldSettled`, `e2e/fixtures.ts`); and this one
+waits for "Saved." as well. With the same slow save, the test as it is now passes, and with only the wait for
+"Saved." taken out it fails, with exactly the failure of the full run.
+
+**After that run** the world's page was changed to say so, those tests were changed to wait, the help test was
+made to note every press the page is given (run 48, under _Continuous integration_), and four comments were
+corrected to measured numbers. The specs that touch a world's page, the map, the journey in, "how to play",
+Memory Forest, the phones and the tests' own tools were then run on all seven screens (`a11y-worlds`,
+`journey`, `garden`, `hub`, `howto`, `sizes`, `phones`, `memory`, `smoke`, `begin`): **692 tests, 552 passed, 140 skipped by design, none failed** (17.5 minutes); and `shell`,
+`help` and `begin` before them, on the same change: 77 passed, 4 skipped by design. The whole suite was not
+run a second time. The unit tests, the build, its checks and the rehearsal of the update are of the final
+tree. **WebKit is CI's**, as always.
+
+**Before that, with the first-visit help.** The whole suite was run in one go on the tree with the
 first-visit help in it: 1212 tests, 1025 passed, 186 skipped by design and **one failed**, in 42.5 minutes. By
 screen: desktop 358 passed, phone 420, the tablet and the small phone 48 each, the two Android shapes 52 each,
 and the phone held sideways 47 with the one failure. That one was "how to play" played through at 844×390: at
@@ -526,15 +558,97 @@ ever run in CI, for the reason told under run 44 below.
 | Walking the ground does not see a bridge is up; counts one way to the star, or one way to each place                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | the tests that hold it to the engine                                                                    |
 | In a browser: a row with places empty is handed in; going back over a run hands it in again; one step on is offered where there is none; the step just carried out is not lit; "go" is ready before the row is full; nothing stirs when there is no room; Glim is shown pressing the wrong button; the bridge is drawn before any run; no dots over a robot that waits; a long row is one line on a phone; what Glim says is not written; the bridge is not in the world page's picture; a screen reader is told nothing of it; the bridge is drawn up whatever the board says; the new activities come before the old | the browser test meant for each                                                                         |
 
+### What Memory Forest's later activities added to the tests, and what the tests found
+
+70 unit tests and 82 browser tests. The unit tests are of the engine: a question that follows another, in a
+demonstration, with help at hand and alone, and both asked again when either was missed; a thing kept for the
+next sitting, asked last of all, never the one kept the time before, and asked for again only after ten
+minutes, as one skill the same day and another on a later day; an answer that carries the way it was looked at
+(`tests/engine/plans.test.ts`, `tests/engine/tasks.test.ts`). Of the rules: every new rule of the content's
+and of Memory Forest's own is broken by a pack made to break it. Of the lesson's runner: which sitting is the
+last one, that a sitting left before its end kept nothing, that a first sitting looks nothing up. Of the
+script and the words: Glim looks each way and keeps the first, a wrong answer uncovers nothing, two groups are
+said as two groups. Of the list of what each activity is called, which the content build writes. And of
+knowing when it is known what a player has finished, which is not the same as their having finished nothing.
+
+The browser tests choose each way and are asked that way's question; look for what is covered, in the page,
+and do not find it; give a wrong answer and see it set aside and nothing uncovered; ask for another look and
+see the cards turned away; read what was written down, to see that the two questions are counted apart and
+that the way is in the answer; watch Glim's showing with the clock held; do it all from a keyboard; finish a
+sitting, move the clock on a quarter of an hour, load the page afresh and find the first thing asked is what
+was kept; do the same a moment later, and a day later; and measure every board at 640 by 256.
+
+**What the tests found in the new work, and in what was there.**
+
+- **A world's page moved under a finger.** A test of the world pages tapped a card and missed: the card had
+  moved. Each card's name came with the world's content, some names take two lines, and every card below
+  moved down as they arrived: 15 to 78 pixels, on every world's page, for as long as there have been cards.
+  What each activity is called is now in a small list the content build writes, known before the content
+  comes, and room is kept for the pictures. A test holds the content back, measures everything on the page,
+  lets it through and measures again: nothing may have moved. Measured so on sixteen combinations of world and
+  screen: 0 pixels.
+- **Things to remember were too small to make out, on three boards.** In two groups on an upright phone, four
+  across, each was 71 pixels: the two of a group now stand one above the other. On the narrowest phone held
+  sideways the four were 28 pixels, because the board gave them a third of the width as boards do: they have
+  the width now, and the three pictures that choose a way a thumb's width each. And five things in one row
+  were 33 pixels across on a phone held sideways. Four, in "Things that go together", which is live, are 46
+  there and 39 on an iPhone 13 held sideways, measured on the live site. All of it was found by measuring the
+  review pictures, after looking at them had not found it. Five or six stand in two rows of three wherever
+  that is larger, and four stand two and two on a phone held sideways.
+- **Nine cards were 51 pixels wide** at 640 by 256, under the 56 a child's finger is given. Five things are
+  picked out from eight cards.
+- **A test of where Play goes had passed since it was written, whatever was saved.** It is told under _The
+  release check_, above: it left a page before its change was written down, and read the next page before
+  that page knew who was playing, at which moment Play goes to the beginning for everyone. A world's page
+  now says when it knows who is playing and what they have finished, and the tests that read where Play goes
+  wait for it.
+- **A check that could never matter.** Of 53 faults put back against the unit tests, 52 were caught at once.
+  The other was a line that passed over another activity's sittings when looking for what the last sitting
+  kept. With it taken out every test passed, and rightly: a sitting of another activity holds none of this
+  one's challenges, so it can have kept none of them. The line is gone, and what follows from what is said
+  beside it.
+- **The answers a browser test gave were counted against a guess.** The test that plays every activity to
+  its end expected at least five answers; the new activity that keeps something asks for four. It now takes
+  the number from the activity's own plan, and must match it exactly.
+
+**What was wrong with the new tests, found by putting faults back.** Of 35 faults put back in a browser, 34
+were caught by the test meant for them. The one that was not is a rule that keeps room for a second line
+under "Play" on a world's page. The note there changes when the page learns what a player has finished, and
+no test has such a player on such a page; the rule stays, on reasoning, and `docs/QUALITY_REPORT.md` says it
+is not held.
+
+| The fault                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Caught by                              |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| What follows a question is never asked, or always answered alone; only the first of a pair is asked again, or the second by itself; a pair both missed is asked again twice                                                                                                                                                                                                                                                                                                                         | `plans.test.ts`                        |
+| What was kept is asked for however soon; a clock put back is a later day; the two days are swapped; the same thing may be kept twice running; it is asked back after the demonstration; the thing to keep is asked before the closing questions; a re-probe goes after it                                                                                                                                                                                                                           | `plans.test.ts`                        |
+| What was kept is read from the first step; no day is taken for today; something unknown is asked about as the first thing kept                                                                                                                                                                                                                                                                                                                                                                      | `plans.test.ts`                        |
+| An answer is judged by the first way's answer; the two kinds of slip are swapped; a card the way does not offer is taken; more than a way and a card is taken; it is shown in the last way; only the first way's cards are laid out                                                                                                                                                                                                                                                                 | `tasks.test.ts`                        |
+| Let through by the content's rules: an answer that was never looked at; a chain of questions that follow; a thing both looked at and recalled; a thing kept and never asked about; a way offered twice; a card nobody looks at or is offered                                                                                                                                                                                                                                                        | `packs.test.ts`                        |
+| What follows, and the thing to keep, are not counted among what is answered alone                                                                                                                                                                                                                                                                                                                                                                                                                   | `packs.test.ts`                        |
+| Let through by Memory Forest's rules: two ways, where three are asked; two ways that ask for the same thing; a way that shows other things; a way that offers only things that were there; other things asked for with no hint, or from last time; in groups, the thing itself as its own answer                                                                                                                                                                                                    | `memoryForestRules.test.ts`            |
+| The sitting finished first is taken for the last; a sitting left before its end counts as having kept something; a new sitting is not told what day it is; "again" plans without looking up what was kept; the first sitting of all looks nothing up                                                                                                                                                                                                                                                | `lessonRunner.test.ts`                 |
+| Another activity's sittings are passed over (**not caught: the line could never matter, and is gone**)                                                                                                                                                                                                                                                                                                                                                                                              | nothing                                |
+| The list calls an activity by its id; anything an object has is taken for an activity                                                                                                                                                                                                                                                                                                                                                                                                               | `generated.test.ts`                    |
+| Glim keeps the last way and not the first; a way is not named; the question is not said again once the things are put away; another look is never covered again in time; a wrong answer uncovers the things; two groups are said as a plain list; the sign for last time is read as the sign for the start                                                                                                                                                                                          | `memoryForest.test.ts`                 |
+| In a browser: the things stay in the page when put away; what will be asked about is shown while they are on show; the answer is written down as the first way; every card is offered whatever the way; another look leaves the cards as they were, or shows the things as they come; a wrong card is not set aside; the card pointed out is the first way's; no way says it is the one chosen; Glim keeps the last way; a wrong answer shows the things; "Ready" is offered before a way is chosen | `memory.spec.ts`                       |
+| In a browser: the sign for last time has no words; the runner forgets what was kept; it is asked for a moment later; a later day is asked about as the same day; what follows a question is not asked when the child plays alone                                                                                                                                                                                                                                                                    | `memory.spec.ts`, `everything.spec.ts` |
+| In a browser, on phones: the pictures that choose a way are narrower; the things have half the width; the two of a group stand side by side; a thing at a place is no larger; five things in one row upright, or sideways; five two abreast, as four are; the flattest screens given two rows; four in one row sideways                                                                                                                                                                             | `memory.spec.ts`, `sizes.spec.ts`      |
+| In a browser, on a world's page: no room is kept for the picture above "Play", or for a card's picture; a card's name comes with the content                                                                                                                                                                                                                                                                                                                                                        | `shell.spec.ts`                        |
+| On a world's page: no room is kept for a second line under "Play" (**not caught: said above**)                                                                                                                                                                                                                                                                                                                                                                                                      | nothing                                |
+| In the tests' own tool: the clock is not asked again; it is asked fifty times; it is set going again after being held                                                                                                                                                                                                                                                                                                                                                                               | `smoke.spec.ts`                        |
+| What is finished is called known from the start; a store that cannot be read leaves the page waiting for ever                                                                                                                                                                                                                                                                                                                                                                                       | `progress.test.tsx`                    |
+| In a browser: where Play begins is read from the first player on the device, whoever is playing; a nudge needs four taps (to see the help test say what the page was given)                                                                                                                                                                                                                                                                                                                         | `begin.spec.ts`, `help.spec.ts`        |
+
 ## Continuous integration
 
-Every push to a pull request, and to `main`, runs eleven jobs (`.github/workflows/ci.yml`): lint, types, unit
-tests and build; the browser tests in Chromium on seven screen shapes, dealt out between six jobs; and the
-browser tests in WebKit on five, between four. The machine they run on has four processor cores and no
+Every push to a pull request, and to `main`, runs thirteen jobs (`.github/workflows/ci.yml`): lint, types, unit
+tests and build; the browser tests in Chromium on seven screen shapes, dealt out between seven jobs; and the
+browser tests in WebKit on five, between five. The machine they run on has four processor cores and no
 graphics card, and runs two tests at a time. (Until the six worlds there was one job for each engine. The
 jobs have been divided as the suite grew, each time one came near its forty-minute limit, and once after one
-reached it: run 46, below. A job's forty minutes also have to cover putting the browser and what it needs on
-the machine, which is usually half a minute and has taken seventeen.)
+reached it: run 46, below. They are dealt out by screen now, since run 48. A job's forty minutes also have to
+cover putting the browser and what it needs on the machine, which is usually half a minute and has taken
+seventeen.)
 
 **For the six worlds.** Pull request #5, which carried the engine for every kind of game, the voice and Number
 Garden's seven activities, passed on its head commit `9cb3dda` (run 26; the run on the commit before it was
@@ -720,17 +834,19 @@ met 47-point bars. The dialog is live, as it has been all along.
 
 **And two runs after those. The second ran everything, and everything passed.**
 
-| Run | What                                                                   | Chromium, desktop and tablet    | Chromium, phones                 | WebKit, desktop and tablet                             | WebKit, phones                         |
-| --- | ---------------------------------------------------------------------- | ------------------------------- | -------------------------------- | ------------------------------------------------------ | -------------------------------------- |
-| 38  | pull request #9, Number Garden's numerals (`30d47ae`)                  | cancelled by the next push      | cancelled                        | cancelled                                              | cancelled                              |
-| 39  | pull request #9, the place kept through an update (`0afde1b`)          | 17.9 and 8.6 for the two halves | 12.3 and 18.5 for the two halves | 15.3 minutes, after 12.8 installing WebKit             | 22.1 minutes                           |
-| 40  | `main` after the owner merged pull request #9 (`dbbdbc3`)              | passed, both halves             | passed, both halves              | passed                                                 | passed                                 |
-| 41  | pull request #10, Reading Cove's later activities (`563f46c`)          | 17.1 and 10.8                   | 17.4 and 21.2                    | 22.6 minutes                                           | 28.8 minutes                           |
-| 42  | `main` after the owner merged pull request #10 (`8288833`)             | passed, both halves             | passed, both halves              | passed                                                 | passed                                 |
-| 43  | pull request #11, the help for a first visit (`4fce12e`)               | 25.4 and 12.6                   | 20.4 and 24.3                    | 21.8 minutes                                           | **failed**, both halves: 13.3 and 16.8 |
-| 44  | pull request #11, the page that was too wide for an iPhone (`1decf66`) | 19.5 and 12.1                   | 17.4 and 24.8                    | 24.1 minutes                                           | 14.1 and 18.6, **passed**              |
-| 45  | `main` after the owner merged pull request #11 (`ed3efd6`)             | 24.5 and 12.4                   | 19.5 and 26.1                    | 24.2 minutes                                           | 15.0 and 16.9                          |
-| 46  | pull request #12, Robot Ridge's longer plans and bridge (`e9cdb5c`)    | 25.4 and 18.1                   | 22.2 and 34.7                    | **cancelled** at its 40 minutes, 566 of 567 tests done | 16.2 and 21.2                          |
+| Run | What                                                                   | Chromium, desktop and tablet       | Chromium, phones                   | WebKit, desktop and tablet                             | WebKit, phones                                     |
+| --- | ---------------------------------------------------------------------- | ---------------------------------- | ---------------------------------- | ------------------------------------------------------ | -------------------------------------------------- |
+| 38  | pull request #9, Number Garden's numerals (`30d47ae`)                  | cancelled by the next push         | cancelled                          | cancelled                                              | cancelled                                          |
+| 39  | pull request #9, the place kept through an update (`0afde1b`)          | 17.9 and 8.6 for the two halves    | 12.3 and 18.5 for the two halves   | 15.3 minutes, after 12.8 installing WebKit             | 22.1 minutes                                       |
+| 40  | `main` after the owner merged pull request #9 (`dbbdbc3`)              | passed, both halves                | passed, both halves                | passed                                                 | passed                                             |
+| 41  | pull request #10, Reading Cove's later activities (`563f46c`)          | 17.1 and 10.8                      | 17.4 and 21.2                      | 22.6 minutes                                           | 28.8 minutes                                       |
+| 42  | `main` after the owner merged pull request #10 (`8288833`)             | passed, both halves                | passed, both halves                | passed                                                 | passed                                             |
+| 43  | pull request #11, the help for a first visit (`4fce12e`)               | 25.4 and 12.6                      | 20.4 and 24.3                      | 21.8 minutes                                           | **failed**, both halves: 13.3 and 16.8             |
+| 44  | pull request #11, the page that was too wide for an iPhone (`1decf66`) | 19.5 and 12.1                      | 17.4 and 24.8                      | 24.1 minutes                                           | 14.1 and 18.6, **passed**                          |
+| 45  | `main` after the owner merged pull request #11 (`ed3efd6`)             | 24.5 and 12.4                      | 19.5 and 26.1                      | 24.2 minutes                                           | 15.0 and 16.9                                      |
+| 46  | pull request #12, Robot Ridge's longer plans and bridge (`e9cdb5c`)    | 25.4 and 18.1                      | 22.2 and 34.7                      | **cancelled** at its 40 minutes, 566 of 567 tests done | 16.2 and 21.2                                      |
+| 47  | pull request #12, CI's jobs dealt out in more parts (`9ba9418`)        | 14.1, 17.0 and 10.4 in three parts | 12.0, 17.8 and 26.9 in three parts | 11.8 and 14.0                                          | 15.9 and 33.0, the 33 after 12.6 installing WebKit |
+| 48  | `main` after the owner merged pull request #12 (`3c322c5`)             | 16.1, 16.9 and 9.7                 | 11.0, 15.2 and 27.0                | 12.8 and 29.3, the 29.3 after 15.8 installing WebKit   | 13.4 and 21.4                                      |
 
 Run 39 is the first to have Number Garden's numerals, the room at its three sizes and the dialog test in
 Safari's engine, and all of them passed there. No test in any job needed a second attempt: the six artifacts
@@ -1006,6 +1122,96 @@ left at forty: it is there to stop a job that hangs.
   before passed at its first attempt on all nine screens that run it. That is what the fix should do; it is
   not proof, since the fault showed only now and then.
 
+**Run 47** is pull request #12's second (`9ba9418`), the first with eleven jobs. **All eleven passed, and one
+test needed a second attempt.** Nine artifacts are between 0.6 and 1.0 MB, and one, of the third part of
+Chromium's desktop and tablet, is 2.3: a trace is in it.
+
+| Job                            | Result                  | Its tests           | The whole job       |
+| ------------------------------ | ----------------------- | ------------------- | ------------------- |
+| Lint, types, unit tests, build | passed                  |                     | 1.6 minutes         |
+| Chromium, desktop and tablet   | passed, all three parts | 13.2, 16.4 and 9.6  | 14.1, 17.0 and 10.4 |
+| Chromium, phones               | passed, all three parts | 11.5, 14.6 and 26.3 | 12.0, 17.8 and 26.9 |
+| WebKit, desktop and tablet     | passed, both halves     | 11.2 and 13.0       | 11.8 and 14.0       |
+| WebKit, phones                 | passed, both halves     | 15.1 and 20.2       | 15.9 and 33.0       |
+
+**The test that needed a second attempt** was Reading Cove's "has the picture of the word above three places,
+and lights each place as its sound is said", on the desktop. It did not get as far as the game: it stopped
+where it holds the page's clock, with `clock.pauseAt: Cannot fast-forward to the past`. **The fault was in the
+tests' own tool.** A test holds the clock by reading the page's time and asking the clock to stop 20 ms after
+it, because Playwright's clock can only be asked to stop at a time and will not stop at one that has gone by.
+The page's clock runs on while the time is read and sent back, and that once, on a busy machine, the two
+steps took longer than 20 ms. The report has both attempts step by step: the reading took 29 ms and the asking
+began 33 ms after it; at the second attempt, 31 and 32, and it passed, so it was near the edge both times. A
+run holds the clock a few hundred times, and this is the first that lost.
+
+It was tried outside any test before anything was changed: asked to stop 20 ms after a time read a tenth of a
+second earlier, Playwright's clock refuses in exactly those words, **and is left held**; asked again with the
+time read afresh, it stops. So `holdClock` (`e2e/fixtures.ts`) now asks again when it is refused, up to five
+times, and does not rely on the clock having been left held. Two tests stage it (`e2e/smoke.spec.ts`): the
+reading is made to take a tenth of a second, once, and the clock must be held after two readings, with a
+timer set in the page not going off until the test moves the clock; and a time that is always long gone must
+be given up on after five. Three faults were put back and all caught: not asking again, asking fifty times,
+and setting the clock going again once held.
+
+**And the time.** The split into eleven jobs was made on the promise that no part would need more than about
+half of its forty minutes for its tests. One did: **the third part of Chromium's phones took 26.3 minutes**,
+where the first two took 11.5 and 14.6. Playwright deals tests out by number, one screen after another. The
+phone is the screen with every test, so the first two parts were the phone's and nothing else's, and the
+third was the four other phones', which run only the tests of layout: the long ones. WebKit's phones were
+dealt the same way, and its second half took 20.2 minutes of tests after **12.6 minutes of getting WebKit**:
+33.0 of its 40, from the same slow fetching of Ubuntu's packages that cancelled a job in run 46, on another
+machine.
+
+**Run 48** is `main` after the owner merged pull request #12 (`3c322c5`), eleven seconds after run 47 went
+green. **All eleven jobs passed, and two tests needed a second attempt**, one in each of WebKit's
+desktop-and-tablet jobs: their artifacts are 14.0 and 3.2 MB, and the other eight are between 0.5 and 0.9.
+
+| Job                            | Result                  | Its tests           | The whole job       |
+| ------------------------------ | ----------------------- | ------------------- | ------------------- |
+| Lint, types, unit tests, build | passed                  |                     | 1.4 minutes         |
+| Chromium, desktop and tablet   | passed, all three parts | 15.6, 16.3 and 9.1  | 16.1, 16.9 and 9.7  |
+| Chromium, phones               | passed, all three parts | 10.5, 14.6 and 26.3 | 11.0, 15.2 and 27.0 |
+| WebKit, desktop and tablet     | passed, both halves     | 12.0 and 13.3       | 12.8 and 29.3       |
+| WebKit, phones                 | passed, both halves     | 12.8 and 20.7       | 13.4 and 21.4       |
+
+1. **As an iPad, the page that never comes, for the seventh time.** The Music Lab's "fits the screen, with a
+   drum far larger than a small finger needs" asked for the world's page at its first line and waited the
+   whole minute. The note it left is the same as the six before it in every particular: "the last page asked
+   for had not been read yet; 1 unanswered: document /world/music-lab (asked for 59.9 s before; the browser
+   reported no answer at all; requests for /world/music-lab that reached the server after that: at +0.0 s
+   from iPad, answered in 0 ms; …); the page stood at about:blank; the test that had the browser before this
+   one: [ipad] who had what? › shows one of them again, alone, and asks what went with it". The server had
+   the request at once and answered it at once, and the browser never read the answer. At its second attempt
+   the page came. **Not explained.** Seven times now, in seven different tests after seven different tests,
+   always a test's first page, always CI's WebKit, never Chromium anywhere. It costs a minute and a second
+   attempt.
+2. **As WebKit's desktop, three taps that brought no nudge.** "Taps that land on nothing: are answered by
+   showing what can be tapped" taps the picture three times while Glim is showing, and "My turn" should then
+   be pointed out. At its first attempt nothing was, for the ten seconds the test waits; at its second, it was
+   there 11 ms after the third tap. The report has the steps of both: at the first attempt the taps were made
+   34 to 179 ms after the activity first showed, and at the second 228 to 335 ms after. The picture taken when
+   the test gave up shows the demonstration played to its end and no ring anywhere. **Not explained, and not
+   reproduced.** Here, in Chromium, three taps made 0, 15, 40, 80, 150 and 300 ms after the activity shows
+   brought the nudge 48 times in 48, half of them with the processor slowed six times. The rule that counts
+   taps was read again for this: it counts every press the lesson is given within eight seconds, and is
+   cleared only by a press on something that can be pressed or by a new step; nothing in it depends on how
+   soon the taps come. So either WebKit did not give the page three presses, or one of them landed somewhere
+   else, and the report cannot say which, because no trace is kept of a first attempt. **What was done:** the
+   test has the page note every press it is given (when, on what, in the lesson or not) and says so when the
+   nudge does not come. Tried with a fault that makes a nudge need four taps: it fails with "the page was
+   given 3 presses: 643 ms: svg, in the lesson; 648 ms: svg, in the lesson; 679 ms: svg, in the lesson". If it
+   happens again, the failure will say whether the presses arrived.
+
+**And the time, again.** WebKit's second desktop-and-tablet job took 29.3 minutes, **15.8 of them getting
+WebKit**. That is three runs running in which one of the WebKit jobs was given the slow mirror: 16.7 minutes
+in run 46, 12.6 in run 47, 15.8 in run 48, a different job each time, with the other jobs of the same run
+taking half a minute. It is not rare, and nothing in the repository can make it quicker short of not fetching
+those packages at all. What the repository can do is leave room, and it now does so by screen and not by
+count: **the jobs are dealt out by name** (`.github/workflows/ci.yml`). The phone has two jobs to itself and
+the other four Chromium phones share two; WebKit's phone has two and its iPhones one. Twelve browser jobs,
+the longest of which should have about sixteen minutes of tests, by the times of these two runs. The next
+run is the first to try it.
+
 **And the time, a third time.** The two halves of the desktop took 15.5 and 11.3 minutes, where the one job
 had taken 29.2: that worked. But the phones took 32.5 of their 40: the phone is the screen everything pressed
 is measured on, 54 tests then and more now. The phones are two halves as well.
@@ -1138,7 +1344,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 2135)
+## What the unit tests cover (Vitest, 2205)
 
 | Area                                                              | Files                                                                                                                                                   | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1231,22 +1437,23 @@ phone 360 pixels wide leaves a page about 264 to 280. `phones.spec.ts` tests bot
 
 | What                                                    | Size (gzip) | Budget  |
 | ------------------------------------------------------- | ----------- | ------- |
-| Script for the first screen                             | 105.9 kB    | 110 kB  |
+| Script for the first screen                             | 106.1 kB    | 110 kB  |
 | Styles for the first screen                             | 7.4 kB      | 12 kB   |
 | Fonts                                                   | 67.2 kB     | 80 kB   |
 | The hub's pictures (WebP, not gzipped)                  | 284.0 kB    | 330 kB  |
 | 3D hub (on demand)                                      | 260.1 kB    | 290 kB  |
 | Largest other on-demand part (Number Garden's content)  | 12.4 kB     | 30 kB   |
-| The game: everything but the voice and the content, raw | 2552.6 kB   | 2700 kB |
-| The content: seven packs, raw                           | 598.8 kB    | 900 kB  |
-| The voice: 573 recordings (MP3, not gzipped)            | 6440 kB     | 9000 kB |
+| The game: everything but the voice and the content, raw | 2585.7 kB   | 2700 kB |
+| The content: seven packs, raw                           | 633.3 kB    | 900 kB  |
+| The voice: 594 recordings (MP3, not gzipped)            | 6712 kB     | 9000 kB |
 | The largest recording                                   | 32.8 kB     | 60 kB   |
 
-A world's code is 2.5 to 12.2 kB and its content 3.5 to 12.4 kB, each fetched on entering that world (Reading
-Cove's are 11.0 and 11.2); the lesson frame is 8.5 kB and the part of the engine that judges answers 5.6 kB,
+A world's code is 5.5 to 12.2 kB and its content 4.9 to 12.4 kB, each fetched on entering that world (Memory
+Forest's are 5.5 and 8.9); the lesson frame is 9.2 kB and the part of the engine that judges answers 6.2 kB,
 fetched with the first activity; and a recording is fetched when the step that may say it arrives.
 
-**Two of these are worth watching.** The script for the first screen is 105.9 kB of the 110 it is allowed, and
+**Three of these are worth watching.** The game's own code is 2586 kB of the 2700 it is allowed, and two
+worlds still have boards to gain. The script for the first screen is 106.1 kB of the 110 it is allowed, and
 it has grown with every activity: what each world offers, with the grown-ups' words about it, is in it. (Six
 more activities in Reading Cove added a tenth of a kilobyte; the first-visit help added seven tenths, for
 what a player's settings may now hold and for the front door's knowing who is new. "How to play" itself is a
@@ -1509,6 +1716,15 @@ voice's files arrive. It is not a phone, and nobody has heard those recordings p
 what was built was right: the five faults in _What was found after the six worlds went live_ were on the site
 while every one of these checks passed.
 
+**After the owner merged pull request #12** (2026-11-26, `3c322c5`), ten minutes after the merge: Vercel's
+own record of the production deployment said "Ready". The tests of that commit, not of this tree, were run
+against the address from a clean copy of it (the tests here expect eight activities in Memory Forest, and six
+are live): 72 passed of 72, eight smoke tests as a desktop and as a phone and 56 as a Pixel 7, which play
+something in every world. Three of those are Robot Ridge's new ones, played through against the site: a long
+row made from its end, run a step at a time on and back, and handed in when it is full; a row whose steps are
+in two lines; and a bridge that nobody knows about until a run begins, where without the wait the robot is
+stopped and with it gets over. No probe was made beyond those tests.
+
 ## An update, rehearsed
 
 `npm run rehearse:update -- <commit>` (`scripts/rehearse-update.mjs`): two real builds and one browser, in
@@ -1524,7 +1740,9 @@ same address, as a deployment puts one build in the place of another, and eighte
 | `765be14`, what was live then                                | pull request #9 with the fix         | **18 of 18**                                                                                                                                     |
 | `765be14`, what was live then                                | this tree, with Reading Cove's six   | **18 of 18**, twice: before the last change to how a sentence is laid out, and after it                                                          |
 | `dbbdbc3`, what was live then (pull request #9 merged)       | this tree, with Reading Cove's six   | **18 of 18**                                                                                                                                     |
-| `8288833`, what is live now (pull request #10 merged)        | this tree, with the first-visit help | **18 of 18**: a player's settings may now hold three more things, and a player stored by the build before has none of them                       |
+| `8288833`, what was live then (pull request #10 merged)      | this tree, with the first-visit help | **18 of 18**: a player's settings may now hold three more things, and a player stored by the build before has none of them                       |
+| `ed3efd6`, what was live then (pull request #11 merged)      | this tree, with Robot Ridge's three  | **18 of 18**                                                                                                                                     |
+| `3c322c5`, what is live now (pull request #12 merged)        | this tree, with Memory Forest's two  | **18 of 18**: a sitting may now be told what the one before it kept, and a sitting stored by the build before kept nothing                       |
 
 What held both times:
 

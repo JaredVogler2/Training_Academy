@@ -72,6 +72,41 @@ describe('what has been finished, on a page that is the first thing opened', () 
     expect(asked).toHaveBeenCalledTimes(1);
   });
 
+  it('says when it is known, and not before, also of someone who has finished nothing', async () => {
+    const profile = await repository.createProfile({ name: 'Robin', avatar: 'leaf' });
+    await repository.setActiveProfileId(profile.id);
+    const { useFinishedLessons, finishedIsKnown } = await import('@/game/progress');
+    function Finished() {
+      const done = useFinishedLessons();
+      return (
+        <p data-testid="done" data-known={finishedIsKnown(done)}>
+          {[...done].join(' ')}
+        </p>
+      );
+    }
+
+    render(<Finished />);
+    // Empty, and not yet known to be: a page must not take this for "nothing finished".
+    expect(screen.getByTestId('done').getAttribute('data-known')).toBe('false');
+    await waitFor(() => expect(screen.getByTestId('done').getAttribute('data-known')).toBe('true'));
+    // Still empty, and now it is known that it is.
+    expect(screen.getByTestId('done').textContent).toBe('');
+  });
+
+  it('is known, as nothing, when what was stored cannot be read', async () => {
+    const profile = await repository.createProfile({ name: 'Robin', avatar: 'leaf' });
+    await repository.setActiveProfileId(profile.id);
+    vi.spyOn(repository, 'listSessions').mockRejectedValue(new Error('the store is broken'));
+    const { useFinishedLessons, finishedIsKnown } = await import('@/game/progress');
+    function Finished() {
+      const done = useFinishedLessons();
+      return <p data-testid="done" data-known={finishedIsKnown(done)} />;
+    }
+
+    render(<Finished />);
+    await waitFor(() => expect(screen.getByTestId('done').getAttribute('data-known')).toBe('true'));
+  });
+
   it('is nothing on a device nobody has played on, and stays so', async () => {
     const { useFinishedLessons } = await import('@/game/progress');
     const { useProfiles } = await import('@/game/profiles');

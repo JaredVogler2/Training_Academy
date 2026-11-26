@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Challenge, ContentPack } from '../src/engine/schema';
 import explorerHarbor from '../src/content/packs/explorer-harbor.v1.json' with { type: 'json' };
-import memoryForest from '../src/content/packs/memory-forest.v1.json' with { type: 'json' };
+import memoryForest from '../src/content/packs/memory-forest.v2.json' with { type: 'json' };
 import musicLab from '../src/content/packs/music-lab.v2.json' with { type: 'json' };
 import numberGarden from '../src/content/packs/number-garden.v3.json' with { type: 'json' };
 import readingCove from '../src/content/packs/reading-cove.v2.json' with { type: 'json' };
@@ -109,6 +109,20 @@ export async function answer(page: Page, press: Press, right = true): Promise<vo
         if ((await card.getAttribute('aria-pressed')) !== 'true') await press(card);
       }
       await press(done(page));
+      return;
+    }
+    case 'recall': {
+      // Looked at the last of the ways (a demonstration keeps the first), put away, and answered as that way asks.
+      const board = page.getByTestId('recall-board');
+      if ((await board.getAttribute('data-phase')) === 'look') {
+        const last = task.ways.at(-1);
+        await press(board.locator(`[data-way-button="${last?.way ?? ''}"]`));
+        await press(page.getByRole('button', { name: 'Ready' }));
+      }
+      const chosen = await board.getAttribute('data-way');
+      const way = task.ways.find((each) => each.way === chosen);
+      if (!way) throw new Error(`The things were put away looked at as "${String(chosen)}".`);
+      await press(board.locator(`[data-choice="${way.answer}"]`));
       return;
     }
     case 'order': {

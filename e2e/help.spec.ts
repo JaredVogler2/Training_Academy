@@ -49,6 +49,41 @@ async function nudgeNow(page: Page): Promise<string | null> {
   return lesson(page).getAttribute('data-nudge');
 }
 
+/**
+ * Have the page keep a note of every press it is given: when, on what, and whether inside the lesson. Once in
+ * CI, in Safari's engine, three taps on the picture brought no nudge, and at the next attempt they did (run
+ * 48). It could not be made to happen here, in Chromium, at any moment after the activity appears or with the
+ * processor slowed six times. So the next time it happens, the test says what the page saw.
+ */
+async function notePresses(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const seen: string[] = [];
+    (window as unknown as { pressesSeen: string[] }).pressesSeen = seen;
+    document.addEventListener(
+      'pointerdown',
+      (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        const lesson = document.querySelector('[data-testid="lesson"]');
+        const inside = lesson !== null && target !== null && lesson.contains(target);
+        const what =
+          target?.closest('button, a[href]')?.getAttribute('aria-label') ?? target?.tagName ?? '?';
+        seen.push(
+          `${String(Math.round(performance.now()))} ms: ${what}, ${inside ? 'in' : 'outside'} the lesson`,
+        );
+      },
+      true,
+    );
+  });
+}
+
+/** The presses the page has been given since it opened, as `notePresses` noted them. */
+async function pressesSeen(page: Page): Promise<string> {
+  const seen = await page.evaluate(
+    () => (window as unknown as { pressesSeen?: string[] }).pressesSeen ?? [],
+  );
+  return `the page was given ${String(seen.length)} presses: ${seen.join('; ')}`;
+}
+
 /** Put a finger on the middle of something that is not a button: the picture a question is about. */
 async function tapOn(page: Page, target: Locator, hasTouch: boolean, times = 1) {
   const box = await target.boundingBox();
@@ -87,6 +122,7 @@ test.describe('taps that land on nothing', () => {
   }) => {
     test.setTimeout(120_000);
     const said = await listenIn(page);
+    await notePresses(page);
     await page.goto(LESSON_PATH);
     await expect(myTurn(page)).toBeVisible();
     expect(await nudgeNow(page)).toBeNull();
@@ -95,7 +131,7 @@ test.describe('taps that land on nothing', () => {
     await tapOn(page, prompt(page), hasTouch, 2);
     expect(await nudgeNow(page)).toBeNull();
     await tapOn(page, prompt(page), hasTouch);
-    await expect(lesson(page)).toHaveAttribute('data-nudge', 'my-turn');
+    await expect(lesson(page), await pressesSeen(page)).toHaveAttribute('data-nudge', 'my-turn');
     // The way on wears a ring, and the words are where Glim's are: on top of nothing that is pointed at.
     expect(await ringed(myTurn(page))).toEqual([true]);
     expect(await ringed(choices(page))).not.toContain(true);

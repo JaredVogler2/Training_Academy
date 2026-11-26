@@ -11,6 +11,16 @@ import { WORLDS, isOpen, lessonsOf, type WorldInfo } from './worlds';
 
 const NOTHING: ReadonlySet<string> = new Set();
 
+/**
+ * Whether what the player has finished is known yet. It is read from the device a moment after a page opens,
+ * and until then nothing is claimed: the set is empty, and "Play" goes where it would for someone who has done
+ * nothing. A page that shows the next thing says when it knows (`data-settled` on a world's page), so that
+ * nothing reads it for an answer too soon. For nobody, nothing is ever read: ask who is playing as well.
+ */
+export function finishedIsKnown(done: ReadonlySet<string>): boolean {
+  return done !== NOTHING;
+}
+
 /** The lessons the player who is playing has finished, by id. Empty until it is known, and for nobody. */
 export function useFinishedLessons(): ReadonlySet<string> {
   const { status, activeId } = useProfiles();
@@ -41,7 +51,11 @@ export function useFinishedLessons(): ReadonlySet<string> {
             ),
           });
         },
-        (error: unknown) => recordError('storage', error),
+        (error: unknown) => {
+          recordError('storage', error);
+          // What cannot be read is taken as nothing finished, and that is as much as will be known.
+          if (current) setFound({ for: activeId, done: new Set() });
+        },
       );
     return () => {
       current = false;

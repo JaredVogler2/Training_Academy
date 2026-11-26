@@ -5,8 +5,12 @@ import {
   buildExplorerHarborVoice,
 } from '../../scripts/content/explorer-harbor.mjs';
 import { buildInventorIslandPack } from '../../scripts/content/inventor-island.mjs';
+import { lessonCalled } from '@/content/lessonList';
 import {
   lessonKey,
+  lessonList,
+  lessonListPath,
+  lessonListText,
   lessonMark,
   lockLessons,
   lockPath,
@@ -59,6 +63,35 @@ describe('what the voice is asked to say for a world, beside its lines', () => {
     ['explorer-harbor', buildExplorerHarborVoice],
   ])('%s: is the list its generator writes, to the letter', async (world, build) => {
     expect(readFileSync(voiceLinesPath(world), 'utf8')).toBe(await voiceLinesText(build()));
+  });
+});
+
+describe('what each activity is called, for a page that lists them before their content has arrived', () => {
+  const packs = [
+    buildReadingCovePack(),
+    buildNumberGardenPack(),
+    buildRobotRidgePack(),
+    buildMemoryForestPack(),
+    buildInventorIslandPack(),
+    buildExplorerHarborPack(),
+    buildMusicLabPack(),
+  ];
+
+  it('is in the file exactly as the build writes it from the packs', async () => {
+    expect(readFileSync(lessonListPath, 'utf8')).toBe(await lessonListText(packs));
+  });
+
+  it('is every activity of every world, by the name and the minutes its pack gives it, and nothing else', () => {
+    const lessons = packs.flatMap((pack) => pack.lessons);
+    const { lessons: listed } = lessonList(packs);
+    expect(Object.keys(listed)).toEqual(lessons.map((lesson) => lesson.id));
+    for (const lesson of lessons) {
+      expect(listed[lesson.id]).toEqual({ title: lesson.title, minutes: lesson.estimatedMinutes });
+      expect(lessonCalled(lesson.id)).toEqual(listed[lesson.id]);
+    }
+    expect(lessonCalled('no-such-activity')).toBeNull();
+    // Not something every object has, either.
+    expect(lessonCalled('constructor')).toBeNull();
   });
 });
 

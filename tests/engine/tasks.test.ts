@@ -24,7 +24,7 @@ import {
   type Task,
 } from '@/engine';
 import { T0, answerTo, dayOf, newSession, play, wrongAnswerTo } from '../helpers/content';
-import { fixtureLesson } from '../helpers/fixturePack';
+import { fixtureKeepLesson, fixtureLesson } from '../helpers/fixturePack';
 
 const lesson = fixtureLesson();
 
@@ -147,6 +147,53 @@ describe('picking out the ones that belong', () => {
     expect(judgeTask(task, 'none')).toBeNull();
     expect(judgeTask(task, 'cat-cat')).toBeNull();
     expect(judgeTask(task, 'cat-fish')).toBeNull();
+  });
+});
+
+describe('looking at things in a way of your own choosing, and saying what went with one', () => {
+  const found = fixtureKeepLesson().challenges.find((each) => each.id.endsWith('.way-a'));
+  if (found?.kind !== 'make' || found.task.type !== 'recall') throw new Error('no such task');
+  const task = found.task;
+  // Fox and ram, key and map. In groups the fox is asked about (the ram went with it); as a story, the ram is
+  // (it had the map).
+
+  it('is right when the card that went with what was asked about is given, for the way that was chosen', () => {
+    expect(judgeTask(task, 'groups-ram')).toEqual({ correct: true, clean: true });
+    expect(judgeTask(task, 'story-map')).toEqual({ correct: true, clean: true });
+  });
+
+  it('takes the answer to one way for a wrong answer to another', () => {
+    // The map is the story's answer. In groups it was there, and went with the key.
+    expect(judgeTask(task, 'groups-map')).toEqual({
+      correct: false,
+      clean: false,
+      misconception: 'went-with-another',
+    });
+  });
+
+  it('tells a thing that went with something else from a thing that was never there', () => {
+    expect(judgeTask(task, 'story-key')?.misconception).toBe('went-with-another');
+    expect(judgeTask(task, 'story-pen')?.misconception).toBe('not-shown');
+    expect(judgeTask(task, 'groups-cat')?.misconception).toBe('not-shown');
+  });
+
+  it('refuses an answer that could not have been given', () => {
+    expect(judgeTask(task, 'places-ram')).toBeNull(); // a way this task does not offer
+    expect(judgeTask(task, 'groups-key')).toBeNull(); // a card this way does not offer
+    expect(judgeTask(task, 'ram')).toBeNull(); // no way at all
+    expect(judgeTask(task, 'groups')).toBeNull();
+    expect(judgeTask(task, 'groups-ram-map')).toBeNull();
+    expect(judgeTask(task, 'none')).toBeNull();
+  });
+
+  it('is shown, when it has to be, in the first of its ways', () => {
+    expect(solutionOf(task)).toBe('groups-ram');
+    // One thing is asked for: there is no part of it for a hint to give.
+    expect(solutionParts(task)).toEqual(['ram']);
+  });
+
+  it('lays out every card of every way, so that the same deal serves whichever is chosen', () => {
+    expect(cardIdsOf(task)).toEqual(['fox', 'ram', 'key', 'map', 'cat', 'pen']);
   });
 });
 
@@ -468,9 +515,24 @@ describe('a design on a workbench', () => {
 });
 
 describe('every kind of task', () => {
-  const tasks = lesson.challenges.flatMap((challenge) =>
+  const tasks = [...lesson.challenges, ...fixtureKeepLesson().challenges].flatMap((challenge) =>
     challenge.kind === 'make' ? [challenge.task] : [],
   );
+
+  it('is tried here: the two lessons made for the tests have one of each between them', () => {
+    expect([...new Set(tasks.map((task) => task.type))].sort()).toEqual([
+      'beat',
+      'design',
+      'echo',
+      'give',
+      'order',
+      'pairs',
+      'program',
+      'recall',
+      'select',
+      'tune',
+    ]);
+  });
 
   it('judges its own answer right', () => {
     for (const task of tasks) {
@@ -491,7 +553,9 @@ describe('every kind of task', () => {
   it('gives its answer back whole when all of its parts are joined', () => {
     for (const task of tasks) {
       const solution = solutionOf(task);
-      if (solution === null || task.type === 'give') continue;
+      // (So many given out is a number, not its parts joined; and the way a thing was looked at is written in
+      // front of the answer, and is no part of it.)
+      if (solution === null || task.type === 'give' || task.type === 'recall') continue;
       expect(writeTokens(solutionParts(task))).toBe(solution);
     }
   });

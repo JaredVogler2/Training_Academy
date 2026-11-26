@@ -6,6 +6,10 @@
 //   things that go together        four things in two groups, then picked out       (a way to remember: grouping)
 //   who had what?                  pairs to link, then asked about one of them      (a way to remember: linking)
 //   what was where?                things at places, then asked about one place     (a way to remember: places)
+//   remember it your way           four things looked at in a way the child chooses, then asked about with
+//                                  a hint, and straight after with none             (recalling from a cue; unaided)
+//   keep it for next time          five things; then three to keep, asked about at the start of the next
+//                                  sitting                                          (unaided; after a wait)
 //
 // These are kept apart on purpose: knowing a thing again when it is seen, recalling an order, recalling one thing
 // from a cue and recalling without one are different things to be able to do, and a child may be at ease with one
@@ -22,13 +26,33 @@ const LETTERS = ['a', 'b', 'c', 'd'];
 
 /** What kind of thing each picture is, for groups to remember and for near misses. */
 const KINDS = {
-  animals: ['cat', 'hen', 'fox', 'fish', 'bird', 'rat', 'ram', 'ant', 'elephant', 'octopus'],
+  animals: [
+    'cat',
+    'hen',
+    'fox',
+    'fish',
+    'bird',
+    'rat',
+    'ram',
+    'ant',
+    'elephant',
+    'octopus',
+    'moth',
+  ],
   clothes: ['hat', 'cap', 'sock', 'ring'],
-  food: ['apple', 'egg', 'nut', 'olive'],
+  food: ['apple', 'egg', 'nut', 'olive', 'banana', 'cheese', 'lemon', 'chip'],
   music: ['drum', 'bell', 'shaker', 'whistle'],
-  kitchen: ['pan', 'pot', 'cup', 'mug'],
+  kitchen: ['pan', 'pot', 'cup', 'mug', 'can', 'tin'],
   sky: ['sun', 'moon', 'rain'],
+  // Kinds the first six activities never use: for sets that are new to a child who has played those.
+  face: ['chin', 'lip', 'nose', 'thumb'],
+  washing: ['mop', 'soap', 'tap'],
+  desk: ['pen', 'ink', 'map', 'pin'],
+  travel: ['rocket', 'ship'],
+  tools: ['axe', 'net', 'fan', 'umbrella', 'top'],
 };
+/** Places along a path, for things to be left at. */
+const PLACES = ['log', 'nest', 'hut', 'mat', 'cot', 'igloo'];
 const kindOf = (id) => Object.keys(KINDS).find((kind) => KINDS[kind].includes(id)) ?? 'thing';
 
 const picture = (id) => ({ type: 'picture', id });
@@ -36,6 +60,10 @@ const card = (id) => ({ id, label: lexicon[id].word, stimulus: picture(id) });
 const pictureChoices = (ids) =>
   ids.map((id, index) => ({ id: LETTERS[index], label: lexicon[id].word, stimulus: picture(id) }));
 
+/**
+ * `then` is a list of [a challenge, the one asked straight after it]; `keep` is a list of [a thing to keep for
+ * next time, the question about it later the same day, the question about it on a later day].
+ */
 function lesson({
   id,
   title,
@@ -47,14 +75,28 @@ function lesson({
   count,
   reprobes = 1,
   closing,
+  then = [],
+  keep = [],
+  alone = count - 1,
 }) {
+  const after = new Map(then.map(([first, next]) => [first.id, next]));
+  // Every challenge, each followed at once by what is asked after it, so that the file reads in the order played.
+  const inOrder = (challenges) =>
+    challenges.flatMap((challenge) =>
+      after.has(challenge.id) ? [challenge, after.get(challenge.id)] : [challenge],
+    );
+  const all = [
+    ...inOrder([...demo, ...guided, ...pool]),
+    ...(closing ?? []),
+    ...keep.flatMap((row) => row),
+  ];
   return {
     id,
     version: 1,
     world: 'memory-forest',
     title,
     summary,
-    skillIds: [...new Set([...demo, ...guided, ...pool, ...(closing ?? [])].map((c) => c.skillId))],
+    skillIds: [...new Set(all.map((c) => c.skillId))],
     estimatedMinutes: minutes,
     plan: {
       demo: demo.map((challenge) => challenge.id),
@@ -65,9 +107,25 @@ function lesson({
         maxReprobes: Math.min(reprobes, pool.length - count),
       },
       ...(closing ? { closing: closing.map((challenge) => challenge.id) } : {}),
+      ...(then.length > 0
+        ? { then: Object.fromEntries(then.map(([first, next]) => [first.id, next.id])) }
+        : {}),
+      ...(keep.length > 0
+        ? {
+            keep: {
+              pool: keep.map(([kept]) => kept.id),
+              recall: Object.fromEntries(
+                keep.map(([kept, sameDay, laterDay]) => [
+                  kept.id,
+                  { sameDay: sameDay.id, laterDay: laterDay.id },
+                ]),
+              ),
+            },
+          }
+        : {}),
     },
-    successCriteria: { independentFirstTryCorrect: count - 1 },
-    challenges: [...demo, ...guided, ...pool, ...(closing ?? [])],
+    successCriteria: { independentFirstTryCorrect: alone },
+    challenges: all,
   };
 }
 
@@ -434,6 +492,263 @@ function placesLesson() {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Remember it your way: the same four things, looked at whichever of three ways the child chooses
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Two animals and two things of one other kind. They can be looked at as two groups (the animals, the things), as
+ * a silly story (each animal has one of the things), or as places along a path (each of the four at a place of
+ * its own). The question that follows has a hint, and which hint depends on how they were looked at: one of a
+ * group, an animal, a place. Each way asks for a different one of the four, so that changing the way changes the
+ * question and not only its wording.
+ *
+ * Offered each time: the right one; one that was there and went with something else; and one that was never
+ * there, of the same kind as the right one, so that "it was an animal" is not enough.
+ *
+ * And then the same four are asked for with no hint at all, among eight. That is another challenge and another
+ * skill: what a hint brings back and what comes back by itself are counted apart.
+ */
+function ownWay({ lessonId, name, owners, things, places, lures, others }) {
+  const [first, second] = owners;
+  const [had, held] = things;
+  const [animal, thing] = lures;
+  const study = [first, second, had, held];
+  // Along the path the two kinds take turns, so that a place does not give away what kind of thing was at it.
+  const left = [first, had, second, held];
+  const ways = [
+    {
+      way: 'groups',
+      scene: { type: 'scene', scene: 'groups', of: { ids: study } },
+      cue: picture(first),
+      ask: 'mf.way.groups.ask',
+      choices: [second, held, animal],
+      answer: second,
+    },
+    {
+      way: 'story',
+      scene: { type: 'scene', scene: 'pairs', of: { owners, things } },
+      cue: picture(second),
+      ask: 'mf.story.ask',
+      choices: [held, had, thing],
+      answer: held,
+    },
+    {
+      way: 'places',
+      scene: { type: 'scene', scene: 'places', of: { owners: places, things: left } },
+      cue: picture(places[1]),
+      ask: 'mf.places.ask',
+      choices: [had, held, thing],
+      answer: had,
+    },
+  ];
+  const variant = `${kindOf(first)}-and-${kindOf(had)}`;
+  const cued = {
+    id: `${lessonId}.${name}`,
+    kind: 'make',
+    skillId: 'memory.cued.chosen-way',
+    variant,
+    prompt: { instruction: 'mf.way.instruction' },
+    task: { type: 'recall', cards: [...study, animal, thing].map(card), study, ways },
+    hints: [
+      { type: 'model', caption: 'mf.way.hint.model' },
+      { type: 'reveal', caption: 'mf.hidden.hint.reveal' },
+    ],
+    // Three are offered: after two that were not it, only it is left.
+    maxTries: 2,
+    feedback: { correct: 'mf.way.correct', incorrect: 'mf.way.incorrect' },
+  };
+  const unaided = {
+    id: `${lessonId}.${name}-all`,
+    kind: 'make',
+    skillId: 'memory.unaided.four-after-choosing',
+    variant,
+    prompt: { instruction: 'mf.all.instruction' },
+    task: {
+      type: 'select',
+      cards: [...study, animal, thing, ...others].map(card),
+      solution: study,
+      recalled: 'just-now',
+    },
+    hints: [
+      { type: 'step', count: 2, caption: 'mf.groups.hint.step' },
+      { type: 'reveal', caption: 'mf.groups.hint.reveal' },
+    ],
+    feedback: { correct: 'mf.groups.correct', incorrect: 'mf.all.incorrect' },
+  };
+  return [cued, unaided];
+}
+
+function ownWayLesson() {
+  const lessonId = 'mf-choose-01';
+  const row = ([name, owners, things, places, lures, others]) =>
+    ownWay({ lessonId, name, owners, things, places, lures, others });
+  const [log, nest, hut, mat, cot, igloo] = PLACES;
+  const demo = [
+    [
+      'demo',
+      ['fox', 'ram'],
+      ['cup', 'pan'],
+      [log, nest, hut, mat],
+      ['rat', 'pot'],
+      ['bell', 'egg'],
+    ],
+  ].map(row);
+  const guided = [
+    [
+      'guided',
+      ['bird', 'fish'],
+      ['bell', 'drum'],
+      [nest, hut, mat, cot],
+      ['hen', 'whistle'],
+      ['sock', 'sun'],
+    ],
+  ].map(row);
+  const pool = [
+    [
+      'cat-ant',
+      ['cat', 'ant'],
+      ['apple', 'nut'],
+      [hut, mat, cot, igloo],
+      ['fox', 'egg'],
+      ['cap', 'moon'],
+    ],
+    [
+      'hen-octopus',
+      ['hen', 'octopus'],
+      ['ring', 'cap'],
+      [mat, cot, igloo, log],
+      ['bird', 'sock'],
+      ['pan', 'rain'],
+    ],
+    [
+      'rat-elephant',
+      ['rat', 'elephant'],
+      ['mug', 'pot'],
+      [cot, igloo, log, nest],
+      ['ram', 'cup'],
+      ['shaker', 'olive'],
+    ],
+    [
+      'ram-fish',
+      ['ram', 'fish'],
+      ['whistle', 'shaker'],
+      [igloo, log, nest, hut],
+      ['ant', 'bell'],
+      ['hat', 'leaf'],
+    ],
+  ].map(row);
+  const firsts = (pairs) => pairs.map(([cued]) => cued);
+  return lesson({
+    id: lessonId,
+    title: 'Remember it your way',
+    summary:
+      'Four things are shown, and your child chooses how to look at them: in two groups, as a silly story of who has what, or at places along a path. Then one question with a hint, and one with none: which four were they? The two are counted apart.',
+    minutes: 5,
+    demo: firsts(demo),
+    guided: firsts(guided),
+    pool: firsts(pool),
+    count: 2,
+    then: [...demo, ...guided, ...pool],
+    // Two sets, each asked about twice: three of the four at the first try.
+    alone: 3,
+  });
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Keep it for next time: one more thing than before, and three things that are asked about another time
+// ---------------------------------------------------------------------------------------------------------------------
+
+function laterLesson() {
+  const id = 'mf-later-01';
+  // Five things, three of one kind and two of another, picked out from among eight. All of them are pictures the
+  // first six activities never show. (Eight, because that is as many cards as stand in one row on the flattest
+  // phone and are still each wide enough for a thumb: nine were 51 points across there.)
+  const five = ([name, shown, others]) => ({
+    id: `${id}.${name}`,
+    kind: 'make',
+    skillId: 'memory.unaided.five-things',
+    variant: `${kindOf(shown[0])}-and-${kindOf(shown[3])}`,
+    prompt: { instruction: 'mf.five.instruction' },
+    task: {
+      type: 'select',
+      cards: [...shown, ...others].map(card),
+      solution: shown,
+      study: shown,
+      ask: 'mf.groups.ask',
+    },
+    hints: [
+      { type: 'model', caption: 'mf.groups.hint.model' },
+      { type: 'step', count: 2, caption: 'mf.groups.hint.step' },
+      { type: 'reveal', caption: 'mf.groups.hint.reveal' },
+    ],
+    feedback: { correct: 'mf.groups.correct', incorrect: 'mf.groups.incorrect' },
+  });
+  // Three things to keep, of three kinds, with one more of each kind beside them when they are asked for. They
+  // are picked out once straight away, which shows only that they were taken in; and again at the start of the
+  // next sitting, with nothing shown, which is the question this activity is for.
+  const kept = ([name, shown, others]) => {
+    const cards = [...shown, ...others].map(card);
+    const back = (when, skillId) => ({
+      id: `${id}.back-${name}-${when}`,
+      kind: 'make',
+      skillId,
+      variant: name,
+      prompt: { instruction: 'mf.back.instruction', stimulus: { type: 'sign', id: 'last-time' } },
+      task: { type: 'select', cards, solution: shown, recalled: 'last-time' },
+      hints: [
+        { type: 'step', count: 1, caption: 'mf.back.hint.step' },
+        { type: 'reveal', caption: 'mf.groups.hint.reveal' },
+      ],
+      feedback: { correct: 'mf.back.correct', incorrect: 'mf.back.incorrect' },
+    });
+    return [
+      {
+        id: `${id}.keep-${name}`,
+        kind: 'make',
+        skillId: 'memory.delayed.keep-three',
+        variant: name,
+        prompt: { instruction: 'mf.keep.instruction' },
+        task: { type: 'select', cards, solution: shown, study: shown, ask: 'mf.keep.ask' },
+        hints: [
+          { type: 'model', caption: 'mf.keep.hint.model' },
+          { type: 'step', count: 1, caption: 'mf.keep.hint.step' },
+          { type: 'reveal', caption: 'mf.groups.hint.reveal' },
+        ],
+        feedback: { correct: 'mf.keep.correct', incorrect: 'mf.keep.incorrect' },
+      },
+      back('same-day', 'memory.delayed.same-day'),
+      back('later-day', 'memory.delayed.another-day'),
+    ];
+  };
+  return lesson({
+    id,
+    title: 'Keep it for next time',
+    summary:
+      'First, five things to look at and pick out again: one more than before, and all new. Then three things to keep. Your child picks them out once now, and is asked for them again at the start of the next visit, ten minutes later or another day, with nothing shown.',
+    minutes: 4,
+    demo: [['demo', ['banana', 'cheese', 'lemon', 'mop', 'soap'], ['chip', 'tap', 'pen']]].map(
+      five,
+    ),
+    guided: [['guided', ['chin', 'lip', 'nose', 'pen', 'ink'], ['thumb', 'map', 'axe']]].map(five),
+    pool: [
+      ['tools-travel', ['axe', 'net', 'fan', 'rocket', 'ship'], ['umbrella', 'map', 'tin']],
+      ['desk-washing', ['pen', 'map', 'pin', 'tap', 'soap'], ['ink', 'mop', 'cheese']],
+      ['food-kitchen', ['banana', 'chip', 'lemon', 'can', 'tin'], ['cheese', 'top', 'nose']],
+      ['face-tools', ['chin', 'nose', 'thumb', 'umbrella', 'top'], ['lip', 'fan', 'soap']],
+    ].map(five),
+    count: 2,
+    keep: [
+      ['rocket-moth-seed', ['rocket', 'moth', 'seed'], ['ship', 'ant', 'leaf']],
+      ['umbrella-lemon-pin', ['umbrella', 'lemon', 'pin'], ['fan', 'banana', 'pen']],
+      ['ship-soap-chin', ['ship', 'soap', 'chin'], ['rocket', 'mop', 'nose']],
+      ['axe-cheese-map', ['axe', 'cheese', 'map'], ['net', 'chip', 'ink']],
+    ].map(kept),
+    // Two sets of five and the three to keep: two of those three at the first try.
+    alone: 2,
+  });
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 // The pack, and the words the voice needs for it
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -489,6 +804,42 @@ const SKILLS = [
     'Looks at things left at two or three places and, shown one place, says what was there.',
     ['memory.recognition.what-was-there'],
   ),
+  skill(
+    'memory.cued.chosen-way',
+    'Recall from a hint, looking your own way',
+    'Chooses how to look at four things (in groups, as a silly story, or at places) and, when they are put away and a hint is given, says what went with it. Which way was chosen is written down with each answer.',
+    ['memory.strategy.grouping', 'memory.strategy.linking', 'memory.strategy.places'],
+  ),
+  skill(
+    'memory.unaided.four-after-choosing',
+    'Recall four things with no hint',
+    'Straight after that, picks all four out from among eight with no hint at all. Counted apart from the question with a hint: what a hint brings back and what comes back by itself are different things.',
+    ['memory.cued.chosen-way'],
+  ),
+  skill(
+    'memory.unaided.five-things',
+    'Recall five things',
+    'Looks at five things of two kinds, none of them met in the earlier activities, and after they are put away picks all five out from among eight.',
+    ['memory.strategy.grouping'],
+  ),
+  skill(
+    'memory.delayed.keep-three',
+    'Take in three things to keep',
+    'Looks at three things to keep for next time and picks them out straight away. This shows only that they were taken in; whether they were kept is asked at the next visit.',
+    ['memory.recognition.what-was-there'],
+  ),
+  skill(
+    'memory.delayed.same-day',
+    'Recall them later the same day',
+    'At the start of a later visit on the same day, ten minutes or more after the three things were shown, picks them out with nothing shown again.',
+    ['memory.delayed.keep-three'],
+  ),
+  skill(
+    'memory.delayed.another-day',
+    'Recall them on another day',
+    'At the start of a visit on a later day, picks out the three things kept, with nothing shown again. Kept apart from the same day: a night between is a different wait.',
+    ['memory.delayed.keep-three'],
+  ),
 ];
 
 const STRINGS = {
@@ -532,6 +883,24 @@ const STRINGS = {
   'mf.places.incorrect': 'That was not at this place. Think again.',
   'mf.places.hint.model': 'Have another look. Walk the path in your head.',
   'mf.places.hint.reveal': 'This was there.',
+  'mf.way.instruction': 'Look at these four. Tap a picture below to look another way.',
+  'mf.way.groups.ask': 'What went with this one?',
+  'mf.way.correct': 'Yes. You remembered it.',
+  'mf.way.incorrect': 'Not that one. Think how you looked at them.',
+  'mf.way.hint.model': 'Have another look, your way.',
+  'mf.all.instruction': 'Now with no help. Which four did you see?',
+  'mf.all.incorrect': 'Not quite. Think how you looked at them.',
+  'mf.five.instruction': 'Look. There are five this time. Some go together.',
+  'mf.keep.instruction': 'These three are for next time. Look well.',
+  'mf.keep.ask': 'Which three will you keep?',
+  'mf.keep.correct': 'Yes. Keep them in your head. I will ask you next time.',
+  'mf.keep.incorrect': 'Not quite. Think again.',
+  'mf.keep.hint.model': 'Say their names in your head.',
+  'mf.keep.hint.step': 'This one is for next time.',
+  'mf.back.instruction': 'Think back to last time. Which three did you keep?',
+  'mf.back.correct': 'Yes. You kept them.',
+  'mf.back.incorrect': 'Not quite. Think back.',
+  'mf.back.hint.step': 'This one was there.',
 };
 
 export function buildMemoryForestPack() {
@@ -540,7 +909,7 @@ export function buildMemoryForestPack() {
     schemaVersion: 1,
     id: 'memory-forest',
     world: 'memory-forest',
-    contentVersion: 1,
+    contentVersion: 2,
     strings: { en: STRINGS },
     skills: SKILLS,
     lessons: [
@@ -550,11 +919,23 @@ export function buildMemoryForestPack() {
       groupsLesson(),
       storyLesson(),
       placesLesson(),
+      ownWayLesson(),
+      laterLesson(),
     ],
   };
 }
 
-/** What the voice needs here beside the pack's lines: the names of the animals whose order is to be remembered. */
+/** What Glim calls each way of looking, when it is chosen. The same words are on the board for a grown-up. */
+export const WAY_LINES = {
+  'mf.ways.groups': 'In two groups.',
+  'mf.ways.story': 'As a silly story.',
+  'mf.ways.places': 'At places along a path.',
+};
+
+/**
+ * What the voice needs here beside the pack's lines: the names of the animals whose order is to be remembered, and
+ * what each way of looking is called.
+ */
 export function buildMemoryForestVoice() {
   const pack = buildMemoryForestPack();
   const named = new Set();
@@ -567,11 +948,12 @@ export function buildMemoryForestVoice() {
   }
   return {
     about:
-      'What the voice says for Memory Forest beside the lines of its pack: the names of the pictures it names aloud. Written by scripts/content/memory-forest.mjs; do not edit by hand.',
+      'What the voice says for Memory Forest beside the lines of its pack: the names of the pictures it names aloud, and what each way of looking at things to remember is called. Written by scripts/content/memory-forest.mjs; do not edit by hand.',
     groups: {
       words: {
         words: Object.fromEntries([...named].sort().map((id) => [`word.${id}`, lexicon[id].word])),
       },
+      'memory-forest': { lines: WAY_LINES },
     },
   };
 }

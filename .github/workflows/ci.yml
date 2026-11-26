@@ -46,19 +46,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Each engine's screens are shared between several jobs, and each of those is dealt out in parts by
-        # Playwright (--shard). A part should need about half of the forty minutes at most, because the forty
-        # also have to cover getting the browser and what it needs onto the machine, and that is not always
-        # quick: it is usually half a minute, and it has taken 5, 13 and 17 minutes when the mirror a runner was
-        # given for Ubuntu's packages was slow. The job whose tests take 23 minutes was cancelled at its limit
-        # by the seventeen, with 566 of its 567 tests done and none failed.
+        # Each engine's screens are shared between several jobs, by screen, and where one screen's tests are
+        # too many for a job they are dealt out in parts by Playwright (--shard). A job should need about half
+        # of the forty minutes at most, because the forty also have to cover getting the browser and what it
+        # needs onto the machine, and that is not always quick: it is usually half a minute, and it has taken
+        # 5, 13, 13 and 17 minutes when the mirror a runner was given for Ubuntu's packages was slow. The job
+        # whose tests took 23 minutes was cancelled at its limit by the seventeen, with 566 of its 567 tests
+        # done and none failed.
         #
-        # How the parts came about. The desktop screen has every test and is two thirds of Chromium's work, so
-        # it shares its jobs with the tablet only. As one job that took 29 minutes with the Music Lab; as two,
-        # 25 and 18 with Robot Ridge's longer plans; it is three now. The phone screen is where everything a
-        # child presses is measured, on each kind of board at each of the tightest screens: as one job the
-        # phones took 32.5 minutes; as two, 22 and 29; they are three now. WebKit's phones took 28.8 as one job
-        # and are two. WebKit's desktop and tablet took 23.5 as one job, and are two.
+        # How the jobs came about. The desktop screen has every test and is two thirds of Chromium's work, so
+        # it shares its jobs with the tablet only: as one job that took 29 minutes with the Music Lab; as two,
+        # 25 and 18 with Robot Ridge's longer plans; as three, 13, 16 and 10. The phone screen has every test
+        # too, and is where everything a child presses is measured, on each kind of board at each of the
+        # tightest screens. Five phones' tests dealt out in three parts took 11, 15 and 26 minutes: Playwright
+        # deals by the number of tests, one screen after another, and the four other phones run only the tests
+        # of layout, which are the long ones, so all four fell into the last part. So the phone has two jobs
+        # to itself, and the other four share two, by name. WebKit's phones were two parts in the same way and
+        # took 15 and 20 minutes, the 20 after thirteen minutes of getting WebKit: 33 of the 40. They are
+        # three jobs now, dealt as Chromium's are.
         include:
           - name: chromium, desktop and tablet, part 1 of 3
             engine: chromium
@@ -72,21 +77,22 @@ jobs:
             engine: chromium
             projects: >-
               --project=desktop --project=tablet --shard=3/3
-          - name: chromium, phones, part 1 of 3
+          - name: chromium, the phone, first half
             engine: chromium
             projects: >-
-              --project=phone --project=small-phone --project=phone-landscape
-              --project=android --project=android-landscape --shard=1/3
-          - name: chromium, phones, part 2 of 3
+              --project=phone --shard=1/2
+          - name: chromium, the phone, second half
             engine: chromium
             projects: >-
-              --project=phone --project=small-phone --project=phone-landscape
-              --project=android --project=android-landscape --shard=2/3
-          - name: chromium, phones, part 3 of 3
+              --project=phone --shard=2/2
+          - name: chromium, the small phone and the phone held sideways
             engine: chromium
             projects: >-
-              --project=phone --project=small-phone --project=phone-landscape
-              --project=android --project=android-landscape --shard=3/3
+              --project=small-phone --project=phone-landscape
+          - name: chromium, the Pixel, upright and sideways
+            engine: chromium
+            projects: >-
+              --project=android --project=android-landscape
           - name: webkit, desktop and tablet, first half
             engine: webkit
             projects: >-
@@ -95,14 +101,18 @@ jobs:
             engine: webkit
             projects: >-
               --project=webkit-desktop --project=ipad --shard=2/2
-          - name: webkit, phones, first half
+          - name: webkit, the phone, first half
             engine: webkit
             projects: >-
-              --project=webkit-phone --project=iphone --project=iphone-landscape --shard=1/2
-          - name: webkit, phones, second half
+              --project=webkit-phone --shard=1/2
+          - name: webkit, the phone, second half
             engine: webkit
             projects: >-
-              --project=webkit-phone --project=iphone --project=iphone-landscape --shard=2/2
+              --project=webkit-phone --shard=2/2
+          - name: webkit, the iPhone, upright and sideways
+            engine: webkit
+            projects: >-
+              --project=iphone --project=iphone-landscape
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7

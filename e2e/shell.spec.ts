@@ -1,4 +1,5 @@
 import {
+  arrived,
   CLOSED_WORLD,
   LIGHTHOUSE_SHARE,
   OPEN_WORLDS,
@@ -120,6 +121,60 @@ test.describe('a world’s page', () => {
     // Decoration: the heading names the world.
     await expect(picture).toHaveAttribute('alt', '');
     expect(await screenFit(page)).toMatchObject({ sideways: [] });
+  });
+
+  test('is whole from its first moment: nothing on it moves when the world’s activities arrive @layout', async ({
+    page,
+  }) => {
+    // A world's page lists its activities at once, and their content (what each asks, and the pictures of it)
+    // comes after. Each card's name used to come with the content: some names take two lines, and every card
+    // below them moved down as they arrived, by as much as 78 pixels on a small phone, under whatever finger
+    // was already on its way to one. A test met it: its tap landed where a card had been.
+    //
+    // The world's content and the code that draws its pictures are held back here; the page is measured as it
+    // stands without them; then they are let through, and it is measured again.
+    const waiting: (() => void)[] = [];
+    let held = true;
+    await page.route(/\/immutable\/number-garden[.-][^/]*\.js$/, async (route) => {
+      if (held) await new Promise<void>((resolve) => waiting.push(resolve));
+      await route.continue().catch(() => undefined);
+    });
+    await page.goto('/world/number-garden');
+    const cards = page.locator('[data-lesson]');
+    await expect(cards).toHaveCount(18);
+    await arrived(page);
+    const where = () =>
+      page.evaluate(() =>
+        [...document.querySelectorAll('main a[href], main p, main h1, main h2')].map((each) => {
+          const box = each.getBoundingClientRect();
+          const name = each.getAttribute('data-lesson') ?? each.tagName.toLowerCase();
+          return [
+            name,
+            Math.round(box.left),
+            Math.round(box.top + window.scrollY),
+            Math.round(box.width),
+            Math.round(box.height),
+          ].join(' ');
+        }),
+      );
+    // Without the content: no picture in any card, and nothing drawn for the activity Play goes to. But every
+    // card says what it is, to someone looking and to someone listening.
+    await expect(page.locator('[data-lesson] svg')).toHaveCount(0);
+    await expect(page.getByTestId('world-example')).toHaveCount(0);
+    await expect(cards.first()).toHaveAccessibleName('Same amount, up to three');
+    await expect(cards.first()).toContainText('Same amount, up to three');
+    await expect(cards.nth(4)).toHaveAccessibleName('Which has more?');
+    expect(waiting.length).toBeGreaterThan(0);
+    const before = await where();
+    expect(before.filter((line) => line.startsWith('ng-'))).toHaveLength(18);
+
+    held = false;
+    for (const letThrough of waiting) letThrough();
+    await expect(page.getByTestId('world-example')).toBeVisible();
+    await expect(page.locator('[data-lesson]:has(svg)')).toHaveCount(18);
+    await arrived(page);
+    expect(await where()).toEqual(before);
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 });
 

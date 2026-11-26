@@ -68,6 +68,11 @@ export function wrongAnswerTo(view: ChallengeView): string | null {
       const extra = task.cards.find((card) => !task.solution.includes(card.id));
       return extra ? [...task.solution, extra.id].sort().join('-') : null;
     }
+    case 'recall': {
+      const [way] = task.ways;
+      const other = way?.choices.find((id) => id !== way.answer);
+      return way && other ? `${way.way}-${other}` : null;
+    }
     case 'pairs':
       return null;
     case 'program':

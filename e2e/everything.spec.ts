@@ -1,6 +1,6 @@
 import { expect, finished, test } from './fixtures';
 import { WORLDS, lessonsOf } from '../src/game/worlds';
-import { ACTIVITIES, playToTheEnd } from './play';
+import { ACTIVITIES, PACKS, playToTheEnd } from './play';
 
 const PLAYED_BY_THEIR_OWN_TESTS = ['robot-ridge', 'inventor-island'];
 
@@ -41,8 +41,26 @@ test.describe('every activity can be played to the end', () => {
       await expect(finished(page)).toContainText(
         /\d+ of \d+ right at the first try, with no help\./,
       );
-      // Every step after the demonstrations was answered once, rightly: nothing needed a second go.
-      expect(answered).toBeGreaterThanOrEqual(5);
+      // Every step after the demonstrations was answered once, rightly: nothing needed a second go. How many
+      // steps that is, is what the activity's own plan says of a first sitting: each guided step, as many as
+      // are drawn to be done alone, whatever is asked straight after any of those, what is kept for the very
+      // end, and the thing to keep for next time. (A beat is tapped by a machine here, and one that was not
+      // kept is tapped again: there it is at least that many.)
+      const lesson = PACKS[activity.world]?.lessons.find((each) => each.id === activity.id);
+      if (!lesson) throw new Error(`No pack has ${activity.id}.`);
+      const { plan } = lesson;
+      const followed = (id: string) => (plan.then?.[id] === undefined ? 1 : 2);
+      const drawn = plan.independent.pool.slice(0, plan.independent.count);
+      const asked =
+        plan.guided.reduce((total, id) => total + followed(id), 0) +
+        drawn.reduce((total, id) => total + followed(id), 0) +
+        (plan.closing?.length ?? 0) +
+        (plan.keep ? 1 : 0);
+      const tapped = lesson.challenges.some(
+        (challenge) => challenge.kind === 'make' && challenge.task.type === 'beat',
+      );
+      if (tapped) expect(answered).toBeGreaterThanOrEqual(asked);
+      else expect(answered).toBe(asked);
     });
   }
 });

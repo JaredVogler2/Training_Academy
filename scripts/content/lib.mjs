@@ -75,6 +75,33 @@ export async function writePack(pack) {
   );
 }
 
+/**
+ * What every activity is called and about how long it takes, in one small file. A world's page lists its
+ * activities at once, before the world's pack has been fetched; with only the pack to go by, each name arrived
+ * late, some of them on two lines, and every card below moved down under whatever finger was already on its way.
+ */
+export const lessonListPath = join(root, 'src/content/lessonList.json');
+
+export function lessonList(packs) {
+  return {
+    about:
+      'What each activity is called and about how many minutes it takes, for the pages that list them before their content has been fetched. Written by `npm run content` from the packs; do not edit by hand.',
+    lessons: Object.fromEntries(
+      packs.flatMap((pack) =>
+        pack.lessons.map((lesson) => [
+          lesson.id,
+          { title: lesson.title, minutes: lesson.estimatedMinutes },
+        ]),
+      ),
+    ),
+  };
+}
+
+export async function lessonListText(packs) {
+  const config = await prettier.resolveConfig(lessonListPath);
+  return prettier.format(JSON.stringify(lessonList(packs)), { ...config, parser: 'json' });
+}
+
 /** Where a world's extra lines for the voice live: the names of its pictures, and sounds that are not speech. */
 export function voiceLinesPath(world) {
   return join(root, 'src/voice/lines', `${world}.json`);

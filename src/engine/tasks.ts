@@ -13,6 +13,7 @@ import type { Task } from './schema';
  *   order    the cards, first to last         "seed-sprout-flower"
  *   echo     the cards, in the order tapped   "owl-fox-owl"
  *   select   the cards picked, in any order   "cat-drum-hat" (kept sorted)
+ *   recall   the way chosen, and the card     "story-hat"
  *   pairs    how many turns it took           "7"
  *   program  the commands, by first letter    "f-f-l-f", or done three times over, "x3-f-l"
  *   design   the value chosen for each part   "thick-two"
@@ -70,6 +71,11 @@ export function solutionOf(task: Task): string | null {
       return writeTokens(task.solution);
     case 'select':
       return writeTokens([...task.solution].sort());
+    case 'recall': {
+      // Shown the first way: a demonstration has to look at them somehow.
+      const first = task.ways[0];
+      return first ? writeTokens([first.way, first.answer]) : null;
+    }
     case 'pairs':
       return null;
     case 'program':
@@ -92,6 +98,9 @@ export function solutionParts(task: Task): string[] {
       return [...task.solution];
     case 'select':
       return [...task.solution].sort();
+    case 'recall':
+      // One thing is asked for, and it is all of the answer: no hint gives a part of it.
+      return task.ways.slice(0, 1).map((first) => first.answer);
     case 'pairs':
       return [];
     case 'program':
@@ -116,6 +125,8 @@ export function cardIdsOf(task: Task): string[] {
     case 'order':
     case 'echo':
     case 'select':
+    case 'recall':
+      // (For a recall, every card of every way: the board lays out the ones the chosen way offers.)
       return task.cards.map((card) => card.id);
     case 'pairs':
       // Two of each.
@@ -189,6 +200,20 @@ export function judgeTask(task: Task, response: string): Judgement | null {
         misconception:
           extra > 0 && missing > 0 ? 'mixed-up' : extra > 0 ? 'too-many' : 'some-missed',
         right: tokens.filter((id) => wanted.has(id)),
+      };
+    }
+    case 'recall': {
+      const [chosen, card, ...more] = tokens;
+      const way = task.ways.find((each) => each.way === chosen);
+      if (!way || card === undefined || more.length > 0 || !way.choices.includes(card)) return null;
+      const correct = card === way.answer;
+      if (correct) return { correct, clean: true };
+      // One of the things that were there, but not the one that went with what was asked about; or a thing that
+      // was never there at all. They are different slips.
+      return {
+        correct,
+        clean: false,
+        misconception: task.study.includes(card) ? 'went-with-another' : 'not-shown',
       };
     }
     case 'pairs': {

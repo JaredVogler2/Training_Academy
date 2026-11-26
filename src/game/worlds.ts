@@ -121,6 +121,8 @@ export const WORLDS: readonly WorldInfo[] = [
         title: 'Grouping and story tricks',
         lessons: ['mf-groups-01', 'mf-story-01', 'mf-places-01'],
       },
+      { title: 'Your own way to remember', lessons: ['mf-choose-01'] },
+      { title: 'Keeping it for next time', lessons: ['mf-later-01'] },
     ],
     role: 'memory',
   },

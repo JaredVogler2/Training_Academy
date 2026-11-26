@@ -26,6 +26,11 @@ import { cardIdsOf, judgeTask, solutionOf, solutionParts } from './tasks';
  *                      evidence. A challenge that needed help is followed, at the end of the lesson, by a re-probe:
  *                      a *different* challenge for the same skill, while the reserve and the lesson's limit allow.
  *
+ * Two things a plan may add to that. Challenges that follow one another (`plan.then`) are asked one straight after
+ * the other wherever the first is asked, and are re-probed together. And a lesson may keep something from one
+ * sitting to the next (`plan.keep`): a sitting then ends with something to keep, and begins, before anything else
+ * is shown, with a question about what the sitting before kept.
+ *
  * A wrong answer is never a dead end. Where there are choices, the one just tried is taken away and the child tries
  * again; when only the right choice is left it is revealed. Where there is a thing to make, the child changes what
  * they made and tries again; after a few tries the answer is shown. Either way, giving the answer that is being
@@ -34,6 +39,12 @@ import { cardIdsOf, judgeTask, solutionOf, solutionParts } from './tasks';
 
 /** Wrong tries at a thing to make before the answer is shown, unless the challenge says otherwise. */
 export const DEFAULT_MAX_TRIES = 3;
+
+/**
+ * How long ago a sitting must have ended for what it kept to be asked about: recalling a thing a moment after
+ * being told it is no measure of keeping it. Sooner than this, the sitting simply does not ask.
+ */
+export const KEPT_AT_LEAST_MS = 10 * 60 * 1000;
 
 /** A bug in the caller or in unvalidated content, never something a child can cause by tapping. */
 export class EngineError extends Error {
@@ -48,6 +59,13 @@ export interface CreateSessionInput {
   now: number;
   /** `contentVersion` of the pack the lesson came from. */
   contentVersion: number;
+  /** Local calendar day of `now`, `YYYY-MM-DD`. Needed only together with `kept`. */
+  day?: string;
+  /**
+   * What this player's last finished sitting of this lesson kept for next time (`plan.keep`), when that sitting
+   * ended, and the local calendar day it ended on. Left out, nothing was kept, and nothing is asked about it.
+   */
+  kept?: { challengeId: string; at: number; day: string };
 }
 
 export interface ChoiceView {
@@ -212,6 +230,33 @@ function advance(session: LessonSession, now: number): LessonSession {
   };
 }
 
+/** A challenge, and the one that is asked straight after it where the plan names one. */
+function withWhatFollows(lesson: Lesson, stage: Stage, challengeId: string): Step[] {
+  const next = lesson.plan.then?.[challengeId];
+  return next === undefined
+    ? [{ stage, challengeId }]
+    : [
+        { stage, challengeId },
+        { stage, challengeId: next },
+      ];
+}
+
+/**
+ * The question a sitting begins with, about what the sitting before kept: none, if nothing was kept, if it is not
+ * something this lesson keeps (any more), or if that sitting ended only a moment ago.
+ */
+function askedBack(lesson: Lesson, input: CreateSessionInput): string | null {
+  const { kept } = input;
+  const back = kept === undefined ? undefined : lesson.plan.keep?.recall[kept.challengeId];
+  if (kept === undefined || back === undefined) return null;
+  if (input.day === undefined) {
+    throw new EngineError(`Lesson ${lesson.id} was told what was kept, and not what day it is.`);
+  }
+  if (input.now - kept.at < KEPT_AT_LEAST_MS) return null;
+  // A later day by the device's own calendar. (A clock that has been put back is not a later day.)
+  return input.day > kept.day ? back.laterDay : back.sameDay;
+}
+
 /** Plan a new sitting of `lesson`. The same seed always plans the same sitting. */
 export function createSession(lesson: Lesson, input: CreateSessionInput): LessonSession {
   const { pool, count } = lesson.plan.independent;
@@ -219,14 +264,26 @@ export function createSession(lesson: Lesson, input: CreateSessionInput): Lesson
     throw new EngineError(`Lesson ${lesson.id} draws ${count} from a pool of ${pool.length}.`);
   }
   const shuffled = rngFor(input.seed, 'plan', lesson.id).shuffle(pool);
+  const { keep } = lesson.plan;
+  const back = askedBack(lesson, input);
+  // What is kept this time is never what was kept the time before: that is being asked about.
+  const toKeep = keep
+    ? rngFor(input.seed, 'keep', lesson.id).shuffle(
+        keep.pool.filter((challengeId) => challengeId !== input.kept?.challengeId),
+      )[0]
+    : undefined;
   const steps: Step[] = [
-    ...lesson.plan.demo.map((challengeId): Step => ({ stage: 'demo', challengeId })),
-    ...lesson.plan.guided.map((challengeId): Step => ({ stage: 'guided', challengeId })),
-    ...shuffled.slice(0, count).map((challengeId): Step => ({ stage: 'independent', challengeId })),
+    ...(back === null ? [] : [{ stage: 'independent' as const, challengeId: back }]),
+    ...lesson.plan.demo.flatMap((challengeId) => withWhatFollows(lesson, 'demo', challengeId)),
+    ...lesson.plan.guided.flatMap((challengeId) => withWhatFollows(lesson, 'guided', challengeId)),
+    ...shuffled
+      .slice(0, count)
+      .flatMap((challengeId) => withWhatFollows(lesson, 'independent', challengeId)),
     ...(lesson.plan.closing ?? []).map((challengeId): Step => ({
       stage: 'independent',
       challengeId,
     })),
+    ...(toKeep === undefined ? [] : [{ stage: 'independent' as const, challengeId: toKeep }]),
   ];
   for (const step of steps) challengeOf(lesson, step.challengeId);
 
@@ -250,6 +307,15 @@ export function createSession(lesson: Lesson, input: CreateSessionInput): Lesson
     reprobesUsed: 0,
     tally: { independentProbes: 0, independentFirstTryCorrect: 0, assistedSolves: 0 },
   };
+}
+
+/**
+ * What a finished sitting kept for next time: the challenge of `plan.keep.pool` it asked. `null` where the lesson
+ * keeps nothing, or the sitting was of a version of it that kept something else.
+ */
+export function keptBy(session: LessonSession, lesson: Lesson): string | null {
+  const pool = lesson.plan.keep?.pool ?? [];
+  return session.steps.find((step) => pool.includes(step.challengeId))?.challengeId ?? null;
 }
 
 /** What to show now, or `null` when the lesson is finished. Asking does not change or record anything. */
@@ -291,22 +357,35 @@ export function advanceDemo(session: LessonSession, lesson: Lesson, now: number)
   return advance(session, now);
 }
 
-/** Pick the re-probe for a challenge that needed help: prefer a different presentation of the same skill. */
+/**
+ * Pick the re-probe for a challenge that needed help: prefer a different presentation of the same skill. Where the
+ * challenge is one of two that are asked together, it is the two that are asked again, with other things: the
+ * second cannot be asked without the first.
+ */
 function takeReprobe(
   session: LessonSession,
   lesson: Lesson,
   missed: Challenge,
-): { reserve: string[]; step: Step } | null {
+): { reserve: string[]; steps: Step[] } | null {
   if (session.reprobesUsed >= lesson.plan.independent.maxReprobes) return null;
+  const then = lesson.plan.then ?? {};
+  const firstOf = Object.keys(then).find((first) => then[first] === missed.id);
+  const first = firstOf === undefined ? missed : challengeOf(lesson, firstOf);
   const candidates = session.reserve
     .map((challengeId) => challengeOf(lesson, challengeId))
-    .filter((candidate) => candidate.skillId === missed.skillId);
-  const pick =
-    candidates.find((candidate) => candidate.variant !== missed.variant) ?? candidates[0];
+    .filter((candidate) => candidate.skillId === first.skillId);
+  const pick = candidates.find((candidate) => candidate.variant !== first.variant) ?? candidates[0];
   if (!pick) return null;
+  const next = then[pick.id];
+  const second = then[first.id];
   return {
     reserve: session.reserve.filter((challengeId) => challengeId !== pick.id),
-    step: { stage: 'independent', challengeId: pick.id, reprobeOf: missed.id },
+    steps: [
+      { stage: 'independent', challengeId: pick.id, reprobeOf: first.id },
+      ...(next === undefined || second === undefined
+        ? []
+        : [{ stage: 'independent' as const, challengeId: next, reprobeOf: second }]),
+    ],
   };
 }
 
@@ -420,18 +499,23 @@ export function submitAttempt(
 
   const cleanFirstTry = clean && firstTry && unassisted;
   let { steps, reserve, reprobesUsed } = session;
-  if (step.stage === 'independent' && !cleanFirstTry) {
+  // The second of two asked together is already to be asked again if the first of them was missed.
+  const already = steps.some(
+    (each, index) => index > session.cursor && each.reprobeOf === challenge.id,
+  );
+  if (step.stage === 'independent' && !cleanFirstTry && !already) {
     const reprobe = takeReprobe(session, lesson, challenge);
     if (reprobe) {
-      // A re-probe comes after the probes and before whatever the lesson keeps for the very end.
-      const closing = new Set(lesson.plan.closing ?? []);
+      // A re-probe comes after the probes and before whatever the lesson keeps for the very end: its closing
+      // questions, and the thing to keep for next time.
+      const atTheEnd = new Set([...(lesson.plan.closing ?? []), ...(lesson.plan.keep?.pool ?? [])]);
       const last = steps.findIndex(
-        (each, index) => index > session.cursor && closing.has(each.challengeId),
+        (each, index) => index > session.cursor && atTheEnd.has(each.challengeId),
       );
       steps =
         last < 0
-          ? [...steps, reprobe.step]
-          : [...steps.slice(0, last), reprobe.step, ...steps.slice(last)];
+          ? [...steps, ...reprobe.steps]
+          : [...steps.slice(0, last), ...reprobe.steps, ...steps.slice(last)];
       reserve = reprobe.reserve;
       reprobesUsed += 1;
     }

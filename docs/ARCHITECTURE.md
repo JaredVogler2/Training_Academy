@@ -54,7 +54,7 @@ Public surface: `src/engine/index.ts`.
 
 | Function                                                                                | What it does                                                                                                                                                                                                                                                                                   |
 | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `createSession(lesson, { id, profileId, seed, now, contentVersion })`                   | Plans one sitting: demonstrations, then guided steps, then `count` independent probes drawn from the lesson's pool by the seed. The undrawn pool is kept as a reserve.                                                                                                                         |
+| `createSession(lesson, { id, profileId, seed, now, contentVersion, day?, kept? })`      | Plans one sitting: demonstrations, then guided steps, then `count` independent probes drawn from the lesson's pool by the seed. The undrawn pool is kept as a reserve. Told what the sitting before kept and what day it is, it begins by asking for that.                                     |
 | `getNextChallenge(session, lesson)`                                                     | A pure read: what to show now (challenge, choices in a stable seeded order, which are still available, hints left), or `null` when finished.                                                                                                                                                   |
 | `advanceDemo(session, lesson, now)`                                                     | Moves past a demonstration. Nothing is asked and nothing is recorded.                                                                                                                                                                                                                          |
 | `submitAttempt(session, lesson, { key, response, now, day, durationMs, adultAssist? })` | Decides correctness; returns the next session and the `Attempt` to store, or a rejection (`stale`, `completed`, `not-answerable`, `unknown-choice`, `unavailable-choice`, `malformed`) that changes nothing. `response` is a choice's id, or a made thing written as tokens joined by hyphens. |
@@ -66,8 +66,9 @@ Things worth knowing:
 
 - **A challenge is a choice or a thing to make.** A `choose-one` challenge has choices and one right answer. A
   `make` challenge has a task — give an amount, put cards in order, repeat an order, pick some out, find pairs,
-  write a row of steps for a robot, change the parts of a thing until it works, tap along with a beat, make up
-  a tune with a shape — and `judgeTask` (`src/engine/tasks.ts`) says whether what was made is right, which
+  recall one of some things looked at in a way of the child's choosing, write a row of steps for a robot,
+  change the parts of a thing until it works, tap along with a beat, make up a tune with a shape — and
+  `judgeTask` (`src/engine/tasks.ts`) says whether what was made is right, which
   parts of it were (they are kept), and whether it was done cleanly. Anything that satisfies the rule is right:
   a robot's row is run (`src/engine/robot.ts`, which also has the solver the content is checked with; where
   there is a bridge that may be up or down, the row is run with it up, because a row that arrives then arrives
@@ -99,6 +100,22 @@ Things worth knowing:
   shown, to be followed.
 - **A lesson can end with a question of its own** (`plan.closing`): one or two challenges asked last of all, after
   any re-probe. Memory Forest uses it to ask about the very start of a sitting.
+- **A question can be followed by another** (`plan.then`): a challenge asked straight after the one it follows,
+  wherever that one is asked, each recorded under its own skill. Memory Forest asks about four things with a
+  hint and then, at once, with none. The two are one unit for re-probing: if either needed help, both are asked
+  again, with other things.
+- **Things can be looked at in a way the child chooses** (the `recall` task): the same things laid out two or
+  three `ways`, each with its own question, hint and choices. The answer is written with the way in it
+  (`story-drum`), so the record says how the child chose to look and the format of an attempt did not change. A
+  `select` task can say its things were looked at before the step began (`recalled`: `just-now`, in the step
+  before, or `last-time`, in an earlier sitting): they are then never shown in it.
+- **A sitting can keep something for the next** (`plan.keep`): one of a pool of challenges, never the one kept
+  last time, is asked last of all, and the next sitting of that lesson begins by asking for it again with
+  nothing shown, under one skill if it is later the same day and another if it is a later day. The engine is
+  told what was kept, when, and what day it is (`createSession`'s `kept` and `day`; `keptBy` reads a finished
+  sitting; `lastKept` in `src/game/lessonRunner.ts` finds the last one in what is stored), because it reads no
+  clock and no store. Sooner than ten minutes after a sitting ended (`KEPT_AT_LEAST_MS`), nothing is asked:
+  recalling a thing a moment after being told it is no measure of keeping it.
 - **A place is kept by the lesson's version.** A sitting left unfinished is taken up where it was left if the
   lesson is still the version it was begun in and has every challenge the sitting still needs; the world's
   content may have grown meanwhile, and what is answered afterwards is recorded against the content as it then
@@ -414,19 +431,19 @@ next world: what a world's large Play button goes to, and where Glim points on t
 `game/worlds/modules.ts` is the registry of per-world code. Each world has a module, fetched with its content
 pack on entering that world and never before:
 
-| A module gives | What it is                                                                                                                                           |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Picture`      | How a stimulus is drawn, as a question, a choice or a card; lit when it is named; with its gap filled when its question has been answered            |
-| `describe`     | The same picture in words, for a screen reader                                                                                                       |
-| `countable`    | How many things a picture holds, where counting is how the world teaches (Number Garden only)                                                        |
-| `chooseScript` | How the world shows off a question with choices: counting, saying a word slowly, uncovering and covering, telling a story as far as it goes          |
-| `makeScript`   | The same for a thing to make, where the world has more to say than the board (a story told back picture by picture)                                  |
-| `soundOf`      | The recording a picture makes of its own accord when lit or tapped (a drum)                                                                          |
-| `toneOf`       | The note a picture plays when it is tapped, where it is an instrument (a chime bar's own pitch)                                                      |
-| `echoLayout`   | `row`, where things to repeat stand in a row in their own order with nothing round them, like the bars of a keyboard                                 |
-| `boards`       | Boards for games only this world has, by the kind of task (`program`, `design`, `give`, `beat`, `tune`) or the scene asked about (`scene:map`)       |
-| `linesFor`     | Lines a challenge is told with beside its own, to be fetched before they are wanted: a story's lines; in Reading Cove, every clip its script may say |
-| `voice`        | Where this world's recordings are and how long each lasts                                                                                            |
+| A module gives | What it is                                                                                                                                               |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Picture`      | How a stimulus is drawn, as a question, a choice or a card; lit when it is named; with its gap filled when its question has been answered                |
+| `describe`     | The same picture in words, for a screen reader                                                                                                           |
+| `countable`    | How many things a picture holds, where counting is how the world teaches (Number Garden only)                                                            |
+| `chooseScript` | How the world shows off a question with choices: counting, saying a word slowly, uncovering and covering, telling a story as far as it goes              |
+| `makeScript`   | The same for a thing to make, where the world has more to say than the board (a story told back picture by picture)                                      |
+| `soundOf`      | The recording a picture makes of its own accord when lit or tapped (a drum)                                                                              |
+| `toneOf`       | The note a picture plays when it is tapped, where it is an instrument (a chime bar's own pitch)                                                          |
+| `echoLayout`   | `row`, where things to repeat stand in a row in their own order with nothing round them, like the bars of a keyboard                                     |
+| `boards`       | Boards for games only this world has, by the kind of task (`program`, `design`, `give`, `beat`, `tune`, `recall`) or the scene asked about (`scene:map`) |
+| `linesFor`     | Lines a challenge is told with beside its own, to be fetched before they are wanted: a story's lines; in Reading Cove, every clip its script may say     |
+| `voice`        | Where this world's recordings are and how long each lasts                                                                                                |
 
 `game/lessonRunner.ts` runs one sitting: resume or create, answer, hint, next, restart. It updates the screen first and
 saves second; a failed save never interrupts a child (the lesson continues in memory and says it is not saved).
@@ -500,6 +517,12 @@ Play button that goes to the next lesson not yet finished (from where a grown-up
 begins, if they have: _First-visit help_, below); and every lesson as a card with a picture built from that
 lesson's own demonstration challenge — so a card cannot show something the activity does not do. Below, for the
 grown-up, is what each activity is and something to try together away from the screen.
+
+**The page is whole from its first moment.** What each activity is called and how long it takes is in a small
+list written by the content build (`src/content/lessonList.json`, read through `lessonCalled`), so every card
+has its name before the world's content has arrived, and room is kept for the pictures that come with it.
+Nothing on the page moves when they do. (The names used to come with the content, some on two lines, and
+every card below them moved down by as much as 78 pixels under a finger that was on its way.)
 
 What has been finished is the player's own, so whatever shows it has to know who is playing
 (`game/progress.ts`). The map finds that out as it opens, and so do an activity and the grown-ups' area; a

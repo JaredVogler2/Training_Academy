@@ -56,7 +56,9 @@ function selectScript(situation: MakeSituation, study: boolean, ask: string | nu
  * tap puts it back; when the child thinks they have them all, they say so.
  *
  * Some of these are memory games: a few things are shown first, for as long as the child likes, and then put away,
- * and the cards are for saying which ones they were.
+ * and the cards are for saying which ones they were. And some ask for things that were looked at before the step
+ * began, in the step before it or in an earlier sitting: those are not shown at all, only where they lie covered,
+ * with the world's sign for "think back" on the cover where there is one.
  */
 export function SelectBoard({ state, runner, pack, module, paused, calm }: BoardProps) {
   const { view, feedback, answered } = state;
@@ -73,6 +75,9 @@ export function SelectBoard({ state, runner, pack, module, paused, calm }: Board
   usePreparedLines(state);
 
   const study = task.study ?? null;
+  // Looked at before this step began, and not shown again in it.
+  const recalled = task.recalled ?? null;
+  const sign = recalled === null ? undefined : challenge.prompt.stimulus;
   const [work, setWork] = useStepState<{ picked: string[]; studied: boolean; judged: string }>(
     view.stepIndex,
     { picked: [], studied: false, judged: '' },
@@ -148,7 +153,8 @@ export function SelectBoard({ state, runner, pack, module, paused, calm }: Board
       <div
         className={styles.select}
         data-count={view.cards.length}
-        data-study={study !== null}
+        data-study={study !== null || recalled !== null}
+        data-recalled={recalled ?? undefined}
         // Looking at what is to be remembered, or picking it out again: on a very flat screen each has the room.
         data-phase={showingStudy ? 'study' : 'answer'}
         data-testid="select-board"
@@ -167,7 +173,7 @@ export function SelectBoard({ state, runner, pack, module, paused, calm }: Board
             </span>
             {/* Once they are put away they are not on the page at all, for any eye or any tool. */}
             {showingStudy && (
-              <ul className={styles.studied} aria-hidden="true">
+              <ul className={styles.studied} data-count={study.length} aria-hidden="true">
                 {study.map((id, index) => {
                   const card = cardOf(id);
                   return (
@@ -179,6 +185,26 @@ export function SelectBoard({ state, runner, pack, module, paused, calm }: Board
               </ul>
             )}
             <span className={lesson.cover} aria-hidden="true" />
+          </div>
+        )}
+        {recalled !== null && (
+          // They lie covered from the first moment to the last: nothing of them is on the page but the cards
+          // to answer with, among which they are.
+          <div
+            className={`${lesson.prompt ?? ''} ${styles.study ?? ''}`}
+            data-covered="true"
+            data-same={same}
+            data-testid="recalled"
+          >
+            <span className="sr-only">
+              {sign ? module.describe(sign, 'prompt') : lessonText.covered}
+            </span>
+            <span className={lesson.cover} aria-hidden="true" />
+            {sign && (
+              <span className={lesson.cue} aria-hidden="true">
+                <Picture stimulus={sign} place="prompt" />
+              </span>
+            )}
           </div>
         )}
 

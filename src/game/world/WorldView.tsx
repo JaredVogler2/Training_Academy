@@ -3,10 +3,11 @@ import { Link } from '@/app/navigation';
 import { loadChunk } from '@/app/chunks';
 import { recordError } from '@/app/diagnostics';
 import { hasPack, loadPack } from '@/content';
+import { lessonCalled } from '@/content/lessonList';
 import type { Challenge, Lesson, Stimulus, WorldId } from '@/engine';
 import { startOf } from '@/game/placement';
 import { activeProfile, useProfiles } from '@/game/profiles';
-import { nextLessonIn, useFinishedLessons } from '@/game/progress';
+import { finishedIsKnown, nextLessonIn, useFinishedLessons } from '@/game/progress';
 import { isOpen, lessonsOf, worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds/modules';
 import { IslandPicture } from '@/render/IslandPicture';
@@ -84,6 +85,12 @@ function picturesOf(shown: Challenge): Stimulus[] {
     const first = task.cards.find((card) => card.id === task.solution[0]);
     return first ? [shown.prompt.stimulus, first.stimulus] : [shown.prompt.stimulus];
   }
+  // Something recalled in a chosen way: what is asked about, the first way, and what went with it.
+  if (task.type === 'recall') {
+    const [way] = task.ways;
+    const answer = task.cards.find((card) => card.id === way?.answer);
+    return way && answer ? [way.cue, answer.stimulus] : [];
+  }
   const wanted = task.type === 'pairs' ? task.cards.slice(0, 2) : task.cards;
   const ids: readonly string[] = task.type === 'pairs' ? [] : task.solution;
   const first = wanted.filter((card) => ids.length === 0 || ids.includes(card.id)).slice(0, 2);
@@ -125,14 +132,28 @@ export default function WorldView({ world }: { world: WorldId }) {
   // What "Play" goes to: the first lesson not yet finished; once they all are, the first again. Where a grown-up
   // has chosen where this player begins here, the first not yet finished from there on.
   const order = lessonsOf(info);
-  const startAt = startOf(activeProfile(useProfiles()), world);
+  const players = useProfiles();
+  const startAt = startOf(activeProfile(players), world);
+  // Whether the page knows yet who is playing and what they have finished. Until it does, Play goes where it
+  // would for someone new, for the blink that takes; the page says so, for whoever reads it. (A test read
+  // Play at once and found "the beginning" whatever a grown-up had chosen.)
+  const settled =
+    players.status === 'ready' && (players.activeId === null || finishedIsKnown(done));
   const nextId = nextLessonIn(info, done, startAt) ?? undefined;
   const next = lessons.find((lesson) => lesson.id === nextId) ?? null;
+  // What it is called is known at once, before the world's content has arrived: the page is whole from its
+  // first moment, and nothing on it moves afterwards.
+  const nextCalled = nextId === undefined ? null : lessonCalled(nextId);
   const allDone = order.length > 0 && order.every((id) => done.has(id));
   const unbuilt = info.activities.some((activity) => activity.lessons.length === 0);
 
   return (
-    <article className={styles.world} data-role={info.role} data-world={world}>
+    <article
+      className={styles.world}
+      data-role={info.role}
+      data-world={world}
+      data-settled={settled}
+    >
       <ActionLink to={{ name: 'home' }} icon={<IconBack size={24} />} className={styles.back}>
         {worldText.islands}
       </ActionLink>
@@ -172,8 +193,8 @@ export default function WorldView({ world }: { world: WorldId }) {
           <p className={styles.playNote}>
             {allDone
               ? worldText.againNote
-              : next
-                ? worldText.lessonNote(next.title, next.estimatedMinutes)
+              : nextCalled
+                ? worldText.lessonNote(nextCalled.title, nextCalled.minutes)
                 : worldText.getting}
           </p>
         </section>
@@ -189,10 +210,16 @@ export default function WorldView({ world }: { world: WorldId }) {
           <h2 id="world-activities" className="sr-only">
             {worldText.activities}
           </h2>
-          {/* Room is kept for every card from the start, so that nothing jumps when the pictures arrive. */}
+          {/*
+            Every card is whole from the start: its name is known before the world's content arrives, and room
+            is kept for its picture, so that nothing moves when the pictures come. (The names used to come with
+            the content, some of them on two lines, and every card below them moved down as they did: as much as
+            78 pixels on a small phone, under whatever finger was already on its way to a card.)
+          */}
           <ol className={styles.cards}>
             {order.map((id) => {
               const lesson = lessons.find((candidate) => candidate.id === id);
+              const called = lessonCalled(id);
               const finished = done.has(id);
               return (
                 <li key={id}>
@@ -203,10 +230,10 @@ export default function WorldView({ world }: { world: WorldId }) {
                     data-done={finished}
                     data-next={id === nextId && !allDone}
                     aria-label={
-                      lesson
+                      called
                         ? finished
-                          ? worldText.doneNote(lesson.title)
-                          : lesson.title
+                          ? worldText.doneNote(called.title)
+                          : called.title
                         : worldText.getting
                     }
                   >
@@ -219,7 +246,7 @@ export default function WorldView({ world }: { world: WorldId }) {
                       </span>
                     )}
                     <span className={styles.cardTitle} aria-hidden="true">
-                      {lesson?.title ?? ''}
+                      {called?.title ?? ''}
                     </span>
                   </Link>
                 </li>

@@ -8,6 +8,7 @@ import {
   passHowTo,
   screenFit,
   test,
+  worldSettled,
   type Page,
 } from './fixtures';
 import { WORLDS, lessonsOf } from '../src/game/worlds';
@@ -49,6 +50,7 @@ test.describe('where to begin', () => {
 
     // As the game begins: Play is the first activity.
     await page.goto('/world/number-garden');
+    await worldSettled(page);
     await expect(play(page)).toHaveAttribute('href', `/world/number-garden/play/${FIRST}`);
     await expect(activity(page, FIRST)).toHaveAttribute('data-next', 'true');
 
@@ -98,6 +100,7 @@ test.describe('where to begin', () => {
 
     // Another world is as it was.
     await page.goto('/world/reading-cove');
+    await worldSettled(page);
     await expect(play(page)).toHaveAttribute('href', '/world/reading-cove/play/rc-listen-01');
 
     // And it is kept: a new visit finds it so.
@@ -125,7 +128,12 @@ test.describe('where to begin', () => {
     await openGrownUps(page);
     await expect(startOf(page, 'Reading Cove')).toHaveValue('rc-blend-01');
     await startOf(page, 'Reading Cove').selectOption('');
+    // It is written down before the page is left, as it was the first time. (Left in the same breath, the
+    // change was lost once, on a busy machine: the world's page had Play where it had been.)
+    await expect(saved(page)).toHaveText('Saved.');
     await page.goto('/world/reading-cove');
+    // Asked once the page knows who is playing: before that, Play goes to the beginning whatever was chosen.
+    await worldSettled(page);
     await expect(play(page)).toHaveAttribute('href', '/world/reading-cove/play/rc-listen-01');
   });
 
@@ -168,6 +176,7 @@ test.describe('where to begin', () => {
     await expect(card(page).getByRole('heading', { name: 'Where Mina begins' })).toBeVisible();
     await expect(startOf(page, 'Number Garden')).toHaveValue('');
     await page.goto('/world/number-garden');
+    await worldSettled(page);
     await expect(play(page)).toHaveAttribute('href', `/world/number-garden/play/${FIRST}`);
   });
 });

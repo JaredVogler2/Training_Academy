@@ -294,7 +294,38 @@ function lintTask(challenge: MakeChallenge, report: Report): void {
     for (const label of duplicates(task.cards.map((card) => card.label))) {
       report('card-label-duplicate', `two cards are both labelled "${label}"`);
     }
-    if (task.type !== 'pairs') {
+    if (task.type === 'recall') {
+      const ways = task.ways.map((each) => each.way);
+      for (const way of duplicates(ways)) report('recall-way-twice', `"${way}" is offered twice`);
+      for (const id of duplicates(task.study)) report('recall-study', `"${id}" is looked at twice`);
+      for (const id of task.study) {
+        if (!ids.includes(id)) report('recall-study', `"${id}" is looked at and is no card`);
+      }
+      for (const { way, choices, answer } of task.ways) {
+        for (const id of choices) {
+          if (!ids.includes(id))
+            report('recall-choice', `the way "${way}" offers "${id}", which is no card`);
+        }
+        for (const id of duplicates(choices))
+          report('recall-choice', `the way "${way}" offers "${id}" twice`);
+        if (!choices.includes(answer)) {
+          report(
+            'recall-answer',
+            `the way "${way}" has "${answer}" for its answer and does not offer it`,
+          );
+        }
+        if (!task.study.includes(answer)) {
+          report(
+            'recall-answer',
+            `the way "${way}" asks for "${answer}", which was not among the things looked at`,
+          );
+        }
+      }
+      for (const id of ids) {
+        if (!task.ways.some((each) => each.choices.includes(id)) && !task.study.includes(id))
+          report('recall-card-unused', `card "${id}" is neither looked at nor offered`);
+      }
+    } else if (task.type !== 'pairs') {
       for (const id of task.solution) {
         if (!ids.includes(id)) report('solution-card', `the answer uses "${id}", which is no card`);
       }
@@ -317,6 +348,9 @@ function lintTask(challenge: MakeChallenge, report: Report): void {
       }
       if ((task.study === undefined) !== (task.ask === undefined)) {
         report('select-ask', 'things to remember and the question about them go together');
+      }
+      if (task.recalled !== undefined && task.study !== undefined) {
+        report('select-recalled', 'things recalled from before are not shown again in this step');
       }
     }
     if (task.type === 'pairs' && task.par < ids.length) {
@@ -399,6 +433,9 @@ export function stringsOf(challenge: Challenge): string[] {
   if (challenge.kind === 'make' && challenge.task.type === 'select' && challenge.task.ask) {
     keys.push(challenge.task.ask);
   }
+  if (challenge.kind === 'make' && challenge.task.type === 'recall') {
+    keys.push(...challenge.task.ways.map((way) => way.ask));
+  }
   if (challenge.kind === 'choose-one' && challenge.prompt.ask) keys.push(challenge.prompt.ask);
   return keys;
 }
@@ -422,10 +459,37 @@ function lintLesson(
       report('lesson-skill-unknown', `skill ${skillId} is not defined in the pack`);
   }
 
-  const { demo, guided, independent } = lesson.plan;
+  const { demo, guided, independent, keep } = lesson.plan;
   const closing = lesson.plan.closing ?? [];
-  const planned = [...demo, ...guided, ...independent.pool, ...closing];
+  const then = lesson.plan.then ?? {};
+  const asked = [...demo, ...guided, ...independent.pool];
+  const recalls = Object.values(keep?.recall ?? {}).flatMap((back) => [
+    back.sameDay,
+    back.laterDay,
+  ]);
+  const planned = [...asked, ...closing, ...Object.values(then), ...(keep?.pool ?? []), ...recalls];
   const own = new Set(lesson.challenges.map((challenge) => challenge.id));
+  // What is asked straight after something is asked only there, after something that is itself asked.
+  for (const [first, next] of Object.entries(then)) {
+    if (!asked.includes(first)) {
+      report(
+        'plan-then-first',
+        `${next} follows ${first}, which is not shown, guided or drawn from the pool`,
+      );
+    }
+    if (next in then)
+      report('plan-then-chain', `${next} follows ${first} and is followed in its turn`);
+  }
+  if (keep) {
+    for (const id of keep.pool) {
+      if (!(id in keep.recall))
+        report('plan-keep-recall', `${id} is kept and never asked about afterwards`);
+    }
+    for (const id of Object.keys(keep.recall)) {
+      if (!keep.pool.includes(id))
+        report('plan-keep-recall', `${id} is asked about afterwards and never kept`);
+    }
+  }
   for (const id of planned) {
     if (!own.has(id))
       report('plan-reference', `plan refers to ${id}, which the lesson does not define`);
@@ -440,7 +504,11 @@ function lintLesson(
   if (independent.count > independent.pool.length) {
     report('plan-count', `draws ${independent.count} from a pool of ${independent.pool.length}`);
   }
-  if (lesson.successCriteria.independentFirstTryCorrect > independent.count + closing.length) {
+  // The fewest questions a sitting has that are answered alone: each one drawn, what follows it, the closing
+  // ones, and the thing to keep. (What was kept before is asked only from a second sitting on.)
+  const followed = independent.pool.every((id) => id in then) ? 2 : 1;
+  const alone = independent.count * followed + closing.length + (keep ? 1 : 0);
+  if (lesson.successCriteria.independentFirstTryCorrect > alone) {
     report(
       'success-criteria',
       'asks for more independent successes than there are independent steps',

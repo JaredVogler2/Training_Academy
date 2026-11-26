@@ -91,3 +91,168 @@
     transform: translateY(0) scale(1);
   }
 }
+
+/* Two groups: each two that go together share a ring, and there is room between the rings. */
+.groups {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: clamp(8px, 3vw, 28px);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.group {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 4px;
+  min-width: 0;
+  min-height: 0;
+  padding: clamp(2px, 1vw, 8px);
+  border: 3px solid var(--mid);
+  border-radius: 22px;
+  background: rgb(255 255 255 / 60%);
+}
+
+/*
+ * Looked at in a way of the child's choosing: the things above, and under them, while they are on show, a
+ * picture for each way to look. The pictures need less room than cards to answer with do.
+ */
+.recall.recall[data-phase='look'] {
+  grid-template-rows: minmax(0, 1.25fr) minmax(0, 0.75fr);
+}
+
+.ways {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: clamp(8px, 2.4vw, 16px);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ways > li {
+  min-width: 0;
+  min-height: 0;
+}
+
+.way {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 64px;
+  padding: 6px;
+  border: 4px solid var(--white);
+  border-radius: 24px;
+  background: var(--white);
+  box-shadow:
+    0 var(--lip) 0 rgb(34 48 79 / 16%),
+    0 10px 18px rgb(34 48 79 / 10%);
+  transition:
+    transform var(--quick) var(--ease-out),
+    box-shadow var(--quick) var(--ease-out),
+    border-color var(--gentle) linear,
+    background-color var(--gentle) linear;
+}
+
+.way[aria-disabled='true'] {
+  cursor: default;
+}
+
+.way[aria-disabled='false']:active {
+  transform: translateY(calc(var(--lip) - 1px));
+  box-shadow: 0 1px 0 rgb(34 48 79 / 16%);
+}
+
+/* The way the things are in now: pressed in, with the world's own colour round it. Never colour alone. */
+.way[aria-pressed='true'] {
+  border-color: var(--mid);
+  background: var(--tint);
+  box-shadow: 0 1px 0 rgb(34 48 79 / 16%);
+  transform: translateY(calc(var(--lip) - 1px));
+}
+
+/* Nothing chosen yet: each is offered in its turn, once. */
+.way[data-offered='true'] {
+  animation: offered 0.5s var(--ease-out) both;
+  animation-delay: calc(var(--order, 0) * 0.16s + 0.5s);
+}
+
+.wayPicture {
+  width: 100%;
+  height: 100%;
+  max-height: 96px;
+  min-height: 0;
+}
+
+@keyframes offered {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  45% {
+    transform: translateY(-6px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .way[data-offered='true'] {
+    animation: none;
+  }
+}
+
+/*
+ * Four things each at a place of its own: on a screen that is taller than it is wide they stand two and two,
+ * so that each is as large as two in a row would be.
+ */
+@media (orientation: portrait) and (max-width: 599px) {
+  .pairs[data-count='4'] {
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row;
+  }
+
+  /* And the two of a group stand one above the other, each group a column of its own. (Side by side, four
+     across, each was 71 pixels wide on a phone.) */
+  .group {
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-flow: row;
+  }
+}
+
+/*
+ * On a phone held sideways the board is two columns. While the things are on show, the three pictures that
+ * choose the way stand in a narrow column of their own, each as wide as a thumb needs and no wider, and the
+ * things have all the rest: four things to take in need the width more than three pictures to press do. (With
+ * the lesson's usual share, a third, each thing was 28 pixels across on the narrowest phone; with two thirds, a
+ * thing left at a place was still only 43.) These rules come last in the file, after the ones they change.
+ */
+@media (orientation: landscape) and (max-height: 520px) {
+  .recall.recall[data-phase='look'] {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .ways {
+    grid-auto-columns: clamp(56px, 9vw, 84px);
+    gap: 6px;
+  }
+
+  /* And a thing left at a place has more of its place's room, where there is so little of it. */
+  .pairs[data-scene='places'] .thing {
+    width: 66%;
+    height: 58%;
+  }
+}

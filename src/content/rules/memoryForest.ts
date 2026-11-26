@@ -1,5 +1,5 @@
 import lexiconFile from '@/art/lexicon.json';
-import type { ChooseOneChallenge, Lesson, MakeChallenge, Stimulus } from '@/engine';
+import type { ChooseOneChallenge, Lesson, MakeChallenge, RecallTask, Stimulus } from '@/engine';
 import type { Report, WorldRules } from './types';
 
 /**
@@ -9,6 +9,11 @@ import type { Report, WorldRules } from './types';
  *   pairs, or things at places        the cue is one of those shown, and the answer is what went with it
  *   a question about the very start   the answer was in the first demonstration, and the others were not
  *   things to pick out again          what is looked at is exactly what is to be picked out
+ *   looked at in a chosen way         every way shows the same things, asks about one of them by something that
+ *                                     was shown with it, and offers the right one, one that went with something
+ *                                     else, and one that was never there
+ *   asked for again with no hint      straight after such a question, and for exactly the things looked at there
+ *   kept for next time                looked at first; and asked for later on the same cards, for the same things
  *
  * And everywhere: what is to be remembered is glanced at and then covered, never left on show.
  */
@@ -119,9 +124,83 @@ function lintChoices(challenge: ChooseOneChallenge, lesson: Lesson, report: Repo
   report('memory-forest-question', `Memory Forest has no scene called "${stimulus.scene}"`);
 }
 
-function lintMake(challenge: MakeChallenge, report: Report): void {
+const sameThings = (a: readonly string[], b: readonly string[]) =>
+  [...a].sort().join() === [...b].sort().join();
+
+/** Things looked at in a way of the child's choosing: each way has to be a fair question about the same things. */
+function lintRecall(task: RecallTask, report: Report): void {
+  const { study } = task;
+  known(study, report);
+  if (task.ways.length !== 3) {
+    report('memory-ways', 'the three ways to look are in groups, as a story, and at places');
+  }
+  if (new Set(task.ways.map((way) => way.answer)).size !== task.ways.length) {
+    report('memory-way-answers', 'two ways ask for the same thing: choosing would change nothing');
+  }
+  for (const { way, scene, cue, choices, answer } of task.ways) {
+    const ids = listOf(scene.of.ids);
+    const owners = listOf(scene.of.owners);
+    const things = listOf(scene.of.things);
+    known([...ids, ...owners, ...things], report);
+    const asked = pictureId(cue);
+    // What went with what is asked about, as this way lays the things out.
+    let wanted: string | undefined;
+    let shown: string[];
+    if (way === 'groups') {
+      shown = ids;
+      // Two and two: each thing goes with the one beside it.
+      const at = asked === null ? -1 : ids.indexOf(asked);
+      wanted = at < 0 ? undefined : ids[at % 2 === 0 ? at + 1 : at - 1];
+      if (scene.scene !== 'groups' || ids.length !== 4) {
+        report('memory-way-scene', 'in groups, four things are shown two and two');
+      }
+    } else {
+      // A story is who has what; places are what was where. Either way, one of each pair is asked about.
+      shown = way === 'story' ? [...owners, ...things] : things;
+      const at = asked === null ? -1 : owners.indexOf(asked);
+      wanted = at < 0 ? undefined : things[at];
+      const all = [...owners, ...things];
+      if (
+        scene.scene !== (way === 'story' ? 'pairs' : 'places') ||
+        owners.length < 2 ||
+        owners.length !== things.length ||
+        new Set(all).size !== all.length
+      ) {
+        report(
+          'memory-way-scene',
+          `as ${way === 'story' ? 'a story' : 'places'}, the things are shown in pairs, none twice`,
+        );
+      }
+    }
+    if (!sameThings(shown, study)) {
+      report('memory-way-things', `the way "${way}" does not show exactly the things to remember`);
+    }
+    if (wanted === undefined) {
+      report('memory-cue', `the way "${way}" asks about something it did not show`);
+    } else if (wanted !== answer) {
+      report(
+        'memory-answer-wrong',
+        `the way "${way}" has "${answer}" for its answer, and "${wanted}" went with what is asked about`,
+      );
+    }
+    const others = choices.filter((id) => id !== answer);
+    if (!others.some((id) => study.includes(id)) || !others.some((id) => !study.includes(id))) {
+      report(
+        'memory-way-choices',
+        `the way "${way}" must offer one thing that went with something else and one that was never there`,
+      );
+    }
+  }
+}
+
+function lintMake(challenge: MakeChallenge, lesson: Lesson, report: Report): void {
   const { task } = challenge;
-  if (task.type !== 'pairs' && task.type !== 'echo' && task.type !== 'select') {
+  if (
+    task.type !== 'pairs' &&
+    task.type !== 'echo' &&
+    task.type !== 'select' &&
+    task.type !== 'recall'
+  ) {
     report('memory-forest-task', `Memory Forest has no rule for a "${task.type}" task`);
     return;
   }
@@ -134,15 +213,59 @@ function lintMake(challenge: MakeChallenge, report: Report): void {
     task.cards.map((card) => card.id),
     report,
   );
-  if (task.type === 'select') {
-    const study = [...(task.study ?? [])].sort();
-    if (study.join() !== [...task.solution].sort().join()) {
-      report('memory-study', 'what is looked at is not exactly what is to be picked out again');
+  if (task.type === 'recall') {
+    lintRecall(task, report);
+    return;
+  }
+  if (task.type !== 'select') return;
+
+  const { plan } = lesson;
+  const taskOf = (id: string | undefined) => {
+    const found = lesson.challenges.find((each) => each.id === id);
+    return found?.kind === 'make' ? found.task : undefined;
+  };
+  if (task.recalled === 'just-now') {
+    // Asked for again with no hint: it follows the question with one, and is about the same things.
+    const first = Object.keys(plan.then ?? {}).find((id) => plan.then?.[id] === challenge.id);
+    const before = taskOf(first);
+    if (before?.type !== 'recall' || !sameThings(before.study, task.solution)) {
+      report(
+        'memory-follow',
+        'things asked for again with no hint are exactly the ones looked at in the question before',
+      );
     }
+    return;
+  }
+  if (task.recalled === 'last-time') {
+    // Asked for at the start of the next sitting: the same cards, and the things that were kept.
+    const kept = Object.keys(plan.keep?.recall ?? {}).find((id) => {
+      const back = plan.keep?.recall[id];
+      return back?.sameDay === challenge.id || back?.laterDay === challenge.id;
+    });
+    const before = taskOf(kept);
+    if (
+      before?.type !== 'select' ||
+      !sameThings(before.solution, task.solution) ||
+      !sameThings(
+        before.cards.map((card) => card.id),
+        task.cards.map((card) => card.id),
+      )
+    ) {
+      report(
+        'memory-back',
+        'things asked for from last time are the ones that were kept, on the same cards',
+      );
+    }
+    return;
+  }
+  // Looked at now, and then picked out: what is looked at is what is asked for. That is so of a thing to keep too.
+  const study = [...(task.study ?? [])].sort();
+  if (study.join() !== [...task.solution].sort().join()) {
+    report('memory-study', 'what is looked at is not exactly what is to be picked out again');
   }
 }
 
 export const memoryForestRules: WorldRules = (challenge, lesson, report) => {
   if (challenge.kind === 'choose-one') lintChoices(challenge, lesson, report);
-  else lintMake(challenge, report);
+  else lintMake(challenge, lesson, report);
 };

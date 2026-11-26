@@ -1,8 +1,21 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { getSkillEvidence, isIndependentSuccess, type Lesson } from '@/engine';
-import { LessonRunner, resumable, type RunnerDeps, type RunnerState } from '@/game/lessonRunner';
+import {
+  KEPT_AT_LEAST_MS,
+  getSkillEvidence,
+  isIndependentSuccess,
+  keptBy,
+  type Lesson,
+} from '@/engine';
+import {
+  LessonRunner,
+  lastKept,
+  resumable,
+  type RunnerDeps,
+  type RunnerState,
+} from '@/game/lessonRunner';
 import { MemoryDriver, Repository, StorageError, migrate, type WriteOp } from '@/storage';
-import { T0, answerTo, numberGardenPack, sampleLesson } from '../helpers/content';
+import { DAY_MS, T0, answerTo, numberGardenPack, sampleLesson } from '../helpers/content';
+import { fixtureKeepLesson, fixturePack } from '../helpers/fixturePack';
 
 const pack = numberGardenPack();
 const lesson = sampleLesson();
@@ -359,5 +372,158 @@ describe('LessonRunner', () => {
     const [attempt] = await w.repository.listAttempts(PROFILE);
     expect(attempt?.durationMs).toBeGreaterThanOrEqual(6500);
     expect(attempt?.durationMs).toBeLessThan(9000);
+  });
+});
+
+describe('a lesson that keeps something for next time', () => {
+  const keepPack = fixturePack();
+  const keepLesson = fixtureKeepLesson();
+  const id = (name: string) => `${keepLesson.id}.${name}`;
+  let w: World;
+  beforeEach(async () => {
+    w = await world();
+  });
+  const deps = (overrides: Partial<RunnerDeps> = {}) =>
+    w.deps({ pack: keepPack, lesson: keepLesson, ...overrides });
+  const first = (runner: LessonRunner) => playing(runner).view;
+  /** A sitting played to its end, and what it kept, by name: "keep-b". */
+  async function sitting(): Promise<string> {
+    const runner = await LessonRunner.start(deps());
+    await finish(runner);
+    const sessions = await w.repository.listSessions(PROFILE);
+    const last = sessions
+      .filter((each) => each.completedAt !== null)
+      .sort((a, b) => (b.completedAt ?? 0) - (a.completedAt ?? 0))[0];
+    const kept = last ? keptBy(last, keepLesson) : null;
+    if (kept === null) throw new Error('The sitting kept nothing.');
+    return kept.replace(`${keepLesson.id}.`, '');
+  }
+  const backFor = (kept: string, when: string) => id(`${kept.replace('keep-', 'back-')}-${when}`);
+
+  it('asks nothing about last time at a first sitting, and ends it with something to keep', async () => {
+    const runner = await LessonRunner.start(deps());
+    expect(first(runner).stage).toBe('demo');
+    await finish(runner);
+    const attempts = await w.repository.listAttempts(PROFILE);
+    expect(attempts.at(-1)?.challengeId).toMatch(/\.keep-[abc]$/);
+    expect(attempts.some((attempt) => attempt.challengeId.includes('.back-'))).toBe(false);
+  });
+
+  it('begins the next sitting with what the last one kept, once ten minutes have gone by', async () => {
+    const kept = await sitting();
+    w.clock.now += KEPT_AT_LEAST_MS;
+    const runner = await LessonRunner.start(deps());
+    expect(first(runner).challenge.id).toBe(backFor(kept, 'same-day'));
+    expect(first(runner).stage).toBe('independent');
+    // Nothing is shown first: it is the first thing on the screen, and it is answered alone.
+    expect(first(runner).stepIndex).toBe(0);
+    await runner.answer(answerTo(first(runner)));
+    const attempts = await w.repository.listAttempts(PROFILE);
+    expect(attempts.at(-1)).toMatchObject({
+      challengeId: backFor(kept, 'same-day'),
+      skillId: 'memory.fixture.kept',
+      stage: 'independent',
+      assistance: 'none',
+      outcome: 'correct',
+    });
+  });
+
+  it('does so after the page has been closed and opened again: it is read from what is stored', async () => {
+    const kept = await sitting();
+    // Everything in memory is gone: a new repository over the same storage, with the clock a day on.
+    const later = await world(w.driver);
+    later.clock.now = w.clock.now + DAY_MS;
+    const runner = await LessonRunner.start(later.deps({ pack: keepPack, lesson: keepLesson }));
+    expect(first(runner).challenge.id).toBe(backFor(kept, 'later-day'));
+  });
+
+  it('asks the question for another day on another day, and the one for the same day on the same day', async () => {
+    const kept = await sitting();
+    w.clock.now += 2 * 60 * 60 * 1000;
+    expect((await lastKept(deps()))?.challengeId).toBe(id(kept));
+    const sameDay = await LessonRunner.start(deps({ newId: () => 'same-day' }));
+    expect(first(sameDay).challenge.id).toBe(backFor(kept, 'same-day'));
+    await w.repository.discardSession('same-day');
+    w.clock.now += DAY_MS;
+    const nextDay = await LessonRunner.start(deps({ newId: () => 'next-day' }));
+    expect(first(nextDay).challenge.id).toBe(backFor(kept, 'later-day'));
+  });
+
+  it('does not ask a moment later, and does not keep the same things twice running', async () => {
+    const kept = await sitting();
+    w.clock.now += KEPT_AT_LEAST_MS - 60_000;
+    const runner = await LessonRunner.start(deps());
+    expect(first(runner).stage).toBe('demo');
+    await finish(runner);
+    const attempts = await w.repository.listAttempts(PROFILE);
+    expect(attempts.some((attempt) => attempt.challengeId.includes('.back-'))).toBe(false);
+    expect(attempts.at(-1)?.challengeId).not.toBe(id(kept));
+    expect(attempts.at(-1)?.challengeId).toMatch(/\.keep-[abc]$/);
+  });
+
+  it('goes by the sitting that was finished last, and takes an unfinished one up where it was left', async () => {
+    const kept = await sitting();
+    w.clock.now += DAY_MS;
+    const second = await LessonRunner.start(deps());
+    expect(first(second).challenge.id).toBe(backFor(kept, 'later-day'));
+    await second.answer(answerTo(first(second)));
+    await second.next();
+    // Left there. Another day on, it is the same sitting, past the question it began with: asked once.
+    w.clock.now += DAY_MS;
+    const resumed = await LessonRunner.start(deps());
+    expect(first(resumed).stepIndex).toBe(1);
+    expect(first(resumed).stage).toBe('demo');
+    await finish(resumed);
+    const asked = (await w.repository.listAttempts(PROFILE)).filter((attempt) =>
+      attempt.challengeId.includes('.back-'),
+    );
+    expect(asked).toHaveLength(1);
+  });
+
+  it('"again", after a sitting, plans the new one knowing what that sitting kept', async () => {
+    const runner = await LessonRunner.start(deps());
+    await finish(runner);
+    const kept = keptBy((await w.repository.listSessions(PROFILE))[0]!, keepLesson)!;
+    // At once: nothing is asked about what was kept a moment ago.
+    await runner.restart();
+    expect(first(runner).stage).toBe('demo');
+    // A quarter of an hour on, "again" from the end of that one begins with what it kept.
+    await finish(runner);
+    const sessions = await w.repository.listSessions(PROFILE);
+    const second = sessions.find((each) => keptBy(each, keepLesson) !== kept)!;
+    w.clock.now += 15 * 60 * 1000;
+    await runner.restart();
+    expect(first(runner).challenge.id).toBe(
+      `${keptBy(second, keepLesson)!.replace('.keep-', '.back-')}-same-day`,
+    );
+  });
+
+  it('takes a sitting that was left before its end to have kept nothing: what it would have kept was never shown', async () => {
+    const runner = await LessonRunner.start(deps());
+    await runner.next();
+    await runner.answer(answerTo(first(runner)));
+    // A day on, "again" from the middle of it: a new sitting, and nothing to ask about.
+    w.clock.now += DAY_MS;
+    expect(await lastKept(deps())).toBeUndefined();
+    await runner.restart();
+    expect(first(runner).stage).toBe('demo');
+    expect(first(runner).stepIndex).toBe(0);
+  });
+
+  it('asks nothing about last time when what is stored cannot be read, and says it is not saving', async () => {
+    await sitting();
+    w.clock.now += DAY_MS;
+    const broken = Object.assign(Object.create(w.repository) as typeof w.repository, {
+      listSessions: () => Promise.reject(new StorageError('unavailable', 'Storage is gone.')),
+    });
+    const runner = await LessonRunner.start(deps({ repository: broken }));
+    expect(first(runner).stage).toBe('demo');
+    expect(playing(runner).saved).toBe(false);
+  });
+
+  it('has nothing kept for a lesson that keeps nothing, however many sittings of it there are', async () => {
+    const runner = await LessonRunner.start(w.deps());
+    await finish(runner);
+    expect(await lastKept(w.deps())).toBeUndefined();
   });
 });

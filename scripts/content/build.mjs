@@ -6,7 +6,16 @@
 import { buildExplorerHarborPack, buildExplorerHarborVoice } from './explorer-harbor.mjs';
 import { buildInventorIslandPack } from './inventor-island.mjs';
 import { writeFileSync } from 'node:fs';
-import { lockLessons, lockPath, lockText, readLock, writePack, writeVoiceLines } from './lib.mjs';
+import {
+  lessonListPath,
+  lessonListText,
+  lockLessons,
+  lockPath,
+  lockText,
+  readLock,
+  writePack,
+  writeVoiceLines,
+} from './lib.mjs';
 import { buildMemoryForestPack, buildMemoryForestVoice } from './memory-forest.mjs';
 import { buildMusicLabPack } from './music-lab.mjs';
 import { buildNumberGardenPack } from './number-garden.mjs';
@@ -38,6 +47,8 @@ if (changed.length > 0) {
 for (const pack of packs) await writePack(pack);
 writeFileSync(lockPath, await lockText(lessons));
 console.log(`src/content/lessons.lock.json: ${Object.keys(lessons).length} lessons written down`);
+writeFileSync(lessonListPath, await lessonListText(packs));
+console.log('src/content/lessonList.json: what each activity is called');
 await writeVoiceLines('reading-cove', buildReadingCoveVoice());
 await writeVoiceLines('memory-forest', buildMemoryForestVoice());
 await writeVoiceLines('explorer-harbor', buildExplorerHarborVoice());

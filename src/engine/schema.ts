@@ -288,6 +288,47 @@ const SelectTaskSchema = v.strictObject({
   study: v.optional(v.pipe(v.array(token('card id')), v.minLength(1), v.maxLength(6))),
   /** What is asked once they have been put away ("which ones did you see?"). Needed exactly when there is a study. */
   ask: v.optional(StringKeySchema),
+  /**
+   * The things were looked at before this step began, and are not shown again: in the step just before it
+   * (`just-now`), or at the end of an earlier sitting (`last-time`). Never together with a study.
+   */
+  recalled: v.optional(v.picklist(['just-now', 'last-time'])),
+});
+
+/** A way of looking at things so as to remember them: by kind, as who has what, or as places along a path. */
+export const WAYS = ['groups', 'story', 'places'] as const;
+export type Way = (typeof WAYS)[number];
+
+/**
+ * Look at some things in a way of your own choosing, and then, when they have been put away, say what went with
+ * one of them. The things are the same whichever way is chosen; how they are laid out, what is asked and what
+ * the hint to it is depend on the way. The answer is written with the way that was chosen in front of it
+ * ("story-hat"), so the record says how a child chose to look.
+ */
+const RecallTaskSchema = v.strictObject({
+  type: v.literal('recall'),
+  /** Every card that any way offers as an answer. */
+  cards: v.pipe(v.array(CardSchema), v.minLength(3), v.maxLength(10)),
+  /** The things looked at: the same ones, whichever way. */
+  study: v.pipe(v.array(token('card id')), v.minLength(2), v.maxLength(6)),
+  ways: v.pipe(
+    v.array(
+      v.strictObject({
+        way: v.picklist(WAYS),
+        /** The things, laid out this way to be looked at. */
+        scene: SceneStimulusSchema,
+        /** What stands in front of the cover once they are put away: what the question is about. */
+        cue: StimulusSchema,
+        /** What is asked, this way ("what did this one have?"). */
+        ask: StringKeySchema,
+        /** The cards offered, and the one that went with the cue. */
+        choices: v.pipe(v.array(token('card id')), v.minLength(2), v.maxLength(4)),
+        answer: token('card id'),
+      }),
+    ),
+    v.minLength(2),
+    v.maxLength(3),
+  ),
 });
 
 /** Turn the cards over two at a time until every pair has been found. */
@@ -447,6 +488,7 @@ export const TaskSchema = v.variant('type', [
   OrderTaskSchema,
   EchoTaskSchema,
   SelectTaskSchema,
+  RecallTaskSchema,
   PairsTaskSchema,
   ProgramTaskSchema,
   DesignTaskSchema,
@@ -455,6 +497,7 @@ export const TaskSchema = v.variant('type', [
 ]);
 export type Task = v.InferOutput<typeof TaskSchema>;
 export type ProgramTask = v.InferOutput<typeof ProgramTaskSchema>;
+export type RecallTask = v.InferOutput<typeof RecallTaskSchema>;
 export type DesignTask = v.InferOutput<typeof DesignTaskSchema>;
 export type BeatTask = v.InferOutput<typeof BeatTaskSchema>;
 export type TuneTask = v.InferOutput<typeof TuneTaskSchema>;
@@ -519,6 +562,28 @@ export const LessonSchema = v.strictObject({
      * the activity (what was shown first, remembered across the whole sitting). Answered alone, like the probes.
      */
     closing: v.optional(v.pipe(v.array(ChallengeIdSchema), v.minLength(1), v.maxLength(2))),
+    /**
+     * Challenges that are asked straight after another, about the same things: `then[first]` is asked next,
+     * wherever `first` is asked, and nothing is shown again in between. It is not listed anywhere else in the
+     * plan. (Recalling from a hint, and then with none.)
+     */
+    then: v.optional(v.record(ChallengeIdSchema, ChallengeIdSchema)),
+    /**
+     * Something kept from one sitting to the next. One of `pool` is asked last of all in a sitting ("these are
+     * for next time"), never the one the sitting before kept. And a sitting begins, before anything else is
+     * shown, with what the sitting before kept: `recall` has the question for each, by whether that sitting was
+     * finished earlier the same day or on an earlier day. The two are different things to manage, and are
+     * different skills.
+     */
+    keep: v.optional(
+      v.strictObject({
+        pool: v.pipe(v.array(ChallengeIdSchema), v.minLength(2)),
+        recall: v.record(
+          ChallengeIdSchema,
+          v.strictObject({ sameDay: ChallengeIdSchema, laterDay: ChallengeIdSchema }),
+        ),
+      }),
+    ),
   }),
   successCriteria: v.strictObject({
     /** First-try, unhinted, unassisted correct answers in the independent stage. */

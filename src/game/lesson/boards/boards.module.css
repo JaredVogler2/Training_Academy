@@ -125,6 +125,41 @@
   }
 }
 
+/*
+ * Five or six things to remember, on a phone held upright: in two rows, so that each is as large as three in
+ * a row would be. (In one row, five were 47 pixels across.) Not on the shortest phones, where the leaf they
+ * lie on is too low for two rows: there one row is the larger.
+ */
+@media (orientation: portrait) and (max-width: 599px) and (min-height: 700px) {
+  .studied[data-count='5'],
+  .studied[data-count='6'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
+    grid-auto-flow: row;
+  }
+}
+
+/*
+ * And on a phone held sideways, where they have a narrow column to themselves: four stand two and two, five or
+ * six in two rows of three. (In one row, five were 33 pixels across at 844 by 390; four were 46 there, and
+ * 39 on an iPhone 13, which leaves a page 750 by 342.) Not on
+ * the flattest screens, which give them the width instead: see below.
+ */
+@media (orientation: landscape) and (max-height: 520px) and (min-height: 321px) {
+  .studied[data-count='4'],
+  .studied[data-count='5'],
+  .studied[data-count='6'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
+    grid-auto-flow: row;
+  }
+
+  .studied[data-count='5'],
+  .studied[data-count='6'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 /* A phone on its side: the things to remember on the left, the cards in rows on the right. */
 @media (orientation: landscape) and (max-height: 520px) {
   .select[data-study='true'] {
@@ -620,4 +655,19 @@
 .echoCards[data-layout='row'] .echoCard[data-lit='true'] {
   border-color: var(--yes);
   background: #fff6d2;
+}
+
+/*
+ * Things that were looked at before this step began lie covered from its first moment to its last. The leaf is
+ * only where they are, with a sign on it where there is one, and the cards to answer with have the room.
+ */
+.select[data-recalled] {
+  grid-template-rows: minmax(0, 0.36fr) minmax(0, 1.64fr);
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .select[data-recalled] {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.32fr) minmax(0, 1.9fr);
+  }
 }

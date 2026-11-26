@@ -129,6 +129,111 @@ const tune = (name: string) =>
     solution: ['c4', 'e4', 'g4'],
   });
 
+// A second lesson, for what a plan can ask beside the usual: things looked at in a chosen way, a question that is
+// asked straight after another, and something kept from one sitting to the next.
+const KEEP = 'fx-keep-01';
+const unaidedSkill = 'memory.fixture.unaided';
+const keptSkill = 'memory.fixture.kept';
+const scene = (name: string, of: object) => ({ type: 'scene', scene: name, of });
+
+/** Four things, looked at in groups or as a story, and asked about with a hint. */
+const ownWay = (name: string, [a, b, c, d]: string[], [lureA, lureB]: string[]) => ({
+  id: `${KEEP}.way-${name}`,
+  kind: 'make',
+  skillId,
+  variant: `way-${name}`,
+  prompt: { instruction: strings.instruction },
+  task: {
+    type: 'recall',
+    cards: [a, b, c, d, lureA, lureB].map((id) => card(id ?? '')),
+    study: [a, b, c, d],
+    ways: [
+      {
+        way: 'groups',
+        scene: scene('groups', { ids: [a, b, c, d] }),
+        cue: picture(a ?? ''),
+        ask: strings.ask,
+        choices: [b, d, lureA],
+        answer: b,
+      },
+      {
+        way: 'story',
+        scene: scene('pairs', { owners: [a, b], things: [c, d] }),
+        cue: picture(b ?? ''),
+        ask: strings.ask,
+        choices: [d, c, lureB],
+        answer: d,
+      },
+    ],
+  },
+  hints: [
+    { type: 'model', caption: strings.model },
+    { type: 'reveal', caption: strings.reveal },
+  ],
+  maxTries: 2,
+  feedback,
+});
+
+/** The same four, asked for straight after with no hint. */
+const allOf = (name: string, ids: string[], others: string[]) => ({
+  id: `${KEEP}.way-${name}-all`,
+  kind: 'make',
+  skillId: unaidedSkill,
+  variant: `all-${name}`,
+  prompt: { instruction: strings.instruction },
+  task: {
+    type: 'select',
+    cards: [...ids, ...others].map(card),
+    solution: ids,
+    recalled: 'just-now',
+  },
+  hints: ladder,
+  feedback,
+});
+
+/** Things to keep for next time, and the two questions about them at a later sitting. */
+const keeping = (name: string, ids: string[], others: string[]) => {
+  const cards = [...ids, ...others].map(card);
+  const back = (when: string) => ({
+    id: `${KEEP}.back-${name}-${when}`,
+    kind: 'make',
+    skillId: keptSkill,
+    variant: `back-${name}`,
+    prompt: { instruction: strings.instruction },
+    task: { type: 'select', cards, solution: ids, recalled: 'last-time' },
+    hints: ladder,
+    feedback,
+  });
+  return [
+    {
+      id: `${KEEP}.keep-${name}`,
+      kind: 'make',
+      skillId: keptSkill,
+      variant: `keep-${name}`,
+      prompt: { instruction: strings.instruction },
+      task: { type: 'select', cards, solution: ids, study: ids, ask: strings.ask },
+      hints: ladder,
+      feedback,
+    },
+    back('same-day'),
+    back('later-day'),
+  ];
+};
+
+const WAY_SETS: [string, string[], string[], string[]][] = [
+  ['demo', ['cat', 'hen', 'hat', 'sock'], ['fox', 'cap'], ['drum', 'sun']],
+  ['guided', ['owl', 'bat', 'cup', 'pan'], ['bee', 'pot'], ['bell', 'moon']],
+  ['a', ['fox', 'ram', 'key', 'map'], ['cat', 'pen'], ['egg', 'star']],
+  ['b', ['bee', 'ant', 'nut', 'fig'], ['owl', 'pea'], ['hat', 'mug']],
+  ['c', ['hen', 'rat', 'jam', 'pie'], ['bat', 'bun'], ['sock', 'cup']],
+];
+const KEEP_SETS: [string, string[], string[]][] = [
+  ['a', ['kite', 'shell'], ['ball', 'leaf']],
+  ['b', ['boat', 'lamp'], ['kite', 'coin']],
+  ['c', ['coin', 'ball'], ['boat', 'shell']],
+];
+const wayId = (name: string) => `${KEEP}.way-${name}`;
+
 const raw = {
   format: 'training-academy.content-pack',
   schemaVersion: 1,
@@ -153,6 +258,22 @@ const raw = {
       strand: 'memory',
       title: 'A skill for the tests',
       objective: 'Makes each kind of thing the engine can ask for.',
+      prerequisites: [],
+    },
+    {
+      id: unaidedSkill,
+      world: 'memory-forest',
+      strand: 'memory',
+      title: 'Another, for what is asked straight after',
+      objective: 'Answers the question that follows with no hint.',
+      prerequisites: [],
+    },
+    {
+      id: keptSkill,
+      world: 'memory-forest',
+      strand: 'memory',
+      title: 'And one for what is kept',
+      objective: 'Keeps something from one sitting to the next.',
       prerequisites: [],
     },
   ],
@@ -220,6 +341,42 @@ const raw = {
         tune('climb'),
       ],
     },
+    {
+      id: KEEP,
+      version: 1,
+      world: 'memory-forest',
+      title: 'What a plan can ask beside the usual',
+      summary: 'Two questions that go together, and something kept for next time.',
+      skillIds: [skillId, unaidedSkill, keptSkill],
+      estimatedMinutes: 3,
+      plan: {
+        demo: [wayId('demo')],
+        guided: [wayId('guided')],
+        independent: { pool: [wayId('a'), wayId('b'), wayId('c')], count: 2, maxReprobes: 1 },
+        then: Object.fromEntries(WAY_SETS.map(([name]) => [wayId(name), `${wayId(name)}-all`])),
+        keep: {
+          pool: KEEP_SETS.map(([name]) => `${KEEP}.keep-${name}`),
+          recall: Object.fromEntries(
+            KEEP_SETS.map(([name]) => [
+              `${KEEP}.keep-${name}`,
+              {
+                sameDay: `${KEEP}.back-${name}-same-day`,
+                laterDay: `${KEEP}.back-${name}-later-day`,
+              },
+            ]),
+          ),
+        },
+      },
+      // Two pairs and the thing to keep: as many as a sitting asks alone, so that the lint has to count them all.
+      successCriteria: { independentFirstTryCorrect: 5 },
+      challenges: [
+        ...WAY_SETS.flatMap(([name, ids, lures, others]) => [
+          ownWay(name, ids, lures),
+          allOf(name, ids, [...lures, ...others]),
+        ]),
+        ...KEEP_SETS.flatMap(([name, ids, others]) => keeping(name, ids, others)),
+      ],
+    },
   ],
 };
 
@@ -232,5 +389,12 @@ export function fixturePack(): ContentPack {
 export function fixtureLesson(): Lesson {
   const lesson = fixturePack().lessons[0];
   if (!lesson) throw new Error('The fixture pack has no lesson.');
+  return lesson;
+}
+
+/** The fixture's second lesson: two questions that go together, and something kept from one sitting to the next. */
+export function fixtureKeepLesson(): Lesson {
+  const lesson = fixturePack().lessons[1];
+  if (!lesson) throw new Error('The fixture pack has no second lesson.');
   return lesson;
 }

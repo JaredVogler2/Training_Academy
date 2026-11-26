@@ -2,30 +2,31 @@
 
 **Seven worlds are built: the six islands, and the Music Lab in the lighthouse. Phases 01 to 03 are complete;
 phase 04 is built (the voice, and help for a child's first visit); phases 05, 06 and 11 are built as far as
-their briefs' last optional parts, and phase 07, Robot Ridge, as far as its brief goes; phases 08 to 10 are
-each partly done. All of it is unheard. The rest of the plan is being built on one branch, a pull request at a time: the
-owner has merged each one soon after its checks went green, four times now without a word, so every push is
-kept fit to go live. The one that is open is [#12](https://github.com/JaredVogler2/Training_Academy/pull/12).**
+their briefs' last optional parts, and phases 07 and 08, Robot Ridge and Memory Forest, as far as their briefs
+go; phases 09 and 10 are each partly done. All of it is unheard. The rest of the plan is being built on one
+branch, a pull request at a time: the owner has merged each one soon after its checks went green, five times
+now without a word and the last time eleven seconds after, so every push is kept fit to go live. The one that
+is open is [#13](https://github.com/JaredVogler2/Training_Academy/pull/13).**
 
 - **Date:** 2026-11-26
 - **What is live:** `main`, at `https://training-academy-dun.vercel.app`: the six islands and the Music Lab,
-  62 activities, and since 2026-11-26 the help for a first visit ("how to play", help when taps land on
-  nothing, the switch a grown-up holds to say they are helping, and "where to begin" in the grown-ups' area).
-  The owner merged pull request #11 that day, four minutes after the last of its checks went green. The
-  update had been rehearsed (18 of 18). The live site was checked an hour and a half afterwards: Vercel's
-  production deployment of `ed3efd6` was ready, and 69 of 69 browser tests passed against the address as a
-  desktop, a phone and a Pixel 7, with "how to play" shown and done from the front door, passed by, and not
-  shown again. CI on `main` was green in all eight jobs, with two tests passing only at a second attempt
-  (below). **A child who has never begun an activity is shown "how to play" at their next visit; one who has,
-  is not.**
-- **One small fault went live with it.** A child who passes "how to play" by (the house, top left), and whose
-  page is closed or loaded again in that same moment, is shown it again at the next visit: passing it by was
-  written down as the page was left, not before. Nothing is lost and nothing looks wrong. It is put right on
-  pull request #12.
-- **What is not live**, on pull request #12: **Robot Ridge's three later activities** (a longer way, a long
-  way round, wait for the bridge), and the fix above. The update from what is live to this tree was
-  rehearsed: 18 of 18. When it goes live, Robot Ridge has seven activities where it had four, the new ones
-  after the old.
+  65 activities, the help for a first visit, and since 2026-11-26 Robot Ridge's three later activities (a
+  longer way, a long way round, wait for the bridge). The owner merged pull request #12 that day, eleven
+  seconds after the last of its checks went green. The update had been rehearsed (18 of 18). The live site
+  was checked ten minutes afterwards: Vercel's production deployment of `3c322c5` was ready, and 72 of 72
+  browser tests passed against the address as a desktop, a phone and a Pixel 7, with Robot Ridge's three new
+  activities played through among them. CI on `main` was green in all eleven jobs, with two tests passing only
+  at a second attempt (below).
+- **The small fault that went live with the first-visit help is gone from the site.** For four hours a child
+  who passed "how to play" by, and whose page was closed in that same moment, was shown it again at the next
+  visit. Its fix went live with pull request #12.
+- **What is not live**, on pull request #13: **Memory Forest's two later activities** (remember it your way,
+  keep it for next time); a world's page that keeps still while its activities arrive (every world's page
+  moved under a finger, by 15 to 78 pixels, and that is live); and things to remember set out larger on phones
+  (four of them are 39 to 46 pixels across on a phone held sideways in "Things that go together", which is
+  live: measured on the site).
+  The update from what is live to this tree was rehearsed: 18 of 18. When it goes live, Memory Forest has
+  eight activities where it had six, the new ones after the old.
 - **The owner's instruction for this stretch of work** (2026-11-25): build all that is left, in the order
   recommended, and the owner will review all of it at once, sounds included, when it is complete. The order:
   the Music Lab; numerals and the number line in Number Garden; rhyme, syllables, letter pairs and sentences in
@@ -34,7 +35,7 @@ kept fit to go live. The one that is open is [#12](https://github.com/JaredVogle
 
 ## The one thing that matters most now
 
-**Nobody has listened to anything, and nobody has played.** The game talks — 573 recordings, made by a speech
+**Nobody has listened to anything, and nobody has played.** The game talks — 594 recordings, made by a speech
 synthesiser ahead of time and shipped with it, each checked by a speech recogniser, which is a machine's
 opinion of the words and nothing more — and it also plays notes, which are made by arithmetic at the moment
 they sound and which no ear has checked at all. The briefs call the accuracy of the audio a release gate. That
@@ -62,10 +63,11 @@ and no child has seen one.
 A static React and TypeScript app builds to `dist/` and runs under the same headers and routing that `vercel.json`
 gives it. A visit opens on a front door, and someone who has never played is shown how before anything else;
 behind it is the map, six islands round a lighthouse, and all seven places are open. A place's page offers the next thing to play as one large button and every activity as a
-picture. There are **65 activities and 744 challenges**: sounds, rhyme, the beats of a word, first sounds,
+picture. There are **67 activities and 774 challenges**: sounds, rhyme, the beats of a word, first sounds,
 letters, blending, building a word, pairs of letters and a sentence in Reading Cove; amounts, counting and
 comparing, then numerals, the numbers in order and adding and taking away in Number Garden; a robot to steer,
-a row of steps to mend, a long way to plan and a bridge to wait for in Robot Ridge; pairs, hidden things, orders and three ways to remember in Memory
+a row of steps to mend, a long way to plan and a bridge to wait for in Robot Ridge; pairs, hidden things,
+orders, three ways to remember, a choice among them and three things kept for the next visit in Memory
 Forest; guesses that are tested and things to mend
 in Inventor Island; stories to put in order, why things happen and a map to answer on in Explorer Harbor; and in
 the Music Lab high and low, the same or different, a beat to tap, notes to play back, a tune to know again and a
@@ -76,40 +78,41 @@ answer is right. Everything is saved on the device.
 
 ## Verified
 
-- Locally: format, lint, typecheck, **2135 unit tests**, the production build and its **1477 build checks**.
-  The whole suite was run in one go in Chromium on all seven screens: **1288 tests, 1086 passed, 202 skipped
-  by design, none failed** (48.8 minutes). After it the tests' guard was changed and a test added for Safari's
-  engine (1290 now). The specs in which a request fails, a page is left with something under way, or the guard is itself tested were then run on all seven screens (smoke, the hub, resilience, the voice, the journey, Robot Ridge and "how to play"): **284 tests, 263 passed, 21 skipped by design, none failed** (18.5 minutes). WebKit is CI's.
-- **CI's last run, run 46, was the first on pull request #12: seven jobs passed and one was cancelled at its
-  forty-minute limit.** No test failed and none was run twice. The job that was cancelled, WebKit's desktop
-  and tablet, had 566 of its 567 tests done: putting the browser on that machine had taken 17 minutes, where
-  it takes half a minute, because the mirror it fetched Ubuntu's packages from was slow. The jobs are now
-  dealt out in more parts (eleven jobs, none needing more than about half its forty minutes for its tests).
-  **What that run settled:** the guard's reading of WebKit is right (its test that stages nothing ran for the
-  first time and passed on both screens; see _Run 45_ and _Run 46_ in `docs/TEST_RESULTS.md`), and Robot
-  Ridge's three later activities pass in Safari's engine.
-- **The two runs before it, 44 and 45, were green and not clean**: eight tests passed only at a second
-  attempt. Four were one fault in the game, live until pull request #12 is merged (passing "how to play" by
-  was written down as the page was left). One was a test that read one moment in two steps. One was the
-  tests' own guard, wrong for the third time about the same sentence of WebKit's. Two were the page that
-  never comes in CI's WebKit, the fifth and sixth times, still not explained.
-- **The tests that passed first time were made to fail.** For Robot Ridge's three later activities, sixty-one
-  faults were put back one at a time; all that could be caught were, and the two that were not were checks that
-  can never fire, since removed. For the way out of "how to play", five; for the guard's rule, thirteen. For the first-visit help, eighty-six faults were put
-  back one at a time (fifty-three against the unit tests, thirty-three in a browser). Seventy-nine were caught
-  at once by the test meant for them. The other seven were each a fault in a test, and each test was put right
-  until it failed: `docs/TEST_RESULTS.md` says what was wrong with each, and it is worth reading before writing another
-  test that says "there is none". It also lists the faults for Reading Cove, the Music Lab and Number Garden.
+- Locally: format, lint, typecheck, **2205 unit tests**, the production build and its **1519 build checks**.
+  The whole suite was run in one go in Chromium on all seven screens: **1372 tests, 1151 passed, 220 skipped
+  by design, one failed** (51.0 minutes). The one was a test that left a page before what it had changed was
+  written down, and then read the next page before that page knew who was playing. Both are put right, and
+  what they touch was run again on all seven screens: **692 tests, 552 passed, 140 skipped by design, none failed** (17.5 minutes). WebKit is CI's.
+- **CI's last two runs, 47 and 48, were green in all eleven jobs and not clean**: three tests passed only at a
+  second attempt. One was the tests' own tool for holding the clock, which lost a race of 20 ms (put right,
+  and tried outside a test first). One was the page that never comes in CI's WebKit, the seventh time, still
+  not explained. One was three taps that brought no nudge, in WebKit, once: not explained, and not reproduced
+  here in 48 tries; the test will say what the page was given if it happens again. `docs/TEST_RESULTS.md` →
+  _Run 47_ and _Run 48_.
+- **CI's jobs are dealt out by screen now: twelve browser jobs.** In each of the last three runs one WebKit job
+  spent 13 to 17 minutes fetching Ubuntu's packages, where it takes half a minute; run 46 lost a job to that
+  at its forty-minute limit. No job should now need more than about sixteen minutes for its tests. **The
+  first run of that arrangement is the one on pull request #13**: read its times.
+- **The tests that passed first time were made to fail.** For Memory Forest's two later activities and what
+  came with them, eighty-eight faults were put back one at a time; eighty-six were caught by the test meant
+  for them, one was a check that could never matter (removed), and one is a rule no test holds (room for a
+  second line under "Play"; `docs/QUALITY_REPORT.md` says so). For Robot Ridge's three later activities,
+  sixty-one, of which the two not caught were checks that can never fire, since removed. For the way out of
+  "how to play", five; for the guard's rule, thirteen. For the first-visit help, eighty-six (fifty-three
+  against the unit tests, thirty-three in a browser): seventy-nine were caught at once, and the other seven
+  were each a fault in a test, put right until it failed. `docs/TEST_RESULTS.md` says what was wrong with
+  each, and it is worth reading before writing another test that says "there is none". It also lists the
+  faults for Reading Cove, the Music Lab and Number Garden.
 - **Every activity is played to its end by a browser test**, with the answers its content says are right
   (`e2e/everything.spec.ts`; Robot Ridge and Inventor Island in their own specs). The beat is tapped the way a
   person taps it: from the first beats heard, each tap begun a little ahead.
 - Every content pack is exactly what its generator writes, and every rule that can refuse a challenge has been
   shown to fire (`tests/content/`): 32 of them are the Music Lab's.
 - Every browser test also fails on any console error or warning, failed request, or request to another origin.
-- **The live site**, as above: `main` after pull request #11. `docs/DEPLOYMENT.md` has the check.
+- **The live site**, as above: `main` after pull request #12. `docs/DEPLOYMENT.md` has the check.
 - **The update from what is live to this tree was rehearsed** (`npm run rehearse:update -- origin/main`), in
-  Chromium: 18 of 18, on the final tree, from the build that pull request #11's merge made live. (For the push before, it had found a fault at 16 of 18, which was
-  fixed.) Rehearse it again after any later change to content or to what is stored.
+  Chromium: 18 of 18, from the build that pull request #12's merge made live. Rehearse it again after any
+  later change to content or to what is stored.
 
 ## Not verified — read this before relying on anything
 
@@ -133,6 +136,12 @@ answer is right. Everything is saved on the device.
   someone who may never have held a phone. Whether a three-year-old then taps the one that is the same, or
   taps the hand, or waits, is not known; nor is whether thirty seconds of it is too long before the first
   island.
+- **Whether choosing how to look means anything to a child.** In Memory Forest a child now picks one of
+  three ways to look at four things. What is written down is which way the things were in when they were put
+  away. Nothing shows that the way was used to remember by, and nobody has watched a child choose.
+- **Whether what is kept is ever asked for.** Three things are asked for again only at the next sitting of
+  that one activity, ten minutes or more later. Ten minutes is a guess, and a family that plays it once has
+  no later.
 - **Whether help with the screen helps.** Three taps on nothing in eight seconds is a guess at what "does not
   know what to press" looks like. A child who taps a picture because it is a picture is told what to press
   too. Nobody has watched either.
@@ -168,27 +177,31 @@ or sooner if there is a moment:
    (or hand it to a child and watch). Then, in any activity, tap the picture three times instead of an answer.
    Then pause, hold the grown-up's mark, and look at **Grown-ups → Where _name_ begins**.
 
-8. **Play Robot Ridge's last three activities** (on the preview of pull request #12, or on the site once it
-   is merged). In _A longer way_, put a step in and press the small arrow beside the row: does the robot
+8. **Play Robot Ridge's last three activities**, which are live. In _A longer way_, put a step in and press the small arrow beside the row: does the robot
    showing each step make a long way findable? In _Wait for the bridge_: do three dots read as "wait", and
    is the bridge seen to be up?
 
-Pull request #12 has a preview on Vercel (behind the owner's Vercel login) for looking at Robot Ridge's three
+9. **Play Memory Forest's last two activities** (on the preview of pull request #13, or on the site once it
+   is merged). In _Remember it your way_: do the three pictures under the things read as ways of looking at
+   them? Then play _Keep it for next time_ to its end, come back a quarter of an hour later, and see what it
+   asks first.
+
+Pull request #13 has a preview on Vercel (behind the owner's Vercel login) for looking at Memory Forest's two
 later activities before they are merged.
 
 ## The next action
 
 If this session is the one still building: carry on down the order above. The Music Lab, Number Garden's
-numerals, Reading Cove's later activities, the first-visit help of phase 04 and Robot Ridge's longer plans and
-bridge are done; **next is the gaps in the other three worlds** (a choice of strategy and recall in a later
-sitting in Memory Forest; a wind shelter and a portfolio in Inventor Island; making up a story, stories
-that branch, and a globe in Explorer Harbor), and then phases 12 to 17. `docs/PROGRESS.md` → the table at the top says which phases are done; its _Known
+numerals, Reading Cove's later activities, the first-visit help of phase 04, Robot Ridge's longer plans and
+bridge, and Memory Forest's choice of a way and its keeping for next time are done; **next is the gaps in the
+other two worlds** (a wind shelter and a portfolio in Inventor Island; making up a story, stories that branch,
+and a globe in Explorer Harbor), and then phases 12 to 17. `docs/PROGRESS.md` → the table at the top says which phases are done; its _Known
 gaps_ table says what each world still lacks.
 
 If it is a new session:
 
 > Read prompt-series/README.md and prompt-series/00_MASTER_BRIEF.md, then docs/CONTINUE_HERE.md,
-> docs/PROGRESS.md, docs/CURRICULUM.md and docs/ARCHITECTURE.md. Pull request #12 is open: carry on with what
+> docs/PROGRESS.md, docs/CURRICULUM.md and docs/ARCHITECTURE.md. Pull request #13 is open: carry on with what
 > docs/CONTINUE_HERE.md says is next, on the same branch. It must work on Android and iOS devices on a Vercel
 > deployment.
 
@@ -311,11 +324,46 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
   (`src/content/lessons.lock.json`). To change a lesson that is live, give it a new version in its generator.
 - **The game's size and the content's size are budgeted apart** (`scripts/verify-dist.mjs`). Content is meant
   to grow; the game's own code is not meant to jump.
-- **The first screen's script is 105 kB of the 110 it is allowed**, and what each world offers
+- **The first screen's script is 106 kB of the 110 it is allowed**, and what each world offers
   (`src/game/worlds.ts`) is in it, grown-ups' text and all. More activities will need that text moved out of
   the first load.
 - **Testing a deployment, name the screens**: `BASE_URL=… npx playwright test --project=desktop
 --project=phone`. Without them the layout tests of five more screens run against the site as well.
+
+**New with Memory Forest's later activities**
+
+- **A question can be followed by another, and a sitting can keep something for the next** (`plan.then`,
+  `plan.keep`). The engine still reads no clock and no store: it is told what the sitting before kept, when,
+  and what day it is (`kept` and `day` to `createSession`; `lastKept` in `src/game/lessonRunner.ts` looks it
+  up). Anything else that has to reach across sittings should come in the same way.
+- **An answer can carry how it was reached.** A recall is written `story-drum`: the way, then the card. The
+  record's shape did not change, and the way can be read later.
+- **A world's page is whole before its content arrives.** What each activity is called comes from
+  `src/content/lessonList.json`, written by the content build; room is kept for every picture. Anything new
+  on that page needs its room kept too: `e2e/shell.spec.ts` holds the content back and measures everything
+  before and after.
+- **Measure the pictures; do not only look at them.** The review pictures of five things on a phone held
+  sideways were looked at and passed. A script that printed the size of each thing on eleven screens said 33
+  pixels. Make that script for every new board, and include 844 by 390 and 750 by 342, not only the extremes.
+- **A rule for one shape of screen goes after the rule it changes, in the same file.** One that came first
+  did nothing, and its test passed for another reason.
+- **A tool of the tests' own that allows a margin of real time will one day lose it.** `holdClock` read the
+  page's time and asked the clock to stop 20 ms later; once in CI that was too late. It asks again now. Try a
+  tool's failure outside a test first, to see what the library does: Playwright's clock, refused, is left
+  held.
+- **A test that changes a setting waits for "Saved." before it leaves the page.** One did not, the second
+  time it changed something, and lost the change on a busy machine.
+- **A world's page says when it knows who is playing** (`data-settled`), and until then its Play goes to the
+  beginning for everyone. A test that expects Play at the beginning waits for it first (`worldSettled` in
+  `e2e/fixtures.ts`), or it has tested nothing: one passed for as long as it existed with its change never
+  saved. To find such a test, break what it is about on purpose (here, a save slowed by 0.4 s).
+- **CI's jobs are named by screen.** Playwright deals tests out by number, one screen after another, so three
+  equal parts of five phones were 11, 15 and 26 minutes. When a screen's tests outgrow a job, give that
+  screen another job; do not add a part.
+- **Before committing part of a tree, look at what is already staged.** A deleted file staged long before
+  nearly went in with a commit about something else.
+- **The game's own code has 114 kB of its budget left** (2586 of 2700 kB). Two worlds still have boards to
+  gain. Raising the budget is a decision, to be said in the commit that does it.
 
 **New with the first-visit help**
 
@@ -483,17 +531,17 @@ A unit test fails until this is done, whenever anything under `src/render/hub3d/
 
 ## Where things are
 
-| For                                    | Look in                                                                                                                                                    |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| How it should look, move and sound     | `docs/ART_DIRECTION.md`                                                                                                                                    |
-| How it is built, and why               | `docs/ARCHITECTURE.md`                                                                                                                                     |
-| What was run and what was found        | `docs/TEST_RESULTS.md`                                                                                                                                     |
-| How it looks now, and what is weak     | `docs/QUALITY_REPORT.md`                                                                                                                                   |
-| Phase status and gaps carried forward  | `docs/PROGRESS.md`                                                                                                                                         |
-| Assets, licences, how assets are made  | `docs/ASSETS.md`, `docs/assets.manifest.json`                                                                                                              |
-| Authoring content                      | `docs/CURRICULUM.md`                                                                                                                                       |
-| Making and checking the voice          | `scripts/voice/README.md`                                                                                                                                  |
-| Deploying                              | `docs/DEPLOYMENT.md`                                                                                                                                       |
-| Screenshots of the running build       | `docs/review/phase-03/` (hub: `phase-02/`); the six worlds: `docs/review/worlds/`; then `music-lab/`, `number-garden/`, `reading-cove/` and `first-visit/` |
-| Getting it onto a phone; what to check | `docs/DEPLOYMENT.md`                                                                                                                                       |
-| One island close up; the guide's sheet | `/studio/<island>`, `/studio/guide` in the build                                                                                                           |
+| For                                    | Look in                                                                                                                                                                                      |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| How it should look, move and sound     | `docs/ART_DIRECTION.md`                                                                                                                                                                      |
+| How it is built, and why               | `docs/ARCHITECTURE.md`                                                                                                                                                                       |
+| What was run and what was found        | `docs/TEST_RESULTS.md`                                                                                                                                                                       |
+| How it looks now, and what is weak     | `docs/QUALITY_REPORT.md`                                                                                                                                                                     |
+| Phase status and gaps carried forward  | `docs/PROGRESS.md`                                                                                                                                                                           |
+| Assets, licences, how assets are made  | `docs/ASSETS.md`, `docs/assets.manifest.json`                                                                                                                                                |
+| Authoring content                      | `docs/CURRICULUM.md`                                                                                                                                                                         |
+| Making and checking the voice          | `scripts/voice/README.md`                                                                                                                                                                    |
+| Deploying                              | `docs/DEPLOYMENT.md`                                                                                                                                                                         |
+| Screenshots of the running build       | `docs/review/phase-03/` (hub: `phase-02/`); the six worlds: `docs/review/worlds/`; then `music-lab/`, `number-garden/`, `reading-cove/`, `first-visit/`, `robot-ridge/` and `memory-forest/` |
+| Getting it onto a phone; what to check | `docs/DEPLOYMENT.md`                                                                                                                                                                         |
+| One island close up; the guide's sheet | `/studio/<island>`, `/studio/guide` in the build                                                                                                                                             |

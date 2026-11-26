@@ -221,9 +221,13 @@ describe('every lint rule fires', () => {
   const lesson = (pack: Loose) => pack.lessons[0];
   /** An independent challenge with three choices: a, b and the answer c. */
   const three = (pack: Loose) => lesson(pack).challenges[3];
-  /** The fixture's things to make, by name. */
+  /** The fixture's things to make, by name, in either of its lessons. */
   const made = (pack: Loose, name: string) =>
-    pack.lessons[0].challenges.find((challenge: Loose) => challenge.id.endsWith(`.${name}`));
+    pack.lessons
+      .flatMap((each: Loose) => each.challenges)
+      .find((challenge: Loose) => challenge.id.endsWith(`.${name}`));
+  /** The plan of the fixture's second lesson: questions that follow one another, and something kept. */
+  const keeping = (pack: Loose) => pack.lessons[1].plan;
 
   const BREAK: Record<string, (pack: Loose) => void> = {
     'challenge-id-prefix': (pack) => {
@@ -460,6 +464,43 @@ describe('every lint rule fires', () => {
     },
     'design-nothing-to-find': (pack) => {
       made(pack, 'ramp').task.controls[0].options = ['mid', 'mid'];
+    },
+    'recall-way-twice': (pack) => {
+      const { ways } = made(pack, 'way-a').task;
+      ways[1].way = ways[0].way;
+    },
+    'recall-study': (pack) => {
+      made(pack, 'way-a').task.study = ['fox', 'ram', 'key', 'wolf'];
+    },
+    'recall-choice': (pack) => {
+      made(pack, 'way-a').task.ways[0].choices[2] = 'wolf';
+    },
+    'recall-answer': (pack) => {
+      // One of the things offered, which was never looked at.
+      made(pack, 'way-a').task.ways[0].answer = 'cat';
+    },
+    'recall-card-unused': (pack) => {
+      made(pack, 'way-a').task.cards.push({
+        id: 'wolf',
+        stimulus: { type: 'picture', id: 'wolf' },
+        label: 'wolf',
+      });
+    },
+    'select-recalled': (pack) => {
+      made(pack, 'keep-a').task.recalled = 'last-time';
+    },
+    'plan-then-first': (pack) => {
+      // What it follows is no longer asked at all.
+      const plan = keeping(pack);
+      plan.independent.pool = plan.independent.pool.filter((id: string) => !id.endsWith('.way-c'));
+    },
+    'plan-then-chain': (pack) => {
+      const plan = keeping(pack);
+      plan.then[`${String(pack.lessons[1].id)}.way-a-all`] =
+        `${String(pack.lessons[1].id)}.way-b-all`;
+    },
+    'plan-keep-recall': (pack) => {
+      keeping(pack).keep.recall = {};
     },
   };
 

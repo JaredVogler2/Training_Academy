@@ -16,3 +16,11 @@ export function lockLessons(
   lock: Record<string, string>,
 ): { lessons: Record<string, string>; changed: string[] };
 export function lockText(lessons: Record<string, string>): Promise<string>;
+
+/** What every activity is called and about how many minutes it takes: `src/content/lessonList.json`. */
+export const lessonListPath: string;
+export function lessonList(packs: readonly BuiltPack[]): {
+  about: string;
+  lessons: Record<string, { title: string; minutes: number }>;
+};
+export function lessonListText(packs: readonly BuiltPack[]): Promise<string>;

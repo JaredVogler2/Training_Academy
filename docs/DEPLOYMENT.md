@@ -91,16 +91,28 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
 - **Since then, some children are shown "how to play" at their next visit and some are not.** A player who
   has begun any activity is not: they know how. A player who has only ever chosen a picture, and anyone new,
   is, once; the house at the top left passes it by. Nothing is asked of the owner.
-- **One small fault went live with it, and its fix is not live.** A child who passes "how to play" by with the
-  house, and whose page is closed or loaded again in that same moment, is shown it again at the next visit:
-  passing it by was written down as the page was left, where it should have been written first. Nothing is
-  lost and nothing looks wrong. CI's tests met it four times in two runs, each time passing at a second
-  attempt, which is how it was found.
-- **What is on pull request [#12](https://github.com/JaredVogler2/Training_Academy/pull/12) is not live**: Robot Ridge's three later activities (a longer way,
-  a long way round, wait for the bridge), the fix for the fault above, and whatever else that pull request
-  gains. Its own description says how far it has got. The update from what is live (`ed3efd6`) to it was
-  rehearsed on 2026-11-26 and passed, 18 of 18. It should be rehearsed again after anything more is added
-  (_Before a release_, below).
+- **One small fault went live with it, and was live for four hours.** A child who passed "how to play" by
+  with the house, and whose page was closed or loaded again in that same moment, was shown it again at the
+  next visit: passing it by was written down as the page was left, where it should have been written first.
+  Nothing was lost and nothing looked wrong. CI's tests met it four times in two runs, each time passing at a
+  second attempt, which is how it was found. Its fix went live with pull request #12.
+- **Robot Ridge's three later activities went live on 2026-11-26**, when the owner merged pull request
+  [#12](https://github.com/JaredVogler2/Training_Academy/pull/12), eleven seconds after the last of its
+  checks went green: a longer way, a long way round, and wait for the bridge, after the four that were there.
+  **The update had been rehearsed** before its first push and passed, 18 of 18; its second commit changed only
+  how CI's jobs are dealt out. **Checked on the live site ten minutes after the merge:** Vercel's record of
+  the production deployment of the merge commit `3c322c5` said "Ready"; of 72 browser tests run against the
+  address as a desktop, a phone and a Pixel 7 (that commit's own tests, run from a clean copy of it: the smoke
+  tests, and the Pixel's tests that play something in every world), 72 passed, with the three new activities
+  among them: a long row made from its end and run a step at a time, a row set in two lines, and a bridge that
+  nobody knows about until a run begins; and CI's run on `main` was green in all eleven jobs, with two tests
+  passing only at a second attempt (`docs/TEST_RESULTS.md` → _Run 48_).
+- **What is on pull request [#13](https://github.com/JaredVogler2/Training_Academy/pull/13) is not live**:
+  Memory Forest's two later activities (remember it your way, keep it for next time), a world's page that no
+  longer moves when its activities arrive, things to remember set out larger on phones, and whatever else that
+  pull request gains. Its own description says how far it has got. The update from what is live (`3c322c5`)
+  to it was rehearsed on 2026-11-26 and passed, 18 of 18. It should be rehearsed again after anything more is
+  added (_Before a release_, below).
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The

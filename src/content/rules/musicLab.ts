@@ -302,6 +302,7 @@ function lintMake(challenge: MakeChallenge, report: Report): void {
     case 'give':
     case 'order':
     case 'select':
+    case 'recall':
     case 'pairs':
     case 'program':
     case 'design':

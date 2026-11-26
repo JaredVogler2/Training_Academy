@@ -54,6 +54,8 @@ const BOARDS: readonly (readonly [world: string, lesson: string, what: string])[
   ['memory-forest', 'mf-pairs-01', 'pairs to find'],
   ['memory-forest', 'mf-order-01', 'an order to repeat'],
   ['memory-forest', 'mf-groups-01', 'things to pick out'],
+  ['memory-forest', 'mf-choose-01', 'things, three ways to look at them, and cards to answer with'],
+  ['memory-forest', 'mf-later-01', 'five things to pick out from nine'],
   ['explorer-harbor', 'eh-story-01', 'a story to put in order'],
   ['explorer-harbor', 'eh-ending-01', 'a story, and endings'],
   ['explorer-harbor', 'eh-water-01', 'a map to answer on'],
@@ -130,6 +132,18 @@ for (const [screen, width, height] of SCREENS) {
           await press(myTurn(page));
           await expect(frame).not.toHaveAttribute('data-challenge', step);
         }
+        // Where the things can be looked at in more than one way, the pictures that choose the way are pressed
+        // too: they are measured as they stand, and then one is pressed, so that the things can be put away.
+        const ways = frame.locator('[data-way-button]');
+        const choosing = (await ways.count()) > 0;
+        if (choosing) await arrived(page);
+        const before = choosing ? await controls(page) : [];
+        if (choosing) {
+          expect(before.filter((control) => control.name.startsWith('Look at them'))).toHaveLength(
+            3,
+          );
+          await press(ways.last());
+        }
         // Where there is something to look at first and then put away, it is put away: what is measured is what
         // is pressed to answer.
         const ready = page.getByRole('button', { name: 'Ready' });
@@ -146,7 +160,7 @@ for (const [screen, width, height] of SCREENS) {
         });
         await arrived(page);
 
-        const found = await controls(page);
+        const found = [...before, ...(await controls(page))];
         // The bar's three, Glim, and at least one thing to answer with.
         expect(found.length).toBeGreaterThanOrEqual(5);
         const least = KNOWN_NARROW[lesson] ?? SMALLEST;

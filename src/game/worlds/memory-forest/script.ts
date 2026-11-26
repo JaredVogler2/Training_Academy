@@ -1,5 +1,6 @@
-import type { MakeChallenge, Stimulus } from '@/engine';
+import type { MakeChallenge, Stage, Stimulus, Way } from '@/engine';
 import {
+  PART_TIME,
   PAUSE,
   REST,
   SAME,
@@ -8,7 +9,10 @@ import {
   type ChooseSituation,
   type MakeSituation,
   type Script,
+  type ScriptEvent,
+  type Seconds,
 } from '@/game/lesson/script';
+import { memoryText } from './text';
 import { voice } from './voice';
 
 /**
@@ -141,5 +145,78 @@ export function makeScript(situation: MakeSituation, challenge: MakeChallenge): 
     case 'hint-step':
     case 'hint-reveal':
       return makingScript(situation);
+  }
+}
+
+/** How long Glim looks at the things each way, when showing how the game goes. */
+export const WAY_TIME = 1500;
+
+/** What a beat says when Glim, showing how, looks at the things one way: `way:groups`. */
+export const lookingAs = (way: Way): string => `way:${way}`;
+
+/** Everything a set of things looked at in a chosen way can tell the one who writes its script. */
+export interface RecallSituation {
+  stage: Stage;
+  event: ScriptEvent;
+  /** The child has asked to be told again. */
+  again: boolean;
+  /** The ways there are to look. The first is the one a demonstration keeps, and asks about. */
+  ways: readonly Way[];
+  /** The things have been put away: what there is to say again is the question, not how to look. */
+  put: boolean;
+  /** The things as they are looked at, for how long another look lasts. */
+  scene: Stimulus;
+  lines: { instruction: string; ask: string; feedback: string | null; hint: string | null };
+  seconds: Seconds;
+}
+
+/**
+ * Things looked at in a way of the child's choosing, and then asked about. In a demonstration Glim looks each way
+ * in turn, naming it, keeps the first, puts the things away, and answers what that way asks. For a child, the
+ * looking and the putting away are theirs to do: the script only says what is wanted. Another look is help, and
+ * is in the way the child chose.
+ */
+export function recallScript(situation: RecallSituation): Script {
+  const { stage, event, ways, put, scene, lines, seconds } = situation;
+  const script = new Writer(seconds);
+  switch (event) {
+    case 'new': {
+      const [kept, ...others] = ways;
+      if (stage === 'demo' && kept !== undefined) {
+        script.wait(400).say('lesson.watch').say(lines.instruction);
+        // Each way, and the one that is kept last: that is the way the things are in when they are put away.
+        for (const way of [...others, kept]) {
+          script
+            .beat({ show: 'name', which: lookingAs(way) })
+            .say(memoryText.wayLine(way))
+            .wait(WAY_TIME);
+        }
+        script.beat({ show: 'do', parts: 0 }).wait(PAUSE).say(lines.ask).wait(PAUSE);
+        script.beat({ show: 'do', parts: 1 }).note(0).wait(PART_TIME);
+        return script.cue('same').end(SAME);
+      }
+      return script
+        .wait(250)
+        .say(put ? lines.ask : lines.instruction)
+        .end(REST);
+    }
+    case 'correct':
+      script.wait(500).cue('same').beat(SAME);
+      if (lines.feedback) script.say(lines.feedback);
+      return script.end(SAME);
+    case 'incorrect':
+      script.wait(600);
+      if (lines.feedback) script.say(lines.feedback);
+      return script.end(REST);
+    case 'hint-model':
+      script.wait(200);
+      if (lines.hint) script.say(lines.hint);
+      return script.beat({ show: 'glance' }).wait(lookingTime(scene)).end(REST);
+    case 'hint-eliminate':
+    case 'hint-step':
+    case 'hint-reveal':
+      script.wait(200);
+      if (lines.hint) script.say(lines.hint);
+      return script.end(REST);
   }
 }

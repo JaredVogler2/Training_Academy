@@ -3,10 +3,12 @@ import {
   createSession,
   getHint,
   getNextChallenge,
+  keptBy,
   submitAttempt,
   summarizeSession,
   type ChallengeView,
   type ContentPack,
+  type CreateSessionInput,
   type Feedback,
   type Hint,
   type Lesson,
@@ -76,6 +78,30 @@ export function resumable(session: LessonSession, lesson: Lesson): boolean {
   );
 }
 
+/**
+ * What this player's last finished sitting of the lesson kept for next time, where the lesson keeps anything
+ * (`plan.keep`): which thing, when that sitting ended, and on what day. It is read from the sittings that are
+ * stored, so it is there after the page has been closed and opened again, and on another day.
+ */
+export async function lastKept(
+  deps: Pick<RunnerDeps, 'repository' | 'lesson' | 'profileId' | 'localDay'>,
+): Promise<CreateSessionInput['kept']> {
+  const { repository, lesson, profileId, localDay } = deps;
+  if (!lesson.plan.keep) return undefined;
+  const sessions = await repository.listSessions(profileId);
+  let last: { challengeId: string; at: number } | null = null;
+  for (const session of sessions) {
+    // A sitting left before its end kept nothing: what it would have kept was never shown. (A sitting of
+    // another activity needs no telling apart: it holds none of this one's challenges, so it kept none of them.)
+    if (session.completedAt === null) continue;
+    const challengeId = keptBy(session, lesson);
+    if (challengeId !== null && (last === null || session.completedAt > last.at)) {
+      last = { challengeId, at: session.completedAt };
+    }
+  }
+  return last === null ? undefined : { ...last, day: localDay(last.at) };
+}
+
 export class LessonRunner {
   private session: LessonSession;
   private state: RunnerState;
@@ -115,13 +141,14 @@ export class LessonRunner {
         else await repository.discardSession(existing.id);
       }
       if (!session) {
-        session = LessonRunner.fresh(deps);
+        session = LessonRunner.fresh(deps, await lastKept(deps));
         await repository.saveProgress(session);
       }
     } catch (error) {
       deps.onSaveError?.(error);
       saved = false;
-      session ??= LessonRunner.fresh(deps);
+      // What was kept could not be read, so nothing is asked about it: better than asking about the wrong thing.
+      session ??= LessonRunner.fresh(deps, undefined);
     }
     const runner = new LessonRunner(deps, session);
     runner.saved = saved;
@@ -129,13 +156,15 @@ export class LessonRunner {
     return runner;
   }
 
-  private static fresh(deps: RunnerDeps): LessonSession {
+  private static fresh(deps: RunnerDeps, kept: CreateSessionInput['kept']): LessonSession {
+    const now = deps.now();
     return createSession(deps.lesson, {
       id: deps.newId(),
       profileId: deps.profileId,
       seed: deps.newSeed(),
-      now: deps.now(),
+      now,
       contentVersion: deps.pack.contentVersion,
+      ...(kept === undefined ? {} : { kept, day: deps.localDay(now) }),
     });
   }
 
@@ -267,7 +296,17 @@ export class LessonRunner {
   /** Start the lesson again from the beginning, as a new sitting with a new seed. */
   async restart(): Promise<void> {
     if (this.busy) return;
-    this.session = LessonRunner.fresh(this.deps);
+    let kept: CreateSessionInput['kept'];
+    if (this.deps.lesson.plan.keep) {
+      // The sitting just finished may have kept something: the new one is planned knowing it.
+      this.busy = true;
+      try {
+        kept = await lastKept(this.deps).catch(() => undefined);
+      } finally {
+        this.busy = false;
+      }
+    }
+    this.session = LessonRunner.fresh(this.deps, kept);
     const session = this.session;
     this.shownAt = this.deps.elapsed();
     this.setState(this.present());

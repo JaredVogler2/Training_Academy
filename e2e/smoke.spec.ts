@@ -1,4 +1,4 @@
-import { expect, test } from './fixtures';
+import { expect, holdClock, test } from './fixtures';
 
 /**
  * The checks that matter on a real deployment as much as locally. Run them against a Vercel preview with
@@ -217,5 +217,58 @@ test.describe('the guard that every one of these tests runs under', () => {
       expect.stringMatching(/^uncaught: .*\/robots\.txt due to access control checks\.$/),
     ]);
     expect(guard.problems()).toEqual([]);
+  });
+});
+
+/**
+ * The clock that tests hold (fixtures.ts). Like the guard's tests, these stage what they need and belong to no
+ * deployment.
+ */
+test.describe('the clock that a test holds', () => {
+  test('is held even when the machine is slow between reading the time and asking the clock to stop there', async ({
+    page,
+  }) => {
+    // What failed a test in CI once, at its first attempt only (run 47, words.spec.ts): the page's time is read
+    // and the clock is asked to stop 20 ms after it; it will not stop at a time that has gone by, and that once
+    // the reading and the asking took longer than 20 ms. Here the reading is made to take a tenth of a second,
+    // the first time: the clock refuses, is asked again with the time read afresh, and is held.
+    await page.clock.install();
+    await page.goto('/');
+    await expect(page.getByRole('navigation', { name: 'Worlds' })).toBeVisible();
+    let readings = 0;
+    await holdClock(page, async () => {
+      const now = await page.evaluate(() => Date.now());
+      readings += 1;
+      if (readings === 1) await new Promise((resolve) => setTimeout(resolve, 100));
+      return now;
+    });
+    expect(readings).toBe(2);
+    // Held: a fifth of a second goes by here and none in the page, and a timer set there does not go off.
+    const before = await page.evaluate(() => {
+      window.setTimeout(() => document.body.setAttribute('data-went-off', 'true'), 50);
+      return Date.now();
+    });
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    expect(await page.evaluate(() => Date.now())).toBe(before);
+    await expect(page.locator('body')).not.toHaveAttribute('data-went-off', 'true');
+    // And it moves when the test moves it.
+    await page.clock.runFor(60);
+    await expect(page.locator('body')).toHaveAttribute('data-went-off', 'true');
+  });
+
+  test('gives up, and says why, when the clock will not stop however often it is asked', async ({
+    page,
+  }) => {
+    // A time that is always long gone by: asked five times, and then the refusal is the test's to see.
+    await page.clock.install();
+    await page.goto('/');
+    await expect(page.getByRole('navigation', { name: 'Worlds' })).toBeVisible();
+    let readings = 0;
+    const longAgo = () => {
+      readings += 1;
+      return Promise.resolve(0);
+    };
+    await expect(holdClock(page, longAgo)).rejects.toThrow('Cannot fast-forward to the past');
+    expect(readings).toBe(5);
   });
 });

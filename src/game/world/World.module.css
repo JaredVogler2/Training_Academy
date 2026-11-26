@@ -228,7 +228,13 @@
   font-size: 1.75rem;
 }
 
+/*
+ * Room for two lines, always: which activity Play goes to is known a moment after the page is (it depends on
+ * what this player has finished), and one name fits on a line where the next takes two. What is under the note
+ * stays where it is.
+ */
 .playNote {
+  min-height: 2lh;
   color: var(--ink-soft);
   font-size: var(--text-s);
   text-align: center;

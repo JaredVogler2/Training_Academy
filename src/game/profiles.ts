@@ -2,6 +2,7 @@ import { createStore, useStore } from '@/app/store';
 import { recordError } from '@/app/diagnostics';
 import type { AvatarId, Profile } from '@/engine';
 import type { BackendInfo, ImportResult, ProfilePatch } from '@/storage';
+import type { CheckBackupContent } from '@/storage/transfer';
 import { getRepository } from './services';
 
 /**
@@ -81,9 +82,12 @@ export async function setActiveProfile(id: string): Promise<void> {
   await refreshProfiles();
 }
 
-export async function importProfile(fileText: string): Promise<ImportResult> {
+export async function importProfile(
+  fileText: string,
+  checkContent?: CheckBackupContent,
+): Promise<ImportResult> {
   const repo = await getRepository();
-  const result = await repo.importBundle(fileText);
+  const result = await repo.importBundle(fileText, checkContent);
   await refreshProfiles();
   return result;
 }

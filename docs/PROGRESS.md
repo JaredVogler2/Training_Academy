@@ -1,5 +1,7 @@
 # Progress
 
+The dashboard and current release verification are tracked in the [release checklist](RELEASE_CHECKLIST.md) and [release audit](RELEASE_AUDIT.md).
+
 The plan is the seventeen phases in `prompt-series/`. A phase is marked done only when its own acceptance checks
 have been run and passed; the evidence is linked. `docs/CONTINUE_HERE.md` has the next action.
 
@@ -17,11 +19,11 @@ have been run and passed; the evidence is linked. `docs/CONTINUE_HERE.md` has th
 | 10    | Storytelling and geography                     | **Built** (2026-11-26): a globe and a story to make up; no countries. Untried    |
 | 11    | Music and additional skills                    | **Built** (2026-11-25): the Music Lab. No person has heard it                    |
 | 12    | Adaptive mastery engine                        | **Built** (2026-11-26): what Play offers next and why; luck allowed for. Untried |
-| 13    | Parent dashboard                               | Not started (a basic grown-ups area exists)                                      |
-| 14    | Accessibility, privacy, performance            | Not started (foundations in place)                                               |
-| 15    | Test and visual QA                             | Not started (test harness in place)                                              |
-| 16    | Vercel release                                 | Not started as a phase. The owner has deployed `main`: see below                 |
-| 17    | Polish, expansion, hand-off                    | Not started                                                                      |
+| 13    | Parent dashboard                               | Implemented on the release-readiness branch                                      |
+| 14    | Accessibility, privacy, performance            | Audited on the candidate. Physical-device and human checks remain                |
+| 15    | Test and visual QA                             | Browser and update evidence tracked in the release checklist                     |
+| 16    | Vercel release                                 | Production is live. Candidate and rollback checks are documented                 |
+| 17    | Polish, expansion, hand-off                    | Release checklist and audited hand-off added                                     |
 
 "Built" is meant exactly, and it is not "done": what is there is built, tested and playable, nobody has heard
 it and no child has tried it, and for every one of these phases the brief asked for something that is not
@@ -30,7 +32,7 @@ there. The tables below say what, item by item.
 ## Phase 12 — what Play offers next: what was asked, and what there is
 
 Built on 2026-11-26 and 27, on the pull request after
-[#16](https://github.com/JaredVogler2/Training_Academy/pull/16); **not live** until the owner merges it. Its brief asks for a learning engine that is transparent, that fits practice
+[#16](https://github.com/JaredVogler2/Training_Academy/pull/16). [PR #17](https://github.com/JaredVogler2/Training_Academy/pull/17) has been merged and deployed. Its brief asks for a learning engine that is transparent, that fits practice
 to a child without claims about the child, and whose evidence is valid. What there is does the first two as
 far as a machine can show, and the third as far as short runs of answers allow, which is written out with
 numbers in `docs/QUALITY_REPORT.md`. **No child has played by it.**

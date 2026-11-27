@@ -16,6 +16,7 @@ export interface Asked {
   today: string;
   /** Where a grown-up has chosen for Play to begin, by world. */
   startAt?: Partial<Record<WorldId, string>>;
+  leftOut?: readonly WorldId[];
 }
 
 export async function adviceFor(asked: Asked): Promise<Advice> {
@@ -26,5 +27,6 @@ export async function adviceFor(asked: Asked): Promise<Advice> {
     finished: asked.finished,
     today: asked.today,
     ...(asked.startAt ? { startAt: asked.startAt } : {}),
+    ...(asked.leftOut ? { leftOut: asked.leftOut } : {}),
   });
 }

@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import type * as Services from '@/game/services';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Profile } from '@/engine';
@@ -29,7 +30,8 @@ function shut(): void {
   door = { open, opened, broken: false };
 }
 
-vi.mock('@/game/services', () => ({
+vi.mock('@/game/services', async (original) => ({
+  ...(await original<typeof Services>()),
   getRepository: () =>
     Promise.resolve(
       new Proxy(repository, {

@@ -157,7 +157,12 @@ export function Home() {
   // When a sitting of the length a grown-up chose has been played, nothing more is pointed at: Glim rests.
   // Every island is still there to be tapped.
   const { rest } = useTimeToRest();
-  const next = !known || rest ? null : advice?.top ? worldById(advice.top.world) : nextWorld(done);
+  const next =
+    !known || rest
+      ? null
+      : advice
+        ? advice.top && worldById(advice.top.world)
+        : nextWorld(done, player?.settings.leftOut);
   // Whether this page opened on the front door: if so, Glim greets the child on the map as well.
   const [openedAtDoor] = useState(!begun);
 

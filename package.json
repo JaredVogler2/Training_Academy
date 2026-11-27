@@ -2,7 +2,7 @@
   "name": "training-academy",
   "private": true,
   "version": "0.1.0",
-  "description": "Training Academy — a storybook learning adventure for preschoolers that runs in the browser and saves on the device.",
+  "description": "Training Academy \u2014 a storybook learning adventure for preschoolers that runs in the browser and saves on the device.",
   "type": "module",
   "engines": {
     "node": "22.x"
@@ -69,6 +69,9 @@
   "overrides": {
     "eslint-plugin-jsx-a11y": {
       "eslint": "$eslint"
+    },
+    "@vercel/routing-utils": {
+      "path-to-regexp": "6.3.0"
     }
   }
 }

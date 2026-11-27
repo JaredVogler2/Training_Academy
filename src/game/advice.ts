@@ -35,8 +35,9 @@ export function useAdvice(): Advised {
   const playerId = player?.id ?? null;
   // Where a grown-up has chosen to begin, as text: the same choice is the same text however often it is read.
   const startAt = player?.settings.startAt;
-  const starts = JSON.stringify(startAt ?? {});
-  const asked = playerId === null ? null : `${playerId} ${starts}`;
+  const leftOut = player?.settings.leftOut;
+  const selection = JSON.stringify([startAt, leftOut]);
+  const asked = playerId === null ? null : `${playerId} ${selection}`;
   const ready = finishedIsKnown(done);
 
   useEffect(() => {
@@ -52,6 +53,7 @@ export function useAdvice(): Advised {
           finished: done,
           today: localDay(now()),
           ...(startAt ? { startAt } : {}),
+          ...(leftOut ? { leftOut } : {}),
         }),
       )
       .then(
@@ -67,7 +69,7 @@ export function useAdvice(): Advised {
     return () => {
       current = false;
     };
-    // `startAt` is read through `starts`: the object is a new one every time the player is read.
+    // Settings are read through the serialized selection because the profile is read afresh.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerId, asked, ready, done]);
 

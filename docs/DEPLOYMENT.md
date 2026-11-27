@@ -1,5 +1,7 @@
 # Deployment
 
+The dashboard and current release verification are tracked in the [release checklist](RELEASE_CHECKLIST.md) and [release audit](RELEASE_AUDIT.md).
+
 **Status: the owner has deployed it.** The repository is connected to a Vercel project, `training-academy`, by its
 owner. Production is the `main` branch, at `https://training-academy-dun.vercel.app`.
 

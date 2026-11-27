@@ -659,6 +659,8 @@ export const ProfileSchema = v.object({
      * Nothing before it is marked as done, nothing is locked, and every activity is still on the world's page.
      */
     startAt: v.optional(v.record(WorldIdSchema, LessonIdSchema)),
+    /** Worlds Glim skips when pointing on the map. */
+    leftOut: v.optional(v.array(WorldIdSchema)),
     /** This player has been shown how to play, or has passed it by: it is not shown unasked again. */
     howTo: v.optional(v.literal('seen')),
     /**

@@ -65,6 +65,14 @@ export function startOf(profile: Profile | null, world: WorldId): string | undef
 
 type Settings = Profile['settings'];
 
+export function withLeftOut(settings: Settings, world: WorldId, out: boolean): Settings {
+  const { leftOut, ...rest } = settings;
+  const worlds = new Set(leftOut);
+  if (out) worlds.add(world);
+  else worlds.delete(world);
+  return worlds.size ? { ...rest, leftOut: [...worlds] } : rest;
+}
+
 /**
  * The suggestions worth making: those that would begin a world further on than where it begins now. A grown-up
  * who has already chosen a place as far on, or further, is not asked again.

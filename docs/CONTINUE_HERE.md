@@ -1,5 +1,7 @@
 # Continue here
 
+The dashboard and current release verification are tracked in the [release checklist](RELEASE_CHECKLIST.md) and [release audit](RELEASE_AUDIT.md).
+
 **Seven worlds are built: the six islands, and the Music Lab in the lighthouse. Phases 01 to 03 are complete;
 phase 04 is built (the voice, and help for a child's first visit); phases 05, 06 and 11 are built as far as
 their briefs' last optional parts, and phases 07 to 10, Robot Ridge, Memory Forest, Inventor Island and

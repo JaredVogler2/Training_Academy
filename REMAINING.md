@@ -14,6 +14,8 @@ seventeen briefs in `prompt-series/` (start with `prompt-series/README.md` and `
 
 ---
 
+> Current branch handoff. Phase 12 and the storybook graphics were merged and deployed before this work began. For the dashboard and release evidence, see [Release audit](docs/RELEASE_AUDIT.md) and [Release checklist](docs/RELEASE_CHECKLIST.md). The original production notes below describe the date this handoff was first written.
+
 ## 1. Where things stand
 
 ### The product
@@ -30,9 +32,9 @@ skills, a recorded synthetic voice (736 clips), and a grown-ups' area behind a h
 | Phases | State                                                                                                      |
 | ------ | ---------------------------------------------------------------------------------------------------------- |
 | 01–11  | Done or built: the foundation, the look, the journey, the voice and first-visit help, and all seven worlds |
-| 12     | **Built, on an open pull request (see below). Not merged, so not live**                                    |
-| 13     | **Begun and not kept** (section 3). Nothing of it is in the repository                                     |
-| 14–17  | Not started as phases. Much of their groundwork exists (section 4)                                         |
+| 12     | **Built and deployed from main**                                                                           |
+| 13     | **Implemented on the release-readiness branch**                                                            |
+| 14–17  | Release audit and checklist added. Human and physical verification remains                                 |
 
 "Built" is meant exactly. Nobody has listened to the voice or the music, no child has played, and no teacher has
 reviewed the content. The briefs call the accuracy of the audio a release gate, and that gate has not been
@@ -72,120 +74,15 @@ with a game of pairs played on the live build first: 24 of 24.
 
 ---
 
-## 2. First steps for whoever picks this up
+## 2. First steps
 
-1. `npm ci`, then `npm run verify:release` (format, lint, types, unit tests, build, build checks, browser tests).
-   Browser tests need Playwright's Chromium; the README says how to install it. WebKit runs only in CI. The full
-   browser suite takes about an hour on four cores.
-2. **Read pull request #17.** If it has merged, start the branch again from the latest `main` (the PR's work is
-   already in `main`), check the live site (section 6, "After a merge"), and record it. If it is open:
-   - Read every CI job. If any is red, find the root cause and fix it (section 6, "When CI is red"). Never skip,
-     disable or quarantine a test to get green.
-   - **Look at the artifact sizes even when CI is green.** A report of 0.5–0.9 MB has nothing in it but the
-     summary. One of several MB means some test passed only at a second attempt and its traces were kept. Download
-     it, read the failure and the trace, and find out why. A test that needs a second attempt has a cause.
-   - Phase 12's new browser tests (`e2e/next.spec.ts`) had never run in WebKit before #17's CI.
-3. Then carry on with phase 13 (section 3).
-
----
+Start from `main` and read the [release checklist](docs/RELEASE_CHECKLIST.md). Verify the exact Git SHA when checking a preview or production deployment.
 
 ## 3. Phase 13: the parent dashboard
 
-Brief: `prompt-series/13_PARENT_DASHBOARD.md`. Read it first; this section sets it against the code.
+The release-readiness branch adds daily learning history, last-practised and review dates, expandable curriculum details, printable activities for all seven worlds, and per-player controls for where Glim points. The worlds and their activities remain directly available. The backup importer checks lesson and question references in actual published packs before writing.
 
-### What the grown-ups' area already has (`src/parent/`)
-
-| Brief's section            | What exists                                                                                                                                                                                                                                                                    |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Entry challenge            | `Gate` in `GrownUps.tsx`: hold a button for two seconds. It says plainly that it is not a lock                                                                                                                                                                                 |
-| 1. Profiles                | `Players`: add (nickname and picture), change, remove, switch. Up to `MAX_PROFILES`. Save a copy, load a copy, erase everything (`Data`)                                                                                                                                       |
-| 2. Skill trees             | `Evidence.tsx`: every skill of every world, its status (not yet observed → exploring → guided → practising → independent so far → independent across days) and its counts in words, including what luck could account for. **No "last review", no "next suggested" per skill** |
-| (phase 12) What comes next | `NextUp.tsx`: what Play offers in every world and why                                                                                                                                                                                                                          |
-| 3. Learning history        | **Nothing**                                                                                                                                                                                                                                                                    |
-| 4. Concepts                | **Nothing shown.** `conceptsOf(pack)` in `src/engine/graph.ts` can already give each skill's objective, examples, prerequisites, how its questions are used, the mistakes they tell apart and its hint ladder. There are no difficulty settings                                |
-| Skip optional worlds       | **Nothing**                                                                                                                                                                                                                                                                    |
-| 5. Session management      | `WhereToBegin.tsx`: a sitting length of about 10, 15 or 20 minutes (after which Glim rests and nothing more is suggested), "a grown-up is helping", where Play begins. `DeviceSettings`: sound, motion, graphics. **No words on breaks**                                       |
-| 6. Offline connection      | Things to try together exist **only on world pages**, for Inventor Island, Explorer Harbor and the Music Lab (`together` in `src/game/worlds.ts`). None for Reading Cove, Number Garden, Robot Ridge or Memory Forest. Nothing in the grown-ups' area, nothing printable       |
-| 7. Data control            | Export is readable JSON with a format version and a checksum (`src/storage/transfer.ts`). Import checks type, size, shape, checksum and ownership, and merges. **It does not check that the challenges it refers to exist**                                                    |
-
-### What was built in a session and not kept
-
-The following was written and partly tested, then left uncommitted when work stopped. **None of it is in the
-repository.** Redo it from this description. It is a reasonable design, but not a binding one.
-
-1. **Import checks what a file refers to.** In `src/storage/transfer.ts`, add a `KnownContent` interface
-   (`lesson(lessonId) → boolean`, `challenge(lessonId, challengeId) → boolean`) and an `ImportProblem` of
-   `'unknown-content'`. `readBundle(input, known?)` refuses a bundle in which a sitting's `lessonId`, or an
-   answer's `lessonId` or `challengeId`, is unknown, and names the first one. Pass `known` through
-   `Repository.importBundle(input, known?)` and `importProfile(fileText, known?)` in `src/game/profiles.ts`. The
-   storage layer must not import content, so the game supplies `known`. **Build `known` in `src/parent/`**, from
-   `lessonCalled()` (`src/content/lessonList.ts`) with "a challenge id begins with its lesson id and a dot". Doing
-   it in `profiles.ts` would pull the lesson list into the first load, which has no room (section 5). Test it in
-   `tests/storage/repository.test.ts`: a known file loads; an unknown lesson, an unknown challenge or an unknown
-   sitting is refused and nothing is written; without `known`, nothing is checked.
-2. **Day by day.** Add `src/engine/history.ts` with `dayByDay(attempts) → DayDone[]`, the latest day first.
-   Each `DayDone` has `day`, `lessons`, `answers`, `alone` (first tries in an independent step with no hint and no
-   help: `isIndependentProbe`), `aloneRight` (`isIndependentSuccess`), `rightWithHelp` (correct with a second
-   try, a hint or a grown-up) and `firstTimeAlone` (skills done alone for the first time that day). It drops
-   answers whose day is not a calendar day, counts an answer stored twice once, and gives the same result in any
-   order. Export it from `src/engine/index.ts` and add `history` to the `engine-next` chunk group in
-   `vite.config.ts`. Show it in `src/parent/History.tsx` as one card per day, in sentences (they read on a 320 px
-   phone, where a table does not), for the latest 14 days, with a line saying how many earlier days a saved copy
-   holds. Write days in words with a function that works the weekday out from the day number (1970-01-01 was a
-   Thursday), so the result does not depend on the browser's locale. Say nothing until the record has been read
-   (`data-settled`), as `Evidence.tsx` does. Share the record-reading hook between the cards by moving `useRecord`
-   from `Evidence.tsx` into `src/parent/fetched.ts`.
-3. **When each skill was last practised, and when it is worth coming back to.** In each row of `Evidence.tsx`,
-   add `getSkillReview(record, skill, localDay(now()), DEFAULT_REVIEW_POLICY, DEFAULT_EVIDENCE_POLICY, chance)`
-   (`src/engine/review.ts`) and show "Last practised on …" and "Worth coming back to from …" (or "now"). This is
-   the brief's "last review / next suggested". In the tests, a `vi.mock('@/game/services', …)` must spread the
-   original module, because the code now calls `localDay` and `now`.
-4. **A skill in full** (the brief's "Concepts"): a `<details>` in each skill row, closed by default, built from
-   `conceptsOf(pack)`. It shows what the skill builds on (by name, never by id), the activities that ask it,
-   three example instructions (an instruction is a key into `pack.strings.en`, so resolve it), how its questions
-   are used, how a sitting draws them, the help it offers in words, and the mistakes it can tell apart. To have
-   `useSkills()` in `fetched.ts` return `concepts` and `words` beside `skills`, it calls `conceptsOf(pack)`.
-5. **Things to do together, away from the screen**, and printable: `src/parent/guides.ts` holds new guides for
-   the four worlds without any (a sound hunt for Reading Cove; counting snacks for Number Garden; "be the robot"
-   for Robot Ridge; "what is missing?" on a tray and a walk to remember for Memory Forest). Each has what to do,
-   what is needed and what to watch out for: choking (cut grapes lengthways), stairs, roads. `allGuides()` puts
-   them together with the `together` entries already in `worlds.ts`. `src/parent/Guides.tsx` lists them by world,
-   with a "Print these" button that sets `data-printing="guides"` on `<html>` and calls `window.print()`, and a
-   `@media print` rule that hides everything else in the area. Keep these out of `worlds.ts`, which is in the
-   first load.
-6. **Leave a world out of where Glim points** (the brief's "skip/enable optional worlds without false mastery").
-   Add `leftOut: v.optional(v.array(WorldIdSchema))` to `ProfileSchema.settings` (`src/engine/schema.ts`) and
-   `leftOut?: readonly WorldId[]` to `AdviseInput`. In `advise()`, choose `top` only from the worlds not left out;
-   each world's own page keeps its Play. Pass it through `adviceEngine.ts` and `advice.ts`, putting it in the key
-   the hook re-asks on. Give `nextWorld(done, leftOut)` in `src/game/progress.ts`, the map's fallback, the same
-   rule. Add a `withLeftOut(settings, world, out)` helper in `src/game/placement.ts`, and a tick per world on the
-   "where to begin" card ("Glim may point at …"). Nothing is closed or counted as done. This one had **no tests
-   yet**. Needed: `advise` never makes a left-out world `top` and returns `null` when all are left out;
-   `withLeftOut` writes nothing when nothing is left out; the hook asks again when the setting changes; the card
-   saves the tick; and a browser test shows the map not pointing at a left-out world while its page still offers
-   Play. The setting changes what a player record can hold, so rehearse the update.
-7. **Breaks.** Add a sentence to the sitting-length help in `src/parent/text.ts`: short sittings with something
-   else in between suit young children, and nothing keeps a streak, sends a reminder or asks a child to come
-   back.
-
-### What phase 13 still needs after that
-
-- **The brief's acceptance test, as a browser test**: a new learner completes guided and independent challenges;
-  the dashboard shows the right distinctions (guided against independent, counts, history); save a copy; erase;
-  load it; everything shown is identical. Compare the text of the skill rows and of the history before and after.
-- **Profile isolation** in the browser (one player's record, history and suggestions never shown for another),
-  and **badges cannot edit the log**: tapping a status or a history card changes nothing. Status badges are `<p>`,
-  not buttons; a test should hold to that.
-- **Accessibility and fit of every new card**: run axe on the grown-ups' area with the new cards open
-  (`e2e/a11y.spec.ts` shows how), and check that nothing runs off the side on 320, 360 and 390 px phones and on
-  the phones held sideways (`screenFit` in `e2e/fixtures.ts`). The fold-outs' summaries must be at least 44 px
-  tall.
-- Decide whether "difficulty settings" means anything here. Nothing in the game has one; the brief lists them
-  under Concepts.
-- **The build budget** (section 5) has to be raised on purpose, or room made. Phase 13 will not fit otherwise.
-- Documents: PROGRESS (a phase 13 table like phase 12's), ARCHITECTURE, QUALITY_REPORT (a review with pictures
-  in `docs/review/phase-13/`), TEST_RESULTS, CONTINUE_HERE, README.
-- The full check, the full browser suite, a rehearsal of the update, a push and a pull request.
+The remaining checks for release are listed in the [release checklist](docs/RELEASE_CHECKLIST.md). That includes human audio and educator review, and physical-device and screen-reader checks. The underlying learning policies and their limitations are covered in the [Quality report](docs/QUALITY_REPORT.md).
 
 ---
 
@@ -233,7 +130,7 @@ Read each brief in `prompt-series/`. What is already there to build on:
 
 ### 17: polish and hand-off
 
-- Not started. The open items in section 7 are the honest list of what polish should look at first. No child
+- The release-readiness branch adds a checklist and audit. Section 7 records the open product and validation issues. No child
   playtests have been done. If any are done, they must be consented and observed, with nothing recorded or
   uploaded.
 
@@ -251,7 +148,7 @@ From `npm run verify:dist` on #17's tree:
 | Voice: 736 clips                                    | 9350.8 kB | 10500 kB |
 | 3D hub (gzip, on demand)                            | 260.1 kB  | 290 kB   |
 
-Raising a limit is a decision: change it in `scripts/verify-dist.mjs` with the reason written beside the number.
+The release-readiness branch sets the runtime output cap to 2,870 KiB for Phase 13 and keeps the 110 KiB first-load JavaScript cap. Code and font notices have a separate budget and are loaded on request. Raising a limit is a decision: change it in `scripts/verify-dist.mjs` with the reason written beside the number.
 Anything added to `src/game/worlds.ts`, `src/game/profiles.ts` or the map lands in the first load; keep grown-up
 material in `src/parent/` (an on-demand chunk). The verifier also fails the build if any two built files import
 each other in a ring, and with good reason: that once made the grown-ups' page fail in the built game only
@@ -362,11 +259,6 @@ clip is missing, stale or heard as different words. **No person has listened to 
 
 ---
 
-## 8. A short checklist
+## 8. Closeout
 
-1. Read #17's CI at its head, every job, and artifact sizes; fix what is red, explain what retried.
-2. If #17 is merged: restart the branch from `main`, check the live site with that commit's tests, record it.
-3. Phase 13: rebuild section 3's items with tests and fault checks; the acceptance browser test; budgets;
-   documents; full suite; rehearsal; pull request.
-4. Phases 14 to 17 from their briefs, in order, keeping section 6's practices.
-5. Never claim what was not run. Keep every document's numbers true to the last run.
+Use the [release checklist](docs/RELEASE_CHECKLIST.md) to record the candidate, test evidence, human reviews, and approval. Confirm what reached production after an approved release.

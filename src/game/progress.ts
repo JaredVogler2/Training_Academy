@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { recordError } from '@/app/diagnostics';
+import type { WorldId } from '@/engine/schema';
 import { refreshProfiles, useProfiles } from './profiles';
 import { getRepository } from './services';
 import { WORLDS, isOpen, lessonsOf, type WorldInfo } from './worlds';
@@ -85,7 +86,10 @@ export function nextLessonIn(
  * The world to go to next: the first, in teaching order, that still has something unfinished. When everything has
  * been finished it is the first world again; when no world has anything to play there is none.
  */
-export function nextWorld(done: ReadonlySet<string>): WorldInfo | null {
-  const open = WORLDS.filter(isOpen);
+export function nextWorld(
+  done: ReadonlySet<string>,
+  leftOut?: readonly WorldId[],
+): WorldInfo | null {
+  const open = WORLDS.filter((world) => isOpen(world) && !leftOut?.includes(world.id));
   return open.find((world) => lessonsOf(world).some((id) => !done.has(id))) ?? open[0] ?? null;
 }

@@ -30,7 +30,7 @@ const BUDGET_KB = {
   /** Any other on-demand chunk (a world, the lesson frame, the grown-ups area, a content pack). */
   lazyChunk: 30,
   /**
-   * Everything in dist but the voice and the content, uncompressed: the game itself. It grows when code or
+   * Runtime output, uncompressed, excluding voice, content and license notices. It grows when code or
    * pictures are added, and a jump in it is a library or a picture that was not meant to be there.
    *
    * It was 2700 until Explorer Harbor's room for making a story, which brought 109 kB with it and took the
@@ -38,7 +38,9 @@ const BUDGET_KB = {
    * list of seventy-five more recordings. The room is a part of its own (12 kB compressed), fetched only by
    * whoever opens it. The limit was moved for that, on purpose, and stands as far above the game as it did.
    */
-  totalRaw: 2850,
+  // Phase 13 adds the grown-ups dashboard, checked imports and printable activities.
+  totalRaw: 2870,
+  licenseNotices: 128,
   /**
    * The content together, uncompressed: every challenge of every world, written out, and the outlines of the
    * continents for Explorer Harbor's globe. This is meant to grow, an activity at a time; each pack is fetched
@@ -240,8 +242,11 @@ const packs = relativeFiles.filter((file) => /^immutable\/[a-z-]+\.v\d+-[\w-]+\.
 // (vite.config.ts), fetched with that world.
 const atlas = relativeFiles.filter((file) => /^immutable\/atlas-[\w-]+\.js$/.test(file));
 const content = [...packs, ...atlas];
+const licenseNotices = ['assets/dependency-licenses.txt', 'assets/additional-licenses.txt'];
 const totalRaw = sum(
-  relativeFiles.filter((file) => !clips.includes(file) && !content.includes(file)),
+  relativeFiles.filter(
+    (file) => !clips.includes(file) && !content.includes(file) && !licenseNotices.includes(file),
+  ),
   (file) => statSync(file).size,
 );
 const contentRaw = sum(content, (file) => statSync(file).size);
@@ -252,6 +257,18 @@ const within = (label, bytes, budget) =>
 within('first-load script (gzip)', initialScript, BUDGET_KB.initialScript);
 within('first-load styles (gzip)', initialStyles, BUDGET_KB.initialStyles);
 within('fonts', fonts, BUDGET_KB.fonts);
+check(
+  licenseNotices.every((file) => relativeFiles.includes(file)),
+  'the build includes code and font license notices',
+);
+within(
+  'license notices',
+  sum(
+    relativeFiles.filter((file) => licenseNotices.includes(file)),
+    (file) => statSync(file).size,
+  ),
+  BUDGET_KB.licenseNotices,
+);
 within('3D hub chunks (gzip)', hub3d, BUDGET_KB.hub3d);
 const pictures = relativeFiles.filter((file) => /^immutable\/.*\.webp$/.test(file));
 check(pictures.length >= 7, `the build has the hub's pictures (${pictures.length} WebP files)`);
@@ -260,11 +277,7 @@ within(
   sum(pictures, (file) => statSync(file).size),
   BUDGET_KB.hubPictures,
 );
-within(
-  'whole build without the voice and the content (uncompressed)',
-  totalRaw,
-  BUDGET_KB.totalRaw,
-);
+within('runtime build without voice and content (uncompressed)', totalRaw, BUDGET_KB.totalRaw);
 check(packs.length >= 7, `the build has a content pack for each world (${packs.length} of them)`);
 check(
   atlas.length === 1,

@@ -13,8 +13,8 @@
   inset: 0;
   z-index: 1;
   background:
-    radial-gradient(ellipse at 16% 0%, rgb(255 241 198 / 35%), transparent 54%),
-    linear-gradient(rgb(223 244 242 / 32%), transparent 21%),
+    radial-gradient(ellipse at 16% 28%, rgb(255 243 210 / 16%), transparent 54%),
+    linear-gradient(rgb(194 231 255 / 35%), transparent 21%),
     radial-gradient(125% 95% at 50% 43%, transparent 47%, rgb(10 48 91 / 34%) 100%);
   content: '';
   pointer-events: none;

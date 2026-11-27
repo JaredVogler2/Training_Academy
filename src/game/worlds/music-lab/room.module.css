@@ -98,7 +98,10 @@
   width: 136px;
   padding: 8px 10px;
   border-radius: var(--radius-pill);
-  background: rgb(255 255 255 / 70%);
+  background: linear-gradient(var(--white), var(--tint));
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    0 4px 14px rgb(74 35 81 / 12%);
 }
 
 .note {

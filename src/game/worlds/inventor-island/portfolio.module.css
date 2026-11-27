@@ -79,7 +79,7 @@
   align-content: start;
   padding: 8px 8px 10px;
   border-radius: var(--radius-m);
-  background: var(--white);
+  background: linear-gradient(155deg, var(--white) 48%, var(--tint));
   box-shadow:
     0 var(--lip) 0 rgb(34 48 79 / 14%),
     0 10px 18px rgb(34 48 79 / 10%);
@@ -96,6 +96,20 @@
   color: inherit;
   background: var(--paper-warm);
   cursor: pointer;
+}
+
+.picture > svg {
+  transition: transform var(--gentle) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .picture:hover > svg {
+    transform: scale(1.035);
+  }
+}
+
+.picture:active > svg {
+  transform: scale(0.97);
 }
 
 .picture:focus-visible {

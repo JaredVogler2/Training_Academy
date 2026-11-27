@@ -85,10 +85,10 @@ export default defineConfig({
               priority: 6,
             },
             {
-              // The harbour itself: the modelling kit, the islands, the water. The hub and the studio both use it,
+              // The harbour itself: the modelling kit, the islands, the water. The hub, island views and studio use it,
               // and each stays a small chunk of its own that asks for this one.
               name: 'harbour',
-              test: /src[\\/]render[\\/]hub3d[\\/](?!Hub3D\.|Studio\.)/,
+              test: /src[\\/]render[\\/]hub3d[\\/](?!Hub3D\.|Studio\.|IslandVista3D\.)/,
               priority: 5,
             },
             {

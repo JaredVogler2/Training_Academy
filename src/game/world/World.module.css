@@ -13,62 +13,68 @@
 
 .hero {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: clamp(14px, 4vw, 28px);
-  align-items: center;
-  padding: clamp(16px, 4vw, 28px);
-  border: 4px solid var(--white);
+  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  min-height: clamp(210px, 32vh, 310px);
+  overflow: hidden;
+  border: 3px solid rgb(255 255 255 / 88%);
   border-radius: var(--radius-l);
-  background: var(--tint);
-  box-shadow:
-    0 var(--lip) 0 var(--mid),
-    0 16px 30px rgb(34 48 79 / 14%);
+  background: var(--paper);
+  box-shadow: var(--shadow-card);
 }
 
-.emblem {
-  position: relative;
-  width: clamp(96px, 26vw, 168px);
-  height: clamp(96px, 26vw, 168px);
-  /* Room for the badge, which hangs off the picture's corner. */
-  margin: 0 clamp(8px, 2.5vw, 18px) clamp(6px, 2vw, 14px) 0;
-}
-
-/* What the world is for, pinned to the picture of the place. */
-.badge {
-  position: absolute;
-  right: -16%;
-  bottom: -12%;
+.heading {
   display: grid;
-  place-items: center;
-  width: 54%;
-  height: 54%;
-  border: 3px solid var(--white);
-  border-radius: 50%;
-  background: var(--white);
-  box-shadow: 0 3px 0 rgb(34 48 79 / 16%);
-}
-
-.badge svg {
-  width: 84%;
-  height: 84%;
-}
-
-.emblemArt {
-  width: 100%;
-  height: 100%;
-  animation: world-float 5s ease-in-out infinite alternate;
+  align-content: center;
+  justify-items: start;
+  gap: 8px;
+  padding: clamp(16px, 3vw, 32px);
+  background:
+    radial-gradient(ellipse at 100% 0%, var(--tint), transparent 80%),
+    linear-gradient(150deg, var(--white), var(--paper));
 }
 
 .heading h1 {
   font-size: var(--text-xxl);
 }
 
+.heroMark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  aspect-ratio: 1;
+  margin-bottom: 2px;
+  border-radius: 50%;
+  background: var(--tint);
+}
+
+.heroMark svg {
+  width: 34px;
+  height: 34px;
+}
+
 .focus {
-  margin-top: 6px;
-  color: var(--deep);
-  font-size: var(--text-l);
+  color: var(--ink-soft);
+  font-size: var(--text-m);
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 1.3;
+}
+
+@media (max-width: 599px) and (min-height: 521px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: clamp(128px, 25vh, 212px) auto;
+    min-height: 0;
+  }
+
+  .heading {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 2px 10px;
+    align-items: center;
+  }
+
+  .heroMark {
+    grid-row: 1 / 3;
+  }
 }
 
 .play {
@@ -168,7 +174,7 @@
   border: 4px solid var(--white);
   border-radius: var(--radius-m);
   color: var(--ink);
-  background: var(--white);
+  background: linear-gradient(160deg, var(--white) 58%, var(--tint));
   box-shadow:
     0 var(--lip) 0 rgb(34 48 79 / 14%),
     0 10px 18px rgb(34 48 79 / 10%);
@@ -176,6 +182,15 @@
   transition:
     transform var(--quick) var(--ease-out),
     box-shadow var(--quick) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 7px 0 rgb(34 48 79 / 14%),
+      0 14px 24px rgb(34 48 79 / 16%);
+  }
 }
 
 .card:active {
@@ -409,15 +424,6 @@
   font-weight: 800;
 }
 
-@keyframes world-float {
-  from {
-    transform: translateY(-3px) rotate(-1.5deg);
-  }
-  to {
-    transform: translateY(4px) rotate(1.5deg);
-  }
-}
-
 /*
  * A phone on its side: the place on the left, the way in on the right, so that Play is on the first screen.
  * What is written for grown-ups follows underneath, across both.
@@ -449,13 +455,23 @@
     grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
   }
 
-  .emblem {
-    width: 88px;
-    height: 88px;
+  .hero {
+    grid-template-columns: minmax(130px, 1.1fr) minmax(0, 1fr);
+    min-height: 146px;
   }
 
-  .hero {
-    padding: 12px 18px;
+  .heading {
+    gap: 4px;
+    padding: 8px 12px;
+  }
+
+  .heroMark {
+    width: 34px;
+  }
+
+  .heroMark svg {
+    width: 26px;
+    height: 26px;
   }
 
   .heading h1 {

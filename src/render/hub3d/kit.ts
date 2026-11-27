@@ -473,7 +473,9 @@ export function landmass(spec: LandSpec): Land {
     const slope =
       smooth(plateau + 0.02, plateau + 0.18, f) *
       (1 - smooth(BEACH_FROM - 0.14, BEACH_FROM - 0.02, f));
-    target.lerp(rockColour, slope * cliff);
+    const seam = 0.5 + 0.5 * Math.sin(f * 62 + seed + 1.8 * Math.sin(x * 2.8 + z * 2.1));
+    target.lerp(rockColour, slope * cliff * (0.84 + seam * 0.16));
+    target.multiplyScalar(1 - slope * cliff * seam * 0.13);
     for (const [index, patch] of patches.entries()) {
       const reach = Math.hypot(x - patch.x, z - patch.z) / patch.radius;
       const colour = patchColours[index];

@@ -10,7 +10,9 @@
   place-items: center;
   padding: calc(var(--topbar) + var(--safe-top) + 12px) calc(var(--gutter) + var(--safe-right))
     calc(16px + var(--safe-bottom)) calc(var(--gutter) + var(--safe-left));
-  background: linear-gradient(rgb(223 242 250 / 78%), rgb(150 220 226 / 62%));
+  background:
+    radial-gradient(ellipse at 50% 45%, rgb(239 248 230 / 75%), transparent 76%),
+    linear-gradient(rgb(160 216 224 / 53%), rgb(29 108 150 / 40%));
   animation: veil-in var(--gentle) linear both;
 }
 
@@ -28,7 +30,9 @@
   /* Room at the top for Glim, who stands half behind the card's edge. */
   padding: clamp(40px, 8vh, 60px) clamp(6px, 3vw, 24px) clamp(2px, 2vh, 12px);
   border-radius: var(--radius-l);
-  background: var(--paper);
+  background:
+    radial-gradient(ellipse at 50% 0%, #ffedb9, transparent 57%),
+    linear-gradient(150deg, var(--white), var(--paper));
   box-shadow: var(--shadow-card);
   animation: card-in 0.5s var(--ease-spring) both;
 }

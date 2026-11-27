@@ -88,11 +88,11 @@ export function Lights({
 
   return (
     <>
-      <hemisphereLight args={['#dfe9ff', '#ffe3bd', 1.55]} />
+      <hemisphereLight args={['#ccdefd', '#efc78d', 1.36]} />
       <directionalLight
         ref={sun}
-        intensity={2.05}
-        color="#fff1d6"
+        intensity={2.22}
+        color="#fff1cf"
         castShadow={shadows}
         shadow-mapSize={[shadowMapSize || 512, shadowMapSize || 512]}
         shadow-bias={-0.0008}

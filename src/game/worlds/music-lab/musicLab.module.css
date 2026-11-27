@@ -368,6 +368,29 @@
   cursor: default;
 }
 
+.key[data-lit='true']::after {
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--yes-deep);
+  border-radius: inherit;
+  content: '';
+  opacity: 0;
+  pointer-events: none;
+  animation: note-ring 360ms var(--ease-out);
+}
+
+@keyframes note-ring {
+  from {
+    opacity: 0.65;
+    scale: 0.94;
+  }
+
+  to {
+    opacity: 0;
+    scale: 1.06;
+  }
+}
+
 .key[data-lit='true'] {
   border-color: var(--yes);
   background: #fff6d2;

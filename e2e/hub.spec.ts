@@ -123,8 +123,10 @@ test.describe('the 3D hub', () => {
     for (const world of [/Robot Ridge/, /Memory Forest/]) {
       await press(page.getByRole('link', { name: world }));
       await expect(page.getByRole('link', { name: 'Islands' })).toBeVisible({ timeout: 45_000 });
-      // Away from the hub there is no canvas at all: the scene and its graphics context have been given back.
-      await expect(page.locator('canvas')).toHaveCount(0);
+      const vista = page.getByTestId('island-vista');
+      await expect(stage(page)).toHaveCount(0);
+      await expect(vista.locator('[data-ready="true"] canvas')).toBeVisible({ timeout: 45_000 });
+      await expect(page.locator('canvas')).toHaveCount(1);
       await press(page.getByRole('link', { name: 'Islands' }));
       await expect(stage(page)).toHaveAttribute('data-hub-mode', '3d', { timeout: 45_000 });
       await expect(page.locator('canvas')).toHaveCount(1);
@@ -132,8 +134,37 @@ test.describe('the 3D hub', () => {
     // (A scene that leaked its context would also be reported by the browser, and any console message fails a test.)
   });
 
+  test('the island close-up falls back independently if its context is lost', async ({
+    page,
+    guard,
+  }) => {
+    guard.allow(/Context Lost|context lost|WebGL/i);
+    await page.goto('/world/music-lab');
+    const vista = page.getByTestId('island-vista');
+    const canvas = vista.locator('[data-ready="true"] canvas');
+    await expect(canvas).toBeVisible({ timeout: 45_000 });
+    await canvas.evaluate((element: HTMLCanvasElement) => {
+      element.getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext();
+    });
+    await expect(vista.locator('canvas')).toHaveCount(0);
+    await expect(vista.locator('img')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
+  });
+
   test.describe('with the device set to reduce motion', () => {
     test.use({ contextOptions: { reducedMotion: 'reduce' } });
+
+    test('the island close-up starts at rest', async ({ page }) => {
+      await page.goto('/world/music-lab');
+      const vista = page.getByTestId('island-vista');
+      const canvas = vista.locator('[data-ready="true"] canvas');
+      await expect(canvas).toBeVisible({ timeout: 45_000 });
+      const before = decodePng(await canvas.screenshot({ scale: 'css' }));
+      expect(distinctColours(before)).toBeGreaterThan(150);
+      await page.waitForTimeout(500);
+      const after = decodePng(await canvas.screenshot({ scale: 'css' }));
+      expect(changedShare(before, after)).toBe(0);
+    });
 
     test('is drawn, and holds still', async ({ page }) => {
       await page.goto('/');

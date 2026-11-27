@@ -1,5 +1,7 @@
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { WORLDS, worldById } from '@/game/worlds';
+import { placeOf } from '@/render/extents';
+import { spriteFile } from '@/render/spriteFiles';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Home } from './Home';
 import { TopBar } from './TopBar';
@@ -68,6 +70,9 @@ function RouteView({ route }: { route: Route }) {
 export function App() {
   const route = useRoute();
   const path = toPath(route);
+  const world = 'world' in route ? worldById(route.world) : null;
+  const setting = route.name === 'how-to' ? 'academy' : world ? placeOf(world.id) : null;
+  const scenery = setting && route.name !== 'world' ? spriteFile(setting) : null;
   const main = useRef<HTMLElement>(null);
   const firstRender = useRef(true);
   const [announcement, setAnnouncement] = useState('');
@@ -100,7 +105,19 @@ export function App() {
   }
 
   return (
-    <div className={styles.app} data-route={route.name}>
+    <div className={styles.app} data-route={route.name} data-role={world?.role}>
+      {scenery && (
+        <div className={styles.scenery} aria-hidden="true">
+          <img
+            src={scenery.url}
+            alt=""
+            width={scenery.width}
+            height={scenery.height}
+            decoding="async"
+            draggable={false}
+          />
+        </div>
+      )}
       <a
         className={styles.skip}
         href="#main"

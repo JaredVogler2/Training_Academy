@@ -34,6 +34,7 @@ const ExportBundleSchema = v.object({
   checksum: v.string(),
 });
 export type ExportBundle = v.InferOutput<typeof ExportBundleSchema>;
+export type CheckBackupContent = (bundle: ExportBundle) => Promise<string | null>;
 
 export type ImportProblem =
   | 'not-json'
@@ -42,7 +43,9 @@ export type ImportProblem =
   | 'unsupported-version'
   | 'invalid-shape'
   | 'checksum-mismatch'
-  | 'foreign-records';
+  | 'foreign-records'
+  | 'duplicate-records'
+  | 'unknown-content';
 
 export type ReadBundleResult =
   { ok: true; bundle: ExportBundle } | { ok: false; problem: ImportProblem; detail: string };
@@ -119,6 +122,12 @@ export function readBundle(input: unknown): ReadBundleResult {
     bundle.attempts.some((attempt) => attempt.profileId !== bundle.profile.id);
   if (foreign) {
     return fail('foreign-records', 'The file holds records that belong to a different player.');
+  }
+  if (
+    new Set(bundle.sessions.map(({ id }) => id)).size !== bundle.sessions.length ||
+    new Set(bundle.attempts.map(({ id }) => id)).size !== bundle.attempts.length
+  ) {
+    return fail('duplicate-records', 'The file contains duplicate records.');
   }
   return { ok: true, bundle };
 }

@@ -103,6 +103,7 @@ interface Told {
   finished?: string[];
   today?: string;
   startAt?: Partial<Record<WorldId, string>>;
+  leftOut?: WorldId[];
   policy?: PlayPolicy;
   graph?: ConceptGraph;
 }
@@ -111,6 +112,7 @@ function ask({
   finished,
   today = D0,
   startAt,
+  leftOut,
   policy,
   graph = GRAPH,
 }: Told): Advice {
@@ -121,6 +123,7 @@ function ask({
     finished: new Set(finished ?? attempts.map((answer) => answer.lessonId)),
     today,
     ...(startAt ? { startAt } : {}),
+    ...(leftOut ? { leftOut } : {}),
     ...(policy ? { policy } : {}),
   });
 }
@@ -1133,6 +1136,41 @@ describe('for any record', () => {
         }
       }),
       { numRuns: 300 },
+    );
+  });
+});
+
+describe('a world a grown-up has left out of where Glim points', () => {
+  it('is never where Glim points, and still has its own Play', () => {
+    const advice = ask({ leftOut: ['reading-cove'] });
+    expect(advice.top).toMatchObject({ world: 'number-garden', lessonId: 'b1' });
+    // Nothing is closed and nothing is counted done: the world's page offers what it would have.
+    expect(advice.byWorld['reading-cove']).toEqual(ask({}).byWorld['reading-cove']);
+  });
+
+  it('leaves Glim pointing nowhere when every world is left out', () => {
+    const advice = ask({ leftOut: ['reading-cove', 'number-garden'] });
+    expect(advice.top).toBeNull();
+    expect(Object.keys(advice.byWorld).sort()).toEqual(['number-garden', 'reading-cove']);
+  });
+
+  it('changes nothing else that is offered, whatever the record holds', () => {
+    fc.assert(
+      fc.property(anyRecord, anyFinished, anyToday, (attempts, finished, today) => {
+        const all = advise({ graph: GRAPH, attempts, finished: new Set(finished), today });
+        const some = advise({
+          graph: GRAPH,
+          attempts,
+          finished: new Set(finished),
+          today,
+          leftOut: ['number-garden'],
+        });
+        expect(some.byWorld).toEqual(all.byWorld);
+        expect(some.due).toEqual(all.due);
+        expect(some.top?.world).not.toBe('number-garden');
+        // Where Glim pointed at a world that is still included, it points there still.
+        if (all.top?.world === 'reading-cove') expect(some.top).toEqual(all.top);
+      }),
     );
   });
 });

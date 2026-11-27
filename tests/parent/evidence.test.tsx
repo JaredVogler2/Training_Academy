@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import type * as Services from '@/game/services';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Profile } from '@/engine';
@@ -29,7 +30,8 @@ function shut(): void {
   door = { open, opened, broken: false };
 }
 
-vi.mock('@/game/services', () => ({
+vi.mock('@/game/services', async (original) => ({
+  ...(await original<typeof Services>()),
   getRepository: () =>
     Promise.resolve(
       new Proxy(repository, {
@@ -240,5 +242,44 @@ describe('what a player has shown', () => {
     expect(card().dataset.settled).toBe('true');
     expect(rows()).toEqual([]);
     expect(card().textContent).not.toContain('Nothing recorded yet.');
+  });
+});
+
+describe('a skill, as a grown-up reads it', () => {
+  it('says when it was last practised and when it is worth coming back to, by the rule Play goes by', async () => {
+    await show(await player('Robin', 3));
+    door.open();
+    await waitFor(() => expect(card().dataset.settled).toBe('true'));
+    // Three right alone on 2 November, and today is far later: it is worth coming back to now.
+    expect(row()?.textContent).toContain(
+      'Last practised on 2 November 2026. Worth coming back to now.',
+    );
+    // A skill with nothing recorded has no such line.
+    const untouched = rows().find((each) => each.dataset.status === 'not-yet-observed');
+    expect(untouched?.textContent).not.toContain('Last practised');
+  });
+
+  it('can be read in full, folded away until asked for, with activities named and not opened', async () => {
+    await show(await player('Robin', 0));
+    door.open();
+    await waitFor(() => expect(card().dataset.settled).toBe('true'));
+    const folds = [
+      ...document.querySelectorAll<HTMLDetailsElement>('[data-testid="skill"] details'),
+    ];
+    expect(folds).toHaveLength(rows().length);
+    expect(folds.every((each) => !each.open)).toBe(true);
+    const matching = row()?.querySelector('details');
+    expect(matching?.textContent).toContain('Builds onIntroduced here');
+    expect(matching?.textContent).toContain('Same amount, up to three');
+    // Examples are said in words, never as the keys they are stored under.
+    expect(matching?.textContent).not.toMatch(/ng\.same-amount|\{|\}/);
+    // An activity opened from here would be played as the child: it is named, and is no link.
+    expect(matching?.querySelector('a')).toBeNull();
+    // One that builds on another names it as a grown-up knows it, never by its id.
+    const counting = document.querySelector(
+      '[data-testid="skill"][data-skill="math.counting.give-to-5"] details',
+    );
+    expect(counting?.textContent).toMatch(/Builds on[A-Z][a-z]/);
+    expect(counting?.textContent).not.toMatch(/math\./);
   });
 });

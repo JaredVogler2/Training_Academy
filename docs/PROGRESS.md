@@ -3,34 +3,58 @@
 The plan is the seventeen phases in `prompt-series/`. A phase is marked done only when its own acceptance checks
 have been run and passed; the evidence is linked. `docs/CONTINUE_HERE.md` has the next action.
 
-| Phase | Subject                                        | Status                                                                           |
-| ----- | ---------------------------------------------- | -------------------------------------------------------------------------------- |
-| 01    | Architecture, tooling, Vercel-ready foundation | **Done** (2026-11-22) — see below                                                |
-| 02    | Visual identity and art pipeline               | **Done** (2026-11-22) — see below                                                |
-| 03    | World and player journey, first vertical slice | **Done** (2026-11-23) — see below                                                |
-| 04    | Audio and pre-reader onboarding                | **Built** (2026-11-25): the voice, and first-visit help. Unheard, untried        |
-| 05    | Phonics                                        | **Built** (2026-11-25) to a short sentence; the last step, P6, is not            |
-| 06    | Math                                           | **Built** (2026-11-25) to adding within ten; the optional M7 is not              |
-| 07    | Robots (visual programming)                    | **Built** (2026-11-26): Robot Ridge's seven activities. Untried                  |
-| 08    | Memory                                         | **Built** (2026-11-26): Memory Forest's eight activities. Untried                |
-| 09    | Inventors' lab                                 | **Built** (2026-11-26): Inventor Island's five activities. Untried               |
-| 10    | Storytelling and geography                     | **Built** (2026-11-26): a globe and a story to make up; no countries. Untried    |
-| 11    | Music and additional skills                    | **Built** (2026-11-25): the Music Lab. No person has heard it                    |
-| 12    | Adaptive mastery engine                        | **Built** (2026-11-26): what Play offers next and why; luck allowed for. Untried |
-| 13    | Parent dashboard                               | Not started (a basic grown-ups area exists)                                      |
-| 14    | Accessibility, privacy, performance            | Not started (foundations in place)                                               |
-| 15    | Test and visual QA                             | Not started (test harness in place)                                              |
-| 16    | Vercel release                                 | Not started as a phase. The owner has deployed `main`: see below                 |
-| 17    | Polish, expansion, hand-off                    | Not started                                                                      |
+| Phase | Subject                                        | Status                                                                                              |
+| ----- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| 01    | Architecture, tooling, Vercel-ready foundation | **Done** (2026-11-22) — see below                                                                   |
+| 02    | Visual identity and art pipeline               | **Done** (2026-11-22) — see below                                                                   |
+| 03    | World and player journey, first vertical slice | **Done** (2026-11-23) — see below                                                                   |
+| 04    | Audio and pre-reader onboarding                | **Built** (2026-11-25): the voice, and first-visit help. Unheard, untried                           |
+| 05    | Phonics                                        | **Built** (2026-11-25) to a short sentence; the last step, P6, is not                               |
+| 06    | Math                                           | **Built** (2026-11-25) to adding within ten; the optional M7 is not                                 |
+| 07    | Robots (visual programming)                    | **Built** (2026-11-26): Robot Ridge's seven activities. Untried                                     |
+| 08    | Memory                                         | **Built** (2026-11-26): Memory Forest's eight activities. Untried                                   |
+| 09    | Inventors' lab                                 | **Built** (2026-11-26): Inventor Island's five activities. Untried                                  |
+| 10    | Storytelling and geography                     | **Built** (2026-11-26): a globe and a story to make up; no countries. Untried                       |
+| 11    | Music and additional skills                    | **Built** (2026-11-25): the Music Lab. No person has heard it                                       |
+| 12    | Adaptive mastery engine                        | **Built** (2026-11-26): what Play offers next and why; luck allowed for. Untried                    |
+| 13    | Parent dashboard                               | **Built** (2026-11-27), on the open pull request: history, skills in full, checked imports. Untried |
+| 14    | Accessibility, privacy, performance            | Not started as a phase: a release audit is written. No real device, screen reader or person         |
+| 15    | Test and visual QA                             | Not started as a phase (unit and browser tests in place; no screenshot comparison)                  |
+| 16    | Vercel release                                 | Not started as a phase: a release checklist is written. The owner has deployed `main`               |
+| 17    | Polish, expansion, hand-off                    | Not started                                                                                         |
 
 "Built" is meant exactly, and it is not "done": what is there is built, tested and playable, nobody has heard
 it and no child has tried it, and for every one of these phases the brief asked for something that is not
 there. The tables below say what, item by item.
 
+## Phase 13 — the grown-ups' dashboard: what was asked, and what there is
+
+Built on 2026-11-27, on the pull request after [#17](https://github.com/JaredVogler2/Training_Academy/pull/17):
+begun as [#19](https://github.com/JaredVogler2/Training_Academy/pull/19), a draft from another branch, and
+carried on here with its faults put right (`docs/TEST_RESULTS.md` → _Phase 13_). **Not live** until the owner
+merges it. Its brief asks for a dashboard that explains what a learner can show, not a chart of playtime.
+
+| Asked for                                                                                                              | What there is                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| An entry challenge, not passed off as security                                                                         | The hold-to-open gate, which says plainly that it is not a lock. No sum or word to read: the brief asks for one only "if appropriate", and the people it would keep out cannot read yet                                                                                                                                                                                                                                                                                           |
+| 1. Profiles: create, switch, import and export, reset with a warning                                                   | Add, change, remove and switch players; save a copy, load a copy, erase everything after a warning                                                                                                                                                                                                                                                                                                                                                                                |
+| 2. Skill trees: introduced, practised, provisionally and consistently independent, counts, last review, next suggested | Every skill of every world with its status and its counts in words, what luck could account for, and **when it was last practised and when it is worth coming back to**, by the rule Play goes by. What comes next is said world by world (_What Play offers next, and why_), not skill by skill                                                                                                                                                                                  |
+| 3. Learning history: per day, practice and independent success; no leaderboards or age ranks                           | **A card for each day, the latest fourteen**: activities, answers, first tries alone and how many were right, right answers that came with help, and skills done alone for the first time. Nothing is compared with anybody                                                                                                                                                                                                                                                       |
+| 4. Concepts: exact content, guided lessons, prerequisites, difficulty settings                                         | **"About this skill"**, folded away under each skill: what it builds on, the activities that ask it (named, not opened: an activity opened from here would be played as the child), three of its instructions as a child hears them, how its questions are used, how a sitting draws them, the help it offers and the mistakes it can tell apart. **There are no difficulty settings**: nothing in the game has one                                                               |
+| 4. Skip or enable optional worlds without false mastery                                                                | **"Worlds Glim suggests"**: a world left out is never where Glim or the map points. Its page still offers Play, and nothing in it is counted as done                                                                                                                                                                                                                                                                                                                              |
+| 5. Session management: a suggested limit, sound and motion, breaks, no streaks or threats                              | A sitting of about 10, 15 or 20 minutes, after which Glim rests; sound, motion and pictures, and "Use quieter settings" for all three at once; a sentence on breaks. There are no streaks, reminders or rewards for coming back                                                                                                                                                                                                                                                   |
+| 6. Offline connection: printable guides, adult help and safety said                                                    | **"Play together away from the screen"**, printable: one each for Reading Cove, Number Garden, Robot Ridge and Memory Forest, and the world pages' own for Inventor Island (5), Explorer Harbor (6) and the Music Lab (3), each with what to watch out for. Counting is done with socks and toys, not snacks, so that nothing small goes near a mouth. **Nobody has reviewed these for safety**                                                                                   |
+| 7. Data control: readable export with a schema version, verified import, deletion, no account or tracking              | A readable file with its format and data version and a checksum. Loading checks type, size, shape, checksum, ownership, duplicates and data version, and **every activity and question it names**: a question of a lesson's earlier version only as far as can be, so that a family's own older copy still loads, and a copy from a newer game is refused with a word on how to update. Erase one player or everything. The privacy line says there is no account and no tracking |
+| Engineering: from real records, empty, loading and low-data states, atomic saves, no share links, safe imports         | Every number is counted from the record; each card says nothing until the record is read, says when it cannot be, and says when there is nothing. A copy is written in one transaction, new records only added, so it cannot replace another player's sitting. There are no share links                                                                                                                                                                                           |
+| Acceptance: a new learner's guided and independent answers, the distinctions, export, delete, import, identical        | `e2e/grownups.spec.ts`: an activity played through, the evidence and the history read, a copy saved, everything erased, the copy loaded, and both read again and compared word for word. Players kept apart; a status pressed changes nothing; the area at twice the text size, with axe, on seven screens (the phones made 320 pixels wide)                                                                                                                                      |
+
+**What is not there**: difficulty settings; a review by a person of anything the area says, the guides above all;
+any use by a parent.
+
 ## Phase 12 — what Play offers next: what was asked, and what there is
 
 Built on 2026-11-26 and 27, on the pull request after
-[#16](https://github.com/JaredVogler2/Training_Academy/pull/16); **not live** until the owner merges it. Its brief asks for a learning engine that is transparent, that fits practice
+[#16](https://github.com/JaredVogler2/Training_Academy/pull/16). [PR #17](https://github.com/JaredVogler2/Training_Academy/pull/17) has been merged and deployed. Its brief asks for a learning engine that is transparent, that fits practice
 to a child without claims about the child, and whose evidence is valid. What there is does the first two as
 far as a machine can show, and the third as far as short runs of answers allow, which is written out with
 numbers in `docs/QUALITY_REPORT.md`. **No child has played by it.**

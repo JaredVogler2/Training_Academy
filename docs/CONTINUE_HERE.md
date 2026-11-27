@@ -1,46 +1,35 @@
 # Continue here
 
 **Seven worlds are built: the six islands, and the Music Lab in the lighthouse. Phases 01 to 03 are complete;
-phase 04 is built (the voice, and help for a child's first visit); phases 05, 06 and 11 are built as far as
-their briefs' last optional parts, and phases 07 to 10, Robot Ridge, Memory Forest, Inventor Island and
-Explorer Harbor, as far as their briefs go (but for countries and flags on the globe, which its brief leaves
-optional). The worlds are finished as far as this plan takes them, and all of them are live. Phase 12 is
-built too, and is on the pull request that is open: Play and Glim now go where a small engine suggests, a
-grown-up can read why, and the record allows for luck. What is left is phases 13 to 17. All of it is
-unheard. The rest of the plan is being built on one branch, a pull request at a time: the owner has merged
-each one soon after its checks went green, nine times now, so every push is kept fit to go live.**
+phase 04 is built (the voice, and help for a child's first visit); phases 05 to 11 are built as far as their
+briefs go (but for countries and flags on the globe, which its brief leaves optional). Phase 12 is built and
+live: Play and Glim go where a small engine suggests, a grown-up can read why, and the record allows for luck.
+Phase 13, the grown-ups' dashboard, is built on the pull request that is open (see below). Phases 14 to 17 have
+a release checklist and a release audit, and nothing more: their briefs ask for checks by people and on real
+devices that have not been made. All of it is unheard, and no child has played.**
 
 - **Date:** 2026-11-27
-- **What is live:** `main`, at `https://training-academy-dun.vercel.app`: the six islands and the Music Lab,
-  71 activities, the help for a first visit, and since 2026-11-26 everything the worlds' briefs ask for as
-  far as this plan takes them, with **Explorer Harbor's room for making a story** the last of it. The owner
-  merged pull request [#16](https://github.com/JaredVogler2/Training_Academy/pull/16) at 22:25 that day,
-  an hour and a quarter after the last of its checks went green; with the room came the globe's turn mended and a
-  grown-ups' page that says nothing of any skill until it has read the record. The update had been
-  rehearsed (18 of 18). The live site was checked two hours and a half afterwards: Vercel's production
-  deployment of `cbadaa3` was ready, and of that commit's own browser tests, run against the address on
-  seven screens, all 329 passed, with the room for making a story among them on five screens: a story made by five taps on pictures, each page told as it is made.
-- **CI on `main` is green**, in all thirteen jobs (run 58, of the merge), **and no test needed a second
-  attempt**: every report was under 0.9 MB. `docs/TEST_RESULTS.md` → _Run 58_.
-- **Three faults are live, and are mended on the pull request that is open.** In _Find the pairs_ (Memory
-  Forest) a game finished in many more turns than remembering needs is written into the record as done
-  alone, and the grown-ups' area can say "Independent so far" of a child who turned cards over at random.
-  At Inventor Island's shelter, a wall tested with no prop does nothing when "Test it" is pressed. And the
-  time written down with an answer counts any pause, up to ten minutes. None loses a child anything. The
-  first changes what is stored: answers already on a device are marked once when the new build first opens
-  them, and nothing else of them is touched. `docs/QUALITY_REPORT.md` → _Phase 12_.
-- **What is not live**, on the pull request that is open: **phase 12**, which is where Play and Glim go, the
-  card that says why, a length for a sitting, and a record that allows for luck; and the three mends above.
-  The update from what is live (`cbadaa3`) to this tree was rehearsed, with a game of pairs played on the
-  live build first: 24 of 24. When it goes live, on any device that has been played on, Play may go back
-  to something played before.
-- **The last pull request's three runs of CI**, all answered: run 55 had one job red (a test of the globe's
-  mended turn that asked how many pictures a browser draws in a tenth of a second) and one test at a second
-  attempt (the grown-ups' page's own fault, mended); run 56 had one job red (a test of Number Garden's towers
-  that measured an answer while it was being offered) and one test at a second attempt that **is not
-  explained** (an activity stood at "Getting ready…" for ten seconds; it now says what it waits for); and
-  run 57 was green, with one test at a second attempt that waited for one bench of ten to be drawn by lot.
-  `docs/TEST_RESULTS.md` → _Run 55_ to _Run 57_.
+- **What is live:** `main` at `ccaddde`, at `https://training-academy-dun.vercel.app`. Two pull requests were
+  merged on 2026-11-27: [#17](https://github.com/JaredVogler2/Training_Academy/pull/17) (phase 12, merged as
+  `f2c080f`) and, twelve minutes later, [#18](https://github.com/JaredVogler2/Training_Academy/pull/18) (the
+  storybook graphics and animations, from the branch `codex/storybook-graphics`). Vercel's production deployment of
+  `ccaddde` is ready. **The live site has not been checked with that commit's own browser tests**: do that first
+  (`REMAINING.md`, section 6, _After a merge_).
+- **CI on `main` is green**: run 65, of `ccaddde`, in all thirteen jobs, and no test needed a second attempt
+  (every report under 0.9 MB). Run 64, of `f2c080f`, was cancelled, not failed: the workflow cancels a run
+  when a newer commit arrives, and #18's merge was that commit. So phase 12 was never tested on `main` alone, only
+  together with #18, and passed.
+- **The three faults that phase 12 mended are live mended**: a game of pairs finished in far too many turns is
+  no longer written down as done alone (data version 2 marks the old ones once), a wall tested with no prop at
+  the shelter is an answer, and the time with an answer leaves out pauses.
+- **What is not live**, on the pull request that is open: **phase 13**, which began as
+  [#19](https://github.com/JaredVogler2/Training_Academy/pull/19) (a draft from the branch
+  `codex/academy-release-readiness`) and is carried
+  on, with its faults put right, on this branch. CI on #19 (run 66) failed in five jobs, for two causes in the
+  change itself: a new licence notice in `public/` named three other sites and was not in the asset manifest,
+  and Inventor Island's things to try together had lost the words a test holds them to (_Never leave a child
+  alone with water_; _no hair dryer, no electric fan, nothing lit_). Both are put right, with what a review
+  found besides: `docs/TEST_RESULTS.md` → _Phase 13_.
 - **The owner's instruction for this stretch of work** (2026-11-25): build all that is left, in the order
   recommended, and the owner will review all of it at once, sounds included, when it is complete. The order:
   the Music Lab; numerals and the number line in Number Garden; rhyme, syllables, letter pairs and sentences in

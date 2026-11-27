@@ -41,6 +41,7 @@ export default defineConfig({
     // Everything Vite emits is content-hashed and lands in /immutable/, which vercel.json caches forever.
     // Files in public/assets keep their names and are revalidated instead.
     assetsDir: 'immutable',
+    license: { fileName: 'assets/dependency-licenses.txt' },
     // A clip of the voice is a file of its own however small it is: written into a script as text it would be
     // downloaded with that script whether or not it is ever played, and could not be kept on its own for offline.
     assetsInlineLimit: (file) => (file.endsWith('.mp3') ? false : undefined),
@@ -106,7 +107,7 @@ export default defineConfig({
               // other's constants before they are made: the grown-ups' page could not say what Play would
               // offer. scripts/verify-dist.mjs fails the build if any two files ever wait for each other again.
               name: 'engine-next',
-              test: /src[\\/]engine[\\/](days|review|graph|recommend)\.ts$/,
+              test: /src[\\/]engine[\\/](days|history|review|graph|recommend)\.ts$/,
               priority: 6,
             },
             {

@@ -124,7 +124,7 @@ export interface Advice {
   today: string;
   /** What Play offers in each world that has anything to play. */
   byWorld: Partial<Record<WorldId, Suggestion>>;
-  /** The one Glim points at: `null` only when there is nothing to play anywhere. */
+  /** The one Glim points at among the worlds the grown-up includes. */
   top: Suggestion | null;
   /** Everything played before that is due again, in every world, the longest-waiting first. */
   due: Suggestion[];
@@ -148,6 +148,7 @@ export interface AdviseInput {
   today: string;
   /** Where a grown-up has chosen for Play to begin, by world. */
   startAt?: Partial<Record<WorldId, string>>;
+  leftOut?: readonly WorldId[];
   policy?: PlayPolicy;
 }
 
@@ -537,7 +538,7 @@ export function advise(input: AdviseInput): Advice {
 
   // Where Glim points: the world of the one thing that would be chosen from everything there is. What is offered
   // there is that world's own suggestion, so that the map and the world's page never say different things.
-  const topWorld = choose(offers)?.world;
+  const topWorld = choose(offers.filter(({ world }) => !input.leftOut?.includes(world)))?.world;
   const top = topWorld === undefined ? null : (byWorld[topWorld] ?? null);
 
   return {

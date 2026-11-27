@@ -1175,6 +1175,61 @@ for the answer's clock, not stopped when the activity is paused, the page's own 
 the time; and a page left open never looking again. **Sixteen were caught at once**, each by the test meant for it and in its own words. The one that
 was not is the two copies of one rule, above.
 
+### What phase 13 added to the tests, and what the tests found
+
+Phase 13, the grown-ups' dashboard, began as pull request
+[#19](https://github.com/JaredVogler2/Training_Academy/pull/19), from the branch `codex/academy-release-readiness`.
+Its CI (run 66, under _Continuous integration_) failed in five jobs. This branch holds #19's commit and, on top of
+it, what put those failures right and what a review of the whole change, file by file, found besides.
+
+**Found by CI, and put right:**
+
+- `public/assets/additional-licenses.txt` (the fonts' licences, and React Three Fiber's, whose package carries no
+  licence file for the build to copy) named three other sites and was not in the asset manifest. The addresses are
+  taken out, the licence terms left as they were, and the file is listed (`licence-notices`). The notice the build
+  writes from the packages it bundles names no site.
+- Two of Inventor Island's things to try together had been rewritten without their safety sentences. They are as
+  they were on `main`, which a browser test holds them to. The two the change rewrote for Explorer Harbor and the
+  Music Lab, in which the grown-up handles the ice and the glasses, are kept.
+
+**Found by the review, and put right:**
+
+- **A family's own saved copy could become impossible to load.** A copy was refused if any answer named a question
+  the lesson's current version does not have, and a lesson that changes is given a new version: a copy saved
+  before such a change would have been refused for good. (None has changed that way yet: "Make a tune" is in its
+  second version with the same questions.) A question of an earlier version is now checked as far as it can be,
+  as one of that activity's own (all 823 question ids begin with their activity's); those of the version this game
+  has are checked one by one, with their skill; and a copy holding a newer version than the game knows is refused
+  with a word on how to update. `src/parent/backup.ts`.
+- **"About this skill" linked each activity**, and an activity opened from the grown-ups' area is played as the
+  child: a grown-up's answers would have gone into the child's record. The activities are named, not linked.
+- The learning history said "0 of 0 first tries were right" of a day of practice, and said that "a saved copy also
+  holds" days whether or not a copy had been saved. It now says the day was practice and help only, and that the
+  earlier days are not shown here and a saved copy holds every day.
+- The documents said phases 14 to 17 were audited, documented or handed off, and that the guides had been reviewed
+  for safety. Nobody has reviewed them, and those phases are not started as phases; `docs/PROGRESS.md` now says so,
+  and has a table for phase 13 like the others.
+- `package.json`'s description had its dash rewritten as an escape; it is a dash again.
+
+**Tests added**, none of which #19 had: the import check with copies from an earlier, the current and a newer
+version of a lesson (5); a world left out of where Glim points, in `advise` (3, one a property over made-up
+records), in `withLeftOut` (2) and in the map's fallback (1); the day-by-day count, ported from a version of this
+phase that was begun and not kept (4, one a property: the same in any order, every answer once); the history
+card's waiting, trouble, empty, a day, a day of practice and fourteen days (6); and a skill's last-practised line
+and its fold-out (2).
+
+**Faults put back, one at a time: 18, all caught** by the tests above, each fault one that compiles: an earlier
+version's question checked as a current one, or not checked as the activity's own; a newer version let in, as an
+answer or as a sitting that names no question; a question's skill not compared; a world left out still pointed
+at, or its own Play taken away; an empty list of left-out worlds written down; the map's fallback forgetting them;
+a duplicated answer counted twice; a skill "done alone for the first time" every day; days earliest first; "0 of
+0"; fifteen days shown; the history settled while it waits; the last-practised line gone; an activity a link
+again; what a skill builds on given by its id.
+
+**The test that needed a second attempt in run 66** (`e2e/phones.spec.ts`, a press of "My turn" sent as raw
+touches): mended as far as it could be, and its cause not found. With the press left out, the test now fails at
+once where it is ("the answers cannot be chosen"); before, it failed ten seconds later at a Next that never came.
+
 ## Continuous integration
 
 Every push to a pull request, and to `main`, runs thirteen jobs (`.github/workflows/ci.yml`): lint, types, unit
@@ -2270,6 +2325,38 @@ that never comes in CI's WebKit did not happen, as it has not since run 54.
 | WebKit, desktop and tablet, in two halves        | passed | 13.1 and 17.7           |
 | WebKit, the phone, in two halves                 | passed | 13.7 and 15.8           |
 | WebKit, the iPhone, upright and sideways         | passed | 15.2                    |
+
+**Runs 59 to 65**: phase 12's pull request, the storybook graphics, and both merged. **Run 59** (pull request
+#17, `b76c80f`) was cancelled part-way, by the push of `REMAINING.md`; the workflow cancels a run when a newer
+commit arrives. **Run 60** (`df80160`, that push) passed in all thirteen jobs, and no test needed a second
+attempt: the twelve reports are between 0.65 and 0.88 MB. Runs 61 to 63 were pull request #18's, from the branch
+`codex/storybook-graphics`: 61 and 62 were cancelled by its own later pushes, and 63 passed. The owner merged #17
+as `f2c080f` and, twelve minutes later, #18 as `ccaddde`. **Run 64**, of `f2c080f`, was cancelled by the second
+merge, so phase 12 was never tested on `main` on its own. **Run 65**, of `ccaddde`, which holds both, passed in
+all thirteen jobs, and no test needed a second attempt (reports between 0.63 and 0.87 MB).
+
+**Run 66** is pull request #19's (`b84b1b8`, from the branch `codex/academy-release-readiness`: the grown-ups'
+dashboard). **Five jobs failed**, for two causes in the change, and one test passed at a second attempt:
+
+- _Lint, types, unit tests, build_: two tests of `tests/config/assets.test.ts` failed, both on a new file,
+  `public/assets/additional-licenses.txt`. It was not in the asset manifest, and it named three other sites (the
+  fonts' homes and the font licence's). The build and its checks were never run, being after the tests.
+- Four browser jobs (Chromium's desktop and phone, WebKit's desktop and phone), at both attempts:
+  `e2e/inventor.spec.ts:244`, "something to try together for each". The change had rewritten two of Inventor
+  Island's things to try together, and lost what the test holds them to: _Never leave a child alone with water_,
+  _Stay with your child_ at the shelter, _no hair dryer, no electric fan, nothing lit_, and what is needed, what
+  mess to expect and two things to ask.
+- `e2e/phones.spec.ts:258`, "a tap counts while another finger rests on the screen", failed in Chromium's desktop
+  part 2 and passed at its second attempt. Its picture shows the demonstration still on: the press of "My turn"
+  was not taken. The press is sent to the browser as raw touches, which do not wait for the page as a tap does,
+  and it was sent as the step arrived. **The cause of the lost press is not found**: in 22 runs of the test on a
+  page slowed six and fourteen times (`SLOW_CPU`) it never failed. What was wrong with the test is mended: it
+  checked after the press only that the answers were visible, which they are in the demonstration too, so a lost
+  press was found ten seconds later as a Next that never came. It now waits for the step to be shown before it
+  touches, and checks that the press made the answers choosable; with the press left out, it fails there.
+
+All of it is put right on the pull request after #19, with what a review of the change found besides:
+_What phase 13 added to the tests, and what the tests found_, above.
 
 **Phase 03** is pull request [#4](https://github.com/JaredVogler2/Training_Academy/pull/4). The first run with
 the whole phase in it to pass was [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45093042202)

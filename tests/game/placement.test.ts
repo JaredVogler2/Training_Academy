@@ -8,6 +8,7 @@ import {
   suggestionsFor,
   triedOn,
   withObserved,
+  withLeftOut,
   withStart,
   withTried,
 } from '@/game/placement';
@@ -242,5 +243,28 @@ describe('what an activity is called for a grown-up', () => {
         expect(placeOfLesson(world, lesson), lesson).not.toBeNull();
       }
     }
+  });
+});
+
+describe('worlds left out of where Glim points', () => {
+  it('keeps each world once, and writes nothing when none is left out', () => {
+    const one = withLeftOut(NOTHING, 'reading-cove', true);
+    const again = withLeftOut(one, 'reading-cove', true);
+    const two = withLeftOut(again, 'robot-ridge', true);
+    expect(two.leftOut).toEqual(['reading-cove', 'robot-ridge']);
+    const back = withLeftOut(two, 'reading-cove', false);
+    expect(back.leftOut).toEqual(['robot-ridge']);
+    const none = withLeftOut(back, 'robot-ridge', false);
+    expect(none).toEqual(NOTHING);
+    expect('leftOut' in none).toBe(false);
+    // Putting back a world that was never left out changes nothing.
+    expect(withLeftOut(NOTHING, 'music-lab', false)).toEqual(NOTHING);
+  });
+
+  it('touches no other setting', () => {
+    const started = withStart(NOTHING, 'number-garden', 'ng-give-02');
+    const out = withLeftOut(started, 'number-garden', true);
+    expect(out.startAt).toEqual(started.startAt);
+    expect(withLeftOut(out, 'number-garden', false)).toEqual(started);
   });
 });

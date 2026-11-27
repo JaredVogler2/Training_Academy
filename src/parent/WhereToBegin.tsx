@@ -8,7 +8,14 @@ import {
   type Seen,
 } from '@/engine';
 import { setHelping, useHelping } from '@/game/helping';
-import { WATCH_IN, placeOfLesson, suggestionsFor, withObserved, withStart } from '@/game/placement';
+import {
+  WATCH_IN,
+  placeOfLesson,
+  suggestionsFor,
+  withLeftOut,
+  withObserved,
+  withStart,
+} from '@/game/placement';
 import { updateProfile } from '@/game/profiles';
 import { WORLDS, isOpen, lessonsOf, worldById, type WorldInfo } from '@/game/worlds';
 import { ActionButton, ActionLink } from '@/ui/controls';
@@ -35,20 +42,24 @@ function labelOf(world: WorldInfo, lesson: string): string {
 export function WhereToBegin({ profile }: { profile: Profile | null }) {
   const helping = useHelping();
   const [message, setMessage] = useState<string | null>(null);
+  const [pending, setPending] = useState<Profile['settings'] | null>(null);
   const id = useId();
   /** The settings on their way to being saved, if any are: what the next change is made to. */
   const saving = useRef<Profile['settings'] | null>(null);
   if (!profile) return null;
 
-  const { settings } = profile;
+  const settings = pending ?? profile.settings;
   // A change is made to the settings as they will be once whatever is still being saved has been: two things
   // changed one straight after the other are both kept. (Each used to start from the settings as the card
   // last drew them, and the second saved over the first.)
   const save = (change: (now: Profile['settings']) => Profile['settings']) => {
     const next = change(saving.current ?? settings);
     saving.current = next;
+    setPending(next);
     const done = (message: string) => () => {
-      if (saving.current === next) saving.current = null;
+      if (saving.current !== next) return;
+      saving.current = null;
+      setPending(null);
       setMessage(message);
     };
     updateProfile(profile.id, { settings: next }).then(
@@ -154,7 +165,30 @@ export function WhereToBegin({ profile }: { profile: Profile | null }) {
         })}
       </ul>
 
+      <fieldset className={styles.suggestions}>
+        <legend>Worlds Glim suggests</legend>
+        <p className={styles.small}>
+          Choose where Glim may point on the map. Every world stays open for play.
+        </p>
+        {open.map(({ id: world, name }) => (
+          <label key={world} className={styles.check}>
+            <input
+              type="checkbox"
+              checked={!settings.leftOut?.includes(world)}
+              onChange={(event) => {
+                const out = !event.target.checked;
+                save((now) => withLeftOut(now, world, out));
+              }}
+            />
+            <span>{name}</span>
+          </label>
+        ))}
+      </fieldset>
+
       <h3 className={styles.part}>{text.sittingTitle}</h3>
+      <p className={styles.small}>
+        Leave time to move or play away from the screen between sittings.
+      </p>
       <p className={styles.small}>{text.sittingHelp}</p>
       <div className={styles.field} data-testid="sitting-length">
         <label htmlFor={`${id}-sitting`}>{text.sittingLabel}</label>

@@ -207,8 +207,9 @@ export const WORLDS: readonly WorldInfo[] = [
         title: 'Why did that happen?',
         lessons: ['eh-why-01', 'eh-next-01'],
         together: {
-          what: 'Put an ice cube on a saucer in a warm spot and another in the fridge. Guess together what each will be like after lunch, then look. Ask what made the difference.',
-          safety: 'Ice and water only: nothing hot, and nothing a small child could swallow whole.',
+          what: 'A grown-up puts two ice cubes in separate bowls, then puts one bowl in the freezer and leaves the other on a counter. Guess what each will look like later and check together.',
+          safety:
+            'The grown-up handles the ice and bowls. Look at the ice together and keep it out of mouths.',
         },
       },
       {
@@ -284,9 +285,9 @@ export const WORLDS: readonly WorldInfo[] = [
         title: 'Make a tune',
         lessons: ['ml-tune-01'],
         together: {
-          what: 'Line up three or four glasses with different amounts of water and tap each gently with a wooden spoon. Find the lowest and the highest, then make up a tune that climbs and comes back down.',
+          what: 'A grown-up taps two sturdy tumblers with different amounts of water with a wooden spoon. The child points to the higher sound. Take turns humming high and low sounds to make a tune.',
           safety:
-            'Stay with your child: glasses break. Tap gently, use sturdy tumblers, and mop up spills so nobody slips.',
+            'The grown-up handles and taps the glasses on a stable surface, out of reach. Wipe spills and keep the sounds quiet.',
         },
       },
     ],

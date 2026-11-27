@@ -11,7 +11,13 @@ import {
 } from '@/engine/schema';
 import { StorageError, type DriverKind, type StorageDriver, type WriteOp } from './driver';
 import { DATA_VERSION, withThePairsMark } from './migrations';
-import { buildBundle, readBundle, type ExportBundle, type ImportProblem } from './transfer';
+import {
+  buildBundle,
+  readBundle,
+  type CheckBackupContent,
+  type ExportBundle,
+  type ImportProblem,
+} from './transfer';
 
 /**
  * Everything the game reads and writes about its players, on top of whichever driver the browser allowed.
@@ -306,11 +312,20 @@ export class Repository {
    * by id (they never change once written), and the more recently updated copy of the player and of each sitting
    * wins. Loading the same file twice changes nothing the second time.
    */
-  async importBundle(input: unknown): Promise<ImportResult> {
+  async importBundle(input: unknown, checkContent?: CheckBackupContent): Promise<ImportResult> {
     const read = readBundle(input);
     if (!read.ok) return read;
     const { bundle } = read;
     const { profile } = bundle;
+    if (bundle.app.dataVersion > DATA_VERSION) {
+      return {
+        ok: false,
+        problem: 'unsupported-version',
+        detail: 'This copy was saved by a newer version of Training Academy.',
+      };
+    }
+    const unknown = await checkContent?.(bundle);
+    if (unknown) return { ok: false, problem: 'unknown-content', detail: unknown };
 
     const [existing, profiles, localSessions, localAttempts] = await Promise.all([
       this.getProfile(profile.id),
@@ -329,7 +344,7 @@ export class Repository {
     const ops: WriteOp[] = [];
     const winner = existing && existing.updatedAt >= profile.updatedAt ? existing : profile;
     if (winner !== existing) {
-      ops.push({ op: 'put', store: 'profiles', key: profile.id, value: winner });
+      ops.push({ op: existing ? 'put' : 'add', store: 'profiles', key: profile.id, value: winner });
     }
 
     const sessionsById = new Map(localSessions.map((session) => [session.id, session]));
@@ -338,7 +353,7 @@ export class Repository {
       const local = sessionsById.get(session.id);
       if (!local) sessionsAdded += 1;
       if (!local || session.updatedAt > local.updatedAt) {
-        ops.push({ op: 'put', store: 'sessions', key: session.id, value: session });
+        ops.push({ op: local ? 'put' : 'add', store: 'sessions', key: session.id, value: session });
       }
     }
 

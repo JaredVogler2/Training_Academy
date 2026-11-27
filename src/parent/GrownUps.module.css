@@ -464,3 +464,95 @@
   font: inherit;
   font-size: var(--text-s);
 }
+
+.suggestions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 4px 12px;
+  min-width: 0;
+}
+
+.suggestions legend {
+  font-weight: 800;
+}
+
+.suggestions > p {
+  grid-column: 1 / -1;
+}
+
+.concept summary,
+.card > summary {
+  min-height: 44px;
+  align-content: center;
+  cursor: pointer;
+}
+
+.concept summary {
+  color: var(--robot-deep);
+  text-decoration: underline;
+}
+
+.conceptFacts {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.conceptFacts dt {
+  font-weight: 800;
+}
+
+.conceptFacts dd {
+  margin: 3px 0 0;
+}
+
+.conceptFacts ul {
+  padding-inline-start: 1.25em;
+  list-style: disc;
+}
+
+.guideWorld,
+.printActivity {
+  display: grid;
+  gap: 8px;
+}
+
+.printActivity {
+  padding: 12px 0;
+}
+
+.printActivity h4 {
+  margin: 0;
+  font-size: var(--text-m);
+}
+
+@media print {
+  :global(html[data-printing='guides'])
+    :global(body)
+    :not(:has([data-testid='offline-guides'])):not(
+      [data-testid='offline-guides'],
+      [data-testid='offline-guides'] *
+    ) {
+    display: none !important;
+  }
+
+  :global(html[data-printing='guides']) :global([data-route='grown-ups']),
+  :global(html[data-printing='guides']) .area,
+  :global(html[data-printing='guides']) [data-testid='offline-guides'] {
+    display: block;
+    width: auto;
+    min-height: 0;
+    padding: 0;
+    color: #000;
+    background: #fff;
+    box-shadow: none;
+  }
+
+  :global(html[data-printing='guides']) .guideActions {
+    display: none;
+  }
+
+  .printActivity {
+    break-inside: avoid;
+  }
+}

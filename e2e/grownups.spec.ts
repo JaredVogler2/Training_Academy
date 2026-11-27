@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { readFile } from 'node:fs/promises';
 import {
   LESSON_PATH,
@@ -155,10 +156,15 @@ test.describe('the grown-ups area', () => {
 
     await openGrownUps(page);
     await expect(skill(page)).toContainText('3 independent successes');
+    const history = page.getByTestId('learning-history');
+    await expect(history).toContainText('3 of 3 first tries were right without help');
+    const before = await history.innerText();
     await addPlayer(page, 'Bo', 'Sun');
     await expect(page.getByRole('heading', { name: 'What Bo has shown' })).toBeVisible();
     await expect(skill(page)).toContainText('Nothing recorded yet.');
+    await expect(history).toContainText('No answers recorded yet.');
     await page.getByRole('button', { name: 'Switch to this player: Ada' }).click();
+    await expect.poll(() => history.innerText()).toBe(before);
     await expect(skill(page)).toContainText('3 independent successes');
   });
 
@@ -175,6 +181,15 @@ test.describe('the grown-ups area', () => {
     await expect(page.getByTestId('evidence')).toHaveAttribute('data-settled', 'true');
     await expect(skill(page)).toContainText('3 independent successes');
     const before = await skill(page).innerText();
+    const history = page.getByTestId('learning-history');
+    await expect(history).toContainText('3 of 3 first tries were right without help');
+    await expect(history).toContainText('2 right answers came with practice, a retry, or help');
+    const beforeHistory = await history.innerText();
+    // Displayed evidence is plain text, so pressing its badge cannot change a record.
+    await skill(page)
+      .getByText(/^(Practising|Independent so far)$/)
+      .click();
+    await expect.poll(() => skill(page).innerText()).toBe(before);
 
     const download = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Save a copy of Explorer' }).click();
@@ -200,6 +215,8 @@ test.describe('the grown-ups area', () => {
     await expect(page.getByText('Explorer has been loaded (5 new answers added).')).toBeVisible();
     await expect(players(page)).toHaveCount(1);
     await expect.poll(() => skill(page).innerText()).toBe(before);
+
+    await expect.poll(() => history.innerText()).toBe(beforeHistory);
 
     // Loading the same file again adds nothing.
     await page.getByTestId('import-file').setInputFiles(file);
@@ -345,4 +362,64 @@ test.describe('the way in from a lesson', () => {
     await press(page.getByRole('link', { name: 'Leave the activity' }));
     await expect(page.getByRole('link', { name: 'Grown-ups' })).toBeVisible();
   });
+});
+
+test('Glim’s suggestions can be switched off without closing a world @layout', async ({ page }) => {
+  await openGrownUps(page);
+  await addPlayer(page, 'Robin', 'Leaf');
+  const suggested = page.getByTestId('next-top');
+  const included = page.getByRole('group', { name: 'Worlds Glim suggests' });
+  for (const checkbox of await included.getByRole('checkbox').all()) {
+    await checkbox.uncheck();
+  }
+  await expect(
+    page.getByTestId('where-to-begin').getByText('Saved.', { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByTestId('next-up')).toHaveAttribute('data-settled', 'true');
+  await expect(suggested).toHaveCount(0);
+  await page.getByRole('link', { name: 'Back to the game' }).click();
+  await expect(page.locator('[data-next="true"]')).toHaveCount(0);
+  await page.getByRole('link', { name: /Reading Cove/ }).click();
+  await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
+});
+
+test('dashboard controls and printable guides work with 200% text @layout', async ({ page }) => {
+  await openGrownUps(page);
+  await addPlayer(page, 'Robin', 'Leaf');
+  await expect(page.getByTestId('evidence')).toHaveAttribute('data-settled', 'true');
+  const guides = page.getByTestId('offline-guides');
+  const summary = guides.locator('summary');
+  await summary.focus();
+  await summary.press('Enter');
+  await expect(guides.getByRole('heading', { name: 'Robot Ridge' })).toBeVisible();
+  await skill(page).locator('summary').click();
+  await expect(skill(page).getByText('Builds on', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Use quieter settings' }).click();
+  await expect(page.getByLabel('Graphics', { exact: true })).toHaveValue('pictures');
+  await expect(page.getByLabel('Motion', { exact: true })).toHaveValue('reduced');
+
+  const viewport = page.viewportSize();
+  if (viewport && viewport.width <= 390) await page.setViewportSize({ ...viewport, width: 320 });
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = '200%';
+  });
+  expect((await screenFit(page)).sideways).toEqual([]);
+  for (const target of [summary, skill(page).locator('summary')]) {
+    expect((await target.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+  }
+  const { violations } = await new AxeBuilder({ page })
+    .include('main')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+    .analyze();
+  expect(
+    violations.map(({ id, nodes }) => ({ id, targets: nodes.map(({ target }) => target) })),
+  ).toEqual([]);
+
+  await page.evaluate(() => {
+    document.documentElement.dataset.printing = 'guides';
+  });
+  await page.emulateMedia({ media: 'print' });
+  await expect(guides.getByRole('heading', { name: 'Robot Ridge' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Players' })).toBeHidden();
+  await expect(guides.getByRole('button', { name: 'Print these activities' })).toBeHidden();
 });

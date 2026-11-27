@@ -233,6 +233,15 @@
       "paths": ["public/manifest.webmanifest", "public/robots.txt", "public/assets/README.md"],
       "licence": "Project",
       "madeWith": "Written for this project"
+    },
+    {
+      "id": "licence-notices",
+      "kind": "content",
+      "origin": "derived",
+      "what": "The licences of the two fonts and of React Three Fiber, shipped with the game as those licences ask (Vite writes the rest, from the packages it bundles, as dependency-licenses.txt)",
+      "paths": ["public/assets/additional-licenses.txt"],
+      "licence": "Project",
+      "madeWith": "Copied from the font packages' OFL.txt and React Three Fiber's MIT licence, with the upstream web addresses taken out so that nothing shipped names another site; the licence terms are unchanged"
     }
   ]
 }

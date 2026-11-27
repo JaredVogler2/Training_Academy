@@ -32,6 +32,7 @@ import {
 } from '@/game/profiles';
 import { getRepository } from '@/game/services';
 import { MAX_PROFILES, StorageError } from '@/storage';
+import { MAX_IMPORT_BYTES } from '@/storage/transfer';
 import { AvatarPicture } from '@/ui/art';
 import { ActionButton, ActionLink, HoldButton, Modal } from '@/ui/controls';
 import {
@@ -45,6 +46,8 @@ import {
   IconUpload,
 } from '@/ui/icons';
 import { Evidence } from './Evidence';
+import { Guides } from './Guides';
+import { checkBackupContent } from './backup';
 import { NextUp } from './NextUp';
 import { Select } from './Select';
 import { WhereToBegin } from './WhereToBegin';
@@ -258,12 +261,24 @@ function Data({
   };
 
   const load = async (chosen: File) => {
-    const result = await importProfile(await chosen.text());
-    setMessage(
-      result.ok
-        ? text.loaded(result.profile.name, result.added.attempts)
-        : `${text.notLoaded} ${result.detail}`,
-    );
+    if (chosen.size > MAX_IMPORT_BYTES) {
+      setMessage(`${text.notLoaded} The file is too large.`);
+      return;
+    }
+    try {
+      const result = await importProfile(await chosen.text(), checkBackupContent);
+      setMessage(
+        result.ok
+          ? text.loaded(result.profile.name, result.added.attempts)
+          : `${text.notLoaded} ${result.detail}`,
+      );
+    } catch (error: unknown) {
+      setMessage(
+        error instanceof StorageError
+          ? `${text.notLoaded} ${text.couldNotSave}`
+          : `${text.notLoaded} Open the app online and try loading the copy again.`,
+      );
+    }
   };
 
   return (
@@ -274,7 +289,7 @@ function Data({
         <ActionButton
           icon={<IconDownload size={22} />}
           disabled={!profile}
-          onClick={() => void save()}
+          onClick={() => void save().catch(() => setMessage(text.couldNotSave))}
         >
           {profile ? text.saveCopy(profile.name) : text.saveCopyNobody}
         </ActionButton>
@@ -323,6 +338,17 @@ function DeviceSettings() {
   return (
     <section className={styles.card} aria-labelledby="device-title">
       <h2 id="device-title">{text.device}</h2>
+      <div className={styles.row}>
+        <ActionButton
+          tone="quiet"
+          onClick={() => store.set({ motion: 'reduced', graphics: 'pictures', sound: false })}
+        >
+          Use quieter settings
+        </ActionButton>
+      </div>
+      <p className={styles.small}>
+        Turns on calm motion and pictures and switches off sound. You can change each setting below.
+      </p>
       <label className={styles.check}>
         <input type="checkbox" checked={settings.sound} onChange={() => store.toggleSound()} />
         <span>{text.sound}</span>
@@ -487,11 +513,16 @@ function Area() {
         </ActionLink>
       </header>
       <p className={styles.lead}>{text.privacy}</p>
+      <p className={styles.small}>
+        <a href="/assets/dependency-licenses.txt">Code licenses</a> ·{' '}
+        <a href="/assets/additional-licenses.txt">Font and additional code licenses</a>
+      </p>
 
       <Players onDialog={setDialog} />
       <WhereToBegin key={`begin-${playing?.id ?? 'nobody'}`} profile={playing} />
       <NextUp key={`next-${playing?.id ?? 'nobody'}`} profile={playing} />
       <Evidence key={playing?.id ?? 'nobody'} profile={playing} />
+      <Guides />
       <Data profile={playing} onDialog={setDialog} />
       <DeviceSettings />
       <Voice />

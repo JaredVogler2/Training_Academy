@@ -3,13 +3,20 @@
 Everything in this file was actually run. Where something was not run, it says so.
 
 - **Date:** 2026-11-27
-- **Code under test:** `main` as the owner merged it on 2026-11-27 (pull request #20, `3e9d905`: phase 13, the
-  grown-ups' dashboard), whose tree is that of `d679e93`, #20's head; with the pull request this document comes
-  with, which changes two browser tests (a race CI found on the merge, below) and the documents. The release check
-  below was run on `d679e93`'s tree. What was run on the live site was run on what was live, and says so.
-- **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright 1.63.0
-  with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
-- **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium and WebKit builds that Playwright 1.63.0 installs.
+- **Code under test:** `main` as the owner merged it on 2026-11-27 (pull request #21, `4617489`), whose game is
+  that of pull request #20 (`3e9d905`: phase 13, the grown-ups' dashboard; #21 changed two browser tests, the
+  update rehearsal and the documents); with the pull request this document comes with, which changes how the
+  browser tests start Chromium (_Runs 69 and 70_, below), one test of the tests' own clock, and the documents.
+  The release check below was run on `d679e93`'s tree, which is `3e9d905`'s. What was run on the live site was
+  run on what was live, and says so.
+- **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright
+  1.63.0. The browser there is the machine's own: Chrome for Testing 157 (headless), started through a wrapper
+  that, among other things, leaves out `--use-gl=angle --use-angle=swiftshader`, so it has always drawn pages
+  with Chromium's own software path (WebGL through the SwiftShader software renderer). For runs 69 and 70 it was
+  also started as CI starts it, with Playwright's own Chromium 153 and those switches; see there. WebKit is not
+  installed there.
+- **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium (153) and WebKit builds that Playwright 1.63.0
+  installs.
 - **On a phone or a tablet:** not by this project's testing. See _Phones and tablets_ below.
 - **On the live site:** each merged commit's own tests, on seven screens. See _The live site_ below.
 
@@ -2393,6 +2400,92 @@ four tests passed only at their second attempt**, in two WebKit jobs (reports of
   the half-minute limit, and at the second attempt the page came at once. **Not explained**, as before (_Seen
   only on the CI machine_, below).
 
+**Runs 69 and 70** are pull request #21's (`c0fe2d0`: the wait for the dialog above, the update rehearsal mended,
+the documents), the one re-run its failed job was given, and `main` after the owner merged it as `4617489`.
+Nothing the game ships changed in #21. **Twelve of the thirteen jobs passed each time, and Chromium's desktop and
+tablet, part 3 of 3, failed each time**, always in tests run as the tablet:
+
+| Run        | Failed at both attempts                                    | Passed at a second attempt                                             |
+| ---------- | ---------------------------------------------------------- | ---------------------------------------------------------------------- |
+| 69         | `next.spec.ts:70`, `next.spec.ts:140`, `phones.spec.ts:62` | `globe.spec.ts:438`                                                    |
+| 69, re-run | `next.spec.ts:140`                                         | `memory.spec.ts:821`; and, as the desktop, `smoke.spec.ts:277` (below) |
+| 70         | `next.spec.ts:140`, `phones.spec.ts:62`                    | none                                                                   |
+
+Each waited for a page to do something, and the page did nothing for ten seconds: a world's page that never said
+it knew what to offer (`worldSettled`), the inventions page with no cards on it, an activity not yet on its page,
+a globe still in the middle of its turn. The traces of the second attempts say more. The page had been opened
+within a second of the test leaving a finished activity, or reloaded just after; from a fraction of a second
+after it opened, Playwright's checks of it went unanswered (three in the first 75 ms and then none for ten
+seconds; one and then none; or none at all); the page did nothing of its own either (the inventions page asked for Inventor
+Island's content ten seconds after it opened, the moment the test gave up; a world's page reloaded after an
+activity asked for its own fifteen seconds after); and the picture taken when the test failed shows the page
+finished, every card in place. So the page's main thread was held for ten to fifteen seconds, starting about a
+second after the page did.
+
+That is the stall described under _Seen only on the CI machine_, below, since Phase 01: Chromium, taking down the
+drawing of a page it has left, waits on the main thread of the page that follows for the GPU process to finish
+what is queued for it, and in CI that GPU is SwiftShader, a CPU emulation. In Phase 01 it took one to two seconds,
+as the desktop. As the tablet, 1536 by 2048 pixels, three times the desktop's, on CI's slower machines (part 3 of
+3 took 20.9 minutes in run 70 and 14.7 in run 68, the same tests), it took ten and more.
+
+**Why it was only ever seen in CI.** The tests started Chromium with `--use-gl=angle --use-angle=swiftshader`, to
+give WebGL to the 3D hub. Those two put **all** of a page's drawing on SwiftShader, not only WebGL. The browser on
+the machine this project is developed on is started through a wrapper that leaves out exactly those two switches,
+among a few other changes, so every test run there drew its pages with Chromium's own software path, and the
+stall could not happen. Started as CI starts it (Playwright's own Chromium 153 with the switches; the wrapper has
+variables for that), it happens there too.
+
+**Shown there**, with a temporary test (not kept) that finishes an activity, opens the map, then opens Number
+Garden's page as the tablet, while a timer in the page notes every gap of more than 0.3 s and a browser trace is
+recorded:
+
+| Chromium started with                      | Number Garden's page knew what to offer after | The page stood still for         |
+| ------------------------------------------ | --------------------------------------------- | -------------------------------- |
+| the two switches, as in CI (two sets of 3) | 5.1, 2.3, 2.9 s; 6.3, 2.9, 2.3 s              | 4.3, 1.5, 2.1 s; 5.4, 2.1, 1.5 s |
+| without them (two sets of 3)               | 0.86, 0.85, 0.86 s; 0.88, 0.86, 0.85 s        | never                            |
+
+In each of the first three stalls, whose traces were read, the page's main thread is in
+`LayerTreeHost::~LayerTreeHost` for the whole of it, its compositor thread in `RasterImplementation::Finish`,
+waiting for the GPU process, and the GPU process is running a single task of the same length: the renderer's
+drawing commands, with 55 to 60 MB of memory in use. There, on an idle machine, the stalls were one and a half to
+five and a half seconds; on CI's, ten to fifteen.
+
+**Put right in how the tests start Chromium, not in the game**: `--enable-unsafe-swiftshader
+--ignore-gpu-blocklist` only (`playwright.config.ts`). WebGL is still there, drawn by SwiftShader, and reports
+the same renderer, `ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)…), SwiftShader driver)`, so the
+game's test for a software renderer, and what it gives one, are unchanged; the pages are drawn as on any computer
+without a GPU. Checked there, with Chromium started as CI starts it:
+
+- the hub's tests on all seven Chromium screens: 71 passed and one skipped by design, both ways; 7.2 minutes with
+  the switches and 4.0 without, and the slowest test ("keeps moving gently") 51.7 and 38.6 seconds;
+- the job that failed, Chromium's desktop and tablet part 3 of 3, without the switches: 105 passed, 120 skipped by
+  design, none failed and none at a second attempt, in 11.6 minutes; the five tests above among them, in 8 to 22
+  seconds each. With the switches, as `main` has them: 16.8 minutes, the five tests 14 to 47 seconds each (the
+  globe's 47.3 against 11.8), and one test at a second attempt, `words.spec.ts:295` as the desktop, whose first
+  attempt waited out its whole two minutes for the board to settle with nothing left to load. (That wait is
+  checked at each frame the page draws.) The five did not fail there: on that faster machine the stall was a few
+  seconds, inside their ten.
+
+It very likely explains two older entries under _Seen only on the CI machine_ too: the activity that stayed at
+"Getting ready…" for ten seconds in run 56 was `memory.spec.ts:821`, the same test as in the re-run above,
+failing the same way; and the waits of five to thirty seconds after the 3D scene were the same kind of wait. That
+is not shown for those runs, which left no trace of it; the next runs will say.
+
+**`smoke.spec.ts:277`**, "the clock that a test holds is held even when the machine is slow…", passed at its
+second attempt in the re-run, as the desktop. **Its cause is in the test, and has nothing to do with the stall.**
+It is the test of the helper that stops the page's clock (`holdClock`): it made the first reading of the page's
+time slow, by waiting a tenth of a second, and counted on the clock then refusing to stop 20 ms after a time that
+had gone by. But Playwright's clock, asked to stop, compares with the time it last caught up with, not with the
+time it is (read in Playwright's source), and the page catches it up about every tenth of a second when nothing
+in it asks sooner. Measured there, 60 times: a tenth of a second after a reading it had caught up by anything from
+2 to 100 ms, and by less than 20 ms 10 times in 60 (9 in 60 with three cores kept busy). Then the clock stops at
+the first asking, and the test counts one reading where it expects two. **The test as it was failed 3 times in 40
+there**, on an idle machine. The helper did its job each time; the test's way of making a reading late did not
+always make it late. The first reading is now made a fifth of a second old instead, which always is, and the test
+counts that the time was read again at least once (whether a second asking is refused too is the same race the
+helper is there to win). As it is now: 40 of 40. And it still fails, every time, with the helper broken so that
+it gives up at the first refusal, or asks again with the old reading (3 of 3 each).
+
 **Phase 03** is pull request [#4](https://github.com/JaredVogler2/Training_Academy/pull/4). The first run with
 the whole phase in it to pass was [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45093042202)
 below, on `d2e644c`: **all three jobs passed, with no failed test and no retry.**
@@ -2892,16 +2985,20 @@ things to try, in order.
 
 ## Seen only on the CI machine, and explained
 
-On the page that follows a finished lesson, the main thread stalls for one to two seconds, about a second after the
-page starts. A temporary probe recorded a browser trace of it in CI: Chromium destroys the previous page's compositor
-(`LayerTreeHost::~LayerTreeHost`) and waits for the GPU process to finish its queued work, and on that machine the
-"GPU" is SwiftShader, a CPU emulation. Nothing in the game causes it; it does not happen on the faster machine this
-was developed on, even with the CPU throttled; and with the home screen no longer starving the runner it no longer
-delays anything a test waits for. It has not been checked on a device with a real GPU, where that wait should be
-milliseconds.
+On the page that follows a finished lesson, the main thread stalled about a second after the page started: for one
+to two seconds as the desktop in Phase 01, and as the tablet for ten to fifteen in runs 69 and 70, where it failed
+tests. Browser traces of it, in CI in Phase 01 and on the development machine after run 70, agree: Chromium destroys
+the previous page's compositor (`LayerTreeHost::~LayerTreeHost`) and waits for the GPU process to finish its queued
+work, and that "GPU" was SwiftShader, a CPU emulation, because the tests asked for it to draw everything
+(`--use-gl=angle --use-angle=swiftshader`). **Explained and put right after run 70** (_Runs 69 and 70_, above): the
+two switches are gone and WebGL is drawn by SwiftShader as before. Nothing in the game caused it. It was "only on
+the CI machine" because the browser on the machine this was developed on has always been started without those
+two switches, which is also why throttling its CPU never brought it on. It has not been checked on a device with
+a real GPU, where that wait should be milliseconds.
 
-After the 3D scene of Phase 02 the same kind of wait is far longer, five to thirty seconds, and it falls on the next
-test: see _What the times in those runs said_, above.
+After the 3D scene of Phase 02 the same kind of wait was far longer, five to thirty seconds, and it fell on the
+next test: see _What the times in those runs said_, above. That was with the same switches; whether it has gone
+with them, the next runs will say.
 
 **A tap seen by nothing**, in Safari's engine, twice (runs 48 and 49): explained after the second, under _Run
 49_, and put right. It was not the machine: the game told its listeners that the audio had woken in the
@@ -2928,8 +3025,11 @@ offer it. Here the measuring always came before that; on CI's machine, once, it 
 attempts. A board now says when it has shown its step, and the test waits for that.
 
 **An activity that stayed at "Getting ready…" for ten seconds** (run 56, in Chromium, after the page was
-loaded again): **not explained.** It could not be made to happen here in 110 tries. An activity being opened
-now says what it is waiting for, and a test that fails while one is still opening reports it.
+loaded again): **very likely the stall at the top of this section.** It could not be made to happen here in 110
+tries, and could not have: the browser here did not draw with SwiftShader. The same test (`memory.spec.ts:821`)
+failed the same way in run 69's re-run, as the tablet, with the activity fully drawn in the page's picture when
+the check gave up. Run 56 left no trace, so that is not proven for it. An activity being opened says what it is
+waiting for, and a test that fails while one is still opening reports it.
 
 **A test that asked how fast a browser draws** (run 55): explained under _Run 55_. A test stopped the page a
 tenth of a second into a turn of the globe and asked for three pictures to have been drawn by then; WebKit,

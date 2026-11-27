@@ -10,23 +10,28 @@ have a release checklist and a release audit, and nothing more: their briefs ask
 devices that have not been made. All of it is unheard, and no child has played.**
 
 - **Date:** 2026-11-27
-- **What is live:** `main` at `3e9d905`, at `https://training-academy-dun.vercel.app`. On 2026-11-27 the owner
+- **What is live:** `main` at `4617489`, at `https://training-academy-dun.vercel.app`. On 2026-11-27 the owner
   merged [#17](https://github.com/JaredVogler2/Training_Academy/pull/17) (phase 12), then
   [#18](https://github.com/JaredVogler2/Training_Academy/pull/18) (the storybook graphics, from the branch
   `codex/storybook-graphics`), then [#20](https://github.com/JaredVogler2/Training_Academy/pull/20) (phase 13, at
   17:03), which carried [#19](https://github.com/JaredVogler2/Training_Academy/pull/19) (a draft from the branch
   `codex/academy-release-readiness`) with its faults put right; GitHub marked #19 merged with it. **Checked on the
-  live site about fifty minutes after the last merge:** Vercel's production deployment of `3e9d905` is ready, and
+  live site about fifty minutes after that merge:** Vercel's production deployment of `3e9d905` was ready, and
   that commit's own browser tests, run against the address from a clean copy of it on seven screens, passed **349
-  of 349**, none at a second attempt.
-- **CI on `main` is green** (run 68, of `3e9d905`), **with four tests passed at a second attempt.** Three were one
-  of phase 13's new tests on three WebKit screens: it pressed keys on the page while the add-player dialog was
-  still closing. That is mended on the pull request that is open, and shown. The fourth was the page that never
-  comes, in WebKit, a twelfth time and the first since run 54: still not explained. `docs/TEST_RESULTS.md` →
-  _Run 68_.
-- **What is on the pull request that is open**, and not on `main`: the mended test (and the same wait in one
-  other), a rehearsal script that no longer expects a migration where there is none (_An update, rehearsed_ in
-  `docs/TEST_RESULTS.md`), and the documents brought up to date. Nothing the game ships changes.
+  of 349**, none at a second attempt. Then [#21](https://github.com/JaredVogler2/Training_Academy/pull/21) (at
+  19:06: two browser tests, the update rehearsal, the documents) made `main` `4617489`; nothing the game ships
+  changed, and Vercel's production deployment of `4617489` is ready.
+- **CI on `main` is red in one job** (run 70, of `4617489`): Chromium's desktop and tablet, part 3 of 3, where two
+  tests as the tablet failed at both attempts. So did run 69, #21's own, and its re-run. **The cause is found, and
+  is not in the game:** the tests started Chromium with two switches that put all of a page's drawing on
+  SwiftShader, a CPU emulation of a GPU, and Chromium, taking down a page it has left, waits for that drawing on
+  the main thread of the next page; as the tablet on CI's machine, for ten to fifteen seconds. Shown on the
+  development machine, whose browser had always been started without those switches (which is why such stalls
+  were only ever seen in CI). `docs/TEST_RESULTS.md` → _Runs 69 and 70_.
+- **What is on the pull request that is open**, and not on `main`: Chromium started without those two switches
+  (`playwright.config.ts`; WebGL is still drawn by SwiftShader, and reports the same renderer), the test of the
+  tests' own clock made to stop depending on how often the page's clock catches up (it passed at a second
+  attempt in run 69's re-run), and the documents. Nothing the game ships changes.
 - **The owner's instruction for this stretch of work** (2026-11-25): build all that is left, in the order
   recommended, and the owner will review all of it at once, sounds included, when it is complete. The order:
   the Music Lab; numerals and the number line in Number Garden; rhyme, syllables, letter pairs and sentences in
@@ -87,10 +92,12 @@ answer is right. Everything is saved on the device.
   production build and its **1862 build checks**; and the whole browser suite in Chromium on all seven screens,
   **1553 tests: 1310 passed, 243 skipped by design, none failed and none at a second attempt**, in an hour.
   WebKit is CI's.
-- **CI's last runs, 59 to 68**, are all answered: run 66 was #19's, red in five jobs for two causes in that
+- **CI's last runs, 59 to 70**, are all answered: run 66 was #19's, red in five jobs for two causes in that
   change, both put right on #20; run 67, #20's, was green with no test at a second attempt; run 68, on `main`
-  after the merge, was green with four tests at a second attempt (above). `docs/TEST_RESULTS.md` → _Runs 59 to
-  65_, _Run 66_ to _Run 68_.
+  after the merge, was green with four tests at a second attempt, one a race in a test, mended on #21; runs 69
+  and 70, #21's and `main`'s after it, were red in one job for the stall above, and one test of the tests' own
+  clock passed at a second attempt; both are put right on the pull request that is open. `docs/TEST_RESULTS.md` →
+  _Runs 59 to 65_, _Run 66_ to _Run 68_, _Runs 69 and 70_.
 - **CI's twelve browser jobs do what they were made for.** In the runs since they were dealt out by screen
   the longest set of tests took 18.3 minutes. The longest job took 30.1 of the forty it is allowed, and
   sixteen and a half of those went on fetching its browser from a slow mirror: another ten would have

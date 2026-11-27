@@ -2385,7 +2385,8 @@ four tests passed only at their second attempt**, in two WebKit jobs (reports of
   was the first to send them. **Shown:** with the dialog made to take 1.5 seconds to close (in a scratch copy, in
   Chromium), the test failed at the same line, every time; with the test waiting for the dialog to have closed,
   it passed. The wait is in the test's way of adding a player, and in the one other test that adds a player and
-  goes straight on (`e2e/next.spec.ts`).
+  goes straight on (`e2e/next.spec.ts`). Both files were then run on all seven screens: 63 tests, 60 passed, three skipped by design,
+  none failed and none at a second attempt.
 - `e2e/a11y-worlds.spec.ts:60`, "Hear a number", WebKit's desktop: **the page that never comes**, a twelfth
   time and the first since run 54. The browser asked for `/world/number-garden`; the server answered six requests
   for it, each in a millisecond or less; the browser reported no answer at all and stood at `about:blank` until
@@ -3099,6 +3100,25 @@ twenty-four since phase 12, which changed what an answer that is already stored 
 | `64a507b`, what is live now                                  | this tree, after CI's run 55         | **18 of 18**: nothing that is stored has changed, and no content; the grown-ups' part of the build has, and a tab left open on the old build that asks for it says so and offers to load the page again                                                                                                                                                                                                                                                                    |
 | `64a507b`, what was live then                                | this tree, with phase 12             | **24 of 24.** What is stored goes from its first version to its second. On the live build, _Find the pairs_ was played to its end without remembering: four boards alone in 13, 14, 14 and 15 turns, each stored as right with no mark, and its grown-ups' page said "provisionally independent" of finding pairs. After the update the five games that took too many turns carry the mark, the other answers are what they were to the letter, and the page says "guided" |
 | `cbadaa3`, what is live now (pull request #16 merged)        | this tree, with phase 12             | **24 of 24**, the same again from the build the merge made live: four boards of pairs found alone in 12, 12, 15 and 15 turns, stored by the live build with no mark and called "provisionally independent" on its grown-ups' page; after the update the five games that took too many turns carry the mark, the other 16 answers are what they were to the letter, and the page says "guided"                                                                              |
+| `ccaddde`, what was live then (pull request #18 merged)      | `3e9d905`, phase 13 (#20 merged)     | **22 of 24** with the rehearsal as it was; the two that failed asked for a migration, and there was none to make. **24 of 24** with it mended (below)                                                                                                                                                                                                                                                                                                                      |
+| `cbadaa3`, the build before phase 12                         | `3e9d905`, phase 13                  | **23 of 24**, then **24 of 24** once the check of the grown-ups' page counted what the record holds (below); with the migration broken on purpose, **21 of 24**, as it should                                                                                                                                                                                                                                                                                              |
+
+**The last rows are the updates of 2026-11-27, and they found two faults in the rehearsal, none in the game.**
+The script had been written for the update phase 12 was, which took what is stored from its first version to
+its second, and it asked two things of every rehearsal since: that the live build store a game of pairs found in
+far too many turns with no mark on it, and that the data version go up. From `ccaddde`, which is at the second
+version already and marks such games itself, both were asked of a build that rightly did neither. The two checks
+now go by the version the live build stored: a build from before the second version must store the games unmarked
+and have its data brought up to date, and a build at this tree's version must have marked them itself and keep its
+version. Then, from `cbadaa3`, the check of the grown-ups' page failed once on a page that was right: it asked
+that the page count no independent success of finding pairs, and the rehearsal's own player, which plays badly
+only after a first miss, had found one board within its turns, by turning over two cards that were a pair each
+time (about one six-card board in fifteen). That is a success, and the page counted it. The check now counts,
+from the turns in the record and not from the mark, the first tries done alone that were found within the turns
+their board allows, and asks that the page count exactly those. **Shown:** from `cbadaa3` and from `ccaddde`, 24
+of 24 each; and from `cbadaa3` to a build whose migration was made to mark nothing, three failed, as they should:
+no game marked (0 of 4), the answers changed from what was expected, and the page counting four successes where
+the record held one found within its turns.
 
 What held every time:
 

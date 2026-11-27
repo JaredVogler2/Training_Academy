@@ -16,9 +16,11 @@
 //   - the activity left half-way is taken up by the new build at the step it was left at;
 //   - nothing that was stored has gone;
 //   - what the old build wrote down is brought up to date and nothing else of it is changed: a game of pairs
-//     found in far more turns than remembering needs, which the old build stored as done alone, carries the mark
-//     the new build gives such a game, every other answer is to the letter what it was, and the grown-ups' page,
-//     which said "independent" of it, no longer does;
+//     found in far more turns than remembering needs, which a build from before data version 2 stored as done
+//     alone, carries the mark the new build gives such a game, every other answer is to the letter what it was,
+//     and the grown-ups' page, which said "independent" of it, no longer does. Where the old build's data is at
+//     the new build's version already, it is checked that the old build marked those games itself and that
+//     nothing stored is changed at all, the version included;
 //   - once every old tab is closed, the new service worker takes over and clears the old build out;
 //   - after that, what has been opened opens with no connection.
 //
@@ -321,6 +323,18 @@ async function saidOfSkill(page, skill) {
   return { status: (await row.getAttribute('data-status')) ?? '', words: await text(row) };
 }
 
+/** The data version a snapshot of what is stored (`stored()`) is at. Every build has written it. */
+const versionOf = (everything) =>
+  JSON.parse(everything['indexedDB/meta/"schema"'] ?? '{}').dataVersion;
+/** The data version this tree's build writes. */
+const DATA_VERSION_HERE = Number(
+  /export const DATA_VERSION = (\d+);/.exec(
+    readFileSync(join(root, 'src/storage/migrations.ts'), 'utf8'),
+  )?.[1],
+);
+/** The data version from which a game of pairs found in too many turns is stored with its mark. */
+const PAIRS_MARKED_FROM = 2;
+
 const results = [];
 function check(what, ok, detail = '') {
   results.push({ what, ok });
@@ -441,9 +455,18 @@ try {
       (await finished(first).isVisible()) && pairsBefore.length >= 3,
       pairsBefore.map((answer) => `${String(answer.response)} turns`).join(', '),
     );
+    // What a build from before data version 2 did with them is what the update has to mend; a build from since
+    // marks them itself. (Rehearsing #20, from a build that was at version 2 already, this check asked for the
+    // first and failed on the second, which is right.)
+    const liveVersion = versionOf(await stored(first));
+    const unmarkedLive = liveVersion < PAIRS_MARKED_FROM;
     check(
-      'the build that is live stores each of them as right, with no mark on it',
-      pairsBefore.every((answer) => !('clean' in answer)),
+      unmarkedLive
+        ? 'the build that is live stores each of them as right, with no mark on it'
+        : `the build that is live marks each of them itself (what it stores is at data version ${String(liveVersion)})`,
+      unmarkedLive
+        ? pairsBefore.every((answer) => !('clean' in answer))
+        : pairsBefore.every((answer) => answer.clean === false),
     );
     const saidBefore = await saidOfSkill(first, PAIRS.skill);
     console.log(
@@ -548,12 +571,14 @@ try {
     const gone = Object.keys(kept).filter((key) => !(key in after));
     check('nothing that was stored has gone', gone.length === 0, gone.join(', '));
 
-    const version = (everything) =>
-      JSON.parse(everything['indexedDB/meta/"schema"'] ?? '{}').dataVersion;
+    const versionBefore = versionOf(kept);
+    const versionAfter = versionOf(after);
     check(
-      'what is stored has been brought up to date',
-      version(after) > version(kept),
-      `data version ${String(version(kept))} to ${String(version(after))}`,
+      versionBefore < DATA_VERSION_HERE
+        ? 'what is stored has been brought up to date'
+        : "what is stored keeps its data version, which is the new build's already",
+      versionAfter === DATA_VERSION_HERE && versionAfter >= versionBefore,
+      `data version ${String(versionBefore)} to ${String(versionAfter)}`,
     );
     const answersBefore = answersIn(kept);
     const answersAfter = answersIn(after);
@@ -576,10 +601,29 @@ try {
       changed.map(([key]) => key).join(', '),
     );
     const saidAfter = await saidOfSkill(first, PAIRS.skill);
+    // What the page may count as done alone: a first try in a step done alone, right, with no help, and found in
+    // no more turns than its board allows (`isIndependentSuccess` in src/engine/evidence.ts). It is read from the
+    // turns, not from the mark, so that a build that failed to mark would fail here too. A board can be found
+    // within its turns by luck, when every two cards turned over are a pair: this player plays badly only after a
+    // first miss. So there may be one or two such, and the page must count those and none of the games the turns
+    // did not show. (Rehearsing #20 from cbadaa3, one board was found so; this check asked for none, and failed on
+    // a page that was right.)
+    const shownAlone = [...answersAfter.values()].filter(
+      (answer) =>
+        answer.skillId === PAIRS.skill &&
+        answer.stage === 'independent' &&
+        answer.tryIndex === 0 &&
+        answer.hintLevel === 0 &&
+        answer.assistance === 'none' &&
+        answer.outcome === 'correct' &&
+        !tooMany(answer),
+    ).length;
+    const counted = Number(/(\d+) independent success/.exec(saidAfter.words)?.[1] ?? 0);
     check(
-      'the grown-ups’ page no longer says of finding pairs what the turns did not show',
-      !/independent/.test(saidAfter.status) && /No independent success yet/.test(saidAfter.words),
-      `${saidBefore.status} before; ${saidAfter.status} now`,
+      'the grown-ups’ page counts as done alone only the games of pairs the turns showed',
+      counted === shownAlone &&
+        (shownAlone > 0 || /No independent success yet/.test(saidAfter.words)),
+      `${saidBefore.status} before, ${saidAfter.status} now; it counts ${String(counted)}, and the record holds ${String(shownAlone)} found within their turns`,
     );
 
     check(

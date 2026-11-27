@@ -22,6 +22,11 @@ async function addPlayer(page: Page, name: string, picture: string) {
   await page.getByRole('radio', { name: picture }).check({ force: true });
   await page.getByRole('button', { name: 'Add', exact: true }).click();
   await expect(players(page).filter({ hasText: name })).toBeVisible();
+  // The new player is on the list before the dialog has closed: it is added, then chosen, then the dialog shuts.
+  // Until it has, everything behind it is inert, and a focus or a key sent to the page goes nowhere. (CI's run 68,
+  // in WebKit on three screens: a fold-out was focused and Enter pressed while the dialog was still closing, and
+  // the fold-out stayed shut. A click waits for the page to take it; a focus and a key do not.)
+  await expect(page.locator('dialog[open]')).toHaveCount(0);
 }
 
 test.describe('the grown-ups area', () => {

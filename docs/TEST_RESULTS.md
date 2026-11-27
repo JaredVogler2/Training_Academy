@@ -2,16 +2,16 @@
 
 Everything in this file was actually run. Where something was not run, it says so.
 
-- **Date:** 2026-11-26
-- **Code under test:** `main` as the owner merged it on 2026-11-26 (pull request #16: Explorer Harbor's
-  room for making a story, the globe's turn and the grown-ups' page mended), with the pull request this
-  document came with: phase 12, which chooses what to offer next. The release check below was run on that
-  tree after the last change to it. What was run on the live site was run on what was live, and says so.
+- **Date:** 2026-11-27
+- **Code under test:** `main` as the owner merged it on 2026-11-27 (pull request #20, `3e9d905`: phase 13, the
+  grown-ups' dashboard), whose tree is that of `d679e93`, #20's head; with the pull request this document comes
+  with, which changes two browser tests (a race CI found on the merge, below) and the documents. The release check
+  below was run on `d679e93`'s tree. What was run on the live site was run on what was live, and says so.
 - **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright 1.63.0
   with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
 - **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium and WebKit builds that Playwright 1.63.0 installs.
 - **On a phone or a tablet:** not by this project's testing. See _Phones and tablets_ below.
-- **On the live site:** the smoke tests, and two small probes. See _The live site_ below.
+- **On the live site:** each merged commit's own tests, on seven screens. See _The live site_ below.
 
 ## The release check
 
@@ -23,15 +23,21 @@ npm run verify:release
 
 Result of the last local run: **passed.**
 
-| Step                   | Result                                                                                                                                                                           |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run format:check` | clean                                                                                                                                                                            |
-| `npm run lint`         | no errors, no warnings                                                                                                                                                           |
-| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                                                                   |
-| `npm test`             | **2724 tests in 95 files, all passed**                                                                                                                                           |
-| `npm run build`        | built; 843 files in `dist/`, 736 of them the voice's recordings                                                                                                                  |
-| `npm run verify:dist`  | **1849 checks, all passed** (sizes below)                                                                                                                                        |
-| `npm run test:e2e`     | **1535 browser tests, in two runs: none failed, and none needed a second attempt** (Chromium, seven screen shapes; the first run was stopped by a restart of the machine, below) |
+| Step                   | Result                                                                                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run format:check` | clean                                                                                                                                                           |
+| `npm run lint`         | no errors, no warnings                                                                                                                                          |
+| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                                                  |
+| `npm test`             | **2754 tests in 98 files, all passed**                                                                                                                          |
+| `npm run build`        | built; 847 files in `dist/`, 736 of them the voice's recordings                                                                                                 |
+| `npm run verify:dist`  | **1862 checks, all passed** (sizes below)                                                                                                                       |
+| `npm run test:e2e`     | **1553 browser tests in one run: 1310 passed, 243 skipped by design, none failed, and none needed a second attempt** (Chromium, seven screen shapes, 1.0 hours) |
+
+**What the browser tests were run on, for phase 13.** The whole suite in one go, in Chromium on all seven
+screens, on `d679e93`'s tree (which is `main`'s since the merge of #20) after its last change to anything but a
+document: **1553 tests, 1310 passed, 243 skipped by design, none failed, and none at a second attempt**, in an
+hour. The two browser tests changed since (`e2e/grownups.spec.ts` and `e2e/next.spec.ts`, under _Run 68_) were
+then run again on all seven screens: see there.
 
 **What the browser tests were run on, exactly, for phase 12.** The whole suite was started in one go, in
 Chromium on all seven screens, on phase 12's tree after its last change to anything but a document. At 1351
@@ -2358,6 +2364,35 @@ dashboard). **Five jobs failed**, for two causes in the change, and one test pas
 All of it is put right on the pull request after #19, with what a review of the change found besides:
 _What phase 13 added to the tests, and what the tests found_, above.
 
+**Run 67** is pull request #20's (`d679e93`: #19 with its faults put right). **All thirteen jobs passed, and no
+test needed a second attempt**: the twelve reports are between 0.66 and 0.89 MB. In it, for the first time,
+WebKit ran the grown-ups' area's new tests, and Inventor Island's things to try together with their safety words
+back. The owner merged #20 as `3e9d905` eight minutes after the run ended; GitHub marked #19 merged with it, its
+one commit being in `main`.
+
+**Run 68** is `main` after that merge (`3e9d905`, whose tree is `d679e93`'s). **All thirteen jobs passed, and
+four tests passed only at their second attempt**, in two WebKit jobs (reports of 11.6 and 10.1 MB):
+
+- `e2e/grownups.spec.ts:386`, "dashboard controls and printable guides work with 200% text", on all three
+  WebKit screens that run it: the desktop, the iPhone upright and the iPhone sideways. It focused the
+  fold-out of things to do together and pressed Enter, and the fold-out stayed shut. The picture of the first
+  attempt shows the page scrolled to its top and the focus on "Add a player". **The cause:** a new player is
+  added, then chosen, then the dialog is closed, and the list shows the new name before the dialog has shut.
+  The test's way of adding a player waited for the name, and went on. A modal dialog makes everything behind it
+  inert, so the focus and the key were sent to a page that took neither; then the dialog closed and gave the
+  focus back to the button that had opened it, as dialogs do. A click waits for the page to take it, and every
+  other test that adds a player clicks next; a focus and a key do not wait, and this test, new with phase 13,
+  was the first to send them. **Shown:** with the dialog made to take 1.5 seconds to close (in a scratch copy, in
+  Chromium), the test failed at the same line, every time; with the test waiting for the dialog to have closed,
+  it passed. The wait is in the test's way of adding a player, and in the one other test that adds a player and
+  goes straight on (`e2e/next.spec.ts`). Both files were then run on all seven screens: 63 tests, 60 passed, three skipped by design,
+  none failed and none at a second attempt.
+- `e2e/a11y-worlds.spec.ts:60`, "Hear a number", WebKit's desktop: **the page that never comes**, a twelfth
+  time and the first since run 54. The browser asked for `/world/number-garden`; the server answered six requests
+  for it, each in a millisecond or less; the browser reported no answer at all and stood at `about:blank` until
+  the half-minute limit, and at the second attempt the page came at once. **Not explained**, as before (_Seen
+  only on the CI machine_, below).
+
 **Phase 03** is pull request [#4](https://github.com/JaredVogler2/Training_Academy/pull/4). The first run with
 the whole phase in it to pass was [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45093042202)
 below, on `d2e644c`: **all three jobs passed, with no failed test and no retry.**
@@ -2486,7 +2521,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 2724)
+## What the unit tests cover (Vitest, 2754)
 
 | Area                                                               | Files                                                                                                                                                                                                                                           | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -2876,11 +2911,11 @@ the press reached the activity. It needs a busy machine to show, which is why it
 **Two tests out of time** on `main` (run 50): explained under _Run 50_. They took 59.5 seconds of their 60
 when they passed. A test now has two minutes, and one that uses three quarters of its limit fails for that.
 
-**Still not explained: the page that never comes.** Eleven times in CI's WebKit, always a test's first page,
+**Still not explained: the page that never comes.** Twelve times in CI's WebKit, always a test's first page,
 never in Chromium, never here: the server answers at once and the browser never reads the answer. It did not
-happen in runs 49 or 50; it did in runs 51, 52, 53 and 54, once each. The first two of those cost two minutes
-each. A page now has half a minute to come (_Run 51_, above), and the tenth and the eleventh, in runs 53 and
-54, cost 30 seconds each and said what they had been waiting for.
+happen in runs 49 or 50; it did in runs 51, 52, 53 and 54, once each, then not for thirteen runs, and again in
+run 68. The first two of those cost two minutes each. A page now has half a minute to come (_Run 51_, above),
+and the tenth to the twelfth cost 30 seconds each and said what they had been waiting for.
 
 **A globe that turned half-way and came back** (run 54): explained under _Run 54_, and put right. It was not
 only the machine: the wait before the globe turns back by itself was counted from the press, and a page that
@@ -3024,6 +3059,22 @@ pictures, each page told as it is made, and the globe's two, with the turn now m
 those tests. CI's own run on that commit was green in every job, with no test at a second attempt: _Run 58_,
 above.
 
+**After the owner merged pull requests #17 and #18** (2026-11-27, `f2c080f` and, twelve minutes later,
+`ccaddde`), **the live site was not checked with their tests**: the next check was after #20, below, and it
+covers what they brought too.
+
+**After the owner merged pull request #20** (2026-11-27 at 17:03, `3e9d905`), about fifty minutes after the
+merge: Vercel's own record of the production deployment of `3e9d905` said "Ready". That commit's own tests were
+run against the address from a clean copy of it, on every screen the configuration has: **349 passed of 349, and
+none failed, was passed over or needed a second attempt.** Eight are the smoke tests as a desktop and eight as a
+phone; 65 each are the tests of layout as a tablet, as a phone held sideways and as a small phone; and 69 each are
+the Pixel 7's, upright and sideways, which play something in every world. It took 24.0 minutes. Among them, live
+for the first time: phase 12's choice of what Play offers next and the card that says why, and phase 13's
+grown-ups' area, with its learning history, Glim's suggestions switched off for every world while each world's
+Play stays, and the area at twice the text size with axe; and the storybook graphics of #18. No probe was made
+beyond those tests. CI's own run on that commit was green in every job, with four tests at a second attempt, three
+of them a race in a test, mended: _Run 68_, above.
+
 ## An update, rehearsed
 
 `npm run rehearse:update -- <commit>` (`scripts/rehearse-update.mjs`): two real builds and one browser, in
@@ -3049,6 +3100,25 @@ twenty-four since phase 12, which changed what an answer that is already stored 
 | `64a507b`, what is live now                                  | this tree, after CI's run 55         | **18 of 18**: nothing that is stored has changed, and no content; the grown-ups' part of the build has, and a tab left open on the old build that asks for it says so and offers to load the page again                                                                                                                                                                                                                                                                    |
 | `64a507b`, what was live then                                | this tree, with phase 12             | **24 of 24.** What is stored goes from its first version to its second. On the live build, _Find the pairs_ was played to its end without remembering: four boards alone in 13, 14, 14 and 15 turns, each stored as right with no mark, and its grown-ups' page said "provisionally independent" of finding pairs. After the update the five games that took too many turns carry the mark, the other answers are what they were to the letter, and the page says "guided" |
 | `cbadaa3`, what is live now (pull request #16 merged)        | this tree, with phase 12             | **24 of 24**, the same again from the build the merge made live: four boards of pairs found alone in 12, 12, 15 and 15 turns, stored by the live build with no mark and called "provisionally independent" on its grown-ups' page; after the update the five games that took too many turns carry the mark, the other 16 answers are what they were to the letter, and the page says "guided"                                                                              |
+| `ccaddde`, what was live then (pull request #18 merged)      | `3e9d905`, phase 13 (#20 merged)     | **22 of 24** with the rehearsal as it was; the two that failed asked for a migration, and there was none to make. **24 of 24** with it mended (below)                                                                                                                                                                                                                                                                                                                      |
+| `cbadaa3`, the build before phase 12                         | `3e9d905`, phase 13                  | **23 of 24**, then **24 of 24** once the check of the grown-ups' page counted what the record holds (below); with the migration broken on purpose, **21 of 24**, as it should                                                                                                                                                                                                                                                                                              |
+
+**The last rows are the updates of 2026-11-27, and they found two faults in the rehearsal, none in the game.**
+The script had been written for the update phase 12 was, which took what is stored from its first version to
+its second, and it asked two things of every rehearsal since: that the live build store a game of pairs found in
+far too many turns with no mark on it, and that the data version go up. From `ccaddde`, which is at the second
+version already and marks such games itself, both were asked of a build that rightly did neither. The two checks
+now go by the version the live build stored: a build from before the second version must store the games unmarked
+and have its data brought up to date, and a build at this tree's version must have marked them itself and keep its
+version. Then, from `cbadaa3`, the check of the grown-ups' page failed once on a page that was right: it asked
+that the page count no independent success of finding pairs, and the rehearsal's own player, which plays badly
+only after a first miss, had found one board within its turns, by turning over two cards that were a pair each
+time (about one six-card board in fifteen). That is a success, and the page counted it. The check now counts,
+from the turns in the record and not from the mark, the first tries done alone that were found within the turns
+their board allows, and asks that the page count exactly those. **Shown:** from `cbadaa3` and from `ccaddde`, 24
+of 24 each; and from `cbadaa3` to a build whose migration was made to mark nothing, three failed, as they should:
+no game marked (0 of 4), the answers changed from what was expected, and the page counting four successes where
+the record held one found within its turns.
 
 What held every time:
 

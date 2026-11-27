@@ -32,7 +32,7 @@ skills, a recorded synthetic voice (736 clips), and a grown-ups' area behind a h
 | ------ | -------------------------------------------------------------------------------------------------------------- |
 | 01–11  | Done or built: the foundation, the look, the journey, the voice and first-visit help, and all seven worlds     |
 | 12     | **Built and live**: what Play offers next, and a record that allows for luck                                   |
-| 13     | **Built, on the open pull request** (section 3). Not live until it is merged                                   |
+| 13     | **Built and live**: the grown-ups' dashboard (section 3)                                                       |
 | 14–17  | Not started as phases. A release checklist and a release audit are written; much groundwork exists (section 4) |
 
 "Built" is meant exactly. Nobody has listened to the voice or the music, no child has played, and no teacher has
@@ -41,14 +41,16 @@ passed.
 
 ### Git and GitHub
 
-- `main` is at `ccaddde`. On 2026-11-27 the owner merged pull request #17 (phase 12, as `f2c080f`) and, twelve
-  minutes later, #18 (the storybook graphics and animations, from the branch `codex/storybook-graphics`, as
-  `ccaddde`). Vercel's production deployment of `ccaddde` is ready. CI on `main` passed (run 65, no test at a
-  second attempt); the run of `f2c080f` alone was cancelled by the second merge. **Nobody has run `ccaddde`'s own
-  browser tests against the live address yet** (section 6, _After a merge_).
-- The working branch is `claude/zealous-carson-qyiipa`. Its open pull request carries **phase 13**: it began as
-  pull request #19, a draft from the branch `codex/academy-release-readiness`, whose CI (run 66) failed in five
-  jobs; this branch holds #19's commit and the fixes on top of it. If it is merged, GitHub marks #19 merged too.
+- `main` is at `3e9d905`. On 2026-11-27 the owner merged pull request #17 (phase 12, as `f2c080f`), #18 (the
+  storybook graphics and animations, from the branch `codex/storybook-graphics`, as `ccaddde`) and #20 (phase 13,
+  as `3e9d905`). #20 carried #19, a draft from the branch `codex/academy-release-readiness` whose CI had failed,
+  with its faults put right; GitHub marked #19 merged with it. Vercel's production deployment of `3e9d905` is
+  ready, and that commit's own browser tests passed against the live address, 349 of 349 on seven screens. CI on
+  `main` passed (run 68), with four tests at a second attempt: three a race in a test, mended on the pull request
+  after #20, and one the page that never comes (section 7).
+- The working branch is `claude/zealous-carson-qyiipa`. Its open pull request, the one after #20, holds that mended
+  test, a rehearsal script that no longer expects a migration where there is none, and the documents. Nothing the
+  game ships changes in it.
 - Merging is the owner's decision, and it is a release: Vercel deploys `main` to production. The owner has merged
   every pull request so far soon after its checks went green.
 - The workflow cancels a run when a newer commit arrives on the same branch (`concurrency: cancel-in-progress`):
@@ -61,13 +63,12 @@ passed.
 1. `npm ci`, then `npm run verify:release` (format, lint, types, unit tests, build, build checks, browser tests).
    Browser tests need Playwright's Chromium; the README says how to install it. WebKit runs only in CI. The full
    browser suite takes about an hour on four cores.
-2. **Check the live site** with `ccaddde`'s own browser tests (section 6, _After a merge_), and record it.
-3. **Read the open pull request's CI**, every job, at its head. If any is red, find the root cause and fix it
+2. **Read the open pull request's CI**, every job, at its head. If any is red, find the root cause and fix it
    (section 6). Never skip, disable or quarantine a test to get green. **Look at the artifact sizes even when CI
    is green**: a report of 0.5–0.9 MB has nothing in it but the summary; one of several MB means some test passed
    only at a second attempt. Download it, read the failure and the trace, and find out why.
-4. If that pull request has been merged, start the branch again from the latest `main`, check the live site again,
-   and record it. Then carry on with section 4.
+3. If that pull request has been merged, start the branch again from the latest `main`, check the live site with
+   the merge commit's own tests (section 6, _After a merge_), and record it. Then carry on with section 4.
 
 ---
 
@@ -82,7 +83,7 @@ from the screen for every world; "Use quieter settings"; and a loaded copy check
 question it names. The licences of what the game bundles are shipped with it (`/assets/dependency-licenses.txt`,
 made by the build, and `public/assets/additional-licenses.txt`).
 
-What #19 got wrong, and this branch put right (`docs/TEST_RESULTS.md` → _Phase 13_):
+What #19 got wrong, and #20 put right (`docs/TEST_RESULTS.md` → _Phase 13_):
 
 - The licence notice named three other sites and was not in the asset manifest (two unit tests failed).
 - Inventor Island's things to try together had lost their safety sentences (a browser test failed in four jobs).
@@ -263,8 +264,8 @@ clip is missing, stale or heard as different words. **No person has listened to 
   for listening to and marking every clip.
 - **No child has played, and no teacher has reviewed the content.** Nobody has reviewed the safety notes of the
   things to do away from the screen.
-- **Not explained:** eleven times in CI, a WebKit test's first page never arrived and then arrived at once at the
-  second attempt (not seen since run 54). Once, in Chromium, an activity stood at "Getting ready…" for ten
+- **Not explained:** twelve times in CI, a WebKit test's first page never arrived and then arrived at once at the
+  second attempt (the last in run 68, the first since run 54). Once, in Chromium, an activity stood at "Getting ready…" for ten
   seconds (run 56). Once, in run 66, a press of "My turn" sent as raw touches was not taken; 22 runs on a slowed
   page did not bring it back.
 - "Independent so far" can still be luck. A made-up learner who only taps is called that at something, at some
@@ -285,10 +286,9 @@ clip is missing, stale or heard as different words. **No person has listened to 
 
 ## 8. A short checklist
 
-1. Check the live site with `ccaddde`'s own tests, and record it.
-2. Read the open pull request's CI at its head, every job, and the artifact sizes; fix what is red, explain what
+1. Read the open pull request's CI at its head, every job, and the artifact sizes; fix what is red, explain what
    retried.
-3. When it is merged: restart the branch from `main`, check the live site with that commit's tests, record it.
-4. Phases 14 to 17 from their briefs, in order, keeping section 6's practices; `docs/RELEASE_CHECKLIST.md` for any
+2. When it is merged: restart the branch from `main`, check the live site with that commit's tests, record it.
+3. Phases 14 to 17 from their briefs, in order, keeping section 6's practices; `docs/RELEASE_CHECKLIST.md` for any
    release.
-5. Never claim what was not run. Keep every document's numbers true to the last run.
+4. Never claim what was not run. Keep every document's numbers true to the last run.

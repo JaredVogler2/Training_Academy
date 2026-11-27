@@ -601,10 +601,29 @@ try {
       changed.map(([key]) => key).join(', '),
     );
     const saidAfter = await saidOfSkill(first, PAIRS.skill);
+    // What the page may count as done alone: a first try in a step done alone, right, with no help, and found in
+    // no more turns than its board allows (`isIndependentSuccess` in src/engine/evidence.ts). It is read from the
+    // turns, not from the mark, so that a build that failed to mark would fail here too. A board can be found
+    // within its turns by luck, when every two cards turned over are a pair: this player plays badly only after a
+    // first miss. So there may be one or two such, and the page must count those and none of the games the turns
+    // did not show. (Rehearsing #20 from cbadaa3, one board was found so; this check asked for none, and failed on
+    // a page that was right.)
+    const shownAlone = [...answersAfter.values()].filter(
+      (answer) =>
+        answer.skillId === PAIRS.skill &&
+        answer.stage === 'independent' &&
+        answer.tryIndex === 0 &&
+        answer.hintLevel === 0 &&
+        answer.assistance === 'none' &&
+        answer.outcome === 'correct' &&
+        !tooMany(answer),
+    ).length;
+    const counted = Number(/(\d+) independent success/.exec(saidAfter.words)?.[1] ?? 0);
     check(
-      'the grown-ups’ page does not say of finding pairs what the turns did not show',
-      !/independent/.test(saidAfter.status) && /No independent success yet/.test(saidAfter.words),
-      `${saidBefore.status} before; ${saidAfter.status} now`,
+      'the grown-ups’ page counts as done alone only the games of pairs the turns showed',
+      counted === shownAlone &&
+        (shownAlone > 0 || /No independent success yet/.test(saidAfter.words)),
+      `${saidBefore.status} before, ${saidAfter.status} now; it counts ${String(counted)}, and the record holds ${String(shownAlone)} found within their turns`,
     );
 
     check(

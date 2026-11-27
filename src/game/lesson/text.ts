@@ -26,6 +26,9 @@ export const lessonText = {
   report: (independent: number, probes: number) =>
     `For grown-ups: ${independent} of ${probes} right at the first try, with no help.`,
   notSaved: 'This device is not saving progress right now.',
+  /** When a sitting of the length a grown-up chose has been played: said once, at the end of an activity. */
+  rest: (minutes: number) =>
+    `For grown-ups: about ${minutes} minutes have been played, which is the length you chose for a sitting. A good moment to stop. Nothing is closed.`,
   /** What is said, and written, when taps have been landing on nothing: the same words as the recordings. */
   nudge: {
     answers: 'Tap one of these.',

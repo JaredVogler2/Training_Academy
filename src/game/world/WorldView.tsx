@@ -5,15 +5,18 @@ import { recordError } from '@/app/diagnostics';
 import { hasPack, loadPack } from '@/content';
 import { lessonCalled } from '@/content/lessonList';
 import type { Challenge, Lesson, Stimulus, WorldId } from '@/engine';
+import { useAdvice } from '@/game/advice';
 import { dayInWords } from '@/game/dates';
 import { startOf, triedOn, withTried } from '@/game/placement';
 import { activeProfile, updateProfile, useProfiles } from '@/game/profiles';
-import { finishedIsKnown, nextLessonIn, useFinishedLessons } from '@/game/progress';
+import { nextLessonIn } from '@/game/progress';
 import { localDay, now } from '@/game/services';
+import { useTimeToRest } from '@/game/sitting';
 import { isOpen, lessonsOf, worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds/modules';
 import { IslandPicture } from '@/render/IslandPicture';
 import { placeOf } from '@/render/extents';
+import { Guide } from '@/ui/Guide';
 import { WorldEmblem } from '@/ui/art';
 import { ActionLink, HoldToggle } from '@/ui/controls';
 import { IconAsleep, IconBack, IconCheck, IconPlay } from '@/ui/icons';
@@ -25,15 +28,12 @@ interface Opened {
   lessons: Lesson[];
   /** The world's own drawing code, once it has arrived: what lets this page show what each activity is. */
   module: WorldModule | null;
-  /** The lessons this player has finished at least once. */
-  done: ReadonlySet<string>;
 }
 
-/** A world's lessons and how far this player has got. Entering the world is what fetches its content and its code. */
+/** A world's lessons, and the code that draws them. Entering the world is what fetches its content and its code. */
 function useWorld(world: WorldId): Opened {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [module, setModule] = useState<WorldModule | null>(null);
-  const done = useFinishedLessons();
   useEffect(() => {
     if (!hasPack(world)) return;
     let current = true;
@@ -59,7 +59,7 @@ function useWorld(world: WorldId): Opened {
     };
   }, [world]);
 
-  return { lessons, module, done };
+  return { lessons, module };
 }
 
 /**
@@ -168,9 +168,16 @@ function Tried({
 export default function WorldView({ world }: { world: WorldId }) {
   const info = worldById(world);
   const open = isOpen(info);
-  const { lessons, module, done } = useWorld(world);
-  // What "Play" goes to: the first lesson not yet finished; once they all are, the first again. Where a grown-up
-  // has chosen where this player begins here, the first not yet finished from there on.
+  const { lessons, module } = useWorld(world);
+  // What "Play" goes to is what the game would offer next here (`engine/recommend.ts`): something new that
+  // builds on what has been done, or something played before that it is time to come back to. Until that is
+  // known, and where it cannot be worked out, it is the first activity not yet finished, from where a grown-up
+  // has chosen for this player to begin if they have.
+  const { done, known, advice } = useAdvice();
+  // When a sitting of the length a grown-up chose has been played, nothing is offered: no big Play button, and
+  // no activity marked as the next. Every activity is still there to be played from its picture.
+  const { rest, minutes } = useTimeToRest();
+  const offered = rest ? null : (advice?.byWorld[world] ?? null);
   const order = lessonsOf(info);
   const players = useProfiles();
   const player = activeProfile(players);
@@ -187,12 +194,14 @@ export default function WorldView({ world }: { world: WorldId }) {
       () => setUnsaved(true),
     );
   };
-  // Whether the page knows yet who is playing and what they have finished. Until it does, Play goes where it
-  // would for someone new, for the blink that takes; the page says so, for whoever reads it. (A test read
-  // Play at once and found "the beginning" whatever a grown-up had chosen.)
-  const settled =
-    players.status === 'ready' && (players.activeId === null || finishedIsKnown(done));
-  const nextId = nextLessonIn(info, done, startAt) ?? undefined;
+  // Whether the page knows yet who is playing, what they have finished and what to offer them. Until it does,
+  // Play goes where it would for someone new, for the blink that takes; the page says so, for whoever reads
+  // it. (A test read Play at once and found "the beginning" whatever a grown-up had chosen.)
+  const settled = known;
+  const nextId = offered?.lessonId ?? nextLessonIn(info, done, startAt) ?? undefined;
+  // Something played before, offered because it is time to come back to it (or, with everything finished and
+  // nothing due, because it was played longest ago): the note under Play says which.
+  const back = offered !== null && offered.kind !== 'new' && offered.kind !== 'reach';
   const next = lessons.find((lesson) => lesson.id === nextId) ?? null;
   // What it is called is known at once, before the world's content has arrived: the page is whole from its
   // first moment, and nothing on it moves afterwards.
@@ -225,8 +234,22 @@ export default function WorldView({ world }: { world: WorldId }) {
         </div>
       </header>
 
-      {open && nextId !== undefined ? (
-        <section className={styles.play} aria-label={worldText.playHeading}>
+      {open && rest ? (
+        <section
+          className={styles.rest}
+          aria-label={worldText.restHeading}
+          data-testid="world-rest"
+        >
+          <Guide state="rest" className={styles.restGuide} />
+          <p className={styles.playNote}>{worldText.restNote(minutes ?? 0)}</p>
+        </section>
+      ) : open && nextId !== undefined ? (
+        <section
+          className={styles.play}
+          aria-label={worldText.playHeading}
+          // Why this is what Play goes to: the kind of thing the game offers, or the plain order of the page.
+          data-offered={offered?.kind ?? 'in-order'}
+        >
           {/* Room is kept for the example, so the button does not move when it arrives. */}
           <div
             className={styles.exampleRoom}
@@ -244,11 +267,15 @@ export default function WorldView({ world }: { world: WorldId }) {
             {worldText.play}
           </ActionLink>
           <p className={styles.playNote}>
-            {allDone
-              ? worldText.againNote
-              : nextCalled
-                ? worldText.lessonNote(nextCalled.title, nextCalled.minutes)
-                : worldText.getting}
+            {!nextCalled
+              ? worldText.getting
+              : offered?.kind === 'free'
+                ? worldText.freeNote(nextCalled.title)
+                : back
+                  ? worldText.backNote(nextCalled.title, nextCalled.minutes)
+                  : allDone
+                    ? worldText.againNote
+                    : worldText.lessonNote(nextCalled.title, nextCalled.minutes)}
           </p>
         </section>
       ) : (
@@ -281,7 +308,7 @@ export default function WorldView({ world }: { world: WorldId }) {
                     className={styles.card}
                     data-lesson={id}
                     data-done={finished}
-                    data-next={id === nextId && !allDone}
+                    data-next={!rest && id === nextId && (offered !== null || !allDone)}
                     aria-label={
                       called
                         ? finished

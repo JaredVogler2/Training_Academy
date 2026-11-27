@@ -57,6 +57,14 @@ export default defineConfig({
         hostType === 'js' ? deps.filter((dep) => dep.endsWith('.css')) : deps,
     },
     rolldownOptions: {
+      treeshake: {
+        // The learning engine is headless: importing one of its modules does nothing but make what it exports.
+        // Said here, so that a file that only passes the engine's names on (src/engine/index.ts) is not built
+        // to fetch and start every part of the engine "in case" starting them mattered. It was: the small file
+        // with the seeded dice in it, which the harbour asks for, went on to ask for the whole lesson engine,
+        // and the lesson engine asked for that file back. Every other module is judged as it always was.
+        moduleSideEffects: [{ test: /src[\\/]engine[\\/][\w-]+\.ts$/, sideEffects: false }],
+      },
       output: {
         codeSplitting: {
           // A group takes exactly the modules its test matches. (By default it would also take everything those
@@ -78,10 +86,27 @@ export default defineConfig({
             },
             {
               // The part of the engine that runs a lesson: judging answers, a robot's programs, the workbench
-              // models, what the record shows. The first screen needs none of it (it needs only the shapes of
-              // what is stored), so it is kept out of the chunk the first screen fetches.
+              // models, what the record shows, and how likely a blind answer is to be right. The first screen
+              // needs none of it (it needs only the shapes of what is stored), so it is kept out of the chunk
+              // the first screen fetches.
+              //
               name: 'engine-play',
-              test: /src[\\/]engine[\\/](session|tasks|robot|models|evidence)\.ts$/,
+              test: /src[\\/]engine[\\/](session|tasks|robot|models|evidence|chance)\.ts$/,
+              priority: 6,
+            },
+            {
+              // The part of the engine that says what Play offers next: when a skill is worth coming back to,
+              // what an activity asks for first, and the choice between them. It reads what the record shows,
+              // so it waits for the part above, and nothing in the part above waits for it.
+              //
+              // It is named here, and not left to be gathered up with whatever else is shared, because that is
+              // what once went wrong: gathered into one file with the seeded dice the lesson part needs, it
+              // and the lesson part each waited for the other. Two files that wait for each other start up in
+              // whichever order the page happens to ask for them, and the one that starts first reads the
+              // other's constants before they are made: the grown-ups' page could not say what Play would
+              // offer. scripts/verify-dist.mjs fails the build if any two files ever wait for each other again.
+              name: 'engine-next',
+              test: /src[\\/]engine[\\/](days|review|graph|recommend)\.ts$/,
               priority: 6,
             },
             {

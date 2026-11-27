@@ -7,26 +7,26 @@ hosted on Vercel. There is no account, no server, no advertising and no tracking
 ## Where it stands
 
 **Seven places have something to do: 71 short activities, 823 challenges, a voice, and music.** Six islands, and
-a music room in the lighthouse between them. (All 71 activities are live; a room at Explorer Harbor for
-making up a story is on a pull request.) Phases 01 to
+a music room in the lighthouse between them. (All 71 activities are live, and a room at Explorer Harbor
+for making up a story; the choice of what to play next is on a pull request.) Phases 01 to
 03 of 17 are done (the foundation, the look, the journey in); phase 04 is built (the voice, and help for a
 child's first visit); phases 07 to 10, Robot Ridge, Memory Forest, Inventor Island and Explorer Harbor, are
 built as far as their briefs go, but for the countries and flags the last of them leaves optional; phase 05,
 Reading Cove, is built as far as a short sentence, and phase 06, Number Garden, as far as adding and taking
-away within ten; and phase 11, the Music Lab, is built. "Built" is not "done": nobody has heard any of it
-and no child has tried any of it.
+away within ten; phase 11, the Music Lab, is built; and so is phase 12, which chooses what to offer next
+and says why. "Built" is not "done": nobody has heard any of it and no child has tried any of it.
 [`docs/PROGRESS.md`](docs/PROGRESS.md) sets each brief against what exists. It is built from the plan in
 [`prompt-series/`](prompt-series/README.md).
 
-**Three things to know before relying on it.** No person has listened to any of it: the voice's 735 recordings
+**Three things to know before relying on it.** No person has listened to any of it: the voice's 736 recordings
 were made by a speech synthesiser and checked by a speech recogniser, and the Music Lab's notes are made by
 arithmetic as they are played and have been checked by nothing with ears. No child and no teacher has seen any
 of it. And not all of it is live: the owner's Vercel deployment serves `main`, which has had the six islands
 since 2026-11-23, since 2026-11-25 the Music Lab with its room to play in, Number Garden's numerals and
 Reading Cove's six later activities (rhyme to a sentence), and since 2026-11-26 the help for a first visit,
 Robot Ridge's three later activities, Memory Forest's two, Inventor Island's shelter with the record a
-grown-up keeps there and its portfolio, and Explorer Harbor's globe; Explorer Harbor's room for making a
-story is on an open pull request and reaches the site only when that is merged.
+grown-up keeps there and its portfolio, Explorer Harbor's globe and its room for making a story; all of
+phase 12 is on an open pull request and reaches the site only when that is merged.
 [`docs/CONTINUE_HERE.md`](docs/CONTINUE_HERE.md) says exactly what was and was not verified.
 
 ![The home screen: a lighthouse and six small islands in a turquoise sea, each with its name under it, and a small glowing guide in a rowing boat pointing at the one that is open](docs/review/phase-02/hub-3d-1366x768.jpg)
@@ -69,19 +69,24 @@ What works today:
 - in every activity: Glim shows it first, some steps are done with help at hand and some alone; a wrong answer is
   taught, never marked wrong; help, pause and the way home are always there; and what was done unaided at the
   first try is recorded apart from everything else;
+- **what to play next is suggested, and nothing is locked**: the big Play button and Glim go to something new,
+  or back to something played before when a day or more has passed, by what the child has done alone and
+  what each thing builds on. A grown-up can read every reason, and can say how long a sitting is; when that
+  much has been played Glim goes to sleep and nothing more is suggested. Every activity can still be
+  tapped. A run of right answers that could be luck is not called more than it is;
 - when a child's taps land on nothing — the picture that is asked about, the words — the activity shows what
   can be pressed: every answer alike, never the right one. It is not a hint and nothing is recorded;
 - a grown-up who sits down to help says so by holding a switch (on the pause screen, or on "how to play"), and
   what is answered while it is on is written down as helped, never as done alone;
 - players (a nickname and a picture), saving on the device, and resuming where a child left off;
 - a grown-ups area: players, where Play begins for each (a grown-up who has seen a child count five things can
-  have Number Garden begin past that; nothing is closed and nothing is counted by it), what each has shown world
-  by world, every recording to listen to and mark, save and load a copy, erase, device settings, diagnostics;
+  have Number Garden begin past that; nothing is closed and nothing is counted by it), how long a sitting is,
+  what Play offers next in every world and why, what each has shown world by world, every recording to listen to and mark, save and load a copy, erase, device settings, diagnostics;
 - sound and calm-motion switches, keyboard use, names and announcements for screen readers (not yet tried with
   one), and offline use after the first visit.
 
 What does not exist yet: a check that a child can read a word never met before, a robot that does one thing
-or another by what it finds, countries on the globe, and most of what phases 12 to 17 describe. It has not been tried on real graphics hardware or played by a
+or another by what it finds, countries on the globe, and most of what phases 13 to 17 describe. It has not been tried on real graphics hardware or played by a
 child, and beyond the owner opening the live site on an iPhone it has not run on a phone.
 
 ## Run it
@@ -111,21 +116,21 @@ Then open <http://127.0.0.1:4173>.
 
 ## Check it
 
-| Command                   | What it does                                                                                                                             |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run typecheck`       | TypeScript, strict                                                                                                                       |
-| `npm run lint`            | ESLint, including the rules that keep the layers apart                                                                                   |
-| `npm run format:check`    | Prettier (`npm run format` to fix)                                                                                                       |
-| `npm test`                | Unit tests (Vitest): engine, content, storage, shell, layout, models, assets, Vercel routing                                             |
-| `npm run build`           | Type-check, then the production build into `dist/`                                                                                       |
-| `npm run verify:dist`     | Inspects `dist/`: size budgets, that 3D code is not in the first load, CSP-safe HTML, the manifest                                       |
-| `npm run test:e2e`        | Browser tests (Playwright) against the production build, on seven screen shapes in Chromium (five more in WebKit, where it is installed) |
-| `npm run verify:release`  | All of the above, in order                                                                                                               |
-| `npm run screens`         | Captures the review screenshots in `docs/review/` from the running build                                                                 |
-| `npm run rehearse:update` | Rehearses an update: a browser that has the build of the commit named (`-- origin/main`) meets this tree's build at the same address     |
-| `npm run art:sprites`     | Renders the hub's pictures from the island models (after a build; then build again)                                                      |
-| `npm run measure:hub`     | Draw calls, triangles and frame times of the 3D hub at each quality tier                                                                 |
-| `npm run measure:idle`    | What each screen costs in CPU while nobody is touching it (Linux only)                                                                   |
+| Command                   | What it does                                                                                                                                    |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run typecheck`       | TypeScript, strict                                                                                                                              |
+| `npm run lint`            | ESLint, including the rules that keep the layers apart                                                                                          |
+| `npm run format:check`    | Prettier (`npm run format` to fix)                                                                                                              |
+| `npm test`                | Unit tests (Vitest): engine, content, storage, shell, layout, models, assets, Vercel routing                                                    |
+| `npm run build`           | Type-check, then the production build into `dist/`                                                                                              |
+| `npm run verify:dist`     | Inspects `dist/`: size budgets, that 3D code is not in the first load, that no two built files wait for each other, CSP-safe HTML, the manifest |
+| `npm run test:e2e`        | Browser tests (Playwright) against the production build, on seven screen shapes in Chromium (five more in WebKit, where it is installed)        |
+| `npm run verify:release`  | All of the above, in order                                                                                                                      |
+| `npm run screens`         | Captures the review screenshots in `docs/review/` from the running build                                                                        |
+| `npm run rehearse:update` | Rehearses an update: a browser that has the build of the commit named (`-- origin/main`) meets this tree's build at the same address            |
+| `npm run art:sprites`     | Renders the hub's pictures from the island models (after a build; then build again)                                                             |
+| `npm run measure:hub`     | Draw calls, triangles and frame times of the 3D hub at each quality tier                                                                        |
+| `npm run measure:idle`    | What each screen costs in CPU while nobody is touching it (Linux only)                                                                          |
 
 The browser tests need Playwright's browsers once:
 
@@ -149,8 +154,10 @@ Two pages exist for looking at the art and are linked from nowhere: `/studio/<is
 ## How it is put together
 
 ```
-src/engine    the learning engine: pure TypeScript, no browser, no clock, no randomness of its own
-src/content   the curriculum: one written-out pack for each world, and the rules that refuse a wrong one
+src/engine    the learning engine: pure TypeScript, no browser, no clock, no randomness of its own; what
+              counts as done alone, when a thing comes back, and what to offer next
+src/content   the curriculum: one written-out pack for each world, the rules that refuse a wrong one, and
+              the table of what builds on what
 src/storage   saving on the device: IndexedDB, then localStorage, then memory; migrations; export and import
 src/game      the seven worlds, the lesson runner, the boards activities are played on, the world pages
 src/art       the picture kit and the drawn letters

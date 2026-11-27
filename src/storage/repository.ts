@@ -10,7 +10,7 @@ import {
   type Profile,
 } from '@/engine/schema';
 import { StorageError, type DriverKind, type StorageDriver, type WriteOp } from './driver';
-import { DATA_VERSION } from './migrations';
+import { DATA_VERSION, withThePairsMark } from './migrations';
 import { buildBundle, readBundle, type ExportBundle, type ImportProblem } from './transfer';
 
 /**
@@ -347,7 +347,10 @@ export class Repository {
     for (const attempt of bundle.attempts) {
       if (attemptIds.has(attempt.id)) continue;
       attemptsAdded += 1;
-      ops.push({ op: 'add', store: 'attempts', key: attempt.id, value: attempt });
+      // A file saved by a game from before data version 2 has games of pairs with no mark on them: they are
+      // given it on the way in, as the ones stored here were when this game first opened them.
+      const value = withThePairsMark(attempt) ?? attempt;
+      ops.push({ op: 'add', store: 'attempts', key: attempt.id, value });
     }
 
     if (profiles.length === 0) {

@@ -34,6 +34,7 @@ export {
   quantityMisconception,
   solutionOf,
   solutionParts,
+  designOf,
   tokensOf,
   writeTokens,
   type Judgement,
@@ -107,10 +108,47 @@ export {
   getSkillEvidence,
   isIndependentProbe,
   isIndependentSuccess,
+  showsTheSkill,
   type EvidencePolicy,
   type EvidenceStatus,
   type SkillEvidence,
 } from './evidence';
+export { chanceOf, luckAmong, luckOf } from './chance';
+export { addDays, dayNumber, dayOfNumber, daysBetween } from './days';
+export {
+  DEFAULT_REVIEW_POLICY,
+  attemptsBySkill,
+  daysAgo,
+  getSkillReview,
+  type ReviewBasis,
+  type ReviewPolicy,
+  type SkillReview,
+} from './review';
+export {
+  EMPTY_GRAPH,
+  GRAPH_FORMAT,
+  GRAPH_SCHEMA_VERSION,
+  auditGraph,
+  conceptsOf,
+  graphOf,
+  parseConceptGraph,
+  type Concept,
+  type ConceptGraph,
+  type GraphFault,
+  type GraphLesson,
+  type GraphSkill,
+} from './graph';
+export {
+  DEFAULT_PLAY_POLICY,
+  advise,
+  wantsBefore,
+  type Advice,
+  type AdviseInput,
+  type PlayPolicy,
+  type Reason,
+  type Suggestion,
+  type SuggestionKind,
+} from './recommend';
 export {
   NUMBER_MOST,
   RUN_LEAST,

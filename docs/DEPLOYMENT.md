@@ -155,25 +155,39 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   pin on the globe where its land is, in sight and clear of the others, and a famous place put on the globe
   where it is when its land is found. CI's run on `main` was green in all thirteen jobs, with two tests
   passing only at a second attempt (`docs/TEST_RESULTS.md` → _Run 54_).
-- **One of those two was a fault in the game, and it is live.** A press of one of the globe's two turning
-  buttons, on a device that stops for about two seconds in the middle of the turn, turns the globe half-way
-  and then back to where the question is asked from: the turn is never finished. Nothing is lost by it, a
-  second press turns the globe, and a globe pulled by a finger is not touched by it. It is mended on pull
-  request #16 (`docs/TEST_RESULTS.md` → _Run 54_ says how it was found and shown).
-- **A fault in the grown-ups' page is live too, and has been since phase 01.** For the moment it takes to
-  read a player's record, at every opening of the page, the list of skills says "Not yet observed" and
-  "Nothing recorded yet" of every one of them, whatever the record holds; then it puts itself right. A test
-  read the page in that moment in CI's first run on pull request #16 (`docs/TEST_RESULTS.md` → _Run 55_).
-  It is mended on that pull request: nothing is said of any skill until the record has been read.
-- **A fault in what is written down is live too, and is not mended yet.** In Memory Forest's _Find the
-  pairs_, a game finished in many more turns than remembering needs is written into the record as done
-  alone at the first try. The sitting's own page counts it rightly; the grown-ups' area, which reads the
-  record, can say "Independent so far" where it should not. It was found on 2026-11-26 by a made-up learner
-  who taps without looking, in the work on phase 12, and is to be mended with that phase.
-- **What is on pull request [#16](https://github.com/JaredVogler2/Training_Academy/pull/16) is not live**:
-  Explorer Harbor's room for making a story, with the switch on its page that a grown-up holds to say one
-  was told back; the globe's turn, mended; and whatever else that pull request gains. Its own description
-  says how far it has got. The update from what is live (`64a507b`) to it was rehearsed on 2026-11-26: 18 of 18. It should be rehearsed again after anything more is added (_Before a release_, below).
+- **One of those two was a fault in the game**: a press of one of the globe's two turning buttons, on a
+  device that stops for about two seconds in the middle of the turn, turned the globe half-way and back.
+  **It is mended on the site since pull request #16** (below).
+- **Explorer Harbor's room for making a story went live on 2026-11-26**, when the owner merged pull request
+  [#16](https://github.com/JaredVogler2/Training_Academy/pull/16) at 22:25, an hour and a quarter after the
+  last of its checks went green. With it came the globe's turn mended, and a grown-ups' page that says
+  nothing of any skill until it has read the record (for a moment at every opening it had said "Nothing
+  recorded yet" of every one, a fault live since phase 01). **The update had been rehearsed** before its
+  last push and passed, 18 of 18. **Checked on the live site about two hours and a half after the merge:**
+  Vercel's record of the production deployment of the merge commit `cbadaa3` said "Ready"; and that commit's
+  own tests were run against the address from a clean copy of it, on all seven screens: of 329, **all 329 passed**, and none failed or was passed over. Eight were the smoke tests as a desktop and eight as a phone; 61 each were the tests of layout as a tablet, as a phone held sideways and as a small phone; and 65 each were the Pixel 7's, upright and sideways, which play something in every world. The room's own was among them on five screens: a story made by five taps on pictures, each page told as it is made. It took 22.2 minutes. CI's
+  run on `main` was green in all thirteen jobs, and no test needed a second attempt (`docs/TEST_RESULTS.md`
+  → _Run 58_).
+- **Three faults are live, found in the work on phase 12 and mended on the pull request that is open.** In
+  Memory Forest's _Find the pairs_, a game finished in many more turns than remembering needs is written
+  into the record as done alone at the first try: the sitting's own page counts it rightly, and the
+  grown-ups' area, which reads the record, can say "Independent so far" where it should not. At Inventor
+  Island's shelter, a wall tested with no prop is not taken as an answer, and the press on "Test it" does
+  nothing. And the time written down with an answer counts any pause, up to ten minutes. None of them loses
+  anything a child has done. They were found on 2026-11-26, the first two by a made-up learner who taps
+  without looking.
+- **What is on the pull request that is open is not live**: phase 12, which is where Play and Glim go next,
+  the card that says why, a length for a sitting, and a record that allows for luck; and the three mends
+  above. Its own description says how far it has got.
+- **Merging it changes what is stored on every device that has been played on, once.** What is stored has
+  a second version: when the new build first opens a device's record, each game of pairs stored as right in
+  more turns than its board allowed is given the mark such a game now carries, and nothing else is touched.
+  It is done in one batch with the new version number, so it is either not begun or finished. A device that
+  goes back to an older build afterwards (there is no way to, short of a rollback) would find data newer
+  than it knows, leave it exactly as it is, and run from memory until the newer build returns. **The update
+  from what is live (`cbadaa3`) to this tree was rehearsed on 2026-11-27 with a game of pairs played on the
+  live build first: 24 of 24** (`docs/TEST_RESULTS.md` → _An update, rehearsed_). It should be rehearsed
+  again after anything more is added (_Before a release_, below).
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The

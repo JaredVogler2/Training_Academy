@@ -1,0 +1,1047 @@
+{
+  "about": "What is taught, what each skill builds on and which activity teaches it: what the game goes by to decide what to offer next, before any lesson has been fetched. Written by `npm run content` from the packs; do not edit by hand.",
+  "format": "training-academy.concept-graph",
+  "schemaVersion": 1,
+  "packs": {
+    "reading-cove": 2,
+    "number-garden": 3,
+    "robot-ridge": 2,
+    "memory-forest": 2,
+    "inventor-island": 2,
+    "explorer-harbor": 2,
+    "music-lab": 2
+  },
+  "worlds": [
+    {
+      "id": "reading-cove",
+      "lessons": [
+        "rc-listen-01",
+        "rc-listen-02",
+        "rc-rhyme-01",
+        "rc-syllables-01",
+        "rc-first-01",
+        "rc-first-02",
+        "rc-letters-01",
+        "rc-letters-02",
+        "rc-letters-03",
+        "rc-letters-04",
+        "rc-blend-01",
+        "rc-blend-02",
+        "rc-spell-01",
+        "rc-letters-05",
+        "rc-blend-03",
+        "rc-sentences-01"
+      ]
+    },
+    {
+      "id": "number-garden",
+      "lessons": [
+        "ng-same-amount-01",
+        "ng-glance-01",
+        "ng-give-01",
+        "ng-give-02",
+        "ng-more-01",
+        "ng-fewer-01",
+        "ng-equal-01",
+        "ng-stairs-01",
+        "ng-frame-01",
+        "ng-frame-02",
+        "ng-numerals-01",
+        "ng-numerals-02",
+        "ng-numerals-03",
+        "ng-line-01",
+        "ng-add-01",
+        "ng-take-01",
+        "ng-add-02",
+        "ng-take-02"
+      ]
+    },
+    {
+      "id": "robot-ridge",
+      "lessons": [
+        "rr-move-01",
+        "rr-steps-01",
+        "rr-repeat-01",
+        "rr-mend-01",
+        "rr-plan-01",
+        "rr-bridge-01",
+        "rr-plan-02"
+      ]
+    },
+    {
+      "id": "memory-forest",
+      "lessons": [
+        "mf-pairs-01",
+        "mf-hidden-01",
+        "mf-order-01",
+        "mf-groups-01",
+        "mf-story-01",
+        "mf-places-01",
+        "mf-choose-01",
+        "mf-later-01"
+      ]
+    },
+    {
+      "id": "inventor-island",
+      "lessons": ["ii-bridge-01", "ii-ramp-01", "ii-balance-01", "ii-float-01", "ii-shelter-01"]
+    },
+    {
+      "id": "explorer-harbor",
+      "lessons": [
+        "eh-story-01",
+        "eh-ending-01",
+        "eh-why-01",
+        "eh-next-01",
+        "eh-water-01",
+        "eh-land-01",
+        "eh-near-01",
+        "eh-far-01",
+        "eh-lands-01",
+        "eh-lands-02",
+        "eh-places-01"
+      ]
+    },
+    {
+      "id": "music-lab",
+      "lessons": [
+        "ml-high-low-01",
+        "ml-same-01",
+        "ml-beat-01",
+        "ml-echo-01",
+        "ml-again-01",
+        "ml-tune-01"
+      ]
+    }
+  ],
+  "lessons": {
+    "rc-listen-01": {
+      "world": "reading-cove",
+      "skills": ["phonics.listening.match-sound-to-source"],
+      "asks": ["phonics.listening.match-sound-to-source"]
+    },
+    "rc-listen-02": {
+      "world": "reading-cove",
+      "skills": ["phonics.listening.repeat-sound-pattern"],
+      "asks": ["phonics.listening.repeat-sound-pattern"]
+    },
+    "rc-rhyme-01": {
+      "world": "reading-cove",
+      "skills": ["phonics.awareness.rhyme"],
+      "asks": ["phonics.awareness.rhyme"]
+    },
+    "rc-syllables-01": {
+      "world": "reading-cove",
+      "skills": ["phonics.awareness.syllables"],
+      "asks": ["phonics.awareness.syllables"]
+    },
+    "rc-first-01": {
+      "world": "reading-cove",
+      "skills": ["phonics.awareness.first-sound-s-m-f"],
+      "asks": ["phonics.awareness.first-sound-s-m-f"]
+    },
+    "rc-first-02": {
+      "world": "reading-cove",
+      "skills": ["phonics.awareness.first-sound-n-l-r"],
+      "asks": ["phonics.awareness.first-sound-n-l-r"]
+    },
+    "rc-letters-01": {
+      "world": "reading-cove",
+      "skills": ["phonics.letters.s-m-a-t"],
+      "asks": ["phonics.letters.s-m-a-t"]
+    },
+    "rc-letters-02": {
+      "world": "reading-cove",
+      "skills": ["phonics.letters.p-i-n-o"],
+      "asks": ["phonics.letters.p-i-n-o"]
+    },
+    "rc-letters-03": {
+      "world": "reading-cove",
+      "skills": ["phonics.letters.f-l-c-h"],
+      "asks": ["phonics.letters.f-l-c-h"]
+    },
+    "rc-letters-04": {
+      "world": "reading-cove",
+      "skills": ["phonics.letters.u-e-r"],
+      "asks": ["phonics.letters.u-e-r"]
+    },
+    "rc-blend-01": {
+      "world": "reading-cove",
+      "skills": ["phonics.blending.hear-slow-word"],
+      "asks": ["phonics.blending.hear-slow-word"]
+    },
+    "rc-blend-02": {
+      "world": "reading-cove",
+      "skills": ["phonics.decoding.read-short-word"],
+      "asks": ["phonics.decoding.read-short-word"]
+    },
+    "rc-spell-01": {
+      "world": "reading-cove",
+      "skills": ["phonics.segmenting.build-short-word"],
+      "asks": ["phonics.segmenting.build-short-word"]
+    },
+    "rc-letters-05": {
+      "world": "reading-cove",
+      "skills": ["phonics.letters.sh-ch-th"],
+      "asks": ["phonics.letters.sh-ch-th"]
+    },
+    "rc-blend-03": {
+      "world": "reading-cove",
+      "skills": ["phonics.decoding.read-word-sh-ch-th"],
+      "asks": ["phonics.decoding.read-word-sh-ch-th"]
+    },
+    "rc-sentences-01": {
+      "world": "reading-cove",
+      "skills": ["phonics.decoding.read-short-sentence"],
+      "asks": ["phonics.decoding.read-short-sentence"]
+    },
+    "ng-same-amount-01": {
+      "world": "number-garden",
+      "skills": ["math.quantity.match-sets-to-3"],
+      "asks": ["math.quantity.match-sets-to-3"]
+    },
+    "ng-glance-01": {
+      "world": "number-garden",
+      "skills": ["math.quantity.subitize-to-4"],
+      "asks": ["math.quantity.subitize-to-4"]
+    },
+    "ng-give-01": {
+      "world": "number-garden",
+      "skills": ["math.counting.give-to-5"],
+      "asks": ["math.counting.give-to-5"]
+    },
+    "ng-give-02": {
+      "world": "number-garden",
+      "skills": ["math.counting.give-to-10"],
+      "asks": ["math.counting.give-to-10"]
+    },
+    "ng-more-01": {
+      "world": "number-garden",
+      "skills": ["math.comparison.more-to-6"],
+      "asks": ["math.comparison.more-to-6"]
+    },
+    "ng-fewer-01": {
+      "world": "number-garden",
+      "skills": ["math.comparison.fewer-to-6"],
+      "asks": ["math.comparison.fewer-to-6"]
+    },
+    "ng-equal-01": {
+      "world": "number-garden",
+      "skills": ["math.comparison.equal-to-6"],
+      "asks": ["math.comparison.equal-to-6"]
+    },
+    "ng-stairs-01": {
+      "world": "number-garden",
+      "skills": ["math.order.one-more-to-6"],
+      "asks": ["math.order.one-more-to-6"]
+    },
+    "ng-frame-01": {
+      "world": "number-garden",
+      "skills": ["math.bonds.to-5"],
+      "asks": ["math.bonds.to-5"]
+    },
+    "ng-frame-02": {
+      "world": "number-garden",
+      "skills": ["math.bonds.to-10"],
+      "asks": ["math.bonds.to-10"]
+    },
+    "ng-numerals-01": {
+      "world": "number-garden",
+      "skills": ["math.numerals.read-to-5"],
+      "asks": ["math.numerals.read-to-5"]
+    },
+    "ng-numerals-02": {
+      "world": "number-garden",
+      "skills": ["math.numerals.read-to-10"],
+      "asks": ["math.numerals.read-to-10"]
+    },
+    "ng-numerals-03": {
+      "world": "number-garden",
+      "skills": ["math.numerals.hear-to-10"],
+      "asks": ["math.numerals.hear-to-10"]
+    },
+    "ng-line-01": {
+      "world": "number-garden",
+      "skills": ["math.numerals.order-to-10"],
+      "asks": ["math.numerals.order-to-10"]
+    },
+    "ng-add-01": {
+      "world": "number-garden",
+      "skills": ["math.adding.within-5"],
+      "asks": ["math.adding.within-5"]
+    },
+    "ng-take-01": {
+      "world": "number-garden",
+      "skills": ["math.taking-away.within-5"],
+      "asks": ["math.taking-away.within-5"]
+    },
+    "ng-add-02": {
+      "world": "number-garden",
+      "skills": ["math.adding.within-10"],
+      "asks": ["math.adding.within-10"]
+    },
+    "ng-take-02": {
+      "world": "number-garden",
+      "skills": ["math.taking-away.within-10"],
+      "asks": ["math.taking-away.within-10"]
+    },
+    "rr-move-01": {
+      "world": "robot-ridge",
+      "skills": ["coding.commands.one-move"],
+      "asks": ["coding.commands.one-move"]
+    },
+    "rr-steps-01": {
+      "world": "robot-ridge",
+      "skills": ["coding.sequence.plan-short"],
+      "asks": ["coding.sequence.plan-short"]
+    },
+    "rr-repeat-01": {
+      "world": "robot-ridge",
+      "skills": ["coding.repeat.do-again"],
+      "asks": ["coding.repeat.do-again"]
+    },
+    "rr-mend-01": {
+      "world": "robot-ridge",
+      "skills": ["coding.debug.mend-one-step"],
+      "asks": ["coding.debug.mend-one-step"]
+    },
+    "rr-plan-01": {
+      "world": "robot-ridge",
+      "skills": ["coding.sequence.plan-to-six"],
+      "asks": ["coding.sequence.plan-to-six"]
+    },
+    "rr-bridge-01": {
+      "world": "robot-ridge",
+      "skills": ["coding.condition.wait-for-bridge"],
+      "asks": ["coding.condition.wait-for-bridge"]
+    },
+    "rr-plan-02": {
+      "world": "robot-ridge",
+      "skills": ["coding.sequence.plan-to-ten"],
+      "asks": ["coding.sequence.plan-to-ten"]
+    },
+    "mf-pairs-01": {
+      "world": "memory-forest",
+      "skills": ["memory.recognition.find-pairs"],
+      "asks": ["memory.recognition.find-pairs"]
+    },
+    "mf-hidden-01": {
+      "world": "memory-forest",
+      "skills": ["memory.recognition.what-was-there", "memory.recognition.after-a-while"],
+      "asks": ["memory.recognition.what-was-there"]
+    },
+    "mf-order-01": {
+      "world": "memory-forest",
+      "skills": ["memory.serial.repeat-order"],
+      "asks": ["memory.serial.repeat-order"]
+    },
+    "mf-groups-01": {
+      "world": "memory-forest",
+      "skills": ["memory.strategy.grouping"],
+      "asks": ["memory.strategy.grouping"]
+    },
+    "mf-story-01": {
+      "world": "memory-forest",
+      "skills": ["memory.strategy.linking"],
+      "asks": ["memory.strategy.linking"]
+    },
+    "mf-places-01": {
+      "world": "memory-forest",
+      "skills": ["memory.strategy.places"],
+      "asks": ["memory.strategy.places"]
+    },
+    "mf-choose-01": {
+      "world": "memory-forest",
+      "skills": ["memory.cued.chosen-way", "memory.unaided.four-after-choosing"],
+      "asks": ["memory.cued.chosen-way"]
+    },
+    "mf-later-01": {
+      "world": "memory-forest",
+      "skills": [
+        "memory.unaided.five-things",
+        "memory.delayed.keep-three",
+        "memory.delayed.same-day",
+        "memory.delayed.another-day"
+      ],
+      "asks": ["memory.unaided.five-things"]
+    },
+    "ii-bridge-01": {
+      "world": "inventor-island",
+      "skills": ["engineering.bridge.predict", "engineering.bridge.build"],
+      "asks": ["engineering.bridge.predict", "engineering.bridge.build"]
+    },
+    "ii-ramp-01": {
+      "world": "inventor-island",
+      "skills": ["engineering.ramp.predict", "engineering.ramp.build"],
+      "asks": ["engineering.ramp.predict", "engineering.ramp.build"]
+    },
+    "ii-balance-01": {
+      "world": "inventor-island",
+      "skills": ["engineering.balance.predict", "engineering.balance.build"],
+      "asks": ["engineering.balance.predict", "engineering.balance.build"]
+    },
+    "ii-float-01": {
+      "world": "inventor-island",
+      "skills": ["engineering.float.predict", "engineering.float.build"],
+      "asks": ["engineering.float.predict", "engineering.float.build"]
+    },
+    "ii-shelter-01": {
+      "world": "inventor-island",
+      "skills": ["engineering.shelter.predict", "engineering.shelter.build"],
+      "asks": ["engineering.shelter.predict", "engineering.shelter.build"]
+    },
+    "eh-story-01": {
+      "world": "explorer-harbor",
+      "skills": ["story.sequence.order-three"],
+      "asks": ["story.sequence.order-three"]
+    },
+    "eh-ending-01": {
+      "world": "explorer-harbor",
+      "skills": ["story.sequence.choose-ending"],
+      "asks": ["story.sequence.choose-ending"]
+    },
+    "eh-why-01": {
+      "world": "explorer-harbor",
+      "skills": ["story.cause.find-cause"],
+      "asks": ["story.cause.find-cause"]
+    },
+    "eh-next-01": {
+      "world": "explorer-harbor",
+      "skills": ["story.cause.predict"],
+      "asks": ["story.cause.predict"]
+    },
+    "eh-water-01": {
+      "world": "explorer-harbor",
+      "skills": ["world.map.water"],
+      "asks": ["world.map.water"]
+    },
+    "eh-land-01": {
+      "world": "explorer-harbor",
+      "skills": ["world.map.land"],
+      "asks": ["world.map.land"]
+    },
+    "eh-near-01": {
+      "world": "explorer-harbor",
+      "skills": ["world.space.nearest"],
+      "asks": ["world.space.nearest"]
+    },
+    "eh-far-01": {
+      "world": "explorer-harbor",
+      "skills": ["world.space.farthest"],
+      "asks": ["world.space.farthest"]
+    },
+    "eh-lands-01": {
+      "world": "explorer-harbor",
+      "skills": ["world.globe.match-shape"],
+      "asks": ["world.globe.match-shape"]
+    },
+    "eh-lands-02": {
+      "world": "explorer-harbor",
+      "skills": ["world.globe.find-named"],
+      "asks": ["world.globe.find-named"]
+    },
+    "eh-places-01": {
+      "world": "explorer-harbor",
+      "skills": ["world.place.continent-of"],
+      "asks": ["world.place.continent-of"]
+    },
+    "ml-high-low-01": {
+      "world": "music-lab",
+      "skills": ["music.pitch.high-low"],
+      "asks": ["music.pitch.high-low"]
+    },
+    "ml-same-01": {
+      "world": "music-lab",
+      "skills": ["music.pattern.same-different"],
+      "asks": ["music.pattern.same-different"]
+    },
+    "ml-beat-01": {
+      "world": "music-lab",
+      "skills": ["music.rhythm.steady-beat"],
+      "asks": ["music.rhythm.steady-beat"]
+    },
+    "ml-echo-01": {
+      "world": "music-lab",
+      "skills": ["music.memory.play-back"],
+      "asks": ["music.memory.play-back"]
+    },
+    "ml-again-01": {
+      "world": "music-lab",
+      "skills": ["music.pattern.repeated-phrase"],
+      "asks": ["music.pattern.repeated-phrase"]
+    },
+    "ml-tune-01": {
+      "world": "music-lab",
+      "skills": ["music.making.shape-a-tune"],
+      "asks": ["music.making.shape-a-tune"]
+    }
+  },
+  "skills": {
+    "phonics.listening.match-sound-to-source": {
+      "world": "reading-cove",
+      "needs": [],
+      "lessons": ["rc-listen-01"],
+      "variants": 6,
+      "chance": 0.3333
+    },
+    "phonics.listening.repeat-sound-pattern": {
+      "world": "reading-cove",
+      "needs": ["phonics.listening.match-sound-to-source"],
+      "lessons": ["rc-listen-02"],
+      "variants": 2,
+      "chance": 0.1111
+    },
+    "phonics.awareness.first-sound-s-m-f": {
+      "world": "reading-cove",
+      "needs": ["phonics.listening.repeat-sound-pattern"],
+      "lessons": ["rc-first-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "phonics.awareness.first-sound-n-l-r": {
+      "world": "reading-cove",
+      "needs": ["phonics.awareness.first-sound-s-m-f"],
+      "lessons": ["rc-first-02"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "phonics.letters.s-m-a-t": {
+      "world": "reading-cove",
+      "needs": ["phonics.awareness.first-sound-s-m-f"],
+      "lessons": ["rc-letters-01"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "phonics.letters.p-i-n-o": {
+      "world": "reading-cove",
+      "needs": ["phonics.letters.s-m-a-t"],
+      "lessons": ["rc-letters-02"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "phonics.letters.f-l-c-h": {
+      "world": "reading-cove",
+      "needs": ["phonics.letters.p-i-n-o"],
+      "lessons": ["rc-letters-03"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "phonics.letters.u-e-r": {
+      "world": "reading-cove",
+      "needs": ["phonics.letters.f-l-c-h"],
+      "lessons": ["rc-letters-04"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "phonics.blending.hear-slow-word": {
+      "world": "reading-cove",
+      "needs": ["phonics.awareness.first-sound-n-l-r"],
+      "lessons": ["rc-blend-01"],
+      "variants": 5,
+      "chance": 0.3333
+    },
+    "phonics.decoding.read-short-word": {
+      "world": "reading-cove",
+      "needs": ["phonics.blending.hear-slow-word", "phonics.letters.u-e-r"],
+      "lessons": ["rc-blend-02"],
+      "variants": 4,
+      "chance": 0.3333
+    },
+    "phonics.awareness.rhyme": {
+      "world": "reading-cove",
+      "needs": ["phonics.listening.repeat-sound-pattern"],
+      "lessons": ["rc-rhyme-01"],
+      "variants": 8,
+      "chance": 0.3333
+    },
+    "phonics.awareness.syllables": {
+      "world": "reading-cove",
+      "needs": ["phonics.listening.repeat-sound-pattern"],
+      "lessons": ["rc-syllables-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "phonics.segmenting.build-short-word": {
+      "world": "reading-cove",
+      "needs": ["phonics.blending.hear-slow-word", "phonics.letters.u-e-r"],
+      "lessons": ["rc-spell-01"],
+      "variants": 5,
+      "chance": 0.1667
+    },
+    "phonics.letters.sh-ch-th": {
+      "world": "reading-cove",
+      "needs": ["phonics.letters.u-e-r"],
+      "lessons": ["rc-letters-05"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "phonics.decoding.read-word-sh-ch-th": {
+      "world": "reading-cove",
+      "needs": ["phonics.decoding.read-short-word", "phonics.letters.sh-ch-th"],
+      "lessons": ["rc-blend-03"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "phonics.decoding.read-short-sentence": {
+      "world": "reading-cove",
+      "needs": ["phonics.decoding.read-short-word"],
+      "lessons": ["rc-sentences-01"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "math.quantity.match-sets-to-3": {
+      "world": "number-garden",
+      "needs": [],
+      "lessons": ["ng-same-amount-01"],
+      "variants": 8,
+      "chance": 0.3333
+    },
+    "math.quantity.subitize-to-4": {
+      "world": "number-garden",
+      "needs": ["math.quantity.match-sets-to-3"],
+      "lessons": ["ng-glance-01"],
+      "variants": 10,
+      "chance": 0.3333
+    },
+    "math.counting.give-to-5": {
+      "world": "number-garden",
+      "needs": ["math.quantity.match-sets-to-3"],
+      "lessons": ["ng-give-01"],
+      "variants": 9,
+      "chance": 0.1667
+    },
+    "math.counting.give-to-10": {
+      "world": "number-garden",
+      "needs": ["math.counting.give-to-5"],
+      "lessons": ["ng-give-02"],
+      "variants": 9,
+      "chance": 0.1111
+    },
+    "math.comparison.more-to-6": {
+      "world": "number-garden",
+      "needs": ["math.quantity.match-sets-to-3"],
+      "lessons": ["ng-more-01"],
+      "variants": 4,
+      "chance": 0.5
+    },
+    "math.comparison.fewer-to-6": {
+      "world": "number-garden",
+      "needs": ["math.comparison.more-to-6"],
+      "lessons": ["ng-fewer-01"],
+      "variants": 4,
+      "chance": 0.5
+    },
+    "math.comparison.equal-to-6": {
+      "world": "number-garden",
+      "needs": ["math.quantity.match-sets-to-3"],
+      "lessons": ["ng-equal-01"],
+      "variants": 2,
+      "chance": 0.1429
+    },
+    "math.order.one-more-to-6": {
+      "world": "number-garden",
+      "needs": ["math.comparison.more-to-6"],
+      "lessons": ["ng-stairs-01"],
+      "variants": 4,
+      "chance": 0.3333
+    },
+    "math.bonds.to-5": {
+      "world": "number-garden",
+      "needs": ["math.counting.give-to-5"],
+      "lessons": ["ng-frame-01"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "math.bonds.to-10": {
+      "world": "number-garden",
+      "needs": ["math.bonds.to-5", "math.counting.give-to-10"],
+      "lessons": ["ng-frame-02"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "math.numerals.read-to-5": {
+      "world": "number-garden",
+      "needs": ["math.counting.give-to-5"],
+      "lessons": ["ng-numerals-01"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "math.numerals.read-to-10": {
+      "world": "number-garden",
+      "needs": ["math.numerals.read-to-5", "math.counting.give-to-10"],
+      "lessons": ["ng-numerals-02"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "math.numerals.hear-to-10": {
+      "world": "number-garden",
+      "needs": ["math.numerals.read-to-10"],
+      "lessons": ["ng-numerals-03"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "math.numerals.order-to-10": {
+      "world": "number-garden",
+      "needs": ["math.numerals.read-to-10", "math.order.one-more-to-6"],
+      "lessons": ["ng-line-01"],
+      "variants": 4,
+      "chance": 0.3333
+    },
+    "math.adding.within-5": {
+      "world": "number-garden",
+      "needs": ["math.counting.give-to-5"],
+      "lessons": ["ng-add-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "math.taking-away.within-5": {
+      "world": "number-garden",
+      "needs": ["math.adding.within-5"],
+      "lessons": ["ng-take-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "math.adding.within-10": {
+      "world": "number-garden",
+      "needs": ["math.adding.within-5", "math.numerals.read-to-10"],
+      "lessons": ["ng-add-02"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "math.taking-away.within-10": {
+      "world": "number-garden",
+      "needs": ["math.taking-away.within-5", "math.numerals.read-to-10"],
+      "lessons": ["ng-take-02"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "coding.commands.one-move": {
+      "world": "robot-ridge",
+      "needs": [],
+      "lessons": ["rr-move-01"],
+      "variants": 4,
+      "chance": 0
+    },
+    "coding.sequence.plan-short": {
+      "world": "robot-ridge",
+      "needs": ["coding.commands.one-move"],
+      "lessons": ["rr-steps-01"],
+      "variants": 5,
+      "chance": 0
+    },
+    "coding.sequence.plan-to-six": {
+      "world": "robot-ridge",
+      "needs": ["coding.sequence.plan-short"],
+      "lessons": ["rr-plan-01"],
+      "variants": 3,
+      "chance": 0
+    },
+    "coding.sequence.plan-to-ten": {
+      "world": "robot-ridge",
+      "needs": ["coding.sequence.plan-to-six"],
+      "lessons": ["rr-plan-02"],
+      "variants": 4,
+      "chance": 0
+    },
+    "coding.repeat.do-again": {
+      "world": "robot-ridge",
+      "needs": ["coding.sequence.plan-short"],
+      "lessons": ["rr-repeat-01"],
+      "variants": 4,
+      "chance": 0
+    },
+    "coding.debug.mend-one-step": {
+      "world": "robot-ridge",
+      "needs": ["coding.sequence.plan-short"],
+      "lessons": ["rr-mend-01"],
+      "variants": 3,
+      "chance": 0
+    },
+    "coding.condition.wait-for-bridge": {
+      "world": "robot-ridge",
+      "needs": ["coding.sequence.plan-short"],
+      "lessons": ["rr-bridge-01"],
+      "variants": 4,
+      "chance": 0
+    },
+    "memory.recognition.find-pairs": {
+      "world": "memory-forest",
+      "needs": [],
+      "lessons": ["mf-pairs-01"],
+      "variants": 5,
+      "chance": 0.3783
+    },
+    "memory.recognition.what-was-there": {
+      "world": "memory-forest",
+      "needs": ["memory.recognition.find-pairs"],
+      "lessons": ["mf-hidden-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "memory.recognition.after-a-while": {
+      "world": "memory-forest",
+      "needs": ["memory.recognition.what-was-there"],
+      "lessons": ["mf-hidden-01"],
+      "variants": 1,
+      "chance": 0.3333
+    },
+    "memory.serial.repeat-order": {
+      "world": "memory-forest",
+      "needs": ["memory.recognition.what-was-there"],
+      "lessons": ["mf-order-01"],
+      "variants": 3,
+      "chance": 0.0156
+    },
+    "memory.strategy.grouping": {
+      "world": "memory-forest",
+      "needs": ["memory.recognition.what-was-there"],
+      "lessons": ["mf-groups-01"],
+      "variants": 7,
+      "chance": 0.0039
+    },
+    "memory.strategy.linking": {
+      "world": "memory-forest",
+      "needs": ["memory.recognition.what-was-there"],
+      "lessons": ["mf-story-01"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "memory.strategy.places": {
+      "world": "memory-forest",
+      "needs": ["memory.recognition.what-was-there"],
+      "lessons": ["mf-places-01"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "memory.cued.chosen-way": {
+      "world": "memory-forest",
+      "needs": ["memory.strategy.grouping", "memory.strategy.linking", "memory.strategy.places"],
+      "lessons": ["mf-choose-01"],
+      "variants": 4,
+      "chance": 0.3333
+    },
+    "memory.unaided.four-after-choosing": {
+      "world": "memory-forest",
+      "needs": ["memory.cued.chosen-way"],
+      "lessons": ["mf-choose-01"],
+      "variants": 4,
+      "chance": 0.0039
+    },
+    "memory.unaided.five-things": {
+      "world": "memory-forest",
+      "needs": ["memory.strategy.grouping"],
+      "lessons": ["mf-later-01"],
+      "variants": 6,
+      "chance": 0.0039
+    },
+    "memory.delayed.keep-three": {
+      "world": "memory-forest",
+      "needs": ["memory.recognition.what-was-there"],
+      "lessons": ["mf-later-01"],
+      "variants": 4,
+      "chance": 0.0159
+    },
+    "memory.delayed.same-day": {
+      "world": "memory-forest",
+      "needs": ["memory.delayed.keep-three"],
+      "lessons": ["mf-later-01"],
+      "variants": 4,
+      "chance": 0.0159
+    },
+    "memory.delayed.another-day": {
+      "world": "memory-forest",
+      "needs": ["memory.delayed.keep-three"],
+      "lessons": ["mf-later-01"],
+      "variants": 4,
+      "chance": 0.0159
+    },
+    "engineering.bridge.predict": {
+      "world": "inventor-island",
+      "needs": [],
+      "lessons": ["ii-bridge-01"],
+      "variants": 6,
+      "chance": 0.5
+    },
+    "engineering.bridge.build": {
+      "world": "inventor-island",
+      "needs": ["engineering.bridge.predict"],
+      "lessons": ["ii-bridge-01"],
+      "variants": 2,
+      "chance": 0.8333
+    },
+    "engineering.ramp.predict": {
+      "world": "inventor-island",
+      "needs": [],
+      "lessons": ["ii-ramp-01"],
+      "variants": 6,
+      "chance": 0.3333
+    },
+    "engineering.ramp.build": {
+      "world": "inventor-island",
+      "needs": ["engineering.ramp.predict"],
+      "lessons": ["ii-ramp-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "engineering.balance.predict": {
+      "world": "inventor-island",
+      "needs": [],
+      "lessons": ["ii-balance-01"],
+      "variants": 5,
+      "chance": 0.3333
+    },
+    "engineering.balance.build": {
+      "world": "inventor-island",
+      "needs": ["engineering.balance.predict"],
+      "lessons": ["ii-balance-01"],
+      "variants": 3,
+      "chance": 0.2222
+    },
+    "engineering.float.predict": {
+      "world": "inventor-island",
+      "needs": [],
+      "lessons": ["ii-float-01"],
+      "variants": 8,
+      "chance": 0.5
+    },
+    "engineering.float.build": {
+      "world": "inventor-island",
+      "needs": ["engineering.float.predict"],
+      "lessons": ["ii-float-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "engineering.shelter.predict": {
+      "world": "inventor-island",
+      "needs": [],
+      "lessons": ["ii-shelter-01"],
+      "variants": 6,
+      "chance": 0.5
+    },
+    "engineering.shelter.build": {
+      "world": "inventor-island",
+      "needs": ["engineering.shelter.predict"],
+      "lessons": ["ii-shelter-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "story.sequence.order-three": {
+      "world": "explorer-harbor",
+      "needs": [],
+      "lessons": ["eh-story-01"],
+      "variants": 3,
+      "chance": 0.1667
+    },
+    "story.sequence.choose-ending": {
+      "world": "explorer-harbor",
+      "needs": ["story.sequence.order-three"],
+      "lessons": ["eh-ending-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "story.cause.find-cause": {
+      "world": "explorer-harbor",
+      "needs": ["story.sequence.order-three"],
+      "lessons": ["eh-why-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "story.cause.predict": {
+      "world": "explorer-harbor",
+      "needs": ["story.cause.find-cause"],
+      "lessons": ["eh-next-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "world.map.water": {
+      "world": "explorer-harbor",
+      "needs": [],
+      "lessons": ["eh-water-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "world.map.land": {
+      "world": "explorer-harbor",
+      "needs": ["world.map.water"],
+      "lessons": ["eh-land-01"],
+      "variants": 3,
+      "chance": 0.3333
+    },
+    "world.space.nearest": {
+      "world": "explorer-harbor",
+      "needs": [],
+      "lessons": ["eh-near-01"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "world.space.farthest": {
+      "world": "explorer-harbor",
+      "needs": ["world.space.nearest"],
+      "lessons": ["eh-far-01"],
+      "variants": 2,
+      "chance": 0.3333
+    },
+    "world.globe.match-shape": {
+      "world": "explorer-harbor",
+      "needs": ["world.map.land"],
+      "lessons": ["eh-lands-01"],
+      "variants": 7,
+      "chance": 0.3333
+    },
+    "world.globe.find-named": {
+      "world": "explorer-harbor",
+      "needs": ["world.globe.match-shape"],
+      "lessons": ["eh-lands-02"],
+      "variants": 7,
+      "chance": 0.3333
+    },
+    "world.place.continent-of": {
+      "world": "explorer-harbor",
+      "needs": ["world.globe.match-shape"],
+      "lessons": ["eh-places-01"],
+      "variants": 6,
+      "chance": 0.3333
+    },
+    "music.pitch.high-low": {
+      "world": "music-lab",
+      "needs": [],
+      "lessons": ["ml-high-low-01"],
+      "variants": 8,
+      "chance": 0.5
+    },
+    "music.pattern.same-different": {
+      "world": "music-lab",
+      "needs": ["music.pitch.high-low"],
+      "lessons": ["ml-same-01"],
+      "variants": 4,
+      "chance": 0.5
+    },
+    "music.rhythm.steady-beat": {
+      "world": "music-lab",
+      "needs": [],
+      "lessons": ["ml-beat-01"],
+      "variants": 3,
+      "chance": 0
+    },
+    "music.memory.play-back": {
+      "world": "music-lab",
+      "needs": ["music.pitch.high-low"],
+      "lessons": ["ml-echo-01"],
+      "variants": 3,
+      "chance": 0.037
+    },
+    "music.pattern.repeated-phrase": {
+      "world": "music-lab",
+      "needs": ["music.pattern.same-different"],
+      "lessons": ["ml-again-01"],
+      "variants": 3,
+      "chance": 0.5
+    },
+    "music.making.shape-a-tune": {
+      "world": "music-lab",
+      "needs": ["music.memory.play-back"],
+      "lessons": ["ml-tune-01"],
+      "variants": 5,
+      "chance": 0.24
+    }
+  }
+}

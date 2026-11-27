@@ -1,5 +1,12 @@
-import { useId, useState } from 'react';
-import { OBSERVATIONS, SEEN, type Observation, type Profile, type Seen } from '@/engine';
+import { useId, useRef, useState } from 'react';
+import {
+  OBSERVATIONS,
+  SEEN,
+  SESSION_MINUTE_OPTIONS,
+  type Observation,
+  type Profile,
+  type Seen,
+} from '@/engine';
 import { setHelping, useHelping } from '@/game/helping';
 import { WATCH_IN, placeOfLesson, suggestionsFor, withObserved, withStart } from '@/game/placement';
 import { updateProfile } from '@/game/profiles';
@@ -29,13 +36,24 @@ export function WhereToBegin({ profile }: { profile: Profile | null }) {
   const helping = useHelping();
   const [message, setMessage] = useState<string | null>(null);
   const id = useId();
+  /** The settings on their way to being saved, if any are: what the next change is made to. */
+  const saving = useRef<Profile['settings'] | null>(null);
   if (!profile) return null;
 
   const { settings } = profile;
-  const save = (next: Profile['settings']) => {
+  // A change is made to the settings as they will be once whatever is still being saved has been: two things
+  // changed one straight after the other are both kept. (Each used to start from the settings as the card
+  // last drew them, and the second saved over the first.)
+  const save = (change: (now: Profile['settings']) => Profile['settings']) => {
+    const next = change(saving.current ?? settings);
+    saving.current = next;
+    const done = (message: string) => () => {
+      if (saving.current === next) saving.current = null;
+      setMessage(message);
+    };
     updateProfile(profile.id, { settings: next }).then(
-      () => setMessage(text.beginSaved),
-      () => setMessage(text.couldNotSave),
+      done(text.beginSaved),
+      done(text.couldNotSave),
     );
   };
   const open = WORLDS.filter(isOpen);
@@ -59,7 +77,7 @@ export function WhereToBegin({ profile }: { profile: Profile | null }) {
                 value={seen ?? ''}
                 onChange={(event) => {
                   const value = SEEN.find((each: Seen) => each === event.target.value) ?? null;
-                  save(withObserved(settings, what, value));
+                  save((now) => withObserved(now, what, value));
                 }}
               >
                 <option value="">{text.notObserved}</option>
@@ -91,7 +109,7 @@ export function WhereToBegin({ profile }: { profile: Profile | null }) {
       {suggestionsFor(settings, WORLDS).map(({ world, lesson }) => (
         <div key={world} className={styles.suggestion} data-testid="begin-suggestion">
           <p>{text.suggest(worldById(world).name, labelOf(worldById(world), lesson))}</p>
-          <ActionButton tone="sun" onClick={() => save(withStart(settings, world, lesson))}>
+          <ActionButton tone="sun" onClick={() => save((now) => withStart(now, world, lesson))}>
             {text.beginThere}
           </ActionButton>
         </div>
@@ -111,7 +129,7 @@ export function WhereToBegin({ profile }: { profile: Profile | null }) {
                 id={`${id}-${world.id}`}
                 value={chosen === first ? '' : chosen}
                 onChange={(event) =>
-                  save(withStart(settings, world.id, event.target.value || null))
+                  save((now) => withStart(now, world.id, event.target.value || null))
                 }
               >
                 <option value="">
@@ -135,6 +153,29 @@ export function WhereToBegin({ profile }: { profile: Profile | null }) {
           );
         })}
       </ul>
+
+      <h3 className={styles.part}>{text.sittingTitle}</h3>
+      <p className={styles.small}>{text.sittingHelp}</p>
+      <div className={styles.field} data-testid="sitting-length">
+        <label htmlFor={`${id}-sitting`}>{text.sittingLabel}</label>
+        <Select
+          id={`${id}-sitting`}
+          value={settings.sessionMinutes === null ? '' : String(settings.sessionMinutes)}
+          onChange={(event) => {
+            const minutes = SESSION_MINUTE_OPTIONS.find(
+              (option) => String(option) === event.target.value,
+            );
+            save((now) => ({ ...now, sessionMinutes: minutes ?? null }));
+          }}
+        >
+          <option value="">{text.sittingNone}</option>
+          {SESSION_MINUTE_OPTIONS.map((minutes) => (
+            <option key={minutes} value={String(minutes)}>
+              {text.sittingMinutes(minutes)}
+            </option>
+          ))}
+        </Select>
+      </div>
 
       <h3 className={styles.part}>{text.togetherTitle}</h3>
       <label className={styles.check}>

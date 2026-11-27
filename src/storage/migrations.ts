@@ -7,7 +7,7 @@ import type { StorageDriver, WriteOp } from './driver';
  * To change a stored shape: bump RECORD_SCHEMA_VERSION and DATA_VERSION, add a migration here that rewrites old
  * records, and add a fixture of the old data to tests/storage/migrations.test.ts. Never edit a shipped migration.
  */
-export const DATA_VERSION = 1;
+export const DATA_VERSION = 2;
 
 const SCHEMA_KEY = 'schema';
 
@@ -22,8 +22,69 @@ export interface Migration {
   plan(read: Pick<StorageDriver, 'get' | 'list'>): Promise<WriteOp[]>;
 }
 
-/** Shipped migrations, in order. Empty: version 1 is the first. */
-export const MIGRATIONS: readonly Migration[] = [];
+/**
+ * How many turns each board of "Find the pairs" allows before finding every pair no longer shows remembering:
+ * the `par` of each board of `mf-pairs-01` as it stood, at version 1, while the game was writing such answers
+ * down with no mark on them.
+ *
+ * Until data version 2 a game of pairs that took more turns than that was written into the record exactly as one
+ * that took few: right, at the first try, with no help. The sitting did not count it as done alone, and the
+ * record did. An answer written since carries `clean: false`; these are for the answers written before.
+ * (tests/storage/pairsMark.test.ts holds the numbers to the lesson.)
+ */
+export const PAIRS_PAR: Readonly<Record<string, number>> = {
+  'mf-pairs-01.guided-face-up': 3,
+  'mf-pairs-01.guided-two': 4,
+  'mf-pairs-01.animals': 6,
+  'mf-pairs-01.clothes': 6,
+  'mf-pairs-01.sounds': 6,
+  'mf-pairs-01.sky-and-leaf': 8,
+  'mf-pairs-01.food': 8,
+  'mf-pairs-01.small-animals': 8,
+};
+
+/**
+ * A stored answer with the mark it should have had: a game of pairs, right, in more turns than its board allows.
+ * `null` for every other record, and for one that has the mark already: nothing is to be changed.
+ */
+export function withThePairsMark<T>(record: T): (T & { clean: false }) | null {
+  if (typeof record !== 'object' || record === null) return null;
+  const { challengeId, lessonVersion, outcome, response, clean } = record as {
+    challengeId?: unknown;
+    lessonVersion?: unknown;
+    outcome?: unknown;
+    response?: unknown;
+    clean?: unknown;
+  };
+  if (typeof challengeId !== 'string' || !Object.hasOwn(PAIRS_PAR, challengeId)) return null;
+  // A later version of the lesson is written down by a game that marks its own answers.
+  if (lessonVersion !== 1 || outcome !== 'correct' || clean === false) return null;
+  const par = PAIRS_PAR[challengeId];
+  if (typeof response !== 'string' || !/^[1-9][0-9]?$/.test(response) || par === undefined) {
+    return null;
+  }
+  return Number(response) > par ? { ...record, clean: false } : null;
+}
+
+const markPairs: Migration = {
+  to: 2,
+  describe:
+    'answers: a game of pairs that took more turns than remembering needs is marked as such',
+  async plan(read) {
+    const ops: WriteOp[] = [];
+    for (const record of await read.list('attempts')) {
+      const marked = withThePairsMark(record);
+      const { id } = (marked ?? {}) as { id?: unknown };
+      if (marked && typeof id === 'string') {
+        ops.push({ op: 'put', store: 'attempts', key: id, value: marked });
+      }
+    }
+    return ops;
+  },
+};
+
+/** Shipped migrations, in order. */
+export const MIGRATIONS: readonly Migration[] = [markPairs];
 
 export type MigrationOutcome =
   | { status: 'ready'; from: number; to: number; applied: string[] }

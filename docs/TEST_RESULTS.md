@@ -3,11 +3,10 @@
 Everything in this file was actually run. Where something was not run, it says so.
 
 - **Date:** 2026-11-26
-- **Code under test:** `main` as the owner merged it on 2026-11-26 (pull request #15: Explorer Harbor's
-  globe, the seven big lands and fifteen famous places), with the pull request this document came with
-  (#16): Explorer Harbor's room for making a story, and what CI's run on that merge led to, which is the
-  globe's turn, mended. The release check below was run on that tree. What was run on the live site was run
-  on what was live, and says so.
+- **Code under test:** `main` as the owner merged it on 2026-11-26 (pull request #16: Explorer Harbor's
+  room for making a story, the globe's turn and the grown-ups' page mended), with the pull request this
+  document came with: phase 12, which chooses what to offer next. The release check below was run on that
+  tree after the last change to it. What was run on the live site was run on what was live, and says so.
 - **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright 1.63.0
   with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
 - **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium and WebKit builds that Playwright 1.63.0 installs.
@@ -24,17 +23,28 @@ npm run verify:release
 
 Result of the last local run: **passed.**
 
-| Step                   | Result                                                                                                                          |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run format:check` | clean                                                                                                                           |
-| `npm run lint`         | no errors, no warnings                                                                                                          |
-| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                  |
-| `npm test`             | **2451 tests in 78 files, all passed**                                                                                          |
-| `npm run build`        | built; 839 files in `dist/`, 735 of them the voice's recordings                                                                 |
-| `npm run verify:dist`  | **1834 checks, all passed** (sizes below)                                                                                       |
-| `npm run test:e2e`     | **1505 browser tests in one go: 1264 passed, 241 skipped by design, none failed** (Chromium, seven screen shapes, 58.3 minutes) |
+| Step                   | Result                                                                                                                                                                           |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run format:check` | clean                                                                                                                                                                            |
+| `npm run lint`         | no errors, no warnings                                                                                                                                                           |
+| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                                                                   |
+| `npm test`             | **2724 tests in 95 files, all passed**                                                                                                                                           |
+| `npm run build`        | built; 843 files in `dist/`, 736 of them the voice's recordings                                                                                                                  |
+| `npm run verify:dist`  | **1849 checks, all passed** (sizes below)                                                                                                                                        |
+| `npm run test:e2e`     | **1535 browser tests, in two runs: none failed, and none needed a second attempt** (Chromium, seven screen shapes; the first run was stopped by a restart of the machine, below) |
 
-**What the browser tests were run on, exactly.** The whole suite was run in one go, in Chromium on all seven
+**What the browser tests were run on, exactly, for phase 12.** The whole suite was started in one go, in
+Chromium on all seven screens, on phase 12's tree after its last change to anything but a document. At 1351
+of its 1535 tests (every test as a desktop, as a phone, as a tablet and as a phone held sideways, and 13 of
+the small phone's), **with none failed and none at a second attempt**, the machine it ran on was restarted
+and the run stopped with it, before it could print its totals. The tests of the three screens it had not
+finished were then run on the same tree: the small phone, and the Pixel upright and sideways, 197 tests, **197 passed** and none passed over, in 13.3 minutes.
+So every one of the 1535 has run on this tree and none has failed; how many of the first 1351 were passed
+over by design, and not run, the stopped run did not say (on the earlier runs it was about 240 of the
+suite, all on the desktop and the phone). In between, the owner merged pull request #16, and the branch was
+begun again from `main` with phase 12 kept: the tree under test did not change.
+
+**Before that, with the room for making a story.** The whole suite was run in one go, in Chromium on all seven
 screens, on the tree with the room for making a story in it: **1505 tests, 1264 passed, 241 skipped by
 design, none failed** (58.3 minutes). By screen: desktop 429 passed, phone 522, the tablet, the small phone
 and the phone held sideways 61 each, and the two Android shapes 65 each. The 241 skip themselves and say why:
@@ -71,8 +81,7 @@ engine and another test, untouched by any of this, failed there. That one measur
 while the first of them was being offered, which lifts it; it now waits for the board to say it has shown its
 step, which boards did not say before. And an activity that is being opened now says what it is waiting for,
 because one stayed at "Getting ready…" for ten seconds in that run and nothing could say why. **Ten files of
-browser tests were then run on all seven screens: 491 tests, 467 passed, 24 skipped by design, none failed.** The suite is 1511 tests now: four more, two on
-each of the two screens that run everything.
+browser tests were then run on all seven screens: 491 tests, 467 passed, 24 skipped by design, none failed.** The suite was then 1511 tests: four more, two on each of the two screens that run everything.
 
 The suite is 1507 tests, 36 more than it was. On each of the two screens that run everything, 18: the
 room's seventeen (fourteen written, one of them on four sizes of screen) and the globe's turn that the page
@@ -1052,6 +1061,119 @@ The other six each taught something.
 | In a browser, on the phone: Glim is as small on the flattest phone as it was made (**caught by nothing: the rule was not needed, and is gone**)                                                                                                                                                                                                                    | nothing                                                                                              |
 | In a browser, on the phone: the room goes up under a notch                                                                                                                                                                                                                                                                                                         | "every screen keeps what a child sees and presses clear of the notch"                                |
 | On the harbour's page: there is no switch for a story told back; the switch says it was tried; the switch asks for a second column (**the first check for it passed with the fault back: it measured three paragraphs that had landed in the wide column**)                                                                                                        | "is a switch they hold to say a story was told back"                                                 |
+
+### What phase 12 added to the tests, and what the tests found
+
+273 unit tests (254 in seventeen new files, 19 in five that were there) and six browser tests in a new file,
+`e2e/next.spec.ts`, with one more for the shelter; the suite is 1535 tests in 29 files.
+
+**The unit tests** are of days as arithmetic (`tests/engine/days.test.ts`: every day from 1900 to 2200 there
+and back against the platform's own calendar, leap years, the ends of months and years); of when a skill
+comes back (`review.test.ts`: every wait, what trouble does to it, a calendar that has moved, and five
+properties of any record, among them that nothing is due on a day it was practised and that answers with
+help never make a thing count as done alone); of luck (`chance.test.ts`: the chance of every one of the 823
+challenges, by its kind, and what each number of choices asks of a run before "independent" is said); of the
+concept graph and its audit (`graph.test.ts`, with a fault of every kind the audit knows put into a small
+graph; `tests/content/concepts.test.ts`, which holds the file to the packs and names the skills that fall
+short of what the brief asks); of the choice itself (`recommend.test.ts`, 56 tests on a small curriculum made
+for them, and five properties of any record: there is always something to play in every world and it says
+why, what is new has not been finished and what was played before has, the answer is the same in whatever
+order the record comes); of the five made-up learners (`learners.test.ts`); of the mark on a game of pairs
+and of bringing old data up to date (`clean.test.ts`, `tests/storage/pairsMark.test.ts`, and four properties
+of whatever was stored in `tests/storage/properties.test.ts`); of the shelter's wall with no prop
+(`designNone.test.ts`); of the hook that asks for the choice (`tests/game/advice.test.tsx`: not said until it
+is known, never one player's for another, said to be nothing where it cannot be had); of a sitting's clock
+and the clock an answer is timed by (`sitting.test.tsx`, `playClock.test.tsx`); of every reason in words and
+of the grown-ups' card (`tests/parent/why.test.ts`, `nextUp.test.tsx`); and of what finds a seed for a
+browser test (`tests/config/e2eSittings.test.ts`).
+
+**The browser tests** finish an activity and find something new offered that day; move the page's clock on
+two days, load the page again, and find the first activity offered again with the page saying so, Glim
+pointing at its world, and the grown-ups' card giving the activity, its label, and each reason with the skill
+by its name; find a page with nobody playing going by the plain order and saying that it does; give a player
+a sitting of ten minutes, play nine and find Play still offered, play two more and find the end of the
+activity saying it is a good moment to stop, Glim asleep on the map and pointing at nothing, a world's page
+with no big button and every activity still there and still opening, and, with that page simply left open
+for half an hour, Play offered again with nothing pressed and Glim awake on the map; play forty-five minutes with no length chosen and find nothing resting; play _Find the pairs_ to
+its end turning the same two cards over seven times on every board done alone, and read from what is stored
+that each such game is right and marked, that the activity's own count and the grown-ups' page agree, and
+that the page no longer says "independent"; and pause an activity for five minutes with a question on the
+screen, answer it, and read from what is stored that the answer took more than three seconds and less than a
+minute. The two with `@layout` in their names run on all seven screens and measure that nothing runs off the
+side.
+
+**What the tests found in the new work.**
+
+- **In the built game, the grown-ups' card could not say what Play would offer.** Found by the first browser
+  test at its first run against the build, and by nothing else: every unit test passed. The page's own
+  diagnostics said `Cannot read properties of undefined (reading 'provisional')`. Two of the files the build
+  is cut into each imported the other (the part of the engine that runs a lesson, and a file that had gathered
+  up the seeded dice with the part that chooses what to offer), and a browser starts such a pair in whichever
+  order the page asks for them. On the map and on a world's page that order was the lucky one. On the
+  grown-ups' page it was not: the part that chooses built its table of numbers from a constant of the other
+  file that had not been made yet. The part that chooses now has a file of its own, the engine's modules are
+  declared free of start-up side effects, and `npm run verify:dist` has a check that no two built files wait
+  for each other. **That check was shown failing** on the build as it had been configured: "engine-play-…
+  waits for engine-… waits for engine-play-…".
+- **Two copies of one rule.** A fault put into the rule for "is it time to rest" (ten minutes taken where no
+  length is chosen) was caught by the unit tests and by no browser test: the game did not go by that rule. It
+  went by a second copy, written in whole minutes, beside it. The game now asks the one rule, and the same
+  fault fails the browser test "with no length chosen, nothing rests however long is played".
+- **A rule that was wrong, not a test that was weak.** A fault put into what is "taken on a grown-up's word"
+  was not caught, and writing the test that should catch it showed the rule itself was mistaken: it went by
+  where a skill is first taught, and a skill that is taught again further on was then never taken on their
+  word, so a place a grown-up chose could be passed over for an earlier activity. It goes by what is taught
+  before the activity in question. Two tests hold it, and a test of the content as it stands tries every
+  activity of every world as the place chosen.
+- **A page left open kept Glim asleep.** Found by reading the code again, and by no test: the browser test
+  loaded the page again before it looked, and a page that is loaded again asks afresh. A sitting ends by
+  itself, half an hour after the last of the play, and nothing is written then; the page was told only when
+  time was added. It looks again now when it comes back into sight, and once a minute while it is there. The
+  browser test leaves the page open and loads nothing, and fails without the looking ("Expected: 0,
+  Received: 1" of the sleeping Glim).
+- **Two changes made quickly, and only the second kept.** Found by the first test of the sitting's length,
+  which changes it straight after choosing where Play begins: each change started from the settings as the
+  card had last drawn them, so the second saved over the first. Each is now made to the settings as they
+  will be once the one before has been saved.
+- **A game of pairs in fifteen turns stored as done alone, and a wall with no prop that could not be
+  tested.** Both live; both found by the made-up learner who taps without looking, the first as a skill that
+  learner should never have been called independent at, the second as a sitting that could not be finished
+  by answering at random. Both are in _The update, rehearsed_ and `docs/QUALITY_REPORT.md`.
+- **An answer said to have taken five minutes.** Found by reading the brief again ("duration bounded by
+  pause"), and then by the browser test written for it, with the mend taken out: "Expected: < 60000,
+  Received: 303200".
+- **"Independent across days" said too easily of a learner who only taps.** Found by measuring, not by a
+  test failing: forty made-up months read by five settings (`docs/QUALITY_REPORT.md` has the table). The
+  setting was changed, and the tests of what each number of choices asks for were rewritten to hold both
+  sides of the new line: with two pictures, seven in a row is not enough and eight is.
+
+**The tests were made to fail before they were believed.** Against the unit tests, 185 faults were put into
+the code one at a time:
+
+| What the faults were put into                               | Faults | Caught at once | The rest                                                                                                                                          |
+| ----------------------------------------------------------- | ------ | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Days, and when a skill comes back                           | 15     | 15             |                                                                                                                                                   |
+| Luck, and what it asks of a run                             | 14     | 14             |                                                                                                                                                   |
+| The choice, and the concept graph                           | 60     | 47             | 13 not caught: tests added or strengthened until each was; one showed the rule was wrong (above)                                                  |
+| The rule for what is taken on a grown-up's word, as changed | 9      | 9              |                                                                                                                                                   |
+| The hook that asks for the choice                           | 11     | 11             |                                                                                                                                                   |
+| Reasons in words, the grown-ups' card, the list of skills   | 21     | 20             | 1 stopped by the type check before any test ran                                                                                                   |
+| The mark on pairs, and bringing old data up to date         | 7      | 7              |                                                                                                                                                   |
+| A sitting's clock, and the rule for when to rest            | 15     | 14             | 1 not caught at first (a count below nothing believed): the test's data was dated so that only that could fail it                                 |
+| A page that looks again when a sitting has ended by itself  | 9      | 8              | 1 not caught at first (the look coming once an hour): the test took the length of the wait from the code, and says a minute by its own number now |
+| The two numbers for luck                                    | 7      | 7              |                                                                                                                                                   |
+| The clock an answer is timed by                             | 9      | 9              |                                                                                                                                                   |
+| What finds a seed for a browser test                        | 8      | 8              |                                                                                                                                                   |
+
+And seventeen were put into the game and built, against the browser tests: Play going by the plain order
+whatever is advised; Glim's hand doing the same; nothing ever falling due; a skill named by its code on the
+grown-ups' card; the card's reasons not marked; the time played never added up; a sitting that never ends by
+staying away; ten minutes taken where no length is chosen; an activity still marked as next while Glim
+rests; Glim still pointing while resting; the end of an activity never saying it is time to stop; pairs in
+any number of turns counted as done alone; a page with nobody playing saying it offers something new; and,
+for the answer's clock, not stopped when the activity is paused, the page's own clock used, and stopped all
+the time; and a page left open never looking again. **Sixteen were caught at once**, each by the test meant for it and in its own words. The one that
+was not is the two copies of one rule, above.
 
 ## Continuous integration
 
@@ -2089,6 +2211,66 @@ not answered: until now the tests said so only when they ran out of time, and th
 refused by a single check after ten seconds. A browser test holds a world's content back and reads the
 word; three unit tests hold the words.
 
+**Run 57** is the run on that push (`f7c83bb`). **All thirteen jobs passed**, in 21.5 minutes, WebKit's
+desktop and tablet among them, so the towers are measured rightly in Safari's engine too. Eleven artifacts
+are between 0.63 and 0.87 MB. The twelfth, WebKit's desktop and tablet, first half, is 22.3 MB: **one test
+passed only at its second attempt**, and it was the fault of the test.
+
+| Job                                              | Result                                 | The whole job (minutes) |
+| ------------------------------------------------ | -------------------------------------- | ----------------------- |
+| Lint, types, unit tests, build                   | passed                                 | 1.8                     |
+| Chromium, desktop and tablet, in three parts     | passed                                 | 21.5, 14.0 and 12.6     |
+| Chromium, the phone, in two halves               | passed                                 | 18.0 and 17.4           |
+| Chromium, the small phone and the phone sideways | passed                                 | 14.8                    |
+| Chromium, the Pixel, upright and sideways        | passed                                 | 15.2                    |
+| WebKit, desktop and tablet, in two halves        | passed, one test at its second attempt | 14.8 and 16.6           |
+| WebKit, the phone, in two halves                 | passed                                 | 13.3 and 14.8           |
+| WebKit, the iPhone, upright and sideways         | passed                                 | 15.2                    |
+
+**The test asked luck for something, and gave it eight goes.** `inventor.spec.ts`, "a shelter from the
+wind: a wall that stands and is too low lets the wind over the top", as WebKit's desktop. A sitting of the
+shelter draws three benches from ten. The test is about one of the ten, and it played sittings until that
+one came, giving up after eight: "the low wall in a breeze came up: expected true, received false", with the
+page at "All done!" at the end of the eighth. At its second attempt the bench came.
+
+Three of ten means a sitting misses a given bench seven times in ten, and eight sittings in a row miss it
+0.7⁸ of the time: **5.8 times in 100**. That is the arithmetic; and 200,000 trials of eight sittings, each
+planned with the game's own shuffle from a seed drawn at random, missed it 5.7 times in 100. The test runs
+on four screens in every CI run, so about one run in five should have had it pass at a second attempt, and about one in seventy-five should
+have failed outright. Nothing was the matter with the shelter, the game or the
+browser, and nothing was slow.
+
+**The test no longer waits for luck.** A sitting's seed is one number from the browser's random source.
+`e2e/sittings.ts` finds the first seed whose sitting brings, as the first step done alone, a step the test
+says it is about, by planning sittings exactly as the game does (`createSession`), and has the page plan its
+sittings from that seed (the pinning was already in Robot Ridge's tests of its largest boards, and is shared
+from there now). The test says what it expects to have met, so it fails by name if the content or the
+planning changes. **Twenty runs of the test then each found the bench in its first sitting**; and with the page
+pinned to a seed whose sitting has no such bench, the test fails in CI's own words. The helper has five unit
+tests (every step of every pool can be had; it is the first seed that brings it; it says so when nothing
+does), and eight faults put into it were each caught.
+
+**The other test of the same kind was changed with it.** The balance's bench with six parts was waited for
+over five sittings. Four of its eight benches have six parts and three are drawn, so a sitting misses with
+four chances in 56 and five sittings in a row with about two in a million: it never failed, and it was the
+same mistake. It plans its sitting from a seed too.
+
+**Run 58** is the run on `main` after the owner merged pull request #16 (`cbadaa3`, whose tree is `f7c83bb`'s).
+**All thirteen jobs passed, and no test needed a second attempt**: the twelve reports are between 0.61 and
+0.86 MB, the size of a report with nothing in it but the summary. The whole run took 18.8 minutes. The page
+that never comes in CI's WebKit did not happen, as it has not since run 54.
+
+| Job                                              | Result | The whole job (minutes) |
+| ------------------------------------------------ | ------ | ----------------------- |
+| Lint, types, unit tests, build                   | passed | 2.3                     |
+| Chromium, desktop and tablet, in three parts     | passed | 18.7, 14.6 and 12.4     |
+| Chromium, the phone, in two halves               | passed | 17.4 and 18.0           |
+| Chromium, the small phone and the phone sideways | passed | 15.0                    |
+| Chromium, the Pixel, upright and sideways        | passed | 15.0                    |
+| WebKit, desktop and tablet, in two halves        | passed | 13.1 and 17.7           |
+| WebKit, the phone, in two halves                 | passed | 13.7 and 15.8           |
+| WebKit, the iPhone, upright and sideways         | passed | 15.2                    |
+
 **Phase 03** is pull request [#4](https://github.com/JaredVogler2/Training_Academy/pull/4). The first run with
 the whole phase in it to pass was [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45093042202)
 below, on `d2e644c`: **all three jobs passed, with no failed test and no retry.**
@@ -2217,7 +2399,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 2451)
+## What the unit tests cover (Vitest, 2724)
 
 | Area                                                               | Files                                                                                                                                                                                                                                           | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -2256,6 +2438,16 @@ failures were the useful part:
 | **A globe** (Phase 10, the rest)                                   | `tests/content/globe.test.ts`, `atlas.test.ts`, `explorerHarborRules.test.ts`, `tests/game/globePictures.test.tsx`                                                                                                                              | Where a place is on a ball looked at from far away, whether it faces us, how a finger turns it, and what a land's shape is by itself; the seven continents' outlines held to the world by 51 places on land and 21 at sea; nineteen rules, each with a question that breaks it; fifteen drawings, and words that never name a land                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | **A story to make up** (Phase 10, the rest)                        | `tests/content/storymaker.test.ts`, `tests/game/storyTelling.test.ts`, `storyPictures.test.tsx`, `tests/app/router.test.ts`                                                                                                                     | Five turns, and what is offered at each; every way through walked to its end, 72 of them; a line for every page of every one, the same in the game as in the voice's list; what is shown and said after each choice, with a voice and with none, and nothing to choose from while a page is told; 216 pages each with its picture, glad then worried then glad, and no two things chosen between drawn alike                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | **What a player has shown, once it has been read** (after run 55)  | `tests/parent/evidence.test.tsx`                                                                                                                                                                                                                | Nothing is said of any skill until the record has been read: not that nothing is recorded, and not what was read for the player before; what the record holds is said once it is; a copy loaded into the same player is read, and what was on the page stays until it has been; a record that cannot be read is said to be that, and is not shown as an empty one                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Days, and when a skill comes back** (Phase 12)                   | `tests/engine/days.test.ts`, `review.test.ts`                                                                                                                                                                                                   | A day is a whole number and back, for every day from 1900 to 2200, by sums that agree with the platform's calendar; the wait for each thing the record can say, and what days of trouble do to it; a day or two ahead is today, further ahead is not counted from and is said to be in doubt; and of any record: the same answer in any order, nothing due on a day it was practised, what is due stays due, and help never makes a thing count as done alone                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **Luck** (Phase 12)                                                | `tests/engine/chance.test.ts`, `clean.test.ts`                                                                                                                                                                                                  | How likely a blind answer is to be right, for every challenge there is by its kind; how likely a run was to come out so well by chance; that each first try with no hint says its own chance; what two, three and more pictures ask of a run before "so far" and before "across days" is said, on both sides of each line; and that pairs found in more turns than a board allows are right, marked, and count as a first try alone that was not a success                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **The concept graph** (Phase 12)                                   | `tests/engine/graph.test.ts`, `tests/content/concepts.test.ts`                                                                                                                                                                                  | The audit finds each kind of fault it knows, put into a small graph, and nothing in a sound one; the file is what the build writes from the packs, to the last entry; nothing in the real graph is out of reach; the skills that fall short of three presentations, the one with a single question and the five asked only at times are named; a concept in full is there for every skill                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **What Play offers next** (Phase 12)                               | `tests/engine/recommend.test.ts`, `tests/game/advice.test.tsx`                                                                                                                                                                                  | Something new is the first unfinished activity whose skills build on things done alone, and one that is not ready is passed over, said to be, and offered when nothing else is; something played before comes back by its wait, the longest-waiting first, never on the day it was played; seven in ten over the last ten; one trouble a day, and never first; a place a grown-up chose, and what is taken on their word; a calendar that has moved; and of any record, that every world has something to play and says why. The hook: nothing said until it is known, never one player's for another, nothing where it cannot be had                                                                                                                                                                                                                                                                                                                                               |
+| **Five made-up learners** (Phase 12)                               | `tests/engine/learners.test.ts`, `tests/helpers/learners.ts`                                                                                                                                                                                    | Six weeks of the real lessons by the real rules, twice each: everybody is offered something every time and plays it to the end; nothing is offered twice in a day while there is anything else; nobody is kept on one thing; a learner who taps without looking is never called independent where luck has no part, and hardly ever where it has; one whose finger slips is shown as knowing less than they do, and is not shut out                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Old data brought up to date** (Phase 12)                         | `tests/storage/pairsMark.test.ts`, `properties.test.ts`, `repository.test.ts`                                                                                                                                                                   | The turns each board of pairs allowed are the lesson's own; an old answer is marked when it should be and never otherwise, once; a saved copy from before is marked on the way in; and of whatever was stored: one player's record is theirs alone, a copy saved and loaded back is the record to the letter, a copy makes a part of the record whole, and bringing data up to date says no more of a child than it said before                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **A sitting, and the clock of an answer** (Phase 12)               | `tests/game/sitting.test.tsx`, `playClock.test.tsx`, `tests/parent/whereToBegin.test.tsx`                                                                                                                                                       | Only time in play is added; half an hour away, or a clock gone back, begins another sitting; storage that is blocked or holds something else means nothing has been played; time to rest comes when the length a grown-up chose has been played and never where they chose none; two changes made quickly are both kept. The clock an answer is timed by stands still while paused and goes on from exactly where it stood. A page drawn by the sitting is told within a minute when it ends by itself, and at once when it comes back into sight; nothing is left running or listening when the page has gone                                                                                                                                                                                                                                                                                                                                                                      |
+| **Why, in words** (Phase 12)                                       | `tests/parent/why.test.ts`, `nextUp.test.tsx`, `evidence.test.tsx`                                                                                                                                                                              | A sentence for every reason there is, none of which says anything of a child but what was done; skills by their names and never by their ids; how the two piles were mixed, with the numbers gone by; what can be said of luck, and when nothing is; the card says nothing until it is worked out, and says so when it cannot be                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **A wall with no prop** (Phase 12)                                 | `tests/engine/designNone.test.ts`                                                                                                                                                                                                               | "None" is read back as one choice and not as nothing; in a gust such a wall goes over, which is a wrong answer and not no answer; a sitting takes it and writes it down                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **The seed a browser test plans from** (after run 57)              | `tests/config/e2eSittings.test.ts`                                                                                                                                                                                                              | Every step of every pool can be had as the first done alone; the seed given is the first that brings it; it says so, by the activity's name, when nothing does                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 ## What the browser tests cover (Playwright, against the production build)
 
@@ -2305,7 +2497,7 @@ phone 360 pixels wide leaves a page about 264 to 280. `phones.spec.ts` tests bot
 | `memory.spec.ts`                             | Memory Forest: **nothing that is covered can be read off the page**; the cards to answer with are blank while things are on show; two that differ turn back; an order is shown again only as help; the question about the very start comes last **An order being shown takes no tap until all of it has been shown**: a tap is made in every pause, with the clock held, and none counts; asking again in the middle of an order gives it whole, and takes nothing from the next                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `harbor.spec.ts`                             | Explorer Harbor: a story is put in order and **told back picture by picture, each lifted while its own line is written under it**; a missing picture is nowhere in the page until it is found; **every place on a map is drawn where the content says, with land under it or not as the answer says**; places are 56 points or more and apart, down to 640×256; the boat sails to the island chosen                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `robot.spec.ts`                              | Robot Ridge: each of four activities played rightly and wrongly by reading the ground from the screen and solving it; a run pauses and goes on; help; the keyboard; with less motion the way is marked instead of walked; axe on every board; the largest boards on 360×740 and 640×256                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `inventor.spec.ts`                           | Inventor Island: a guess is tested there and then, and one that did not come true is kept beside what happened; a mend tests a change only when something has changed; help; every activity played to the end; standing still where nothing should move; sideways with a notch; axe. **A shelter**: a wall that blows over goes over away from the wind and its prop comes down after it, measured by where their ends are; one that is held stands. **A grown-up's word**: a switch that is held, never tapped; kept with its day, shown as their word on the island's page and in the portfolio, taken back the same way; there for nobody when nobody is playing. **The portfolio**: what is waiting at each bench, each a way in; a bridge that was mended drawn from the answer itself and tested again at a tap; a picture and no more with less motion; five cards set out for the screen, never four and one                                                                                                                                                                                                                                                                                                               |
+| `inventor.spec.ts`                           | Inventor Island: a guess is tested there and then, and one that did not come true is kept beside what happened; a mend tests a change only when something has changed; help; every activity played to the end; standing still where nothing should move; sideways with a notch; axe. **A shelter**: a wall that blows over goes over away from the wind and its prop comes down after it, measured by where their ends are; one that is held stands. **A grown-up's word**: a switch that is held, never tapped; kept with its day, shown as their word on the island's page and in the portfolio, taken back the same way; there for nobody when nobody is playing. **The portfolio**: what is waiting at each bench, each a way in; a bridge that was mended drawn from the answer itself and tested again at a tap; a picture and no more with less motion; five cards set out for the screen, never four and one **A wall with its prop taken away can be tested**: it goes over again and the child is told so. The benches these tests are about are brought first by the sitting's seed, and no longer waited for                                                                                                           |
 | `voice.spec.ts`                              | The lines of an activity are fetched from the game's own files when wanted, and said; nothing is fetched with the sound off; a recording that cannot be fetched is done without; the voice stops on pause; every recording is listed for a grown-up, plays, and keeps its mark                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `howto.spec.ts` (the first-visit help)       | **A new player is shown how to play, once.** From the front door; each of the three things done; everything pressed measured on every screen shape; Glim's lines listened to in order. With the clock held, each showing watched one moment after another, nothing answering a tap before it is shown, and the hand coming to what there is to tap. Passed by with the house; shown again after a visit that ended in the middle of it; not shown to a child who was already playing; done with the sound off, and from the keyboard                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `help.spec.ts` (the first-visit help)        | **Taps that land on nothing** bring the ring to every answer alike (or to the one way on) and the words to Glim's bubble; the line is said once; the activity then played to its end records three independent successes. With the clock held: not across a pause in the tapping, gone in a few seconds, "watch first" while choices are turned away, a tick pointed out once. **A grown-up is helping**: held to change, never tapped; answers then recorded as helped; before and after are the child's own; kept for the visit only; can be set on "how to play". **A press that comes as the audio wakes** (after run 49), staged: with the audio changing what it says of itself before every press and the page behind with its drawing, what is pressed is still in the page when the document is given the press, every time in 64 presses or more                                                                                                                                                                                                                                                                                                                                                                         |
@@ -2314,20 +2506,21 @@ phone 360 pixels wide leaves a page about 264 to 280. `phones.spec.ts` tests bot
 | `sizes.spec.ts`                              | **What a child presses is large enough to press, where there is least room.** One activity for each kind of board, 34 of them, on four screens (844 by 390, 750 by 342, 640 by 256 and 320 by 568): every button and link inside the activity, measured while a question is being asked, is 56 points or more across and down, and none is off the screen. Measured once, as a touch phone                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `globe.spec.ts` (Explorer Harbor's globe)    | **Every pin is where the content says its land is, with the globe wherever it has been turned to**; the three pins and the two turning buttons are large enough and clear of one another; the land that is found is lit and looked at, and a famous place is put where it is; a land that is only named has nothing to match until help is asked for; a finger pulls the globe and a pin under the finger is not pressed; a pin pressed straight after a flick is pressed; turned until a pin is out of sight, it cannot be pressed, and the globe comes back; two buttons and the arrow keys turn it, and the keyboard is never left with nothing; **a turn by a button is finished however long the page stops in the middle of it**, the page being stopped when the turn is seen to be under way; held the other way it is laid out again; where nothing is to move it is simply where it should be; and on the flattest phone                                                                                                                                                                                                                                                                                                 |
 | `story.spec.ts` (Explorer Harbor's room)     | **A story is made by five taps on pictures, and every line of it is heard in order**; all 24 stories there are for one of the three are made, with what is offered at each turn held to the content; a leaf turns going on and going back, and each line is said over its own page; nothing can be chosen while a page is told, and its room is kept; Glim says a question again, and tells a page again from the top when tapped in the middle of it; three small pages turn the book once the story is whole and not before; with the sound off the pages turn and the words are there, and the sound has a switch; where nothing is to move no leaf turns; the keyboard is never left with nothing; nothing is stored; everything that can be pressed is measured, and the book at every turn of the wordiest story, on the four smallest screens; the accessibility checks at three moments; and on the harbour's page, the switch a grown-up holds to say a story was told back, with every part of the grown-ups' section measured                                                                                                                                                                                           |
+| `next.spec.ts` (phase 12)                    | **What Play offers, and when it stops offering.** An activity finished, and something new offered that day; two days on by the page's clock, the same activity offered again and the page saying why; Glim pointing at its world; the grown-ups' card with the activity, its label and every reason, skills by name; the plain order, said to be that, with nobody playing. **A sitting of ten minutes played out**: the end of an activity says so, Glim sleeps on the map and points at nothing, a world's page has no big button and every activity still opens, and half an hour away brings Play back; with no length chosen nothing rests. **A game of pairs in far too many turns** is stored as right and marked, and the activity's own count and the grown-ups' page agree. **An answer given after a pause of five minutes** is stored as having taken seconds                                                                                                                                                                                                                                                                                                                                                          |
 
 ## Sizes (`npm run verify:dist`)
 
 | What                                                    | Size (gzip) | Budget   |
 | ------------------------------------------------------- | ----------- | -------- |
-| Script for the first screen                             | 107.1 kB    | 110 kB   |
-| Styles for the first screen                             | 7.4 kB      | 12 kB    |
+| Script for the first screen                             | 108.3 kB    | 110 kB   |
+| Styles for the first screen                             | 7.5 kB      | 12 kB    |
 | Fonts                                                   | 67.2 kB     | 80 kB    |
 | The hub's pictures (WebP, not gzipped)                  | 284.0 kB    | 330 kB   |
 | 3D hub (on demand)                                      | 260.1 kB    | 290 kB   |
 | Largest other on-demand part (Explorer Harbor's code)   | 18.2 kB     | 30 kB    |
-| The game: everything but the voice and the content, raw | 2795.8 kB   | 2850 kB  |
+| The game: everything but the voice and the content, raw | 2844.1 kB   | 2850 kB  |
 | The content: seven packs and the atlas, raw             | 716.5 kB    | 900 kB   |
-| The voice: 735 recordings (MP3, not gzipped)            | 9335 kB     | 10500 kB |
+| The voice: 736 recordings (MP3, not gzipped)            | 9351 kB     | 10500 kB |
 | The largest recording                                   | 38.6 kB     | 60 kB    |
 
 A world's code is 4.5 to 18.2 kB and its content 5.4 to 12.4 kB, each fetched on entering that world
@@ -2335,8 +2528,11 @@ A world's code is 4.5 to 18.2 kB and its content 5.4 to 12.4 kB, each fetched on
 code is the 18.2, with 37 story pictures and fifteen famous places drawn in it; the continents' outlines are
 a file of their own beside it, 12.1 kB, counted with the content; and its room for making a story is 12.5 kB,
 with its 42 scenes, fetched by whoever opens it); the lesson frame is
-9.3 kB and the part of the engine that judges answers 6.4 kB, fetched with the first activity; and a
-recording is fetched when the step that may say it arrives.
+9.5 kB and the part of the engine that judges answers and reads the record 7.1 kB, fetched with the first
+activity, or sooner by the map or a world's page when there is somebody to choose for; the part that chooses
+what to offer is 3.6 kB and the table it goes by 3.2 kB, fetched then too (about 15 kB in all, once, after the
+first screen is up; without them Play goes by the plain order); and a recording is fetched when the step that
+may say it arrives.
 
 **Two limits were raised for the room for making a story, on purpose.** The game's own code was 2687 kB of
 the 2700 it was allowed; the room brought 109 kB (forty-two drawn scenes, three animals, three places, a
@@ -2345,9 +2541,12 @@ told aloud, in 75 lines of up to two sentences, which are 1453 kB, and the limit
 first load, and neither is fetched by anyone who does not open the room: the reasons are written beside the
 numbers in `scripts/verify-dist.mjs`.
 
-**Two of these are worth watching.** The game's own code is 2796 kB of the 2850 it is now allowed, with
-nothing more planned that draws. The script for the first screen is 107.1 kB of the 110 it is allowed, and
-it has grown with every activity: what each world offers, with the grown-ups' words about it, is in it. (Six
+**Two of these are worth watching, and one of them is nearly spent.** The game's own code is 2844.1 kB of
+the 2850 it is allowed: phase 12 brought 48 kB (the choice, the graph, the reasons in words, a sitting's
+clock, a sleeping Glim), and 5.9 kB is left. The parent dashboard of phase 13 will not fit in that; the limit
+will have to be raised on purpose, with the reason beside the number, or room made. The script for the first
+screen is 108.3 kB of the 110 it is allowed (phase 12 added 1.2 kB: what a world's page and the map need to
+ask for the choice, and Glim asleep), and it has grown with every activity: what each world offers, with the grown-ups' words about it, is in it. (Six
 more activities in Reading Cove added a tenth of a kilobyte; the first-visit help added seven tenths, for
 what a player's settings may now hold and for the front door's knowing who is new. "How to play" itself is a
 part of its own, 3.9 kB, fetched only by someone who is shown it.) A larger batch of activities will need those
@@ -2357,7 +2556,9 @@ Number Garden's numerals went over it again (2942 kB of 2900). Content is meant 
 own; what is left is the game itself, and its limit is tighter than the old one.
 
 The verifier also proves, on the built files: one entry script; no 3D code, studio, character sheet, world or
-recording reachable from it by static import; no inline script or style (so the CSP holds); no development URL in any file; the manifest and
+recording reachable from it by static import, nor the part that chooses what to offer or its table; **no two
+built files that wait for each other** (new with phase 12, after two did: see _What phase 12 added to the
+tests_); no inline script or style (so the CSP holds); no development URL in any file; the manifest and
 its icons; and that the service worker pre-downloads exactly the first screen's files and knows every hashed file.
 
 ## Screenshots
@@ -2724,28 +2925,43 @@ place shown with the shape of its land, and put on the globe where it is when it
 made beyond those tests. CI's own run on that commit was green in every job, with two tests at a second
 attempt, one of which is a fault that is live: _Run 54_, above.
 
+**After the owner merged pull request #16** (2026-11-26 at 22:25, `cbadaa3`), about two hours and a half
+after the merge: Vercel's own record of the production deployment said "Ready". The tests of that commit, not
+of this tree, were run against the address from a clean copy of it, on every screen the configuration has:
+**329 passed of 329, and none failed or was passed over** (the test that had been passed over five times in
+the check before is listed now only where it is run). Eight are the smoke tests as a desktop and eight as a
+phone; 61 each are the tests of layout as a tablet, as a phone held sideways and as a small phone; and 65 each
+are the Pixel 7's, upright and sideways, which play something in every world. It took 22.2 minutes. Among them
+is the room for making a story, played against the site on five screens: a story made by five taps on
+pictures, each page told as it is made, and the globe's two, with the turn now mended. No probe was made beyond
+those tests. CI's own run on that commit was green in every job, with no test at a second attempt: _Run 58_,
+above.
+
 ## An update, rehearsed
 
 `npm run rehearse:update -- <commit>` (`scripts/rehearse-update.mjs`): two real builds and one browser, in
 Chromium as a phone. The build of the commit is served. On it an activity is finished, a second is left at its
 third step, a tab is left in the middle of a third, and another on the map. Then the other build is served at the
-same address, as a deployment puts one build in the place of another, and eighteen things are checked.
+same address, as a deployment puts one build in the place of another, and eighteen things are checked;
+twenty-four since phase 12, which changed what an answer that is already stored means.
 
-| From                                                         | To                                   | Result                                                                                                                                                                                                                 |
-| ------------------------------------------------------------ | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `334e0e8`, the build before the six worlds: what a phone had | `0e836eb`, the build that went live  | **16 of 18.** The two that failed: a world's page opened by its address did not show what was finished, and Play went back to the first activity                                                                       |
-| `0e836eb`, what is live                                      | this tree                            | **18 of 18**                                                                                                                                                                                                           |
-| `765be14`, what was live then (the Music Lab's activities)   | pull request #9 as first written     | **16 of 18.** The activity left at its third step was begun again at its first, and its stored place was gone                                                                                                          |
-| `765be14`, what was live then                                | pull request #9 with the fix         | **18 of 18**                                                                                                                                                                                                           |
-| `765be14`, what was live then                                | this tree, with Reading Cove's six   | **18 of 18**, twice: before the last change to how a sentence is laid out, and after it                                                                                                                                |
-| `dbbdbc3`, what was live then (pull request #9 merged)       | this tree, with Reading Cove's six   | **18 of 18**                                                                                                                                                                                                           |
-| `8288833`, what was live then (pull request #10 merged)      | this tree, with the first-visit help | **18 of 18**: a player's settings may now hold three more things, and a player stored by the build before has none of them                                                                                             |
-| `ed3efd6`, what was live then (pull request #11 merged)      | this tree, with Robot Ridge's three  | **18 of 18**                                                                                                                                                                                                           |
-| `3c322c5`, what was live then (pull request #12 merged)      | this tree, with Memory Forest's two  | **18 of 18**: a sitting may now be told what the one before it kept, and a sitting stored by the build before kept nothing                                                                                             |
-| `a0e60f8`, what was live then (pull request #13 merged)      | this tree, with the island's shelter | **18 of 18**: a player's settings may now hold what a grown-up says was tried, and a player stored by the build before has none of it; the island's content is a new version, and its four live activities keep theirs |
-| `3f5c5f7`, what was live then (pull request #14 merged)      | this tree, with the harbour's globe  | **18 of 18**: the harbour's content is a new version, and its eight live lessons keep theirs; the continents' outlines are a new file of the build; nothing that is stored has changed shape                           |
-| `64a507b`, what is live now (pull request #15 merged)        | this tree, with the harbour's room   | **18 of 18**: no lesson has changed and nothing that is stored has changed shape; a player's settings may now hold the day a grown-up said a story was told back, in the place they already hold what was tried        |
-| `64a507b`, what is live now                                  | this tree, after CI's run 55         | **18 of 18**: nothing that is stored has changed, and no content; the grown-ups' part of the build has, and a tab left open on the old build that asks for it says so and offers to load the page again                |
+| From                                                         | To                                   | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------ | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `334e0e8`, the build before the six worlds: what a phone had | `0e836eb`, the build that went live  | **16 of 18.** The two that failed: a world's page opened by its address did not show what was finished, and Play went back to the first activity                                                                                                                                                                                                                                                                                                                           |
+| `0e836eb`, what is live                                      | this tree                            | **18 of 18**                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `765be14`, what was live then (the Music Lab's activities)   | pull request #9 as first written     | **16 of 18.** The activity left at its third step was begun again at its first, and its stored place was gone                                                                                                                                                                                                                                                                                                                                                              |
+| `765be14`, what was live then                                | pull request #9 with the fix         | **18 of 18**                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `765be14`, what was live then                                | this tree, with Reading Cove's six   | **18 of 18**, twice: before the last change to how a sentence is laid out, and after it                                                                                                                                                                                                                                                                                                                                                                                    |
+| `dbbdbc3`, what was live then (pull request #9 merged)       | this tree, with Reading Cove's six   | **18 of 18**                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `8288833`, what was live then (pull request #10 merged)      | this tree, with the first-visit help | **18 of 18**: a player's settings may now hold three more things, and a player stored by the build before has none of them                                                                                                                                                                                                                                                                                                                                                 |
+| `ed3efd6`, what was live then (pull request #11 merged)      | this tree, with Robot Ridge's three  | **18 of 18**                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `3c322c5`, what was live then (pull request #12 merged)      | this tree, with Memory Forest's two  | **18 of 18**: a sitting may now be told what the one before it kept, and a sitting stored by the build before kept nothing                                                                                                                                                                                                                                                                                                                                                 |
+| `a0e60f8`, what was live then (pull request #13 merged)      | this tree, with the island's shelter | **18 of 18**: a player's settings may now hold what a grown-up says was tried, and a player stored by the build before has none of it; the island's content is a new version, and its four live activities keep theirs                                                                                                                                                                                                                                                     |
+| `3f5c5f7`, what was live then (pull request #14 merged)      | this tree, with the harbour's globe  | **18 of 18**: the harbour's content is a new version, and its eight live lessons keep theirs; the continents' outlines are a new file of the build; nothing that is stored has changed shape                                                                                                                                                                                                                                                                               |
+| `64a507b`, what is live now (pull request #15 merged)        | this tree, with the harbour's room   | **18 of 18**: no lesson has changed and nothing that is stored has changed shape; a player's settings may now hold the day a grown-up said a story was told back, in the place they already hold what was tried                                                                                                                                                                                                                                                            |
+| `64a507b`, what is live now                                  | this tree, after CI's run 55         | **18 of 18**: nothing that is stored has changed, and no content; the grown-ups' part of the build has, and a tab left open on the old build that asks for it says so and offers to load the page again                                                                                                                                                                                                                                                                    |
+| `64a507b`, what was live then                                | this tree, with phase 12             | **24 of 24.** What is stored goes from its first version to its second. On the live build, _Find the pairs_ was played to its end without remembering: four boards alone in 13, 14, 14 and 15 turns, each stored as right with no mark, and its grown-ups' page said "provisionally independent" of finding pairs. After the update the five games that took too many turns carry the mark, the other answers are what they were to the letter, and the page says "guided" |
+| `cbadaa3`, what is live now (pull request #16 merged)        | this tree, with phase 12             | **24 of 24**, the same again from the build the merge made live: four boards of pairs found alone in 12, 12, 15 and 15 turns, stored by the live build with no mark and called "provisionally independent" on its grown-ups' page; after the update the five games that took too many turns carry the mark, the other 16 answers are what they were to the letter, and the page says "guided"                                                                              |
 
 What held every time:
 
@@ -2762,7 +2978,26 @@ What held every time:
 - no page of the new build put anything on the console. (The old tab did, as it must: a 404 for a file that is
   no longer there.)
 
-**The third row is the update this pull request would have been**, and it is the second time rehearsing one
+**The last row is the first update that changes what is already stored**, and the rehearsal was given six
+more things to check for it. Before the update, on the build that is live, it plays _Find the pairs_ to its
+end, turning the same two cards over seven times on every board done alone before finding anything, and
+reads what that build stores and what its grown-ups' page says of it. After the update it checks that what
+is stored says it has been brought up to date; that every game of pairs that took more turns than its board
+allows now carries the mark; that nothing else of any answer has changed, comparing every answer stored
+before with itself afterwards, to the letter; and that the grown-ups' page no longer says of finding pairs
+what the turns did not show. So the fault is seen on the live build's own code, and seen mended by the
+update, on data that build wrote.
+
+**Its first run had one check fail, and that was the rehearsal's own fault.** "With every old tab closed,
+the new service worker has taken over and cleared the old build out" reported both builds still kept after
+thirty seconds. The script closed the last old tab and opened a new one in the same instant, and the old
+service worker claimed the new tab: a worker stays for as long as it has a page. The longer rehearsal had
+changed its timing by enough for that to happen. The script now gives the waiting worker its moment, asking
+the workers themselves whether the old build has gone, before it opens another tab. Nobody closes a tab and
+opens the next within a few thousandths of a second; a page that is loaded again is another matter, and has
+always kept the old worker, which is what the "load the page again" path is tested for.
+
+**The third row is the update pull request #9 would have been**, and it is the second time rehearsing one
 has found something no other test could. Number Garden gained eleven activities, so its content has a new
 version. The game took up an unfinished activity only if the whole world's content was the version it had been
 begun in: so a child who had left "Which has fewer?" half-way would have been sent back to the start of it, for

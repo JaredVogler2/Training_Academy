@@ -4156,6 +4156,19 @@
       "takes": 3,
       "reviewed": null
     },
+    "lesson.rest": {
+      "group": "common",
+      "kind": "line",
+      "text": "That was good playing. Time for a rest.",
+      "file": "src/assets/voice/en/common/lesson.rest.mp3",
+      "bytes": 16300,
+      "seconds": 2.64,
+      "sha256": "2aa90cdf6697bb9ec468bd463e5e4b4c264351f11f32f3249c599deecbcde319",
+      "heard": "that was good playing time for a rest",
+      "check": "matches",
+      "takes": 5,
+      "reviewed": null
+    },
     "lesson.watch": {
       "group": "common",
       "kind": "line",

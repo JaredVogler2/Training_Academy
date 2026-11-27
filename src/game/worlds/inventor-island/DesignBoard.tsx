@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { playCue } from '@/audio';
-import { startingDesign, tokensOf, writeTokens, type Setup } from '@/engine';
+import { designOf, startingDesign, writeTokens, type Setup } from '@/engine';
 import {
   Foot,
   eventOf,
@@ -46,7 +46,7 @@ export function DesignBoard({ state, runner, pack, paused, calm }: BoardProps) {
 
   const start = useMemo(() => startingDesign(task), [task]);
   // The answer, where the engine is showing it: a demonstration, or after a reveal.
-  const answer = view.shownAnswer === null ? null : tokensOf(view.shownAnswer);
+  const answer = view.shownAnswer === null ? null : designOf(view.shownAnswer);
   const revealed = !demo && answer !== null;
   // What a hint has set is in place from then on, and stays.
   const given = view.given;
@@ -107,7 +107,7 @@ export function DesignBoard({ state, runner, pack, paused, calm }: BoardProps) {
     // The trouble is only shown while the design is still as it was handed over.
     if (untouched) phase = 'testing';
   } else if (testing && tested !== null) {
-    shown = tokensOf(tested);
+    shown = designOf(tested);
     phase = 'testing';
   } else if (tested !== null && tested === written && (work.watched === run || calm)) {
     // Tested, and not changed since: it stays as it came to rest.

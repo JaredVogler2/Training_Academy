@@ -45,6 +45,7 @@ import {
   IconUpload,
 } from '@/ui/icons';
 import { Evidence } from './Evidence';
+import { NextUp } from './NextUp';
 import { Select } from './Select';
 import { WhereToBegin } from './WhereToBegin';
 import { grownUpText as text } from './text';
@@ -489,6 +490,7 @@ function Area() {
 
       <Players onDialog={setDialog} />
       <WhereToBegin key={`begin-${playing?.id ?? 'nobody'}`} profile={playing} />
+      <NextUp key={`next-${playing?.id ?? 'nobody'}`} profile={playing} />
       <Evidence key={playing?.id ?? 'nobody'} profile={playing} />
       <Data profile={playing} onDialog={setDialog} />
       <DeviceSettings />

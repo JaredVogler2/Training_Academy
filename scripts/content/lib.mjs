@@ -102,6 +102,58 @@ export async function lessonListText(packs) {
   return prettier.format(JSON.stringify(lessonList(packs)), { ...config, parser: 'json' });
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+// The concept graph: what is taught, what each thing builds on, and which activity teaches it.
+//
+// It is what the game goes by to decide what to offer next, on pages that have not fetched a single lesson. It is
+// made from the packs and from nothing else, by the engine itself (`graphOf`, in src/engine/graph.ts): how likely
+// a blind answer to a question is to be right takes the engine's own judging of things that are built and tunes
+// that are made, so there is one place that works it out. The build asks Vite for the engine, which is how a
+// plain script comes to run TypeScript; tests/content/concepts.test.ts holds the file to what the engine makes.
+// ---------------------------------------------------------------------------------------------------------------------
+
+export const conceptGraphPath = join(root, 'src/content/concepts.json');
+
+export const CONCEPT_GRAPH_ABOUT =
+  'What is taught, what each skill builds on and which activity teaches it: what the game goes by to decide what to offer next, before any lesson has been fetched. Written by `npm run content` from the packs; do not edit by hand.';
+
+/** The engine's functions that make a graph of packs, fetched through Vite. Close it when done. */
+export async function loadGraphMaker() {
+  const { createServer } = await import('vite');
+  const server = await createServer({
+    root,
+    logLevel: 'error',
+    server: { middlewareMode: true, hmr: false, watch: null },
+    appType: 'custom',
+    optimizeDeps: { noDiscovery: true },
+  });
+  const graph = await server.ssrLoadModule('/src/engine/graph.ts');
+  const schema = await server.ssrLoadModule('/src/engine/schema.ts');
+  return {
+    /** The graph of packs as their generators build them, checked as the game checks a pack it fetches. */
+    graphOf(packs) {
+      const checked = packs.map((pack) => {
+        // As a pack is when it has been written to its file and read back.
+        const parsed = schema.parseContentPack(JSON.parse(JSON.stringify(pack)));
+        if (!parsed.ok) throw new Error(`${pack.id} is not a valid pack: ${parsed.issues[0]}`);
+        return parsed.value;
+      });
+      const made = graph.graphOf(checked, CONCEPT_GRAPH_ABOUT);
+      const faults = graph.auditGraph(made);
+      if (faults.length > 0) {
+        throw new Error(`The concept graph has something out of reach: ${JSON.stringify(faults)}`);
+      }
+      return made;
+    },
+    close: () => server.close(),
+  };
+}
+
+export async function conceptGraphText(graph) {
+  const config = await prettier.resolveConfig(conceptGraphPath);
+  return prettier.format(JSON.stringify(graph), { ...config, parser: 'json' });
+}
+
 /** Where a world's extra lines for the voice live: the names of its pictures, and sounds that are not speech. */
 export function voiceLinesPath(world) {
   return join(root, 'src/voice/lines', `${world}.json`);

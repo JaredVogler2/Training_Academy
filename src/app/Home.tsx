@@ -1,8 +1,10 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { playCue } from '@/audio';
+import { useAdvice } from '@/game/advice';
 import { activeProfile, refreshProfiles, useProfiles } from '@/game/profiles';
-import { nextWorld, useFinishedLessons } from '@/game/progress';
-import { WORLDS, isOpen, type WorldInfo } from '@/game/worlds';
+import { nextWorld } from '@/game/progress';
+import { useTimeToRest } from '@/game/sitting';
+import { WORLDS, isOpen, worldById, type WorldInfo } from '@/game/worlds';
 import { HubStage } from '@/render/HubStage';
 import {
   COMPACT_LABELS_BELOW,
@@ -95,11 +97,14 @@ function HubGuide({
   frame,
   arriving,
   open,
+  resting,
 }: {
   frame: Frame;
   arriving: boolean;
   /** The world to point at, if there is one. */
   open: WorldInfo | null;
+  /** The sitting a grown-up set has been played out: Glim rests, and points at nothing. */
+  resting: boolean;
 }) {
   const [greeting, setGreeting] = useState(arriving);
   useEffect(() => {
@@ -125,7 +130,11 @@ function HubGuide({
         setGreeting(true);
       }}
     >
-      <Guide state={greeting ? 'wave' : open ? 'point' : 'idle'} aim={aim} afloat />
+      <Guide
+        state={greeting ? 'wave' : resting ? 'rest' : open ? 'point' : 'idle'}
+        aim={aim}
+        afloat
+      />
     </button>
   );
 }
@@ -140,8 +149,15 @@ export function Home() {
   const { stage, free, frame } = useHubFrame();
   const [lifted, setLifted] = useState<PlaceId | null>(null);
   const begun = useBegun();
-  // Where the next unfinished thing is: the island Glim points at.
-  const next = nextWorld(useFinishedLessons());
+  // The island Glim points at: where the one thing the game would offer next is (`engine/recommend.ts`). Until
+  // that is known Glim points at nothing: a hand that pointed at one island and then moved to another would be
+  // worse than a hand that waits a moment. Where it cannot be worked out, and for nobody, it is the first
+  // island that has something unfinished.
+  const { done, known, advice } = useAdvice();
+  // When a sitting of the length a grown-up chose has been played, nothing more is pointed at: Glim rests.
+  // Every island is still there to be tapped.
+  const { rest } = useTimeToRest();
+  const next = !known || rest ? null : advice?.top ? worldById(advice.top.world) : nextWorld(done);
   // Whether this page opened on the front door: if so, Glim greets the child on the map as well.
   const [openedAtDoor] = useState(!begun);
 
@@ -150,7 +166,12 @@ export function Home() {
   }, []);
 
   return (
-    <div className={styles.hub} ref={stage} data-arrangement={frame?.layout.arrangement}>
+    <div
+      className={styles.hub}
+      ref={stage}
+      data-arrangement={frame?.layout.arrangement}
+      data-rest={rest || undefined}
+    >
       <div className={styles.free} ref={free} />
       <HubStage frame={frame} lifted={lifted} waiting={!begun} />
       {!begun && <FrontDoor profiles={profiles} />}
@@ -185,7 +206,9 @@ export function Home() {
           </ul>
         </nav>
         {/* After the worlds, so the keyboard and a screen reader reach the islands first. */}
-        {frame && begun && <HubGuide frame={frame} arriving={openedAtDoor} open={next} />}
+        {frame && begun && (
+          <HubGuide frame={frame} arriving={openedAtDoor} open={next} resting={rest} />
+        )}
       </div>
     </div>
   );

@@ -57,6 +57,15 @@ export function writeTokens(tokens: readonly string[]): string {
   return tokens.length === 0 ? 'none' : tokens.join('-');
 }
 
+/**
+ * A design as it is written down, read back: one option for each part that can be changed. A design is never
+ * empty, so here "none" is an option like any other (a wall with no prop) and not the word for nothing. (It was
+ * read as nothing: a wall tested with no prop was no answer at all, and the press that tested it did nothing.)
+ */
+export function designOf(response: string): string[] {
+  return response.split('-');
+}
+
 function sameSequence(a: readonly string[], b: readonly string[]): boolean {
   return a.length === b.length && a.every((value, index) => value === b[index]);
 }
@@ -232,7 +241,7 @@ export function judgeTask(task: Task, response: string): Judgement | null {
         : { correct: false, clean: false, misconception: outcome };
     }
     case 'design': {
-      const result = testDesign(task, tokens);
+      const result = testDesign(task, designOf(response));
       if (!result) return null;
       return result.works
         ? { correct: true, clean: true }

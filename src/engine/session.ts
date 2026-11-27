@@ -12,6 +12,7 @@ import {
   type Stage,
   type Step,
 } from './schema';
+import { chanceOf } from './chance';
 import { cardIdsOf, judgeTask, solutionOf, solutionParts } from './tasks';
 
 /**
@@ -39,6 +40,20 @@ import { cardIdsOf, judgeTask, solutionOf, solutionParts } from './tasks';
 
 /** Wrong tries at a thing to make before the answer is shown, unless the challenge says otherwise. */
 export const DEFAULT_MAX_TRIES = 3;
+
+/**
+ * The chance of a challenge, worked out once for each: for a tune it means trying every tune there could be.
+ * To four places, as it is written down.
+ */
+const chances = new WeakMap<Challenge, number>();
+function chanceKnown(challenge: Challenge): number {
+  let chance = chances.get(challenge);
+  if (chance === undefined) {
+    chance = Math.round(chanceOf(challenge) * 10_000) / 10_000;
+    chances.set(challenge, chance);
+  }
+  return chance;
+}
 
 /**
  * How long ago a sitting must have ended for what it kept to be asked about: recalling a thing a moment after
@@ -454,6 +469,10 @@ export function submitAttempt(
     hintLevel: presentation.hintLevel,
     assistance: adultAssist ? 'adult' : presentation.hintLevel > 0 ? 'hint' : 'none',
     outcome: correct ? 'correct' : 'incorrect',
+    // Right, but not in a way that shows the skill: the record says so, as the sitting's own count does.
+    ...(correct && !clean ? { clean: false as const } : {}),
+    // How easy this question was to get right without looking, kept with a first try that had no hint.
+    ...(firstTry && presentation.hintLevel === 0 ? { chance: chanceKnown(challenge) } : {}),
     response,
     ...(misconception === undefined ? {} : { misconception }),
     at: input.now,

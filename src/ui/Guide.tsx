@@ -13,11 +13,12 @@ import styles from './Guide.module.css';
  *   celebrate   "yes!": a hop, both arms up, happy eyes, sparkles
  *   retry       "not that one — have another look": a gentle tilt of the head and a small nod. Never sad.
  *   wave        "hello"
+ *   rest        "that is enough for now": eyes closed, and two small z's. Nothing is asked, and nothing is pointed at.
  *
  * The pose alone carries the meaning, so with motion reduced the guide still says the same things, standing still.
  * The guide is decoration for assistive technology: whatever it shows is also in the text beside it.
  */
-export type GuideState = 'idle' | 'point' | 'think' | 'celebrate' | 'retry' | 'wave';
+export type GuideState = 'idle' | 'point' | 'think' | 'celebrate' | 'retry' | 'wave' | 'rest';
 
 const INK = '#22304f';
 const AMBER = '#e09a1f';
@@ -169,6 +170,17 @@ export function Guide({
                   <path d="M42.5 51.5q5-3.5 10-1" />
                   <path d="M77.5 51.5q-5-3.5-10-1" />
                 </g>
+                {/* Asleep: the lids come down, where the happy eyes curve up. */}
+                <g
+                  className={styles.eyesAsleep}
+                  fill="none"
+                  stroke={INK}
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                >
+                  <path d="M42.5 61q5.5 6 11 0" />
+                  <path d="M66.5 61q5.5 6 11 0" />
+                </g>
                 <g
                   className={styles.eyesHappy}
                   fill="none"
@@ -271,6 +283,21 @@ export function Guide({
               strokeLinecap="round"
               opacity="0.8"
             />
+          </g>
+
+          {/* Two z's, drawn and not written, so that they are the same in every language and every font. In the
+              ink of the eyes, thinned: a pale grey was lost against the sea, where Glim rests on the map. */}
+          <g
+            className={styles.sleep}
+            fill="none"
+            stroke={INK}
+            opacity="0.62"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M92 26h9l-9 10h9" />
+            <path d="M107 4h12l-12 13h12" />
           </g>
 
           <g className={styles.thoughts} fill="#fff" stroke="#8792ac" strokeWidth="1.5">

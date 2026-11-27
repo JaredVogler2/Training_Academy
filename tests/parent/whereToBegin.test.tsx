@@ -203,4 +203,29 @@ describe('where to begin', () => {
     fireEvent.change(seenBox('taps'), { target: { value: 'seen' } });
     expect(await screen.findByText(text.couldNotSave)).toBeTruthy();
   });
+  it('keeps how long a sitting is, where a grown-up says, and forgets it when they say "as long as they like"', async () => {
+    const { id } = await open();
+    const length = screen.getByLabelText<HTMLSelectElement>(text.sittingLabel);
+    // No length is set until they set one.
+    expect(length.value).toBe('');
+    expect([...length.options].map((option) => option.textContent)).toEqual([
+      text.sittingNone,
+      'About 10 minutes',
+      'About 15 minutes',
+      'About 20 minutes',
+    ]);
+    fireEvent.change(length, { target: { value: '15' } });
+    await waitFor(async () => expect((await settingsOf(id))?.sessionMinutes).toBe(15));
+    await waitFor(() =>
+      expect(screen.getByLabelText<HTMLSelectElement>(text.sittingLabel).value).toBe('15'),
+    );
+    fireEvent.change(screen.getByLabelText(text.sittingLabel), { target: { value: '' } });
+    await waitFor(async () => expect((await settingsOf(id))?.sessionMinutes).toBeNull());
+    // Whatever else they have said is still there, and this changed none of it.
+    fireEvent.change(seenBox('taps'), { target: { value: 'seen' } });
+    fireEvent.change(screen.getByLabelText(text.sittingLabel), { target: { value: '10' } });
+    await waitFor(async () =>
+      expect(await settingsOf(id)).toEqual({ sessionMinutes: 10, observed: { taps: 'seen' } }),
+    );
+  });
 });

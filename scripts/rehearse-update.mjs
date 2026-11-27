@@ -15,6 +15,10 @@
 //   - a world's page opened by its address still shows what was finished, and Play goes on from there;
 //   - the activity left half-way is taken up by the new build at the step it was left at;
 //   - nothing that was stored has gone;
+//   - what the old build wrote down is brought up to date and nothing else of it is changed: a game of pairs
+//     found in far more turns than remembering needs, which the old build stored as done alone, carries the mark
+//     the new build gives such a game, every other answer is to the letter what it was, and the grown-ups' page,
+//     which said "independent" of it, no longer does;
 //   - once every old tab is closed, the new service worker takes over and clears the old build out;
 //   - after that, what has been opened opens with no connection.
 //
@@ -24,6 +28,8 @@
 //
 // The three activities it plays are ones answered by choosing, because it plays without knowing the answers: it
 // taps whatever can be tapped until the way on appears. If Number Garden's activities change, change ACTIVITIES.
+// It also plays "Find the pairs" to its end, turning the same two cards over seven times on every board done alone
+// before finding anything: that is the one kind of answer whose meaning the stored data's second version changed.
 
 import { execFileSync, spawn } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
@@ -51,6 +57,14 @@ const ACTIVITIES = {
   open: 'ng-more-01',
 };
 const play = (id) => `/world/${WORLD}/play/${id}`;
+/** The one activity whose answers the stored data's second version gives a mark to. */
+const PAIRS = {
+  world: 'memory-forest',
+  activity: 'mf-pairs-01',
+  skill: 'memory.recognition.find-pairs',
+  pack: 'src/content/packs/memory-forest.v2.json',
+};
+const FACE_DOWN = 'a card, face down';
 
 // What Chromium remarks on when a service worker controls a page whose first files were preloaded: the second
 // request is answered from the worker's own cache and the page is unaffected (see e2e/offline.spec.ts).
@@ -189,6 +203,124 @@ async function leaveHalfWay(page, id) {
   return stepNumber(page);
 }
 
+/**
+ * One board of pairs, found. Every card is turned once, two at a time, to learn where each is, and then the pairs
+ * are turned: as few turns as a board allows. With `wasted`, the first two cards that differ are turned over that
+ * many times before anything else, as someone does who is not trying to remember: the board is then found in
+ * more turns than it allows, whichever cards they were.
+ */
+async function findPairs(page, wasted) {
+  const cards = lesson(page).locator('[data-place]');
+  await cards.first().waitFor();
+  const count = await cards.count();
+  const name = async (place) => (await cards.nth(place).getAttribute('aria-label')) ?? '';
+  const found = async (place) => (await cards.nth(place).getAttribute('data-found')) === 'true';
+  const faceUp = async (place) => {
+    for (let tries = 0; tries < 50 && (await name(place)) === FACE_DOWN; tries++) {
+      await page.waitForTimeout(100);
+    }
+    return name(place);
+  };
+  const bothDown = async (one, two) => {
+    for (let tries = 0; tries < 80; tries++) {
+      if ((await name(one)) === FACE_DOWN && (await name(two)) === FACE_DOWN) return;
+      await page.waitForTimeout(100);
+    }
+    throw new Error('Two cards that differ did not turn back.');
+  };
+  for (let place = 0; wasted > 0 && place + 1 < count; place += 2) {
+    await cards.nth(place).tap();
+    const first = await faceUp(place);
+    await cards.nth(place + 1).tap();
+    const second = await faceUp(place + 1);
+    // A pair by luck stays found: the next two are tried.
+    if (first === second) continue;
+    for (let turn = 1; turn < wasted; turn++) {
+      await bothDown(place, place + 1);
+      await cards.nth(place).tap();
+      await faceUp(place);
+      await cards.nth(place + 1).tap();
+    }
+    await bothDown(place, place + 1);
+    break;
+  }
+  const seen = new Map();
+  for (let place = 0; place < count; place += 2) {
+    for (const each of [place, place + 1]) {
+      if (each >= count || (await found(each))) continue;
+      await cards.nth(each).tap();
+      const label = await faceUp(each);
+      seen.set(label, [...(seen.get(label) ?? []), each]);
+    }
+    await page.waitForTimeout(1300);
+  }
+  for (const [first, second] of seen.values()) {
+    if (first === undefined || second === undefined || (await found(first))) continue;
+    await cards.nth(first).tap();
+    await cards.nth(second).tap();
+    await page.waitForTimeout(300);
+  }
+}
+
+/** "Find the pairs", played to its end: well with the guide, and without remembering on every board done alone. */
+async function playPairsWithoutRemembering(page) {
+  await page.goto(`${BASE}/world/${PAIRS.world}/play/${PAIRS.activity}`);
+  await myTurn(page).waitFor();
+  for (let guard = 0; guard < 80; guard++) {
+    if (await finished(page).isVisible()) return;
+    if (await myTurn(page).isVisible()) await myTurn(page).tap();
+    else if (await next(page).isVisible()) await next(page).tap();
+    else if (await lesson(page).locator('[data-place]').first().isVisible()) {
+      const alone = (await lesson(page).getAttribute('data-stage')) === 'independent';
+      await findPairs(page, alone ? 7 : 0);
+      await next(page).or(finished(page)).first().waitFor({ timeout: 20_000 });
+    }
+    await page.waitForTimeout(300);
+  }
+  throw new Error('The pairs were not all found.');
+}
+
+/** How many turns each board of pairs allows, from the lesson as this tree has it. */
+function pairsPar() {
+  const pack = JSON.parse(readFileSync(join(root, PAIRS.pack), 'utf8'));
+  const found = pack.lessons.find((each) => each.id === PAIRS.activity);
+  if (!found) throw new Error(`${PAIRS.pack} has no ${PAIRS.activity}.`);
+  return new Map(
+    found.challenges
+      .filter((challenge) => challenge.kind === 'make' && challenge.task.type === 'pairs')
+      .map((challenge) => [challenge.id, challenge.task.par]),
+  );
+}
+
+/** The answers in what was read from a browser's store, by where each is kept. */
+function answersIn(everything) {
+  return new Map(
+    Object.entries(everything)
+      .filter(([key]) => key.startsWith('indexedDB/attempts/'))
+      .map(([key, value]) => [key, JSON.parse(value)]),
+  );
+}
+
+/** A record written out so that two of them can be compared to the letter, whatever order their parts are in. */
+const written = (record) =>
+  JSON.stringify(Object.fromEntries(Object.entries(record).sort(([a], [b]) => a.localeCompare(b))));
+
+/** Hold the grown-ups' button down until their area opens, and say what it says of one skill. */
+async function saidOfSkill(page, skill) {
+  await page.goto(`${BASE}/grown-ups`);
+  const hold = page.getByRole('button', { name: 'Press and hold' });
+  await hold.waitFor({ timeout: 30_000 });
+  const box = await hold.boundingBox();
+  if (!box) throw new Error('The hold button is not on the screen.');
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.getByRole('heading', { name: 'Players' }).waitFor({ timeout: 30_000 });
+  await page.mouse.up();
+  const row = page.locator(`[data-testid="skill"][data-skill="${skill}"]`);
+  await row.waitFor({ timeout: 30_000 });
+  return { status: (await row.getAttribute('data-status')) ?? '', words: await text(row) };
+}
+
 const results = [];
 function check(what, ok, detail = '') {
   results.push({ what, ok });
@@ -295,6 +427,29 @@ try {
     const leftAt = await leaveHalfWay(first, ACTIVITIES.left);
     check(`another is left at step ${String(leftAt)} (${ACTIVITIES.left})`, leftAt === 3);
 
+    await playPairsWithoutRemembering(first);
+    const par = pairsPar();
+    const tooMany = (answer) =>
+      answer.lessonId === PAIRS.activity &&
+      answer.outcome === 'correct' &&
+      Number(answer.response) > (par.get(answer.challengeId) ?? Number.POSITIVE_INFINITY);
+    const pairsBefore = [...answersIn(await stored(first)).values()].filter(
+      (answer) => answer.stage === 'independent' && tooMany(answer),
+    );
+    check(
+      `"Find the pairs" is played to its end without remembering: ${String(pairsBefore.length)} boards found alone, each in more turns than it allows`,
+      (await finished(first).isVisible()) && pairsBefore.length >= 3,
+      pairsBefore.map((answer) => `${String(answer.response)} turns`).join(', '),
+    );
+    check(
+      'the build that is live stores each of them as right, with no mark on it',
+      pairsBefore.every((answer) => !('clean' in answer)),
+    );
+    const saidBefore = await saidOfSkill(first, PAIRS.skill);
+    console.log(
+      `          its grown-ups’ page says of finding pairs: ${saidBefore.status} (“${saidBefore.words.slice(0, 110)}…”)`,
+    );
+
     const playing = await tab('a tab left in an activity');
     const playingAt = await leaveHalfWay(playing, ACTIVITIES.open);
     check(
@@ -393,6 +548,40 @@ try {
     const gone = Object.keys(kept).filter((key) => !(key in after));
     check('nothing that was stored has gone', gone.length === 0, gone.join(', '));
 
+    const version = (everything) =>
+      JSON.parse(everything['indexedDB/meta/"schema"'] ?? '{}').dataVersion;
+    check(
+      'what is stored has been brought up to date',
+      version(after) > version(kept),
+      `data version ${String(version(kept))} to ${String(version(after))}`,
+    );
+    const answersBefore = answersIn(kept);
+    const answersAfter = answersIn(after);
+    const nowMarked = [...answersBefore].filter(
+      ([key, answer]) => tooMany(answer) && answersAfter.get(key)?.clean === false,
+    );
+    const shouldBe = [...answersBefore].filter(([, answer]) => tooMany(answer));
+    check(
+      `every game of pairs that took too many turns carries the mark (${String(nowMarked.length)} of ${String(shouldBe.length)})`,
+      shouldBe.length >= pairsBefore.length && nowMarked.length === shouldBe.length,
+    );
+    const changed = [...answersBefore].filter(([key, answer]) => {
+      const now = answersAfter.get(key);
+      if (!now) return true;
+      return written(now) !== written(tooMany(answer) ? { ...answer, clean: false } : answer);
+    });
+    check(
+      `and nothing else of any answer has changed (${String(answersBefore.size)} answers, to the letter)`,
+      changed.length === 0,
+      changed.map(([key]) => key).join(', '),
+    );
+    const saidAfter = await saidOfSkill(first, PAIRS.skill);
+    check(
+      'the grown-ups’ page no longer says of finding pairs what the turns did not show',
+      !/independent/.test(saidAfter.status) && /No independent success yet/.test(saidAfter.words),
+      `${saidBefore.status} before; ${saidAfter.status} now`,
+    );
+
     check(
       'while an old tab is open, both builds are kept',
       (await shells(first)).length === 2,
@@ -401,6 +590,27 @@ try {
     await playing.close();
     await onTheMap.close();
     await first.close();
+    // With no tab left, the service worker that was waiting takes over. It is given the moment that takes
+    // before another tab is opened, and is asked for itself whether it has: a tab opened in the same instant
+    // as the last old one closes can be claimed by the old worker, which then has a page again and stays for as
+    // long as that page does. (The rehearsal did exactly that once, by being quick, and reported the old build
+    // as never cleared. Nobody closes a tab and opens the next within a few thousandths of a second.)
+    const shellsSeenByAWorker = async () => {
+      for (const worker of context.serviceWorkers()) {
+        try {
+          const names = await worker.evaluate(() => caches.keys());
+          return names.filter((name) => name.startsWith('ta-shell-'));
+        } catch {
+          // That worker has been stopped or replaced: another may answer.
+        }
+      }
+      return null;
+    };
+    for (let tries = 0; tries < 40; tries++) {
+      const seen = await shellsSeenByAWorker();
+      if (seen !== null && seen.join() === `ta-shell-${now.version}`) break;
+      await new Promise((done) => setTimeout(done, 250));
+    }
     const fresh = await tab('a tab opened afresh');
     onNewBuild.add(fresh);
     await fresh.goto(`${BASE}/`);

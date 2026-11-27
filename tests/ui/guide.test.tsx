@@ -13,7 +13,7 @@ const guide = (container: HTMLElement): HTMLElement => {
 
 describe('the guide', () => {
   it('has a pose for every state it can be asked for', () => {
-    const states: GuideState[] = ['idle', 'point', 'think', 'celebrate', 'retry', 'wave'];
+    const states: GuideState[] = ['idle', 'point', 'think', 'celebrate', 'retry', 'wave', 'rest'];
     for (const state of states) {
       const { container, unmount } = render(<Guide state={state} />);
       expect(guide(container).dataset.state).toBe(state);
@@ -21,9 +21,21 @@ describe('the guide', () => {
     }
   });
 
-  it('rests when nothing is asked of it', () => {
+  it('waits when nothing is asked of it', () => {
     const { container } = render(<Guide />);
     expect(guide(container).dataset.state).toBe('idle');
+  });
+
+  it('has, for its rest, eyes that are closed and two z’s that are drawn and not written', () => {
+    const { container } = render(<Guide state="rest" />);
+    const figure = container.querySelector('svg');
+    // The parts are in the drawing for every pose, and the style sheet shows the ones a pose needs.
+    const asleep = figure?.querySelector('[class*="eyesAsleep"]');
+    const zs = figure?.querySelector('[class*="sleep"]');
+    expect(asleep?.querySelectorAll('path')).toHaveLength(2);
+    expect(zs?.querySelectorAll('path')).toHaveLength(2);
+    // No letters anywhere in the drawing: nothing here has to be read, in any language.
+    expect(figure?.querySelector('text')).toBeNull();
   });
 
   it('is decoration for assistive technology: the words beside it say what it shows', () => {

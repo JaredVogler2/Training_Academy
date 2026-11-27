@@ -141,6 +141,45 @@ describe('what a player has shown', () => {
     expect(screen.getByRole('heading', { name: text.shown('Robin') })).toBeTruthy();
   });
 
+  it('goes by how easy a skill’s questions are to guess, for answers written down before each one said so', async () => {
+    // A skill whose questions have two pictures to choose from, as the concept graph has it.
+    const { loadConceptGraph } = await import('@/content/concepts');
+    const graph = await loadConceptGraph();
+    const [easy] = Object.entries(graph.skills).find(([, skill]) => skill.chance === 0.5) ?? [];
+    expect(easy).toBeDefined();
+    if (easy === undefined) return;
+    // Three right at the first try, alone: by luck that happens one time in eight, which is not rare.
+    const profile = await repository.createProfile({ name: 'Robin', avatar: 'leaf' });
+    const session = { ...newSession(lesson, 1, 'sitting-easy', T0), profileId: profile.id };
+    await repository.saveProgress(session);
+    for (let index = 0; index < 3; index++) {
+      await repository.saveProgress(
+        session,
+        attempt({
+          profileId: profile.id,
+          sessionId: session.id,
+          seq: index,
+          at: T0 + index * 1000,
+          lessonId: lesson.id,
+          skillId: easy,
+          challengeId: `${lesson.id}.easy${String(index)}`,
+          variant: index % 2 === 0 ? 'this-way' : 'that-way',
+        }),
+      );
+    }
+    await show(profile);
+    door.open();
+    const easyRow = () =>
+      document.querySelector<HTMLElement>(`[data-testid="skill"][data-skill="${easy}"]`);
+    await waitFor(() => expect(easyRow()).not.toBeNull());
+    expect(easyRow()?.dataset.status).toBe('practicing');
+    expect(easyRow()?.dataset.heldByLuck).toBe('true');
+    expect(easyRow()?.textContent).toContain(
+      'Its questions can be got right by luck, about 1 time in 2, and the latest first tries could still be that.',
+    );
+    // The same three answers to questions with three pictures are enough: that is the other skill, below.
+  });
+
   it('never leaves one player’s record on the page under another’s name', async () => {
     const robin = await player('Robin', 3);
     const sam = await player('Sam', 0);

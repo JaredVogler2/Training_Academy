@@ -3,13 +3,15 @@ import { loadChunk } from '@/app/chunks';
 import { recordError } from '@/app/diagnostics';
 import { navigate } from '@/app/navigation';
 import { settingsStore, useReducedMotion } from '@/app/settings';
-import { addVoice, audio, hushVoice, playCue } from '@/audio';
+import { addVoice, audio, hushVoice, playCue, sayLine } from '@/audio';
 import { findLesson, hasPack, loadPack } from '@/content';
 import type { ContentPack, Lesson, WorldId } from '@/engine';
 import { isHelping, setHelping, useHelping } from '@/game/helping';
 import { LessonRunner, type RunnerState } from '@/game/lessonRunner';
 import { ensureActiveProfile } from '@/game/profiles';
 import { getRepository, localDay, newId, newSeed, now } from '@/game/services';
+import { createPlayClock, useClockStopped, type PlayClock } from '@/game/playClock';
+import { useSittingClock, useTimeToRest } from '@/game/sitting';
 import { worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds/modules';
 import { IslandPicture } from '@/render/IslandPicture';
@@ -39,6 +41,8 @@ interface Loaded {
   pack: ContentPack;
   lesson: Lesson;
   module: WorldModule;
+  /** What times each answer: it stands still while the activity is paused. */
+  clock: PlayClock;
 }
 
 type Load =
@@ -80,6 +84,7 @@ function openLesson(world: WorldId, lessonId: string): Promise<Loaded | null> {
     waitingFor('store');
     const [repository, profile] = await Promise.all([getRepository(), ensureActiveProfile()]);
     waitingFor('sitting');
+    const clock = createPlayClock();
     const runner = await LessonRunner.start({
       repository,
       pack,
@@ -89,11 +94,11 @@ function openLesson(world: WorldId, lessonId: string): Promise<Loaded | null> {
       newId,
       newSeed,
       localDay,
-      elapsed: () => performance.now(),
+      elapsed: clock.now,
       onSaveError: (error) => recordError('storage', error),
       adultHelping: isHelping,
     });
-    return { runner, pack, lesson, module };
+    return { runner, pack, lesson, module, clock };
   })();
   inFlight.set(key, loading);
   void loading
@@ -157,11 +162,17 @@ function Finished({
   world: WorldId;
 }) {
   const { summary } = state;
+  // A grown-up may have said how long a sitting is. When that much has been played, the end of an activity
+  // says so, once, in a picture and a line: Glim rests. Nothing is closed, and "Again" is still there.
+  const { rest, minutes } = useTimeToRest();
+  useEffect(() => {
+    if (rest) sayLine('lesson.rest');
+  }, [rest]);
   return (
-    <section className={styles.finished} data-testid="lesson-finished">
+    <section className={styles.finished} data-testid="lesson-finished" data-rest={rest}>
       <div className={styles.finishedArt}>
         <IslandPicture place={placeOf(world)} />
-        <Guide state="celebrate" className={styles.finishedGuide} />
+        <Guide state={rest ? 'rest' : 'celebrate'} className={styles.finishedGuide} />
       </div>
       <h1>{lessonText.allDone}</h1>
       {/* One flower for each thing done: something has grown here, and nothing is being scored. */}
@@ -175,6 +186,11 @@ function Finished({
         {lessonText.report(summary.independentFirstTryCorrect, summary.independentProbes)}
       </p>
       {!state.saved && <p className={styles.unsaved}>{lessonText.notSaved}</p>}
+      {rest && minutes !== null && (
+        <p className={styles.report} data-testid="lesson-rest">
+          {lessonText.rest(minutes)}
+        </p>
+      )}
       <div className={styles.finishedActions}>
         <ActionButton
           big
@@ -220,7 +236,7 @@ function SoundGate() {
   );
 }
 
-function Player({ runner, pack, lesson, module, world }: Loaded & { world: WorldId }) {
+function Player({ runner, pack, lesson, module, clock, world }: Loaded & { world: WorldId }) {
   const state = useSyncExternalStore(runner.subscribe, runner.getState);
   const audible = useSyncExternalStore(audio().subscribe, () => audio().canPlayClips);
   const silenced = lesson.needsSound === true && !audible && state.phase === 'playing';
@@ -241,6 +257,10 @@ function Player({ runner, pack, lesson, module, world }: Loaded & { world: World
   }, [state.phase]);
   // Leaving the activity, by any road, stops whatever was being said.
   useEffect(() => hushVoice, []);
+  // Time in an activity is what a sitting is made of: on the screen, in play, and not paused.
+  useSittingClock(state.phase === 'playing' && !paused);
+  // And how long an answer took is not counted while the activity is paused (which a hidden page makes it).
+  useClockStopped(clock, paused);
 
   // A phone put down, or another app opened on top: the activity waits, and asks for a tap to carry on.
   const inPlay = state.phase === 'playing';
@@ -381,6 +401,7 @@ export default function LessonView({ world, lessonId }: { world: WorldId; lesson
       pack={load.pack}
       lesson={load.lesson}
       module={load.module}
+      clock={load.clock}
       world={world}
     />
   );

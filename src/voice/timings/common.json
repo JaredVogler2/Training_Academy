@@ -25,6 +25,7 @@
   "howto.yes": 1.66,
   "lesson.done": 0.86,
   "lesson.paused": 2.52,
+  "lesson.rest": 2.64,
   "lesson.watch": 1.04,
   "robot.passes": 3.49,
   "robot.waits": 3.07

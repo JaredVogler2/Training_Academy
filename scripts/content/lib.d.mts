@@ -24,3 +24,12 @@ export function lessonList(packs: readonly BuiltPack[]): {
   lessons: Record<string, { title: string; minutes: number }>;
 };
 export function lessonListText(packs: readonly BuiltPack[]): Promise<string>;
+
+/** What is taught, what each skill builds on and which activity teaches it: `src/content/concepts.json`. */
+export const conceptGraphPath: string;
+export const CONCEPT_GRAPH_ABOUT: string;
+export function loadGraphMaker(): Promise<{
+  graphOf(packs: readonly BuiltPack[]): unknown;
+  close(): Promise<void>;
+}>;
+export function conceptGraphText(graph: unknown): Promise<string>;

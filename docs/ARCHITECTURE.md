@@ -59,8 +59,12 @@ Public surface: `src/engine/index.ts`.
 | `advanceDemo(session, lesson, now)`                                                     | Moves past a demonstration. Nothing is asked and nothing is recorded.                                                                                                                                                                                                                          |
 | `submitAttempt(session, lesson, { key, response, now, day, durationMs, adultAssist? })` | Decides correctness; returns the next session and the `Attempt` to store, or a rejection (`stale`, `completed`, `not-answerable`, `unknown-choice`, `unavailable-choice`, `malformed`) that changes nothing. `response` is a choice's id, or a made thing written as tokens joined by hyphens. |
 | `getHint(session, lesson, now)`                                                         | Shows the next rung of the challenge's authored hint ladder (`model`, then `eliminate` a choice or give a `step` of a thing to make, then `reveal`). From then on, the answer to that challenge is recorded as assisted.                                                                       |
-| `getSkillEvidence(attempts, skillId, policy?)`                                          | Derives what the record says about one skill.                                                                                                                                                                                                                                                  |
+| `getSkillEvidence(attempts, skillId, policy?, chance?)`                                 | Derives what the record says about one skill. Told how likely a blind answer to its questions is to be right, it does not call a run of answers independent that could too easily have been luck.                                                                                              |
 | `summarizeSession(session, lesson)`                                                     | Tallies for the end-of-lesson line shown to a grown-up.                                                                                                                                                                                                                                        |
+| `getSkillReview(attempts, skillId, today, …)`                                           | When one skill is worth coming back to: the wait, in whole days, and whether it is over.                                                                                                                                                                                                       |
+| `graphOf(packs)`, `auditGraph(graph)`, `conceptsOf(pack)`                               | The concept graph of some packs; everything in a graph that would put something out of a child's reach; a concept in full, for a grown-up to read.                                                                                                                                             |
+| `advise({ graph, attempts, finished, today, startAt?, policy? })`                       | What Play offers in each world and where Glim points, each with every reason for it.                                                                                                                                                                                                           |
+| `chanceOf(challenge)`, `luckAmong(successes, chances)`                                  | How likely an answer given without looking is to be right; how likely a run of answers was to come out so well by chance alone.                                                                                                                                                                |
 
 Things worth knowing:
 
@@ -133,8 +137,98 @@ Things worth knowing:
   inflate the count; reaching `consistently-independent` needs successes on at least two calendar days and two
   presentations.
 - **Statuses** are `not-yet-observed`, `exploring`, `guided`, `practicing`, `provisionally-independent`,
-  `consistently-independent` — the names Phase 12 uses. The thresholds live in `DEFAULT_EVIDENCE_POLICY` and are
-  product heuristics, not validated diagnostic cut-offs.
+  `consistently-independent`. The thresholds live in `DEFAULT_EVIDENCE_POLICY` and are product heuristics, not
+  validated diagnostic cut-offs.
+- **A run of right answers counts only when it was unlikely to be luck** (`src/engine/chance.ts`). Every
+  question has a chance: how likely an answer given without looking is to be right. It is one in as many
+  pictures as there are to choose from; for a thing to build, the share of all the ways of building it that
+  work; for pairs, how often turning cards over at random finds them all in the turns allowed; none for a
+  robot's plan or a beat. It is written on every first try that had no hint (`Attempt.chance`), so an answer
+  says of itself how easy its question was, whatever the content becomes later. A skill is called independent
+  only when its latest first tries alone were too good to put down to that: no likelier by chance than one
+  time in twenty for "so far", one in two hundred for "across days" (`maxLuck`). With two pictures that is five right in a row, and all of the last eight; with three, three of three, and five of five or seven of the last eight. Where chance has no part, nothing more is asked than before. When luck is all that stands between a
+  skill and "independent so far", the record says so (`heldByLuck`) and the grown-ups' page puts it in words.
+  It is arithmetic about the questions: nothing here guesses whether a particular answer was a guess.
+- **Right is not always done alone.** One kind of answer can be right without showing the skill: pairs all
+  found, in more turns than its board allows (`par`), which is what turning cards over without remembering
+  takes. It is written down as right and marked (`clean: false`); it counts as a first try alone that was not
+  a success, brings one more board at the end of the sitting, and is trouble to come back to. Until data
+  version 2 it was written down exactly as a game in few turns was (see _Storage_).
+- **How long an answer took** is the time its question was in play: the lesson's clock stands still while the
+  activity is paused or out of sight (`src/game/playClock.ts`), and an answer says ten minutes at most. No
+  rule about what a child has shown reads it.
+
+### What Play offers next
+
+The big Play button on a world's page, and Glim's hand on the map, go where `advise` says
+(`src/engine/recommend.ts`). It is a suggestion and nothing more: every activity stays open on its world's page
+whatever is suggested, and nothing is ever locked, hidden or taken away by it.
+
+- **Days are arithmetic** (`src/engine/days.ts`). Every answer carries the calendar day the device said it was.
+  A day is turned into a whole number and back by sums; no clock, hour or time zone is read, and "today" is
+  handed in by the caller. The same record on the same day gives the same answer on any device, in whatever
+  order the answers are stored.
+- **A skill comes back after a wait** (`src/engine/review.ts`), counted in whole days from the last day it was
+  practised in any way. The wait grows with what the record says and with the number of separate days the
+  skill has been done alone on: done alone but not often enough to say more, 1 day, then 2, 4 and 7;
+  independent so far, 2, then 4 and 7; independent across days, 14, then 30 and 60. After trouble (never yet
+  done alone, or the last day's first tries alone ended with one that was not right) it is 1 day, then 2, 4, 7
+  and 14 for each day running that went badly, so that nobody is brought back to the same trouble day after
+  day. Nothing is ever due again on the day it was practised.
+- **A calendar that moves is expected.** A day in the record up to two days after today is taken as today (a
+  journey west); one further ahead is not counted from, and the answer says the calendar is in doubt
+  (`calendarInDoubt`); where every day recorded is after today, the skill is simply offered now. A record
+  loaded from a copy, a second sitting on one day and a clock put back all come to the same thing: the days
+  written on the answers, and today.
+- **The concept graph** (`src/engine/graph.ts`, `src/content/concepts.json`) is what the choice is made from:
+  the order of the activities in each world, the skills each one has a question for and the ones it asks alone
+  in every sitting, what each skill builds on, how many presentations it has, and how likely a blind answer to
+  its questions is to be right. `npm run content` writes it from the packs and from nothing else, and a test
+  holds the file to them. A page that needs it fetches about 3 kB and not a single lesson.
+- **Nothing in it may be out of reach** (`auditGraph`). A skill may build only on skills of its own world that
+  are met no later than it is, never on itself by any road, and never, from another activity, on a skill that
+  no activity asks alone (the record could never show that one in place). Every activity is in its world's
+  order once, and asks something alone. The content build refuses a graph with a fault, and so does a test.
+- **Two piles, mixed.** _Played before, and due again_: an activity that has been finished, was not played
+  today, and has a skill whose wait is over; the one that has waited longest first. _New_: the first activity
+  not yet finished whose skills build only on things already done alone. One that builds on something not yet
+  done alone is passed over for the moment, said to be, and offered all the same when nothing else is ready.
+  Of any ten activities in a row about seven are ones played before, for as long as any are due (`beforeShare`
+  0.7 over `mixOver` 10). It is reckoned over the last activities played, on whatever days, so that someone
+  who plays one a day meets new things as surely as someone who plays six.
+- **One trouble a day.** Of the things played before, no more than one a day is one that went badly last time
+  (`troublePerDay`), and a day's first is something that went well when there is one. When nothing new is left
+  and nothing else is due, something finished that went well, the one played longest ago, is offered sooner
+  than a second trouble.
+- **Where a grown-up has chosen a place to begin**, the world's order is taken from there. What an activity
+  builds on is taken on their word when everything that teaches it before that activity comes before the place
+  chosen. It is never counted as shown, and the reason given says whose word it is.
+- **Every suggestion says why** (`Suggestion.reasons`, never empty): that a world begins here; what the
+  activity builds on, and whether the record shows it or a grown-up said it; which activity was passed over,
+  and for what; which skill is due, with what the record holds of it, when it was last practised and the wait;
+  how the two piles were mixed, with the numbers that were gone by; that the calendar is in doubt. The
+  grown-ups' page puts each into a sentence (`src/parent/why.ts`), with the skill by its name and never by its
+  id.
+- **The numbers are in one place** (`DEFAULT_PLAY_POLICY`, with `DEFAULT_REVIEW_POLICY` and
+  `DEFAULT_EVIDENCE_POLICY` in it). They are product choices, to be changed and looked at, and none of them is
+  a finding about children. Five made-up learners play the real lessons by them for six weeks in the tests
+  (`tests/engine/learners.test.ts`); what that showed is in `docs/QUALITY_REPORT.md`.
+
+How it reaches the screen: `useAdvice()` (`src/game/advice.ts`) reads the player's answers and fetches, on
+demand, the part of the engine that chooses and the graph. Until it has an answer a world's page marks nothing
+as next and Glim points at nothing; with nobody playing, or if the record or that part of the game cannot be
+had, Play goes by the plain order. The page says which it went by (`data-offered`). The grown-ups' page shows
+what would be offered in every world, with every reason (`src/parent/NextUp.tsx`).
+
+**A sitting has an end, if a grown-up gives it one** (`src/game/sitting.ts`). They choose a length: about 10,
+15 or 20 minutes, or none. Only time in an activity counts: on the screen, in play, not paused. Half an hour
+away from every activity begins another sitting, and so does a new visit; a page that is drawn by the
+sitting looks again when it comes back into sight and once a minute while it is there, so that one left open
+wakes by itself. When the time is up nothing is
+closed: the end of an activity says it is a good moment to stop, Glim rests on the map and points at nothing,
+a world's page has Glim asleep where the big button was, and every activity can still be played from its
+picture. What is kept is one number, for the visit and no longer; no record of a child is made of it, and
+nothing is ever sent or notified.
 
 ### Data shapes
 
@@ -142,12 +236,12 @@ All shapes are [valibot](https://valibot.dev) schemas in `src/engine/schema.ts`;
 them, so the compiler and the validator cannot disagree. Valibot was chosen over heavier validators because only the
 functions actually used are bundled.
 
-| Shape                                          | Notes                                                                                                                                                                                                                                                                                                                                 |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ContentPack` → `Skill`, `Lesson`, `Challenge` | Strict objects: an unknown field (a typo) fails validation. `schemaVersion` for the file format, `contentVersion` per pack, `version` per lesson.                                                                                                                                                                                     |
-| `Profile`                                      | A nickname and a picture, and what a grown-up has chosen or said for this player (`settings`): a length of sitting to suggest, what they have seen the child do, where Play begins, that how-to-play was shown, what was tried away from the screen. No real name is asked for, no birth date, and nothing is typed but the nickname. |
-| `LessonSession`                                | One sitting: seed, planned steps, cursor, the current presentation's tries/hints/eliminated choices/parts given, tallies.                                                                                                                                                                                                             |
-| `Attempt`                                      | One response: skill, challenge, variant, stage, try index, hint level, assistance, outcome, the choice, a misconception tag, time, local day, bounded duration, content versions. No free text, no coordinates, no audio.                                                                                                             |
+| Shape                                          | Notes                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ContentPack` → `Skill`, `Lesson`, `Challenge` | Strict objects: an unknown field (a typo) fails validation. `schemaVersion` for the file format, `contentVersion` per pack, `version` per lesson.                                                                                                                                                                                                                                                  |
+| `Profile`                                      | A nickname and a picture, and what a grown-up has chosen or said for this player (`settings`): a length of sitting to suggest, what they have seen the child do, where Play begins, that how-to-play was shown, what was tried away from the screen. No real name is asked for, no birth date, and nothing is typed but the nickname.                                                              |
+| `LessonSession`                                | One sitting: seed, planned steps, cursor, the current presentation's tries/hints/eliminated choices/parts given, tallies.                                                                                                                                                                                                                                                                          |
+| `Attempt`                                      | One response: skill, challenge, variant, stage, try index, hint level, assistance, outcome, the choice, a misconception tag, time, local day, how long the question was in play (bounded), content versions; and, where they apply, that it was right without showing the skill (`clean: false`) and how likely a blind answer was to be right (`chance`). No free text, no coordinates, no audio. |
 
 IDs: skills are dotted (`math.quantity.match-sets-to-3`); lessons are URL-safe slugs (`ng-same-amount-01`) because they
 appear in addresses; challenges are `lesson-id.local-name`.
@@ -156,6 +250,13 @@ appear in addresses; challenges are `lesson-id.local-name`.
 
 `src/content/packs/<world>.v<contentVersion>.json`, loaded by `loadPack(world)` with a dynamic import, so each pack is
 its own chunk. A pack that fails the schema is refused, never half-used.
+
+**The concept graph is written from the packs** by the same command (`npm run content`), to
+`src/content/concepts.json`: 81 skills and 71 activities in seven worlds, with the version of each world's
+content it was made from. It holds only what is needed to choose what to offer next (see _What Play offers
+next_), and is fetched on demand by `loadConceptGraph()` (`src/content/concepts.ts`), which refuses one that is
+not well made. The build stops if the graph has anything out of reach, and a test fails if the file is not what
+the packs give.
 
 **Packs are written by generators.** `scripts/content/<world>.mjs` turns short tables of what to ask into the
 full, explicit pack; `npm run content` writes all six, and the files are committed. The game itself never makes
@@ -223,13 +324,21 @@ openRepository()            never rejects: a browser that allows no storage stil
   then follows the saved sitting (another tab got there first). Nothing is silently overwritten.
 - **Validation both ways.** Nothing invalid is written. On the way out, a record that fails validation is skipped,
   counted, and left in place — it never crashes a child's game and is never deleted behind a grown-up's back.
-- **Migrations** (`storage/migrations.ts`): `DATA_VERSION` is 1 and the list is empty, but the machinery is tested with
-  synthetic multi-step upgrades, including one interrupted half-way. Data written by a _newer_ version of the game is
-  left untouched and the game runs from memory.
+- **Migrations** (`storage/migrations.ts`): `DATA_VERSION` is 2. There is one migration, and it marks: a game
+  of pairs stored as right in more turns than its board allowed is given the mark such an answer has carried
+  since (`clean: false`). Nothing else of any answer is changed, nothing is removed, and no answer is made to
+  say more of a child than it said before; a property test holds it to that for whatever was stored. The
+  turns each board allowed are written into the migration as they stood (`PAIRS_PAR`), and a test holds them
+  to the lesson. The upgrade and the new version number are written in one batch, so an upgrade that is
+  interrupted has either not begun or is finished; the machinery is also tested with synthetic multi-step
+  upgrades, including one interrupted half-way. Data written by a _newer_ version of the game is left
+  untouched and the game runs from memory.
 - **Export/import** (`storage/transfer.ts`): one player per file — readable JSON with a format version and a checksum.
   Import checks type, size, shape, checksum and ownership before writing anything, then merges: attempts are unioned by
   id, the more recently updated copy of the player and of each sitting wins. Importing the same file twice changes
-  nothing. The checksum catches accidental damage and casual edits; it is not a signature.
+  nothing. The checksum catches accidental damage and casual edits; it is not a signature. A file saved by a game
+  from before data version 2 has games of pairs with no mark on them: they are given it on the way in, as the ones
+  stored here were when this game first opened them. The file's own format did not change.
 - **Device settings** (sound, motion, graphics) are separate, in localStorage (`app/settings.ts`), because they must be
   known before the first frame is drawn.
 
@@ -739,23 +848,39 @@ the browser tests (`listenIn` in `e2e/fixtures.ts`).
 
 ## Bundle splitting
 
-| Chunk                                             | When it loads                             |
-| ------------------------------------------------- | ----------------------------------------- |
-| entry + `react` + `engine` + `profiles`           | first load                                |
-| the hub's pictures (WebP)                         | with the first screen, as images          |
-| `three`, `r3f`, `harbour`, `Hub3D`                | after the shell, only where 3D is planned |
-| `WorldView`, `LessonView`, `GrownUps`             | on first visit to that route              |
-| the Music Lab's room, Inventor Island's portfolio | on first visit to that room               |
-| `engine-play` (judging, the robot, the models)    | with the first activity                   |
-| a world's code and its content pack, each a chunk | on entering that world                    |
-| `atlas` (the continents' outlines)                | with Explorer Harbor's code               |
-| a recording                                       | the first time its line is wanted         |
-| `VoiceCheck` and the voice manifest               | when a grown-up opens the list            |
-| `Studio`, `GuideSheet`                            | only at `/studio/…`                       |
+| Chunk                                                                 | When it loads                                                      |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| entry + `react` + `engine` + `profiles`                               | first load                                                         |
+| the hub's pictures (WebP)                                             | with the first screen, as images                                   |
+| `three`, `r3f`, `harbour`, `Hub3D`                                    | after the shell, only where 3D is planned                          |
+| `WorldView`, `LessonView`, `GrownUps`                                 | on first visit to that route                                       |
+| the Music Lab's room, Inventor Island's portfolio                     | on first visit to that room                                        |
+| `engine-play` (judging, the robot, the models, what the record shows) | with the first activity, or the first page that asks what to offer |
+| `engine-next` (when to come back, the graph, the choice), `concepts`  | when a page first asks what Play offers next                       |
+| a world's code and its content pack, each a chunk                     | on entering that world                                             |
+| `atlas` (the continents' outlines)                                    | with Explorer Harbor's code                                        |
+| a recording                                                           | the first time its line is wanted                                  |
+| `VoiceCheck` and the voice manifest                                   | when a grown-up opens the list                                     |
+| `Studio`, `GuideSheet`                                                | only at `/studio/…`                                                |
 
 The first screen imports the engine's schema only (`@/engine/schema`), so that judging, the robot's interpreter
 and the models stay out of it; `npm run verify:dist` fails if any world's code, the 3D code or a recording
 becomes reachable from the first screen.
+
+**No two built files may wait for each other**, and `npm run verify:dist` fails the build if any do. The
+modules a build is made from do not import one another in a ring, but the files it is cut into can: two
+modules of one file are each wanted by a module of another, and each file then imports the other. A browser
+starts such a pair in whichever order the page happens to ask for them, and the one that starts first reads
+the other's constants before they have been made. That happened here once, to the part of the engine that
+chooses what to offer: gathered into one file with the seeded dice the lesson part needs, it and the lesson
+part each waited for the other, and on the grown-ups' page (which asks in the unlucky order) the game could
+not say what Play would offer, where the map and a world's page could. It was found by a browser test against
+the build; no unit test can see a fault that exists only in the built files. Three things were done about it.
+What is easy to guess joined the lesson part's file, since both sides of that file's business need it; the
+part that chooses has a file of its own (`engine-next`), which waits for the lesson part and is waited for by
+nothing in it; and the engine's modules are declared free of start-up side effects
+(`treeshake.moduleSideEffects` in `vite.config.ts`), which they are, so that the file that only passes the
+engine's names on is no longer built to fetch and start every part of the engine.
 
 Rolldown's `codeSplitting` groups are configured with `includeDependenciesRecursively: false`. With the default, the
 React Three Fiber group also captured React itself, which made the 3D chunk a static dependency of the entry — the

@@ -701,6 +701,19 @@ export const AttemptSchema = v.object({
   hintLevel: nonNegativeInt,
   assistance: v.picklist(['none', 'hint', 'adult']),
   outcome: v.picklist(['correct', 'incorrect']),
+  /**
+   * `false` when the answer was right and the way it was reached does not show the skill: every pair found, by
+   * turning cards over far more often than remembering would need. Such an answer is never counted as done
+   * alone. Left out of every other answer, right or wrong.
+   */
+  clean: v.optional(v.literal(false)),
+  /**
+   * How likely an answer given without looking was to be right, for a first try with no hint: a half where there
+   * were two pictures to choose from, none for a robot's plan (see src/engine/chance.ts). It is a fact about the
+   * question, not about the child, and it is what lets a run of right answers be told from luck. Left out of
+   * later tries and hinted ones, which count for nothing, and missing from answers written before it was kept.
+   */
+  chance: v.optional(v.pipe(v.number(), v.minValue(0), v.maxValue(1))),
   response: ChoiceIdSchema,
   misconception: v.optional(slug('misconception')),
   at: timestamp,

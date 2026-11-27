@@ -14,10 +14,18 @@ export const worldText = {
   getting: 'Getting the activities ready…',
   lessonNote: (title: string, minutes: number) => `${title} · about ${minutes} minutes`,
   againNote: 'Every activity here has been finished. Play starts again from the first.',
+  /** Something played before, and due again: said plainly, so that a grown-up is not left wondering why. */
+  backNote: (title: string, minutes: number) =>
+    `${title} · played before, and time to come back to it · about ${minutes} minutes`,
+  freeNote: (title: string) =>
+    `Every activity here has been finished, and none is due again yet. Play goes to the one played longest ago: ${title}.`,
   openExplain:
-    'No activity here needs reading: the guide shows what to do first. Play goes to the first one that has not been finished, and any of them can be played again from the pictures below it.',
+    'No activity here needs reading: the guide shows what to do first. Play goes to what the game would offer next: something new, or something played before that it is time to come back to. Grown-ups → “What Play offers next” says why. Any activity can be played at any time from the pictures below.',
   partExplain:
     'The activities marked “Later” have not been built yet. Nothing on this page leads to them.',
+  restHeading: 'Time for a rest',
+  restNote: (minutes: number) =>
+    `About ${minutes} minutes have been played, which is the length a grown-up chose for a sitting. Glim is having a rest. Everything is still here: any activity can be played from the pictures below.`,
   roomHeading: 'A room of its own',
   /** What a grown-up holds to say a thing was tried, and what is written once they have. */
   tried: 'We tried this',

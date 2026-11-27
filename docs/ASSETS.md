@@ -54,7 +54,7 @@ where this was built, and Wikidata could not either.)
 
 ## Made here, with tools and a voice model from elsewhere
 
-The voice is 735 recordings that this project made and owns. They were made with other people's tools and with a
+The voice is 736 recordings that this project made and owns. They were made with other people's tools and with a
 voice model that this project did not train. None of the tools or the model is shipped; the recordings are.
 
 | What was used                          | Where it comes from                                                                                                | Licence, as far as it was read                                                                              | Used for                                                                                                                                            |
@@ -238,7 +238,9 @@ run it; it needs tools the game does not ship and CI does not install).
 - **What is said** is every line of every content pack, the lines every activity shares (`src/voice/lines.json`),
   and what a world needs besides (`src/voice/lines/<world>.json`): single words, words with their first sound
   drawn out, words said slowly, words said in their beats, sentences read aloud, and the lines a story is told
-  with. Nothing else is ever said.
+  with. Nothing else is ever said. (The newest is one of the lines every activity shares, made for phase 12:
+  "That was good playing. Time for a rest.", said once at the end of an activity when a sitting of the length
+  a grown-up chose has been played. It was made as every line is and heard by the recogniser as written.)
 - **How each is made.** A sentence is said and trimmed. A single word is said at the end of a carrier sentence
   and cut out, because a synthesiser says a word alone badly. A drawn-out first sound and a slow word are made
   from the same word. A word in its beats is the word cut where the synthesiser says its sounds are, with a
@@ -261,9 +263,9 @@ run it; it needs tools the game does not ship and CI does not install).
   script). What is shown is the word, and what is heard is still held to the word. `npm test` fails if a clip
   is missing, stale, left over, changed since it was made, or heard differently.
 - **What that is worth.** It catches a wrong word, a cut-off ending, noise. It says nothing about whether a clip
-  sounds clear, natural or kind. **No person has listened to any of the 735**, and nobody has checked a mark against the sound it marks. Each has `reviewed: null` in the
+  sounds clear, natural or kind. **No person has listened to any of the 736**, and nobody has checked a mark against the sound it marks. Each has `reviewed: null` in the
   manifest, and the grown-ups' area lists them all to be played and marked.
-- **Size.** 735 clips, 9.1 MB in all, the largest under 60 kB; budgets in `scripts/verify-dist.mjs`. A clip is
+- **Size.** 736 clips, 9.1 MB in all, the largest under 60 kB; budgets in `scripts/verify-dist.mjs`. A clip is
   fetched the first time its line is wanted, never with the first screen.
 
 No recording of a real person is in the game. If one is ever added, it needs that person's written consent on

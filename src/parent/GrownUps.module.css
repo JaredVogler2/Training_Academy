@@ -373,6 +373,17 @@
   color: var(--ink-soft);
 }
 
+/* What Play offers next: the reasons, one to a line */
+.reasons {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  margin: 0;
+  padding-left: 1.2em;
+  list-style: disc;
+  color: var(--ink-soft);
+}
+
 /* Diagnostics */
 .facts {
   display: grid;

@@ -1,4 +1,4 @@
-import { readDesign, type Attempt, type ContentPack, type Setup } from '@/engine';
+import { designOf, readDesign, type Attempt, type ContentPack, type Setup } from '@/engine';
 
 /**
  * What a child has made on Inventor Island, read from what they did: for each activity, the last design of
@@ -56,7 +56,7 @@ export function portfolioOf(pack: ContentPack, attempts: readonly Attempt[]): Pa
       }
       if (challenge.task.type !== 'design' || attempt.outcome !== 'correct') continue;
       const { task } = challenge;
-      const choice = readDesign(task, attempt.response.split('-'));
+      const choice = readDesign(task, designOf(attempt.response));
       // An answer that is no design this task offers (the content has changed since) draws nothing.
       if (!choice) continue;
       if (invention === null || attempt.at >= invention.at) {

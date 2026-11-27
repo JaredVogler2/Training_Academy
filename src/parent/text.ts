@@ -1,6 +1,7 @@
 import { avatarNames } from '@/app/strings';
 import type { EvidenceStatus, Observation, Seen, SkillEvidence } from '@/engine';
 import type { GraphicsOption, MotionOption } from '@/app/settings';
+import { luckInWords } from './why';
 
 const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
 
@@ -46,6 +47,23 @@ export const grownUpText = {
   shown: (name: string) => `What ${name} has shown`,
   shownHelp:
     'Only answers given at the first try, with no hint and no help, count as doing something independently. Watching, hints and second tries never do. These are plain counts, not a test score.',
+  next: (name: string) => `What Play offers ${name} next, and why`,
+  nextHelp:
+    'The big Play button in each world goes to one activity, and on the map Glim points at one world. This says which, and why. It is a suggestion and no more: every activity stays open on its world’s page, whatever is said here. The waits and shares the game goes by are its own rules of thumb, chosen for this game. They are not findings about children, and nothing here measures a child.',
+  nextReading: 'Working out what Play would offer…',
+  nextTrouble:
+    'What Play would offer could not be worked out just now, so Play goes by the plain order of the activities. Try opening this page again.',
+  nextGlim: (world: string, lesson: string) =>
+    `On the map, Glim points at ${world}, for “${lesson}”.`,
+  nextIn: (world: string, lesson: string) => `${world}: “${lesson}”`,
+  nextToday: (before: number, fresh: number) =>
+    before + fresh === 0
+      ? 'Nothing has been played today yet.'
+      : `Played today so far: ${plural(fresh, 'new activity', 'new activities')}, and ${String(before)} played before.`,
+  nextDue: (count: number) =>
+    count === 0
+      ? 'Nothing played before is due again today.'
+      : `${plural(count, 'activity that was played before is', 'activities that were played before are')} due again, counting every world.`,
   shownReading: 'Reading what has been recorded…',
   shownTrouble:
     'What has been recorded could not be read just now, so nothing is said here about any skill. Try opening this page again.',
@@ -95,6 +113,12 @@ export const grownUpText = {
   beginsAt: (activity: string) => `Play begins at “${activity}”.`,
   partOf: (activity: string, part: number) => `${activity}, part ${part}`,
   beginSaved: 'Saved.',
+  sittingTitle: 'How long a sitting is',
+  sittingHelp:
+    'If you choose a length, the game stops suggesting what to play next once about that much time has been spent in activities in one sitting: Glim rests on the map, and a world’s page has no big Play button. Nothing is closed, nothing counts down, and nothing is said to a child about time. A break of half an hour, or closing the game, begins a new sitting.',
+  sittingLabel: 'A sitting lasts',
+  sittingNone: 'As long as they like: no length is set',
+  sittingMinutes: (minutes: number) => `About ${minutes} minutes`,
   togetherTitle: 'Playing together',
   helpingToday: 'I am helping today: do not count answers as theirs alone',
   helpingHelp:
@@ -164,5 +188,7 @@ export function describeEvidence(evidence: SkillEvidence): string {
   if (evidence.assistedSuccesses > 0) {
     parts.push(`${evidence.assistedSuccesses} right after a hint, another try or help.`);
   }
+  const luck = luckInWords(evidence);
+  if (luck !== null) parts.push(luck);
   return parts.join(' ');
 }

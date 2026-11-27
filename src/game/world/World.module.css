@@ -240,6 +240,21 @@
   text-align: center;
 }
 
+/*
+ * Time for a rest: where the big Play button was, Glim asleep. It keeps the room the button and its picture
+ * had, so that nothing below it moves when the page learns that the sitting is over.
+ */
+.rest {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  justify-items: center;
+}
+
+.restGuide {
+  width: clamp(96px, 22vh, 150px);
+}
+
 .asleep {
   display: inline-flex;
   gap: 10px;

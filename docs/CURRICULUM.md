@@ -2,9 +2,10 @@
 
 **Status: seven worlds, a first pass through each.** Every activity the six islands' pages promised is authored
 and playable, and so are the Music Lab's six. Counts in this document are of real content in the repository,
-and the tests pin the ones quoted most. (All of it is live but Explorer Harbor's three lessons on a globe
-and its room for making a story, which are on a pull request that is not merged. The help for a first visit,
-described at the end of this document under _Where a child begins_, went live on 2026-11-26.)
+and the tests pin the ones quoted most. (All of it is live but the choice of what to offer next, described
+below under _What Play offers next_, which is on a pull request that is not merged. The help for a first visit,
+described at the end of this document under _Where a child begins_, went live on 2026-11-26, and Explorer
+Harbor's room for making a story that evening.)
 
 |                              | Authored and tested |
 | ---------------------------- | ------------------- |
@@ -12,7 +13,7 @@ described at the end of this document under _Where a child begins_, went live on
 | Activities (lessons)         | 71                  |
 | Challenges                   | 823                 |
 | Skills                       | 81                  |
-| Spoken lines and words       | 735 recordings      |
+| Spoken lines and words       | 736 recordings      |
 
 **Nothing here has been reviewed by an early-years teacher or tried with a child, and no person has listened to
 the recordings.** All three are required before any claim about what the game teaches. Each world's brief in
@@ -153,21 +154,88 @@ reads each rules file and fails if a rule has no such case.
 Statuses, in order: _not yet observed_ → _exploring_ → _guided_ → _practicing_ → _provisionally independent_ →
 _consistently independent_.
 
-| Status                    | Rule (defaults in `DEFAULT_EVIDENCE_POLICY`)                                              |
-| ------------------------- | ----------------------------------------------------------------------------------------- |
-| not yet observed          | no response recorded — not a judgement                                                    |
-| exploring                 | has responded; no correct first try without help                                          |
-| guided                    | correct at the first try in guided steps; no independent success                          |
-| practicing                | at least one independent success                                                          |
-| provisionally independent | ≥ 3 independent successes, ≥ 2 variants, ≥ 75 % of the last 8 independent probes right    |
-| consistently independent  | ≥ 5 independent successes, ≥ 2 variants, on ≥ 2 calendar days, ≥ 80 % of the last 8 right |
+| Status                    | Rule (defaults in `DEFAULT_EVIDENCE_POLICY`)                                                                                                                            |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| not yet observed          | no response recorded — not a judgement                                                                                                                                  |
+| exploring                 | has responded; no correct first try without help                                                                                                                        |
+| guided                    | correct at the first try in guided steps; no independent success                                                                                                        |
+| practicing                | at least one independent success                                                                                                                                        |
+| provisionally independent | ≥ 3 independent successes, ≥ 2 variants, ≥ 75 % of the last 8 independent probes right, and those probes no likelier to have come out so well by luck than 1 time in 20 |
+| consistently independent  | ≥ 5 independent successes, ≥ 2 variants, on ≥ 2 calendar days, ≥ 80 % of the last 8 right, and no likelier by luck than 1 time in 200                                   |
 
 These numbers are **product heuristics**. They are not research-validated cut-offs, they do not measure ability or
 development, and nothing in the game reports an "IQ", an age level or a comparison with other children. Phase 12
-revisits them with spaced review and a wider set of simulated learners.
+looked at them again: it added the rule about luck, a wait before a thing comes back, and five made-up learners
+who play the whole game by these rules for six weeks. What that showed, and where the rules still fall short, is
+in `docs/QUALITY_REPORT.md`.
+
+**Luck.** Some questions are easy to get right without knowing anything: with two pictures to choose from, half
+of all taps land on the right one. So every question has a chance (how likely an answer given without looking is
+to be right), it is written down with every first try that had no hint, and a skill is called independent only
+when its latest first tries alone were too good to put down to that.
+
+| The questions of a skill                                                              | Skills | "Independent so far" asks for, at the least       | "Independent across days" asks for, at the least          |
+| ------------------------------------------------------------------------------------- | ------ | ------------------------------------------------- | --------------------------------------------------------- |
+| cannot be got right by luck, or hardly: a robot's plan, a beat, an order to repeat    | 16     | what the table above says                         | what the table above says                                 |
+| can be, between one time in nine and one in four: an amount to give, a thing to build | 8      | three of three, or three of four                  | five of five, or five of six                              |
+| are a choice of three (most questions are)                                            | 47     | three of three; with one not right, four of five  | five of five; with one not right, seven of the last eight |
+| are pairs to find (blind turning finds them in the turns allowed 38 times in 100)     | 1      | four of four                                      | six of six                                                |
+| are a choice of two                                                                   | 8      | five in a row; with one not right, seven of eight | all of the last eight                                     |
+| are a bridge to mend, where five of the six ways of mending it hold                   | 1      | cannot be reached                                 | cannot be reached                                         |
+
+The one that cannot be reached is `engineering.bridge.build`: with five of the six things a child can do to the
+bridge holding it up, right every time is still not much to go on, and the record says so. A child who mends
+every bridge is shown as "practising", with the reason beside it.
+
+**Right, and not done alone.** One kind of answer can be right without showing its skill: every pair found, in
+more turns than the board allows, which is what turning cards over without remembering takes. It is written down
+as right and marked; it counts as a first try alone that was not a success.
 
 A grown-up sees the counts in words, for example: _"3 independent successes in 3 kinds of question on 1 day. 2 right
-at the first try in practice with the guide."_
+at the first try in practice with the guide."_ Where luck comes into it, a sentence says so: _"Its questions can
+be got right by luck, about 1 time in 3, and the latest first tries could still be that. More of the same will
+tell."_
+
+## What Play offers next
+
+The big Play button, and Glim's hand on the map, go where the game suggests. It is only a suggestion: every
+activity stays open on its world's page, and nothing is locked, hidden or closed by it. How it is worked out is
+in `docs/ARCHITECTURE.md` (_What Play offers next_); what it means for a child is this.
+
+- **Something new** is the first activity of a world not yet finished whose skills build on things the record
+  shows done alone. One that builds on something not yet done alone is passed over for now and offered when
+  nothing else is ready; it can be played from its picture at any time.
+- **Something played before** comes back when it is time. The time is counted in days from when a skill was last
+  practised: the next day for something done alone once or twice, two days for something independent so far,
+  two weeks and then a month and two for something independent across days, and longer each time it stays the
+  same. After a day that ended with a first try alone that was not right it is the next day; if that goes on, it
+  is two days, then four, a week and two weeks.
+- **About seven in ten** of any ten activities in a row are ones played before, for as long as any are due. The
+  rest are new.
+- **No more than one a day** is something that went badly the last time, and a day does not begin with one.
+- **Nothing is offered again on the day it was played.**
+- **A sitting can have an end.** A grown-up may choose about 10, 15 or 20 minutes. When that much has been
+  played, the game stops suggesting: Glim rests. Nothing is closed.
+
+**What each skill builds on** is written with the skill (`prerequisites` in a pack), and gathered into one
+table for the whole game (`src/content/concepts.json`, written by `npm run content`): 81 skills, of which 67
+build on something, in 77 links; 71 activities in seven worlds. The build refuses a table in which anything is
+out of reach: a skill may build only on skills of its own world that are met no later than it is, and never,
+from another activity, on one that no activity asks alone. Nothing builds on a skill of another world.
+
+**What the table says of the content as it stands**, held by tests so that the numbers stay true:
+
+- **Twenty skills have fewer than three presentations.** The brief for phase 12 asks for three. Nineteen have
+  two: `phonics.listening.repeat-sound-pattern`, the four groups of letters and `phonics.letters.sh-ch-th`,
+  `phonics.decoding.read-short-sentence`, `math.comparison.equal-to-6`, `math.bonds.to-5` and `to-10`,
+  `math.numerals.read-to-5`, `read-to-10` and `hear-to-10`, `math.adding.within-10`,
+  `memory.strategy.linking` and `places`, `engineering.bridge.build`, and `world.space.nearest` and
+  `farthest`. Two is enough for "independent" to be said; a third way of asking each would make it mean more.
+- **One has a single question, and can never be shown as independent:** `memory.recognition.after-a-while`.
+  Its activity is brought back by the other skill it asks.
+- **Five are asked only at times,** never among the questions drawn for every sitting: that one, the four
+  things asked for with no hint straight after the hinted four, and the three about what was kept from the
+  sitting before. They are recorded when they are asked, and no activity is offered again on their account.
 
 ## Authored content
 
@@ -360,8 +428,9 @@ sound exactly when its questions are said.
 | `math.adding.within-10`         | Add within ten, as a story                    | When some more come to a group, finds how many there are now, up to ten, and picks the numeral for it.                                                                                               |
 | `math.taking-away.within-10`    | Take away within ten, as a story              | When some of a group of up to ten go away, finds how many are left, including none, and picks the numeral for it.                                                                                    |
 
-**Why a wrong choice is tempting** is written on every wrong choice of the later questions, for the grown-ups'
-report and for the mastery engine to come. Most are how far off the choice is (`one-more`, `one-fewer`,
+**Why a wrong choice is tempting** is written on every wrong choice of the later questions, and kept with the
+answer. (What chooses the next activity does not read it: that goes by what was done alone, and when.) Most are
+how far off the choice is (`one-more`, `one-fewer`,
 `many-more`, `many-fewer`). Four are ideas of their own: `counted-what-was-there-first` and
 `counted-those-that-came` or `-left` in a story; `counted-the-full-places` where the empty ones were asked for;
 and `looks-alike`, a 6 taken for a 9 or a 9 for a 6.
@@ -670,8 +739,8 @@ basket, over the hole. Not one more berry fell out."), and nobody is called he o
 for a grown-up to be able to record that a child took part. On the harbour's page, under the note about the
 room, is a switch they hold to say their child told a story back in their own words. It is kept with its day
 beside what they say was tried away from the screen, shown as their word ("the game did not hear it"), and
-read by nothing that reports what a child has shown. **Nothing here is evidence of anything**, and phase 12
-must not treat it as any.
+read by nothing that reports what a child has shown. **Nothing here is evidence of anything**, and what chooses
+the next activity does not read it.
 
 ### The first activity as it is played (Phase 03)
 
@@ -821,8 +890,10 @@ Three rules hold it to what it is:
    has done, which is the only place "what a child has shown" is read from. A skill that a grown-up has seen
    and the game has not is still "not yet observed".
 2. **Nothing is closed.** Every activity stays on its world's page, the ones before the beginning as well as
-   the ones after it, and none is marked as done. Play goes to the first unfinished activity from the beginning
-   that was chosen, and, when those are all finished, to the first unfinished one before it.
+   the ones after it, and none is marked as done. New things are offered from the beginning that was chosen,
+   and, when those are all finished, from before it. What an activity builds on is taken on the grown-up's
+   word where everything that teaches it comes before the place they chose; the reason given for the
+   suggestion says that it is their word, and the record still says "not yet observed".
 3. **A suggestion is only offered.** Saying that something was seen moves nothing; the grown-up takes the
    suggestion, or chooses any activity of any world, or leaves things as they are.
 
@@ -849,6 +920,7 @@ From the briefs in `prompt-series/`; `docs/PROGRESS.md` has each brief set again
 | Explorer Harbor | a story a child tells that is kept, or heard; a story made up from more than six beginnings; countries on the globe (it has the seven continents and no border), flags and people; a place found with nothing said about where it is; lands that are neighbours asked together (Europe is never one of three with Africa or Asia); a globe that can be looked at closer            | 10    |
 | The Music Lab   | tapping a rhythm back; black keys; keeping a tune a child has made; the five other rooms its brief describes                                                                                                                                                                                                                                                                       | 11    |
 
-Open questions: who reviews the phonics content and the audio; whether a person should record the voice; how
-prerequisites that cross worlds are shown on the map (nothing is locked, and Glim simply points at the next
-thing not yet finished).
+Open questions: who reviews the phonics content and the audio; whether a person should record the voice;
+whether anything should build on a skill of another world (nothing does, and the build refuses it: Glim points
+at the world of the one thing chosen from everything there is); and whether the waits and the seven in ten are
+the right numbers, which only children playing can say.

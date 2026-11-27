@@ -94,6 +94,8 @@
 
 /* Faces: one set of eyes and one mouth shows at a time. */
 .eyesHappy,
+.eyesAsleep,
+.sleep,
 .brows,
 .mouthOpen,
 .mouthSmall,
@@ -287,6 +289,20 @@
 .guide[data-state='wave'] .armRight {
   transform: rotate(-150deg) scaleY(1.15);
   animation: wave 0.5s ease-in-out 3 alternate;
+}
+
+/* --- Rest: that is enough for now ----------------------------------------------------------------------------- */
+.guide[data-state='rest'] .eyesOpen {
+  display: none;
+}
+
+.guide[data-state='rest'] .eyesAsleep,
+.guide[data-state='rest'] .sleep {
+  display: inline;
+}
+
+.guide[data-state='rest'] .halo {
+  opacity: 0.5;
 }
 
 @keyframes bob {

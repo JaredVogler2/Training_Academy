@@ -16,7 +16,9 @@ export { LOCAL_STORAGE_KEY, LocalStorageDriver } from './localStorageDriver';
 export {
   DATA_VERSION,
   MIGRATIONS,
+  PAIRS_PAR,
   migrate,
+  withThePairsMark,
   type Migration,
   type MigrationOutcome,
 } from './migrations';

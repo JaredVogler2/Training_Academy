@@ -69,12 +69,17 @@ const LAZY_ONLY = [
   /^GrownUps-/,
   /^VoiceCheck-/,
   /^engine-play-/,
+  // What Play offers next is worked out when a page asks for it, from the record and the table of what each
+  // activity asks for first: neither is fetched before there is somebody playing.
+  /^engine-next-/,
+  /^adviceEngine-/,
+  /^concepts-/,
   // The rooms: a room is opened by whoever wants it, and the story room is forty-two drawings.
   /^StoryRoom-/,
   /^Portfolio-/,
   /^Room-/,
   // A world's own code and its content pack, whichever world it is.
-  /^(reading-cove|number-garden|robot-ridge|memory-forest|inventor-island|explorer-harbor)/,
+  /^(reading-cove|number-garden|robot-ridge|memory-forest|inventor-island|explorer-harbor|music-lab)/,
 ];
 const HUB_3D = [/^three-/, /^r3f-/, /^Hub3D-/, /^harbour-/];
 
@@ -134,12 +139,15 @@ check(!/\son[a-z]+="/i.test(html), 'index.html has no inline event handlers');
 
 // --- 3. What the first load really pulls in ----------------------------------------------------------------------------
 
-/** Static imports of a built chunk (not `import(...)`, which is on demand). */
+/**
+ * What a built chunk waits for before it starts: its static imports, and anything it passes on from another file
+ * (`export … from`). Not `import(...)`, which is on demand and waits for nothing.
+ */
 function staticImports(file) {
   const source = readFileSync(join(dist, file), 'utf8');
   const found = new Set();
   for (const match of source.matchAll(
-    /(?:^|[;}\s])import\s*(?:[^"'()]*?\bfrom\s*)?["'](\.{1,2}\/[^"']+)["']/g,
+    /(?:^|[;}\s])(?:import|export)\s*(?:[^"'()]*?\bfrom\s*)?["'](\.{1,2}\/[^"']+)["']/g,
   )) {
     found.add(posix.normalize(posix.join(posix.dirname(file), match[1])));
   }
@@ -172,6 +180,44 @@ for (const group of HUB_3D) {
     `the build has a separate ${group.source.replace(/[\^\\-]/g, '')} chunk`,
   );
 }
+
+/**
+ * Rings of files that each wait for the next, the last of them for the first.
+ *
+ * The modules a build is made from may not import each other in a ring, and the engine's do not. The files a build
+ * is cut into can all the same: two modules of one file are each wanted by a module of another, and each file then
+ * imports the other. A browser starts such a pair in whichever order the page happens to ask for them, and the one
+ * that starts first reads the other's constants before they have been made. That is how the grown-ups' page once
+ * could not say what Play would offer next, where the map and a world's page (which ask in the other order) could:
+ * a fault that exists only in the built files, and only on the pages that ask in the unlucky order.
+ */
+function ringsAmong(chunks) {
+  const waitsFor = new Map(
+    chunks.map((file) => [file, staticImports(file).filter((each) => chunks.includes(each))]),
+  );
+  const rings = [];
+  const state = new Map();
+  const path = [];
+  const visit = (file) => {
+    state.set(file, 'open');
+    path.push(file);
+    for (const next of waitsFor.get(file) ?? []) {
+      if (state.get(next) === 'open') rings.push([...path.slice(path.indexOf(next)), next]);
+      else if (!state.has(next)) visit(next);
+    }
+    path.pop();
+    state.set(file, 'done');
+  };
+  for (const file of chunks) if (!state.has(file)) visit(file);
+  return rings;
+}
+const rings = ringsAmong(allScripts);
+check(
+  rings.length === 0,
+  `no two of the ${allScripts.length} built scripts wait for each other${rings
+    .map((ring) => ` (${ring.map(baseName).join(' waits for ')})`)
+    .join('')}`,
+);
 
 // --- 4. Budgets --------------------------------------------------------------------------------------------------------
 

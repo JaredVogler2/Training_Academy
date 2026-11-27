@@ -8,6 +8,7 @@ import {
   type LessonSession,
 } from '@/engine';
 import {
+  DATA_VERSION,
   MAX_PROFILES,
   StorageError,
   buildBundle,
@@ -413,7 +414,7 @@ describe.each(BACKEND_NAMES)('repository on %s', (name) => {
         format: 'training-academy.profile-export',
         formatVersion: 1,
         exportedAt: T0 + 3 * DAY_MS,
-        app: { version: '0.0.0-test', dataVersion: 1 },
+        app: { version: '0.0.0-test', dataVersion: DATA_VERSION },
       });
       expect(bundle.profile.id).toBe(profileId);
       expect(bundle.sessions).toHaveLength(3);

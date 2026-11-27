@@ -200,7 +200,7 @@ describe('skill evidence', () => {
   it('thresholds are configuration, not constants', () => {
     const strict = {
       ...DEFAULT_EVIDENCE_POLICY,
-      provisional: { minIndependentSuccesses: 10, minDistinctVariants: 2, minRecentAccuracy: 0.75 },
+      provisional: { ...DEFAULT_EVIDENCE_POLICY.provisional, minIndependentSuccesses: 10 },
     };
     expect(getSkillEvidence(successes(3, ['a', 'b']), SKILL, strict).status).toBe('practicing');
   });

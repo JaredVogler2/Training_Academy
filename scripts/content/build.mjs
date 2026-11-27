@@ -7,6 +7,9 @@ import { buildExplorerHarborPack, buildExplorerHarborVoice } from './explorer-ha
 import { buildInventorIslandPack } from './inventor-island.mjs';
 import { writeFileSync } from 'node:fs';
 import {
+  conceptGraphPath,
+  conceptGraphText,
+  loadGraphMaker,
   lessonListPath,
   lessonListText,
   lockLessons,
@@ -49,6 +52,14 @@ writeFileSync(lockPath, await lockText(lessons));
 console.log(`src/content/lessons.lock.json: ${Object.keys(lessons).length} lessons written down`);
 writeFileSync(lessonListPath, await lessonListText(packs));
 console.log('src/content/lessonList.json: what each activity is called');
+// What is taught and what it builds on, made by the engine itself; refused if anything in it is out of reach.
+const maker = await loadGraphMaker();
+try {
+  writeFileSync(conceptGraphPath, await conceptGraphText(maker.graphOf(packs)));
+} finally {
+  await maker.close();
+}
+console.log('src/content/concepts.json: what each skill builds on, and which activity teaches it');
 await writeVoiceLines('reading-cove', buildReadingCoveVoice());
 await writeVoiceLines('memory-forest', buildMemoryForestVoice());
 await writeVoiceLines('explorer-harbor', buildExplorerHarborVoice());

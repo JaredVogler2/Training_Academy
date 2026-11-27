@@ -15,6 +15,7 @@ import {
   type Locator,
   type Page,
 } from './fixtures';
+import { pinSeed } from './sittings';
 
 /**
  * Robot Ridge: telling a robot how to get to a star. Each of its seven activities is played the way a child would
@@ -1207,24 +1208,6 @@ test.describe('accessibility', () => {
     await expectNoViolations(page, 'after a run that did not arrive');
   });
 });
-
-/**
- * Every sitting begun on this page is planned from `seed`: the same journeys, in the same order, every time.
- * (A sitting's seed is one 32-bit number from the browser's random source; everything else that asks that source
- * for numbers still gets them.)
- */
-async function pinSeed(page: Page, seed: number): Promise<void> {
-  await page.addInitScript((value) => {
-    const real = crypto.getRandomValues.bind(crypto);
-    crypto.getRandomValues = <T extends ArrayBufferView<ArrayBuffer>>(array: T): T => {
-      if (array instanceof Uint32Array && array.length === 1) {
-        array[0] = value;
-        return array;
-      }
-      return real(array);
-    };
-  }, seed);
-}
 
 /**
  * The largest boards there are, on the smallest screens the game is made for. Which journeys a sitting asks is

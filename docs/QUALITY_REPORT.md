@@ -1,22 +1,245 @@
 # Quality report
 
-This file has twelve parts. The first is the review of Explorer Harbor's room for making a story (the second
-half of the rest of phase 10). The second is the review of Explorer Harbor's globe: the seven big lands and
-fifteen famous places (the first half). The third is the review of Inventor Island's shelter, of the record a
-grown-up keeps and of the portfolio (the rest of phase 09). The fourth is the review of Memory Forest's two
-later activities (the rest of phase 08). The fifth is the review of Robot Ridge's three later activities (the
-rest of phase 07). The sixth is the review of the help for a first visit (the rest of phase 04). The seventh
-is the review of Reading Cove's later activities, from rhyme to a sentence (the second half of phase 05). The
-eighth is the review of Number Garden's later activities, the ones that bring numerals in (the second half of
-phase 06). The ninth is the review of the Music Lab (phase 11). The tenth is the review of the six worlds and
-the voice (phases 04 to 10). The eleventh is Phase 03's review of what Phase 03 built. The twelfth is Phase
-02's report on the home screen, kept as it was written, because it is still the assessment of the hub.
+This file has thirteen parts. The first is the review of what chooses the next thing to play, and of what
+the record can be trusted to say (phase 12). The second is the review of Explorer Harbor's room for making a
+story (the second half of the rest of phase 10). The third is the review of Explorer Harbor's globe: the seven
+big lands and fifteen famous places (the first half). The fourth is the review of Inventor Island's shelter, of
+the record a grown-up keeps and of the portfolio (the rest of phase 09). The fifth is the review of Memory
+Forest's two later activities (the rest of phase 08). The sixth is the review of Robot Ridge's three later
+activities (the rest of phase 07). The seventh is the review of the help for a first visit (the rest of phase
+04). The eighth is the review of Reading Cove's later activities, from rhyme to a sentence (the second half of
+phase 05). The ninth is the review of Number Garden's later activities, the ones that bring numerals in (the
+second half of phase 06). The tenth is the review of the Music Lab (phase 11). The eleventh is the review of
+the six worlds and the voice (phases 04 to 10). The twelfth is Phase 03's review of what Phase 03 built. The
+thirteenth is Phase 02's report on the home screen, kept as it was written, because it is still the assessment
+of the hub.
 
 All are written to be useful to whoever works on this next, not to make the build look good. The ratings are my own
 reading of screenshots and of the running game in headless Chromium. Nobody else has reviewed it, no child has
 played it, **no person has listened to the voice**, and it has never run on a real graphics card. The owner has
 opened the live site (Phase 03) on an iPhone; nothing in this file comes from a device. The standard it is rated
 against is `docs/ART_DIRECTION.md`.
+
+## Phase 12 (2026-11-26): what Play offers next, and what the record can be trusted to say
+
+### Summary
+
+Until now the big Play button went to the first activity not yet finished, and Glim pointed at the first
+world with one. Now both go where a small engine suggests: to something new, or back to something played
+before when its time has come. A grown-up can read which, in every world, with every reason for it in plain
+words. A grown-up can also say how long a sitting is, and when that much has been played the game stops
+suggesting: Glim goes to sleep. Nothing is ever locked, hidden or closed by any of it. Eighteen pictures are
+in `docs/review/phase-12/`.
+
+The other half of the phase is what the record says of a child. It no longer calls a run of right answers
+"independent" when the run could too easily have been luck; it no longer writes down a game of pairs found
+by turning cards over at random as done alone; and it no longer counts the time a phone lay on a table as
+time spent on a question. Two of those were faults in what is live.
+
+**My reading: it is careful, it explains itself, and its numbers are guesses.** Everything it does can be
+read off three things (the record, the day, and a table of what builds on what), it gives the same answer on
+any device, and it never says more of a child than the answers support. The waits, the seven in ten and the
+thresholds for "independent" were chosen by me, tried on five made-up learners, and changed once on that
+evidence. No child has played by them. Whether a four-year-old wants to come back to yesterday's activity,
+and whether two days is the right wait, are things only children can show.
+
+**And it does not make luck impossible.** A made-up learner who taps without looking for a month is still,
+at some time in that month, called "independent so far" at something in 38 months of 40. The rule about luck
+halves how often that is said on any one day, and takes it almost wholly away where it was worst (questions
+with two pictures). It is written out below with the numbers, because a grown-up reading "independent so
+far" should know how much that can be trusted: it means what it says, so far.
+
+### How it was made, which bears on how far to trust it
+
+The engine is plain functions with nothing hidden in them. `advise` is given every answer one player has
+recorded, the activities they have finished, the day it is, and the concept graph; it reads no clock, no
+store and no network. That is what lets the tests say things like "the answer is the same whatever order the
+record is in" and "nothing is due again on a day it was played" of any record whatever, by trying thousands
+of made-up ones, and it is why a record moved to another device by a saved copy is offered the same thing
+there.
+
+**The tests.** 2724 unit tests now (2451 before), of which 18 are properties tried on generated records, in
+the engine and in what is stored: that one player's record is theirs alone, that a copy saved and loaded back
+is the record to the letter, that bringing old data up to date says no more of a child than it said before,
+that answers given with help never make something count as done alone, that what is due stays due while
+nothing new is recorded. Six browser tests play it through in the built game: an activity finished, the page
+that offers something new that day and the same activity again two days later (the test moves the page's
+clock on), the grown-ups' card with its reasons, a sitting of ten minutes played out, a game of pairs
+finished in fifteen turns, and an answer given after a pause of five minutes.
+
+**They were made to fail before they were believed.** 185 faults were put into the code one at a time
+against the unit tests. 169 were caught at once. Thirteen in the choosing and the graph were not: tests were
+added or strengthened until each was, and one of the thirteen showed that a rule was wrong, not a test (what
+is "taken on a grown-up's word" was worked out wrongly for a skill that is taught again further on; the rule
+was changed). Two in the sitting's clock needed a test tightened, and one was stopped by the type check
+before any test ran. Seventeen more were put into the built game against the browser tests: sixteen were
+caught at once, and **the one that was not found two copies of one rule.** The rule for "is it time to
+rest" was written once where the tests could reach it and once, slightly differently, where the game used
+it, so a change to the rule would have changed nothing a child sees. There is one rule now.
+
+**Five made-up learners** play the real lessons, by the real rules, for six weeks at four activities a day,
+going wherever Glim points (`tests/engine/learners.test.ts`; two runs of each). None is a model of a child,
+and nothing found with them is a finding about children. They show what the rules do with five kinds of
+answering. One knows nearly everything; one knows little and learns by meeting things; one taps at once
+without looking; one knows it on one day and not on the next; one knows nearly everything and has a finger
+that lands somewhere else one time in four.
+
+| After six weeks (168 sittings; 71 activities, 81 skills) | Activities finished        | New, and played before | First tries alone that were right | Skills "independent so far" | Skills "independent across days" | Skills "practising" |
+| -------------------------------------------------------- | -------------------------- | ---------------------- | --------------------------------- | --------------------------- | -------------------------------- | ------------------- |
+| Knows nearly everything                                  | 71 and 71 (all, on day 42) | 71 and 97              | 98% and 97%                       | 15 and 17                   | 54 and 53                        | 10 and 9            |
+| Knows little, and learns                                 | 70 and 68                  | 70 and 98; 68 and 100  | 89% and 87%                       | 17 and 10                   | 42 and 46                        | 17 and 19           |
+| Taps without looking                                     | 69 and 71                  | 69 and 99; 71 and 97   | 32% and 31%                       | none                        | none                             | 56 and 57           |
+| Knows it one day, not the next                           | 67 and 67                  | 67 and 101             | 76% and 71%                       | 12 and 8                    | 30 and 31                        | 31 and 34           |
+| Knows it, and a finger slips                             | 65 and 66                  | 65 and 103; 66 and 102 | 73% and 73%                       | 19 and 16                   | 28 and 26                        | 26 and 31           |
+
+What the table shows, and the tests hold: everybody is offered something every time and finishes nearly
+everything, whatever they answer (nothing is locked, so even the one who taps blindly gets through); nobody
+is kept on one thing (no activity was played more than ten times in six weeks, and that was the guesser's);
+about three in five of what is played has been played before, which is under the seven in ten aimed at,
+because something new is offered whenever nothing is due; and the one who taps without looking ends six
+weeks with nothing called independent.
+
+**Luck, measured.** Forty made-up months of tapping without looking (4800 sittings, 75,508 answers) were
+read by five settings of the two numbers that say how unlikely luck must be. The records are the same for
+every row; only the reading differs.
+
+| Luck allowed for "so far", and for "across days" | Of 42,451 skill-days, called independent | …and "across days" | Where there are two pictures to choose from (5,818 skill-days) | …and "across days" there | Months of 40 in which something was at some time called independent | …and "across days" |
+| ------------------------------------------------ | ---------------------------------------- | ------------------ | -------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------- | ------------------ |
+| No rule about luck (as it was)                   | 2.47%                                    | 0.43%              | 9.63%                                                          | 1.87%                    | 40                                                                  | 19                 |
+| 1 in 20, and 1 in 50 (first chosen)              | 1.35%                                    | 0.26%              | 2.01%                                                          | 0.69%                    | 38                                                                  | 13                 |
+| **1 in 20, and 1 in 200 (as it is)**             | 1.35%                                    | 0.17%              | 2.01%                                                          | 0.03%                    | 38                                                                  | 8                  |
+| 1 in 20, and 1 in 500                            | 1.35%                                    | 0.005%             | 2.01%                                                          | 0.03%                    | 38                                                                  | 1                  |
+| 1 in 50, and 1 in 200                            | 1.01%                                    | 0.17%              | 0.81%                                                          | 0.03%                    | 34                                                                  | 8                  |
+
+The setting was changed on this evidence, from 1 in 50 to 1 in 200 for "across days". The same change read
+on the other four learners' records took between none and two skills of about fifty from their "across
+days" column at six weeks. One in 500 would have taken the thirteen months down to one, and would have taken between a seventh and three fifths of that column from every learner who does know things, most from the one whose finger slips (28 skills down to 11). That is too much to pay for a learner who is not real. Where chance has
+no part in the questions (a robot's plan, a beat: eleven skills) the guesser was never called independent
+at all, under any setting.
+
+**Three faults in what is live were found on the way, and are mended here.** A made-up learner who taps
+without looking found the first: in _Find the pairs_ a game finished in fifteen turns, on a board that allows eight, was written into the record as done alone, and the grown-ups' page then said "Independent so
+far". The sitting itself counted it rightly; the record did not. Such an answer is now marked, the answers
+already stored are marked once when the game first opens them, and the update was rehearsed on the build
+that is live: its own page said "independent", and after the update said "guided", with every other answer
+unchanged to the letter. The second was found by the same learner: at the shelter, a wall tested with no
+prop was read as no answer at all, and the press that tested it did nothing. The third was found by reading
+the brief again: the time written down with an answer included any pause, up to ten minutes.
+
+**One fault existed only in the built game, and was found before it was released.** The grown-ups' card
+said "could not be worked out" in the build, where every unit test passed. Two of the files the build is cut
+into each waited for the other, and on that one page they started in the order that leaves a constant
+unmade. A browser test against the build found it the first time it ran. The build's own check now fails if
+any two files ever wait for each other, and was shown failing on the build as it had been.
+
+**What earlier parts of this file asked of this phase**, and what became of each. That a game of pairs in
+too many turns be mended before the record was leant on: it is, above. That what a grown-up says (what they
+have seen, what was tried away from the screen, that a story was told back, where to begin) never be
+evidence: the choice reads the answers, what has been finished and where to begin, and nothing else; where to
+begin changes the order and is said to be their word, and counts as nothing shown. That the room for making
+a story write nothing down: it does not, and time in it is no part of a sitting. That "Famous places", whose
+questions give their own answers, not count as knowing where a place is: **it is treated as any other
+skill**. Nothing builds on it, so nothing is offered or held back on its account, and its own name on the
+grown-ups' page still says what it is; but the record will call it "independent" as readily as anything
+else, and comes back to it as it would to a thing that can be forgotten. That the way a child chose to look
+at things to remember not be read as a way of remembering that was used, and that a robot's row found out a
+step at a time not be read as planning ahead: nothing reads either. The choice knows only whether a first
+try alone was right.
+
+Nothing here was tried by a child, **nobody has heard the one new line** ("That was good playing. Time for
+a rest."; a recogniser heard it as written), and Safari's engine has not run any of it: CI's WebKit will.
+
+### The review
+
+Looked at on a phone upright (390 by 844), on its side (844 by 390) and on a desk (1366 by 768); the browser
+tests measure the same pages on seven screens for anything that runs off the side.
+
+| What                                                   | How it is                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The big Play button                                    | Where it always was, on a world's page. Under it, one line says what it goes to and why: the activity's name, "played before, and time to come back to it" when it is one, and about how long it takes. The picture of that activity has the ring round it                                                                                                                                          |
+| The pictures of the activities                         | All of them, always, in the order they always had, each with its tick when it has been finished. Whatever Play suggests, any of them can be tapped                                                                                                                                                                                                                                                  |
+| Glim on the map                                        | Points at one world: the world of the one thing that would be chosen from everything there is. Says nothing about why; that is for the grown-ups' page                                                                                                                                                                                                                                              |
+| Before the game knows                                  | For the moment it takes to read the record, a world's page marks nothing as next and Glim points at nothing, sooner than point at one thing and then another                                                                                                                                                                                                                                        |
+| The grown-ups' card                                    | "What Play offers _name_ next, and why". A paragraph saying it is a suggestion and that its numbers are rules of thumb, not findings; where Glim points; then a small card for each world with the activity, a label ("Something new", "More practice of something done before"), and each reason as a sentence, with skills by their names. On a phone it is long: seven worlds, one under another |
+| A skill, in the list below it                          | As before, with one more sentence where luck comes into it: "Its questions can be got right by luck, about 1 time in 3; first tries as good as the latest would come by luck alone about 4 times in 100."                                                                                                                                                                                           |
+| How long a sitting is                                  | A list under "where to begin": as long as they like, or about 10, 15 or 20 minutes, with four lines saying what happens and that nothing is closed                                                                                                                                                                                                                                                  |
+| The end of an activity, when the sitting is played out | "All done!" and the flowers as ever; Glim beside the island with eyes closed and two small z's; a line for the grown-up ("A good moment to stop. Nothing is closed."). "Again" and "Islands" are both there, and "Islands" is the bright one                                                                                                                                                        |
+| The map, when it is                                    | Glim asleep in the boat, pointing at nothing. Every island as it was                                                                                                                                                                                                                                                                                                                                |
+| A world's page, when it is                             | Glim asleep where the big button was, with a few lines for the grown-up; every activity below, and any of them opens                                                                                                                                                                                                                                                                                |
+| Half an hour later, or the next visit                  | Play is offered again. A page that was simply left open wakes by itself within a minute of the half hour, with nothing pressed                                                                                                                                                                                                                                                                      |
+
+### Seen — cause — fix
+
+| Seen                                                                                                                                 | Cause                                                                                                                                                                                                                                  | Fix                                                                                                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A learner who taps without looking called "independent so far" at a tenth of the days of the skills with two pictures to choose from | Three right of the last four was enough, and half of all blind taps at two pictures are right                                                                                                                                          | A run counts only when it was unlikely to be luck: 1 time in 20 for "so far", 1 in 200 for "across days"                                                                                        |
+| "Independent across days" still said of that learner, of some skill, in 13 months of 40                                              | The first number chosen for it, 1 in 50, is passed by six lucky taps in a row at two pictures                                                                                                                                          | 1 in 200: all of the last eight. Eight months of 40; with two pictures, two skill-days of 5,818                                                                                                 |
+| A game of pairs finished in fifteen turns written down as done alone. **Live**                                                       | The sitting knew it was not clean; the answer stored did not say so, and the record is read from the answers                                                                                                                           | The answer carries a mark; answers already stored are given it once; a saved copy from before is given it on the way in                                                                         |
+| At the shelter, a press on "Test it" that did nothing, when the wall had no prop. **Live**                                           | A design is written as its parts, and "none" was read as there being no design                                                                                                                                                         | "None" is an option like any other                                                                                                                                                              |
+| An answer said to have taken five minutes, given three seconds after the question. **Live**                                          | The time was the plain time from question to answer, pause and all                                                                                                                                                                     | The lesson's clock stands still while the activity is paused or out of sight                                                                                                                    |
+| The grown-ups' card saying "could not be worked out", in the built game only                                                         | Two built files each waited for the other, and on that page started in the order that leaves a constant unmade                                                                                                                         | The part that chooses has a file of its own; the build's check refuses any two files that wait for each other                                                                                   |
+| A fault put into the rule for "time to rest" that no browser test caught                                                             | The game went by a second copy of the rule                                                                                                                                                                                             | One rule                                                                                                                                                                                        |
+| Glim still asleep on a page left open, long after the half hour that ends a sitting                                                  | A sitting ends by itself, and nothing is written then to say so; the page was told only when time was added                                                                                                                            | A page drawn by it looks again when it comes back into sight, and once a minute while it is there. Found by reading the code again: the browser test had loaded the page again before it looked |
+| A place a grown-up chose passed over for an earlier activity                                                                         | What is taken on their word was reckoned from where a skill is first taught, and the skill was taught again further on                                                                                                                 | It is reckoned from what is taught before the activity in question                                                                                                                              |
+| Two changes made quickly on the grown-ups' "where to begin" card, and only the second kept                                           | Each change started from the settings as the card last drew them                                                                                                                                                                       | Each is made to the settings as they will be once the one before has been saved                                                                                                                 |
+| The two z's of a sleeping Glim lost against the sea, on the map                                                                      | They were a pale grey, chosen against the sky of a world's page                                                                                                                                                                        | The ink of the eyes, thinned. Seen in a picture; nothing measures it                                                                                                                            |
+| "Of the last 1 activity played, 0 had been played before and 1 was new."                                                             | Numbers put into a sentence made for larger ones                                                                                                                                                                                       | "The last activity played was new."; and "none" where it was "0"                                                                                                                                |
+| After CI's third run on this pull request (run 57, green): a test of the shelter passing only at a second attempt                    | The test played up to eight sittings waiting for one bench of ten, three drawn a sitting. Eight in a row miss it 5.8 times in 100, by arithmetic and by 200,000 trials of the game's own shuffle. Nothing was the matter with the game | The test finds a seed that brings the bench first, with the game's own planning, and plans its sitting from it. Twenty runs of the test each found it in their first sitting                    |
+| The rehearsal of the update reporting the old build as never cleared out, once                                                       | The script closed the last old tab and opened a new one in the same instant; the old service worker claimed it, and stays while it has a page                                                                                          | The script gives the waiting worker its moment first. 24 of 24                                                                                                                                  |
+
+### What is not right yet, or not known
+
+- **No child has played by it, and no teacher has seen it.** The waits (a day, two, a week, two weeks, a
+  month), the seven in ten, one trouble a day and the thresholds are product choices. They are in one place
+  (`DEFAULT_PLAY_POLICY`) so that someone who knows better can change them, and the made-up learners will say
+  at once what a change does to five kinds of answering.
+- **"Independent so far" can still be luck, and will sometimes be.** For a learner who only taps: on any one
+  day about one skill in 74 of those they have met is called independent; in 38 months of 40 something is,
+  at some time; in 8 of 40 something is called "independent across days" at some time. It is said of a
+  short run of answers, and the page says how short and how likely luck was. Nothing more can be had from
+  three or four answers to a question with three pictures.
+- **A finger that lands in the wrong place reads as not knowing.** The learner who knows nearly everything
+  and slips one time in four has 73% of first tries right and 28 skills "across days", against 54 for the
+  same learner with a steady hand. The record cannot tell the two apart. A grown-up can say they are helping
+  for a visit, and the game notices three taps that land on nothing; neither changes what a wrong answer
+  counts as. This is the brief's "device input mistakes", and it is met only in part.
+- **Twenty skills have fewer than three ways of being asked**, which the brief asks for; one has a single
+  question and can never be called independent; five are asked only at times. `docs/CURRICULUM.md` names
+  them. And `engineering.bridge.build` can never be called independent by its own questions: five of the six
+  things a child can do to the bridge hold it up.
+- **What a wrong answer was is recorded and not used to choose what comes next.** Within a sitting a wrong
+  answer is followed by help and then by a different question, as before. Across sittings the choice knows
+  only that it went badly, not how. The brief's "classify the misconception, then offer a conceptual
+  example" is met within a sitting and not beyond it.
+- **A concept in full is not shown to a grown-up anywhere.** Its objective, three examples, the mistakes its
+  questions tell apart and its ladder of help can all be had (`conceptsOf`), and are tested; no page shows
+  them. That belongs with phase 13.
+- **The two cards of the grown-ups' page name an activity differently.** "Where to begin" goes by the list
+  of what a world does ("Matching pairs"; "Beginning, middle, end, part 1"); "what Play offers" goes by the
+  name on the activity's picture ("Find the pairs"; "Put the story in order"). Each matches something on the
+  world's page, and they do not match each other. Phase 13 should choose one.
+- **The grown-ups' card is long on a phone**: seven small cards, one under another, most of them saying the
+  same two sentences for a world not yet begun.
+- **A sitting is counted for the visit and no longer.** Closing the page and opening it again begins another.
+  It is a rest that is suggested, not a lock, by decision; a grown-up who wants more than a suggestion has
+  the device's own controls.
+- **The mix is under what it aims at**: about three in five were ones played before, not seven in ten,
+  because the share is a ceiling while anything new is ready and nothing is due.
+- **Glim asleep at "All done!"** may read to a child as Glim being bored. It is meant as "that is enough for
+  now". Nobody has asked a child.
+- **A page left open over midnight goes by the day it was opened on.** The choice is worked out when the map
+  or a world's page is opened, with the day as it is then. A page left open until the next morning still
+  offers what it offered the evening before, until it is opened again; it is a suggestion that is a day
+  late, and nothing else. (A sitting's end is looked for again by an open page; the day is not.)
+- **How long the choice takes on a phone with a long record is not measured.** Every opening of the map or of
+  a world's page reads the player's whole record again and works the choice out afresh. On this machine the choice takes 7 thousandths of a second for six
+  made-up weeks of answers (1251 of them) and 49 for nine times as many, which is about a year. The reading
+  that comes before it has not been timed, and no phone has done either. Until it is known, the page marks nothing as
+  next and Glim points at nothing, which is right and may be slow.
+- **The time an answer took is still never used**, by decision. It is true now, which it was not.
+- **The whole build is within 5.9 kB of its limit** (2844.1 kB of 2850). Phase 13 will have to raise the
+  limit on purpose or make room.
+- **Safari's engine has not run the six new browser tests**, and no real phone or tablet has run any of it.
 
 ## Phase 10, the rest, second half (2026-11-26): a story to make up
 

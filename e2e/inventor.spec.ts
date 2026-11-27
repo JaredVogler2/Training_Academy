@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { testSetup } from '../src/engine/models';
+import type { Challenge } from '../src/engine/schema';
 import {
   NOTCH_SIDEWAYS,
   arrived,
@@ -16,6 +17,7 @@ import {
   type Locator,
   type Page,
 } from './fixtures';
+import { pinSeed, seedThatBrings } from './sittings';
 
 /**
  * Inventor Island: guessing what will happen and then finding out, and mending a thing that does not work by
@@ -161,21 +163,29 @@ async function toFirstQuestion(page: Page, press: Press, id: string): Promise<vo
   expect(await stepNumber(page)).toBe(3);
 }
 
+/** How many parts the bench of a step has: every value of everything that can be changed on it. */
+const partsOf = (challenge: Challenge): number =>
+  challenge.kind === 'make' && challenge.task.type === 'design'
+    ? challenge.task.controls.reduce((total, control) => total + control.options.length, 0)
+    : 0;
+
 /**
  * To a bench with the most parts a bench has: two things to change, with three values each. Which benches a sitting
- * brings is drawn by lot, so the balance is played until that one comes; a sitting nearly always has one.
+ * brings is drawn from its seed, so the sitting is planned from a seed that brings one first (e2e/sittings.ts).
+ * (It used to be played until one came, up to five sittings: luck nearly always brought one, and need not be asked.)
  */
 async function toWidestBench(page: Page, press: Press): Promise<void> {
   const parts = bench(page).locator('[data-option]');
-  let widest = false;
-  for (let sitting = 0; sitting < 5 && !widest; sitting++) {
-    await page.goto(play('ii-balance-01'));
-    widest = await playRightly(
-      page,
-      press,
-      async () => (await bench(page).isVisible()) && (await parts.count()) === 6,
-    );
-  }
+  await pinSeed(
+    page,
+    seedThatBrings('ii-balance-01', (challenge) => partsOf(challenge) === 6),
+  );
+  await page.goto(play('ii-balance-01'));
+  const widest = await playRightly(
+    page,
+    press,
+    async () => (await bench(page).isVisible()) && (await parts.count()) === 6,
+  );
   expect(widest, 'a bench with six parts came up').toBe(true);
 }
 
@@ -823,17 +833,27 @@ test.describe('a shelter from the wind', () => {
   });
 
   test('a wall that stands and is too low lets the wind over the top', async ({ page, press }) => {
-    // Which benches a sitting brings is drawn by lot: play until the low wall in front of the sunflower comes.
+    // Which benches a sitting brings is drawn from its seed, three of ten: this sitting is planned from a seed
+    // that brings the low wall in front of the sunflower first. (The test used to play up to eight sittings
+    // waiting for it. Eight in a row miss one bench of ten one time in seventeen, and CI's run 57 was that time.)
+    await pinSeed(
+      page,
+      seedThatBrings(
+        'ii-shelter-01',
+        (challenge) =>
+          challenge.kind === 'make' &&
+          challenge.task.type === 'design' &&
+          challenge.task.given.plant === 'sunflower' &&
+          challenge.task.given.wind === 'breeze',
+      ),
+    );
     const lowWall = async () => {
       if (!(await bench(page).isVisible())) return false;
       const { setup } = await onBench(bench(page));
       return setup.plant === 'sunflower' && setup.wind === 'breeze';
     };
-    let found = false;
-    for (let sitting = 0; sitting < 8 && !found; sitting++) {
-      await page.goto(play('ii-shelter-01'));
-      found = await playRightly(page, press, lowWall);
-    }
+    await page.goto(play('ii-shelter-01'));
+    const found = await playRightly(page, press, lowWall);
     expect(found, 'the low wall in a breeze came up').toBe(true);
     const picture = thing(bench(page));
     // The trouble: it stands, and the sunflower is taller than it is.
@@ -855,6 +875,54 @@ test.describe('a shelter from the wind', () => {
     expect(wall.right).toBeLessThan(stem);
     // Propped on the side away from the wind, it stands and is tall enough.
     await build(page, press, { prop: 'right' });
+    await press(testButton(page));
+    await expect(picture).toHaveAttribute('data-outcome', 'sheltered');
+    await expect(caption(page)).toHaveText('It keeps the wind off! You mended it.');
+  });
+
+  test('a wall with its prop taken away can be tested: it goes over again, and the child is told so', async ({
+    page,
+    press,
+  }) => {
+    // To the first bench: a gust from the right, a low wall, and no prop.
+    await toFirstQuestion(page, press, 'ii-shelter-01');
+    await guess(page, press, true);
+    await press(next(page));
+    const picture = thing(bench(page));
+    await expect(picture).toHaveAttribute('data-phase', 'before');
+    expect((await onBench(bench(page))).setup).toMatchObject({ wind: 'gust', prop: 'none' });
+    const step = await stepNumber(page);
+
+    // A prop on the wrong side, tested: over it goes.
+    await build(page, press, { prop: 'right' });
+    await press(testButton(page));
+    await expect(picture).toHaveAttribute('data-outcome', 'blew-over');
+    await expect(picture).toHaveAttribute('data-phase', 'after');
+
+    // So the prop is taken away again, and that is tested. (A design is written as its options, and "none" was
+    // also the word for an answer with nothing in it: the engine took a wall with no prop for no answer at
+    // all, and the press that tested it did nothing whatever. A child was left pressing a button.)
+    await build(page, press, { prop: 'none' });
+    // Changed since it was tested: the wall is standing again, waiting.
+    await expect(picture).toHaveAttribute('data-phase', 'before');
+    await expect(testButton(page)).toBeEnabled();
+    await press(testButton(page));
+    await expect(picture).toHaveAttribute('data-phase', 'testing');
+    await expect(picture).toHaveAttribute('data-outcome', 'blew-over');
+    await expect(caption(page)).toHaveText(
+      'Not yet. Look what the wind did. Change one thing and test again.',
+    );
+    await expect(picture).toHaveAttribute('data-phase', 'after');
+    // What was tested is what is drawn, and what is pressed: no prop.
+    expect((await onBench(bench(page))).setup.prop).toBe('none');
+    await expect(bench(page).locator('[data-option="none"]')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(await stepNumber(page)).toBe(step);
+
+    // And it can still be mended.
+    await build(page, press, { prop: 'left' });
     await press(testButton(page));
     await expect(picture).toHaveAttribute('data-outcome', 'sheltered');
     await expect(caption(page)).toHaveText('It keeps the wind off! You mended it.');

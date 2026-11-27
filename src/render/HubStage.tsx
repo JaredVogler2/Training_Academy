@@ -2,17 +2,12 @@ import { useCallback, useEffect, useState, type ComponentType } from 'react';
 import { ErrorBoundary } from '@/app/ErrorBoundary';
 import { loadChunk } from '@/app/chunks';
 import { mark, recordError, setHubDiagnostics } from '@/app/diagnostics';
-import {
-  GRAPHICS_OPTIONS,
-  useReducedMotion,
-  useSettings,
-  type GraphicsOption,
-} from '@/app/settings';
+import { useReducedMotion, useSettings } from '@/app/settings';
 import type { Frame, PlaceId } from './archipelago';
 import type { Hub3DProps } from './hub3d/Hub3D';
 import { HubPicture } from './HubPicture';
-import { planHub, type HubPlan, type PictureReason } from './quality';
-import { probeWebGl } from './webgl';
+import { devicePlan, graphicsOverride } from './deviceGraphics';
+import type { HubPlan, PictureReason } from './quality';
 import styles from './HubStage.module.css';
 
 /**
@@ -45,31 +40,6 @@ function useHub3D(wanted: boolean): {
     };
   }, [wanted, Hub3D, failed]);
   return { Hub3D, failed };
-}
-
-/** `?gfx=low|medium|high|pictures` overrides the graphics setting for one visit: for testing and for captures. */
-function graphicsOverride(): GraphicsOption | null {
-  const value = new URLSearchParams(window.location.search).get('gfx');
-  return (GRAPHICS_OPTIONS as readonly string[]).includes(value ?? '')
-    ? (value as GraphicsOption)
-    : null;
-}
-
-function devicePlan(graphics: GraphicsOption): HubPlan {
-  const nav = navigator as Navigator & {
-    deviceMemory?: number;
-    connection?: { saveData?: boolean };
-  };
-  return planHub({
-    graphics,
-    webgl: graphics === 'pictures' ? { available: false, software: false } : probeWebGl(),
-    saveData: nav.connection?.saveData === true,
-    device: {
-      coarsePointer: window.matchMedia('(pointer: coarse)').matches,
-      memoryGb: typeof nav.deviceMemory === 'number' ? nav.deviceMemory : null,
-      cores: typeof nav.hardwareConcurrency === 'number' ? nav.hardwareConcurrency : null,
-    },
-  });
 }
 
 function whenIdle(run: () => void): () => void {

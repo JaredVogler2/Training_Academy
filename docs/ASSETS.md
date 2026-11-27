@@ -194,14 +194,14 @@ npm run build
 ```
 
 `scripts/render-sprites.mjs` opens each island in the studio at 80 pixels to the world unit on a clear background,
-with the water around it fading out, captures it in headless Chromium, and writes WebP (quality 82) and
+with the water around it fading out, captures it in headless Chromium, and writes WebP (quality 80) and
 `sprites.json`: each picture's size, the point in it that is the island's middle, and a hash of the sources it was
 rendered from.
 
 - The pictures are committed, because a software renderer does not produce the same bytes on every machine.
 - _Checked by:_ `tests/render/sprites.test.ts` — fails if any model, material or water source has changed since the
   pictures were rendered, if one is missing, or if one is the wrong size; `npm run verify:dist` holds them to 330 kB
-  in all (they are 284 kB); a browser test checks that picture and 3D scene put every island in the same place.
+  in all (the generated set is about 278 kB); a browser test checks that picture and 3D scene put every island in the same place.
 
 ### Audio
 

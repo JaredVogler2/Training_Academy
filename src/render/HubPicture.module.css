@@ -4,15 +4,15 @@
   inset: 0;
   overflow: hidden;
   background: linear-gradient(
-    #8ad3da 0%,
+    #93d5d7 0%,
     #7ecfd8 10%,
     #71c8d4 20%,
-    #61bfcf 30%,
+    #58b6c8 30%,
     #54b7cb 40%,
-    #48acc7 55%,
-    #3da0c1 70%,
-    #3495bd 90%,
-    #2e8ebb 100%
+    #3b98bb 55%,
+    #3289b3 70%,
+    #2879a7 90%,
+    #206e9f 100%
   );
 }
 

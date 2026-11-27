@@ -14,7 +14,7 @@
   padding: 6px 20px;
   border-radius: var(--radius-pill);
   color: var(--ink);
-  background: var(--white);
+  background: linear-gradient(155deg, var(--white) 32%, #f0f5f5);
   box-shadow:
     0 var(--lip) 0 rgb(34 48 79 / 18%),
     0 10px 18px rgb(34 48 79 / 12%);
@@ -61,7 +61,7 @@
 }
 
 .sun {
-  background: var(--sun);
+  background: linear-gradient(152deg, #fff0ae, var(--sun) 75%);
 }
 
 .quiet {

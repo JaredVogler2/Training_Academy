@@ -1,7 +1,7 @@
 {
   "about": "Written by scripts/render-sprites.mjs. Sizes and anchors are in pixels of the picture; `source` is a hash of the model sources the pictures were rendered from.",
   "pixelsPerUnit": 80,
-  "source": "6d15cfc8e43f910e8bb8a481cab1cf79e24f49168f2d76a410ee80c43baaabc9",
+  "source": "748a946ea64a0f80a57cdcd039dece45d4d5c4bad1257c7764ff7194311120b6",
   "sources": [
     "src/render/extents.ts",
     "src/render/sprites.ts",

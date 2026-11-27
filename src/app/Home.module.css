@@ -118,7 +118,7 @@
 /* The world that has something to play is the one that stands out: a sunny label, a little larger. */
 .spot[data-open='true'] .label {
   height: calc(var(--size) * 2.05);
-  background: var(--sun);
+  background: linear-gradient(160deg, #fff0b6, var(--sun) 84%);
   box-shadow:
     0 3px 0 var(--yes-deep),
     0 8px 18px rgb(120 82 0 / 30%);
@@ -160,6 +160,17 @@
   .spot:hover .label {
     transform: translateX(-50%) translateY(-3px) scale(1.06);
   }
+}
+
+.spot[data-next='true'] .label {
+  box-shadow:
+    0 0 0 2px rgb(255 255 255 / 85%),
+    0 4px 0 var(--yes-deep),
+    0 9px 20px rgb(80 59 0 / 30%);
+}
+
+.spot:focus-visible .label {
+  transform: translateX(-50%) translateY(-3px);
 }
 
 .spot:active .label {

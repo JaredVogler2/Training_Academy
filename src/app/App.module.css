@@ -4,7 +4,10 @@
   grid-template-rows: auto 1fr;
   min-height: 100vh;
   min-height: 100dvh;
-  background: linear-gradient(var(--sky-top), var(--sky-mid) 42%, var(--sky-low));
+  background:
+    radial-gradient(ellipse at 12% 0%, rgb(255 251 226 / 92%), transparent 57%),
+    radial-gradient(ellipse at 90% 40%, var(--tint, #e6f5ee), transparent 62%),
+    linear-gradient(165deg, #bce7e8, #e6f6ee 53%, #fff0d1);
   background-attachment: fixed;
 }
 
@@ -154,29 +157,49 @@
   }
 }
 
+.scenery {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scenery img {
+  position: absolute;
+  right: -7rem;
+  bottom: -5rem;
+  width: min(65vw, 50rem);
+  height: auto;
+  opacity: 0.21;
+  mask-image: radial-gradient(ellipse at 53% 52%, #000 14%, transparent 73%);
+  animation: scenery-in 650ms var(--ease-out);
+}
+
+@keyframes scenery-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
 .main {
   position: relative;
   min-width: 0;
 }
 
 /*
- * A page arriving: a short fade and a small rise, so that going from one place to another is felt as going
+ * A page arriving: a short fade, so that going from one place to another is felt as going
  * somewhere. Nothing waits for it, and calm motion removes it.
  */
 .view {
   min-width: 0;
   height: 100%;
-  animation: view-in var(--gentle) var(--ease-out) both;
+  animation: view-in var(--gentle) var(--ease-out);
 }
 
 @keyframes view-in {
   from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 0.45;
   }
 }
 
@@ -187,7 +210,32 @@
   grid-template-rows: 1fr;
 }
 
-.app[data-route='home'] .main {
+.app[data-route='home'] .scenery {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scenery img {
+  position: absolute;
+  right: -7rem;
+  bottom: -5rem;
+  width: min(65vw, 50rem);
+  height: auto;
+  opacity: 0.21;
+  mask-image: radial-gradient(ellipse at 53% 52%, #000 14%, transparent 73%);
+  animation: scenery-in 650ms var(--ease-out);
+}
+
+@keyframes scenery-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.main {
   height: 100%;
 }
 

@@ -67,7 +67,11 @@
   border: 4px solid var(--white);
   border-radius: var(--radius-m);
   background: var(--white);
-  box-shadow: var(--shadow-card);
+  box-shadow:
+    0 4px 0 #e5d7b8,
+    0 7px 0 #fff7df,
+    0 10px 0 #c4a780,
+    0 18px 28px rgb(34 48 79 / 16%);
   perspective: 1400px;
 }
 
@@ -198,6 +202,13 @@
   background: #fff8ec;
   box-shadow: 0 3px 0 rgb(34 48 79 / 16%);
   -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color var(--quick) linear,
+    transform var(--quick) var(--ease-out);
+}
+
+.panel:active {
+  transform: translateY(2px);
 }
 
 .panel > svg {

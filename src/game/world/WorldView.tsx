@@ -14,7 +14,7 @@ import { localDay, now } from '@/game/services';
 import { useTimeToRest } from '@/game/sitting';
 import { isOpen, lessonsOf, worldById } from '@/game/worlds';
 import { hasWorldModule, loadWorldModule, type WorldModule } from '@/game/worlds/modules';
-import { IslandPicture } from '@/render/IslandPicture';
+import { IslandVista } from '@/render/IslandVista';
 import { placeOf } from '@/render/extents';
 import { Guide } from '@/ui/Guide';
 import { WorldEmblem } from '@/ui/art';
@@ -221,14 +221,11 @@ export default function WorldView({ world }: { world: WorldId }) {
       </ActionLink>
 
       <header className={styles.hero}>
-        {/* The place, and pinned to it what the place is for: one picture a child can take in at a glance. */}
-        <div className={styles.emblem}>
-          <IslandPicture place={placeOf(world)} />
-          <span className={styles.badge}>
+        <IslandVista place={placeOf(world)} />
+        <div className={styles.heading}>
+          <span className={styles.heroMark} aria-hidden="true">
             <WorldEmblem world={world} />
           </span>
-        </div>
-        <div className={styles.heading}>
           <h1>{info.name}</h1>
           <p className={styles.focus}>{info.focus}</p>
         </div>

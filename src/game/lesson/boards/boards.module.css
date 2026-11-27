@@ -511,7 +511,8 @@
 
 .pairCard[data-found='true'] {
   border-color: var(--yes);
-  background: #fff6d2;
+  background: radial-gradient(ellipse at 50% 25%, var(--white), #fff0b6);
+  animation: card-settle 0.42s var(--ease-spring);
 }
 
 .pairCard[aria-disabled='true'] {

@@ -139,7 +139,7 @@
   padding: clamp(6px, 1.5vh, 14px);
   border: 4px dashed var(--mid);
   border-radius: var(--radius-l);
-  background: var(--tint);
+  background: radial-gradient(ellipse at 48% 10%, var(--white), var(--tint) 92%);
   transition:
     border-color var(--gentle) linear,
     background-color var(--gentle) linear;
@@ -257,7 +257,7 @@
   padding: 6px;
   border: 4px solid var(--white);
   border-radius: 26px;
-  background: var(--white);
+  background: linear-gradient(160deg, var(--white) 55%, var(--tint));
   box-shadow:
     0 var(--lip) 0 rgb(34 48 79 / 16%),
     0 12px 20px rgb(34 48 79 / 12%);
@@ -574,9 +574,19 @@
   justify-items: center;
   padding: clamp(24px, 6vw, 44px) clamp(16px, 4vw, 32px);
   border-radius: var(--radius-l);
-  background: var(--paper);
+  background:
+    radial-gradient(ellipse at 50% 5%, var(--tint), transparent 68%),
+    linear-gradient(150deg, var(--white), var(--paper));
   box-shadow: var(--shadow-card);
   text-align: center;
+  animation: lesson-finished 420ms var(--ease-out);
+}
+
+@keyframes lesson-finished {
+  from {
+    opacity: 0.55;
+    translate: 0 8px;
+  }
 }
 
 .finished h1 {
@@ -831,8 +841,12 @@
   border: 0;
   border-radius: var(--radius-l);
   color: var(--ink);
-  background: var(--paper);
+  background: linear-gradient(150deg, var(--white), var(--paper));
   box-shadow: var(--shadow-float);
+}
+
+.pause[open] {
+  animation: lesson-finished var(--gentle) var(--ease-out);
 }
 
 .pause::backdrop {

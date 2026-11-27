@@ -103,12 +103,13 @@ const fragmentShader = /* glsl */ `
     // Light marbling the surface where two slow layers of the brush cross: clearest over the pale shallows.
     float a = texture2D(uPaint, p * 0.075 + vec2(uTime * 0.011, -uTime * 0.006)).r;
     float b = texture2D(uPaint, p * 0.075 * 1.31 + vec2(-uTime * 0.009, uTime * 0.008) + 0.37).r;
-    float net = smoothstep(0.05, 0.0, abs(a - b));
+    float net = 1.0 - smoothstep(0.0, 0.05, abs(a - b));
     colour += uFoam * net * (0.012 + 0.06 * shallows);
     #endif
 
     // Shallows: turquoise near land, and the sand showing through right at the edge.
-    colour = mix(colour, uShallow, shallows * 0.82);
+    // Break up the colour transition with the same brush that moves over the open water.
+    colour = mix(colour, uShallow, shallows * (0.72 + drift.g * 0.2));
     colour = mix(colour, uSandy, (1.0 - smoothstep(0.0, 0.5, toLand)) * 0.6);
 
     colour = mix(colour, colour * uShade, shade * 0.5 * step(0.0, offshore));
@@ -124,7 +125,9 @@ const fragmentShader = /* glsl */ `
 
     // Foam: one line breathing against the shore, and rings spreading out and fading.
     float wobble = 0.05 * sin(p.x * 3.1 + uTime * 0.7) + 0.045 * sin(p.y * 2.7 - uTime * 0.55);
-    float foam = smoothstep(0.15, 0.02, abs(offshore - 0.1 - wobble)) * foamGain;
+    float foam = (1.0 - smoothstep(0.02, 0.15, abs(offshore - 0.1 - wobble))) * foamGain;
+    float lace = (1.0 - smoothstep(0.0, 0.08, abs(offshore - 0.24 - wobble * 1.8)));
+    foam += lace * smoothstep(0.48, 0.74, drift.g) * foamGain * 0.42;
     float ring = fract(offshore * 0.85 - uTime * 0.11 + wobble);
     float rings = smoothstep(0.9, 1.0, ring) * (1.0 - smoothstep(0.25, 2.0, offshore)) * smoothstep(0.15, 0.3, offshore);
     colour = mix(colour, uFoam, clamp(foam * 0.9 + rings * 0.32, 0.0, 1.0));
@@ -209,13 +212,13 @@ export function Sea({
       uIsleShape: { value: Array.from({ length: MAX_ISLES }, () => new Vector3()) },
       uCount: { value: 0 },
       uShadow: { value: new Vector2() },
-      uDeep: { value: new Color('#2787b8') },
-      uOpen: { value: new Color('#58c6d2') },
-      uShallow: { value: new Color('#9aead9') },
+      uDeep: { value: new Color('#165e91') },
+      uOpen: { value: new Color('#56bac9') },
+      uShallow: { value: new Color('#9de7d4') },
       uSandy: { value: new Color('#efe6b4') },
       uFoam: { value: new Color('#ffffff') },
       uHaze: { value: new Color('#dff4f2') },
-      uShade: { value: new Color('#93a2e4') },
+      uShade: { value: new Color('#8297c9') },
       uDepth: { value: new Vector2(-24, 20) },
       uHazeRange: { value: new Vector3(8, 46, 0.2) },
       uClouds: { value: clouds },

@@ -13,8 +13,9 @@
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(rgb(223 244 242 / 34%), transparent 16%),
-    radial-gradient(125% 95% at 50% 46%, transparent 58%, rgb(14 62 104 / 20%) 100%);
+    radial-gradient(ellipse at 16% 28%, rgb(255 243 210 / 16%), transparent 54%),
+    linear-gradient(rgb(194 231 255 / 35%), transparent 21%),
+    radial-gradient(125% 95% at 50% 43%, transparent 47%, rgb(10 48 91 / 34%) 100%);
   content: '';
   pointer-events: none;
 }

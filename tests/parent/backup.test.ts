@@ -91,3 +91,71 @@ describe('backup curriculum validation', () => {
     expect(await restored.listSessions(other.id)).toEqual([existing]);
   });
 });
+
+/**
+ * A lesson that changes is given a new version, and a family's own saved copy can hold answers from the version
+ * before. "Make a tune" (ml-tune-01) is in its second version: its first is what such answers would name.
+ */
+describe('a copy made before an activity changed', () => {
+  const fromTheFirstTune = {
+    lessonId: 'ml-tune-01',
+    lessonVersion: 1,
+    challengeId: 'ml-tune-01.dropped',
+    skillId: 'music.making.shape-a-tune',
+  };
+
+  it('loads an answer from an earlier version, even to a question the newer version has dropped', async () => {
+    const { input } = await fixture();
+    input.attempts[0] = { ...input.attempts[0]!, ...fromTheFirstTune };
+    expect(await checkBackupContent(buildBundle(input))).toBeNull();
+  });
+
+  it('still refuses, from an earlier version, a question that is not that activity’s own', async () => {
+    const { input } = await fixture();
+    input.attempts[0] = {
+      ...input.attempts[0]!,
+      ...fromTheFirstTune,
+      challengeId: 'ng-same-amount-01.q1',
+    };
+    expect(await checkBackupContent(buildBundle(input))).toBe(
+      'The file refers to an unknown question (ng-same-amount-01.q1).',
+    );
+  });
+
+  it('checks every question of the version this game has', async () => {
+    const { input } = await fixture();
+    input.attempts[0] = { ...input.attempts[0]!, ...fromTheFirstTune, lessonVersion: 2 };
+    expect(await checkBackupContent(buildBundle(input))).toBe(
+      'The file refers to an unknown question (ml-tune-01.dropped).',
+    );
+    // And the skill each was written for.
+    input.attempts[0] = {
+      ...input.attempts[0],
+      challengeId: 'ml-tune-01.demo',
+      skillId: 'math.quantity.match-sets-to-3',
+    };
+    expect(await checkBackupContent(buildBundle(input))).toBe(
+      'The file refers to an unknown question (ml-tune-01.demo).',
+    );
+  });
+
+  it('refuses an answer from a newer version than this game has, and says how to update', async () => {
+    const { input } = await fixture();
+    input.attempts[0] = { ...input.attempts[0]!, ...fromTheFirstTune, lessonVersion: 3 };
+    expect(await checkBackupContent(buildBundle(input))).toMatch(
+      /newer version of Training Academy\. Open the game while online/,
+    );
+  });
+
+  it('refuses a sitting from a newer version, even one that names no question yet', async () => {
+    const { input } = await fixture();
+    input.attempts.length = 0;
+    input.sessions[0] = {
+      ...input.sessions[0]!,
+      lessonVersion: input.sessions[0]!.lessonVersion + 1,
+      steps: [],
+      reserve: [],
+    };
+    expect(await checkBackupContent(buildBundle(input))).toMatch(/newer version/);
+  });
+});

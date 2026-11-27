@@ -166,17 +166,18 @@ export const WORLDS: readonly WorldInfo[] = [
         title: 'Float or sink',
         lessons: ['ii-float-01'],
         together: {
-          what: 'A grown-up puts a little water in a shallow bowl and tests a wooden spoon, a metal spoon and an empty plastic tub. Guess what each will do first. Ask what your child noticed.',
+          what: 'Fill a washing-up bowl a hand deep and gather a few big, safe things: a wooden spoon, a metal spoon, an apple, an empty plastic tub, a big smooth stone. Guess each one first, then try it. You need: the bowl, the things, a towel. Mess: splashes, so put the towel down first. Ask: what did you think would happen? What did happen?',
           safety:
-            'Stay within arm’s reach throughout. The grown-up handles and empties the bowl and wipes up spills. Use objects too large to swallow.',
+            'Never leave a child alone with water, even a little, even for a moment. Stay within reach the whole time and empty the bowl as soon as you finish. Nothing small enough to swallow.',
         },
       },
       {
         title: 'A shelter from the wind',
         lessons: ['ii-shelter-01'],
         together: {
-          what: 'Stand folded card on a table as a wall, with a paper cup behind it. Fan the wall gently with a sheet of card. Prop the wall with a large soft block on one side, then on the other. Ask which position helped the wall stay up.',
-          safety: 'Stay together. Fan by hand with card and keep the materials away from faces.',
+          what: 'Stand a piece of card up on the table as a wall, with a paper cup or a folded paper figure behind it, and blow at it gently through a drinking straw, or fan it with a book. Then lean a pencil against the card, first on your side and then on the far side, and blow again. You need: card, a paper cup or a paper figure, a pencil, a straw or a book. Mess: none. Ask: which way did the wall fall? Where did the pencil have to be to hold it up?',
+          safety:
+            'Stay with your child. Blow or fan gently, with breath or a book only: no hair dryer, no electric fan, nothing lit. Sit down to use the straw, and keep the pencil away from faces.',
         },
       },
     ],

@@ -36,9 +36,11 @@ export function History({ profile, record }: { profile: Profile; record: Fetched
                     {count(day.lessons.size, 'activity', 'activities')} practised and{' '}
                     {count(day.answers, 'answer')} recorded.
                   </p>
+                  {/* "0 of 0 first tries" is true and says nothing: a day of practice only says so. */}
                   <p>
-                    {day.aloneRight} of {day.alone} first tries were right without help in
-                    independent steps.
+                    {day.alone > 0
+                      ? `${String(day.aloneRight)} of ${count(day.alone, 'first try', 'first tries')} ${day.alone === 1 ? 'was' : 'were'} right without help in independent steps.`
+                      : 'No first tries in independent steps: practice and help only.'}
                   </p>
                   <p>
                     {count(day.rightWithHelp, 'right answer')} came with practice, a retry, or help.
@@ -53,7 +55,9 @@ export function History({ profile, record }: { profile: Profile; record: Fetched
             </ol>
             {days.length > DAYS_SHOWN && (
               <p className={styles.small}>
-                A saved copy also holds {count(days.length - DAYS_SHOWN, 'earlier day')}.
+                {count(days.length - DAYS_SHOWN, 'earlier day')}{' '}
+                {days.length - DAYS_SHOWN === 1 ? 'is' : 'are'} not shown here. A saved copy holds
+                every day.
               </p>
             )}
           </>

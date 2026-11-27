@@ -1,5 +1,10 @@
 React Three Fiber, Fredoka and Nunito
 
+The licences of the fonts and of React Three Fiber, whose package carries no licence
+file for the build to copy. The licences of everything else bundled into the game are
+in dependency-licenses.txt, beside this file. The upstream web addresses are left out:
+nothing the game ships names another site.
+
 MIT License
 
 Copyright (c) 2019-2025 Poimandres
@@ -22,11 +27,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Copyright 2016 The Fredoka Project Authors (https://github.com/hafontia/Fredoka-One)
+Copyright 2016 The Fredoka Project Authors
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
-This license is copied below, and is also available with a FAQ at:
-http://scripts.sil.org/OFL
+This license is copied below, and is also available with a FAQ from SIL
+International.
 
 
 -----------------------------------------------------------
@@ -115,11 +120,11 @@ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
 DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
-Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito) Nunito-Italic[wght].ttf: Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito)
+Copyright 2014 The Nunito Project Authors
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
-This license is copied below, and is also available with a FAQ at:
-http://scripts.sil.org/OFL
+This license is copied below, and is also available with a FAQ from SIL
+International.
 
 
 -----------------------------------------------------------

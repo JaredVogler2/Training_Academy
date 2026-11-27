@@ -511,12 +511,6 @@
   list-style: disc;
 }
 
-.conceptFacts a {
-  display: inline-block;
-  align-content: center;
-  min-height: 44px;
-}
-
 .guideWorld,
 .printActivity {
   display: grid;

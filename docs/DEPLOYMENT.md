@@ -1,6 +1,6 @@
 # Deployment
 
-The dashboard and current release verification are tracked in the [release checklist](RELEASE_CHECKLIST.md) and [release audit](RELEASE_AUDIT.md).
+The checks before and after a release, and how to roll one back, are in the [release checklist](RELEASE_CHECKLIST.md); what data goes where, and the licences, in the [release audit](RELEASE_AUDIT.md).
 
 **Status: the owner has deployed it.** The repository is connected to a Vercel project, `training-academy`, by its
 owner. Production is the `main` branch, at `https://training-academy-dun.vercel.app`.
@@ -170,26 +170,20 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   own tests were run against the address from a clean copy of it, on all seven screens: of 329, **all 329 passed**, and none failed or was passed over. Eight were the smoke tests as a desktop and eight as a phone; 61 each were the tests of layout as a tablet, as a phone held sideways and as a small phone; and 65 each were the Pixel 7's, upright and sideways, which play something in every world. The room's own was among them on five screens: a story made by five taps on pictures, each page told as it is made. It took 22.2 minutes. CI's
   run on `main` was green in all thirteen jobs, and no test needed a second attempt (`docs/TEST_RESULTS.md`
   → _Run 58_).
-- **Three faults are live, found in the work on phase 12 and mended on the pull request that is open.** In
-  Memory Forest's _Find the pairs_, a game finished in many more turns than remembering needs is written
-  into the record as done alone at the first try: the sitting's own page counts it rightly, and the
-  grown-ups' area, which reads the record, can say "Independent so far" where it should not. At Inventor
-  Island's shelter, a wall tested with no prop is not taken as an answer, and the press on "Test it" does
-  nothing. And the time written down with an answer counts any pause, up to ten minutes. None of them loses
-  anything a child has done. They were found on 2026-11-26, the first two by a made-up learner who taps
-  without looking.
-- **What is on the pull request that is open is not live**: phase 12, which is where Play and Glim go next,
-  the card that says why, a length for a sitting, and a record that allows for luck; and the three mends
-  above. Its own description says how far it has got.
-- **Merging it changes what is stored on every device that has been played on, once.** What is stored has
-  a second version: when the new build first opens a device's record, each game of pairs stored as right in
-  more turns than its board allowed is given the mark such a game now carries, and nothing else is touched.
-  It is done in one batch with the new version number, so it is either not begun or finished. A device that
-  goes back to an older build afterwards (there is no way to, short of a rollback) would find data newer
-  than it knows, leave it exactly as it is, and run from memory until the newer build returns. **The update
-  from what is live (`cbadaa3`) to this tree was rehearsed on 2026-11-27 with a game of pairs played on the
-  live build first: 24 of 24** (`docs/TEST_RESULTS.md` → _An update, rehearsed_). It should be rehearsed
-  again after anything more is added (_Before a release_, below).
+- **Phase 12 went live on 2026-11-27**, with the three faults it mended (a game of pairs in far too many turns
+  written down as done alone, a wall tested with no prop at the shelter that was no answer, and the time with an
+  answer that counted pauses). The owner merged pull request
+  [#17](https://github.com/JaredVogler2/Training_Academy/pull/17) as `f2c080f` and, twelve minutes later,
+  [#18](https://github.com/JaredVogler2/Training_Academy/pull/18) (the storybook graphics and animations, from
+  the branch `codex/storybook-graphics`) as `ccaddde`. Merging #17 changed what is stored on every device that
+  has been played on, once: data version 2 marks each game of pairs stored as right in more turns than its board
+  allowed, and touches nothing else. That update had been rehearsed from `cbadaa3`, 24 of 24. **Vercel's record
+  of the production deployment of `ccaddde` says "Ready". CI's run on `ccaddde` was green in all thirteen jobs**,
+  with no test at a second attempt (run 65); the run on `f2c080f` alone was cancelled by the second merge. **The
+  live site has not yet been checked with `ccaddde`'s own browser tests**, as it was after every merge before.
+- **What is on the pull request that is open is not live**: phase 13, the grown-ups' dashboard
+  (`docs/PROGRESS.md` → _Phase 13_). It adds one optional setting to a player (the worlds left out of where Glim
+  points), and changes nothing already stored.
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The

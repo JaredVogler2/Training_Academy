@@ -6,7 +6,6 @@ import { conceptsOf, type Concept } from '@/engine/graph';
 import { DEFAULT_REVIEW_POLICY, attemptsBySkill, getSkillReview } from '@/engine/review';
 import { dayInWords } from '@/game/dates';
 import { localDay, now } from '@/game/services';
-import { Link } from '@/app/navigation';
 import { worldById } from '@/game/worlds';
 import { useGraph, useRecord, useSkills } from './fetched';
 import { History } from './History';
@@ -162,16 +161,8 @@ function ConceptDetails({
   names: ReadonlyMap<string, string>;
   instruction: (key: string) => string;
 }) {
-  const {
-    world,
-    prerequisites,
-    lessons,
-    examples,
-    questions,
-    sittings,
-    hintLadder,
-    misconceptions,
-  } = concept;
+  const { prerequisites, lessons, examples, questions, sittings, hintLadder, misconceptions } =
+    concept;
   return (
     <details className={styles.concept}>
       <summary>About this skill</summary>
@@ -186,12 +177,10 @@ function ConceptDetails({
           <dt>Activities</dt>
           <dd>
             <ul>
+              {/* Names, not links: an activity opened from here would be played as the child, and a grown-up's
+                  answers would go into the child's record. */}
               {lessons.map((id) => (
-                <li key={id}>
-                  <Link to={{ name: 'play', world, lessonId: id }}>
-                    {lessonCalled(id)?.title ?? 'Open activity'}
-                  </Link>
-                </li>
+                <li key={id}>{lessonCalled(id)?.title ?? id}</li>
               ))}
             </ul>
           </dd>

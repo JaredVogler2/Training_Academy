@@ -16,6 +16,7 @@ import {
   next,
   passHowTo,
   screenFit,
+  shown,
   test,
   underTheNotch,
   type Locator,
@@ -324,9 +325,16 @@ test.describe('small hands', () => {
     await tapBesideThumb(page.getByRole('link', { name: /Number Garden/ }));
     await expect(page).toHaveURL(/\/world\/number-garden$/);
     await page.goto(LESSON_PATH);
+    // These touches are sent straight to the browser, and do not wait for the page as a tap does: wait for the
+    // demonstration to have been shown first. (CI run 66 tapped as the step arrived, and the press was not taken.)
     await expect(myTurn(page)).toBeVisible();
+    await shown(page);
     await tapBesideThumb(myTurn(page));
-    await expect(page.getByTestId('lesson').locator('[data-choice]').first()).toBeVisible();
+    // The press is taken: the answers, there to be seen in the demonstration too, can now be chosen. (This used to
+    // ask only that they be visible, which they were all along, and a press that was not taken was found ten
+    // seconds later as a Next that never came.)
+    await expect(page.getByTestId('lesson').locator('[data-choice]').first()).toBeEnabled();
+    await shown(page);
     await choose(page, tapBesideThumb, true);
     await expect(next(page)).toBeVisible();
   });

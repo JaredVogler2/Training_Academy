@@ -178,6 +178,22 @@ describe('the next thing to do', () => {
     expect(nextWorld(new Set(lessonsOf(first)))?.id).toBe(second.id);
     expect(nextWorld(new Set(open.flatMap((world) => lessonsOf(world))))?.id).toBe(first.id);
   });
+
+  it('on the map passes over a world a grown-up has left out, and is none when all are', async () => {
+    const { nextWorld } = await import('@/game/progress');
+    const open = WORLDS.filter(isOpen);
+    const [first, second] = open;
+    if (!first || !second) throw new Error('Fewer than two worlds are open.');
+    expect(nextWorld(new Set(), [first.id])?.id).toBe(second.id);
+    // Finished or not, a world left out is not where the map points.
+    expect(nextWorld(new Set(lessonsOf(second)), [first.id])?.id).not.toBe(first.id);
+    expect(
+      nextWorld(
+        new Set(),
+        open.map((world) => world.id),
+      ),
+    ).toBeNull();
+  });
 });
 
 describe('someone who is new to the game', () => {

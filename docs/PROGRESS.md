@@ -3,25 +3,25 @@
 The plan is the seventeen phases in `prompt-series/`. A phase is marked done only when its own acceptance checks
 have been run and passed; the evidence is linked. `docs/CONTINUE_HERE.md` has the next action.
 
-| Phase | Subject                                        | Status                                                                                              |
-| ----- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| 01    | Architecture, tooling, Vercel-ready foundation | **Done** (2026-11-22) — see below                                                                   |
-| 02    | Visual identity and art pipeline               | **Done** (2026-11-22) — see below                                                                   |
-| 03    | World and player journey, first vertical slice | **Done** (2026-11-23) — see below                                                                   |
-| 04    | Audio and pre-reader onboarding                | **Built** (2026-11-25): the voice, and first-visit help. Unheard, untried                           |
-| 05    | Phonics                                        | **Built** (2026-11-25) to a short sentence; the last step, P6, is not                               |
-| 06    | Math                                           | **Built** (2026-11-25) to adding within ten; the optional M7 is not                                 |
-| 07    | Robots (visual programming)                    | **Built** (2026-11-26): Robot Ridge's seven activities. Untried                                     |
-| 08    | Memory                                         | **Built** (2026-11-26): Memory Forest's eight activities. Untried                                   |
-| 09    | Inventors' lab                                 | **Built** (2026-11-26): Inventor Island's five activities. Untried                                  |
-| 10    | Storytelling and geography                     | **Built** (2026-11-26): a globe and a story to make up; no countries. Untried                       |
-| 11    | Music and additional skills                    | **Built** (2026-11-25): the Music Lab. No person has heard it                                       |
-| 12    | Adaptive mastery engine                        | **Built** (2026-11-26): what Play offers next and why; luck allowed for. Untried                    |
-| 13    | Parent dashboard                               | **Built** (2026-11-27), on the open pull request: history, skills in full, checked imports. Untried |
-| 14    | Accessibility, privacy, performance            | Not started as a phase: a release audit is written. No real device, screen reader or person         |
-| 15    | Test and visual QA                             | Not started as a phase (unit and browser tests in place; no screenshot comparison)                  |
-| 16    | Vercel release                                 | Not started as a phase: a release checklist is written. The owner has deployed `main`               |
-| 17    | Polish, expansion, hand-off                    | Not started                                                                                         |
+| Phase | Subject                                        | Status                                                                                      |
+| ----- | ---------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| 01    | Architecture, tooling, Vercel-ready foundation | **Done** (2026-11-22) — see below                                                           |
+| 02    | Visual identity and art pipeline               | **Done** (2026-11-22) — see below                                                           |
+| 03    | World and player journey, first vertical slice | **Done** (2026-11-23) — see below                                                           |
+| 04    | Audio and pre-reader onboarding                | **Built** (2026-11-25): the voice, and first-visit help. Unheard, untried                   |
+| 05    | Phonics                                        | **Built** (2026-11-25) to a short sentence; the last step, P6, is not                       |
+| 06    | Math                                           | **Built** (2026-11-25) to adding within ten; the optional M7 is not                         |
+| 07    | Robots (visual programming)                    | **Built** (2026-11-26): Robot Ridge's seven activities. Untried                             |
+| 08    | Memory                                         | **Built** (2026-11-26): Memory Forest's eight activities. Untried                           |
+| 09    | Inventors' lab                                 | **Built** (2026-11-26): Inventor Island's five activities. Untried                          |
+| 10    | Storytelling and geography                     | **Built** (2026-11-26): a globe and a story to make up; no countries. Untried               |
+| 11    | Music and additional skills                    | **Built** (2026-11-25): the Music Lab. No person has heard it                               |
+| 12    | Adaptive mastery engine                        | **Built** (2026-11-26): what Play offers next and why; luck allowed for. Untried            |
+| 13    | Parent dashboard                               | **Built** (2026-11-27) and live: history, skills in full, checked imports. Untried          |
+| 14    | Accessibility, privacy, performance            | Not started as a phase: a release audit is written. No real device, screen reader or person |
+| 15    | Test and visual QA                             | Not started as a phase (unit and browser tests in place; no screenshot comparison)          |
+| 16    | Vercel release                                 | Not started as a phase: a release checklist is written. The owner has deployed `main`       |
+| 17    | Polish, expansion, hand-off                    | Not started                                                                                 |
 
 "Built" is meant exactly, and it is not "done": what is there is built, tested and playable, nobody has heard
 it and no child has tried it, and for every one of these phases the brief asked for something that is not
@@ -31,8 +31,8 @@ there. The tables below say what, item by item.
 
 Built on 2026-11-27, on the pull request after [#17](https://github.com/JaredVogler2/Training_Academy/pull/17):
 begun as [#19](https://github.com/JaredVogler2/Training_Academy/pull/19), a draft from another branch, and
-carried on here with its faults put right (`docs/TEST_RESULTS.md` → _Phase 13_). **Not live** until the owner
-merges it. Its brief asks for a dashboard that explains what a learner can show, not a chart of playtime.
+carried on there with its faults put right (`docs/TEST_RESULTS.md` → _Phase 13_). **Live since 2026-11-27**,
+when the owner merged [#20](https://github.com/JaredVogler2/Training_Academy/pull/20) as `3e9d905`. Its brief asks for a dashboard that explains what a learner can show, not a chart of playtime.
 
 | Asked for                                                                                                              | What there is                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

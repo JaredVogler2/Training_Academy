@@ -263,8 +263,8 @@ clip is missing, stale or heard as different words. **No person has listened to 
   for listening to and marking every clip.
 - **No child has played, and no teacher has reviewed the content.** Nobody has reviewed the safety notes of the
   things to do away from the screen.
-- **Not explained:** eleven times in CI, a WebKit test's first page never arrived and then arrived at once at the
-  second attempt (not seen since run 54). Once, in Chromium, an activity stood at "Getting ready…" for ten
+- **Not explained:** twelve times in CI, a WebKit test's first page never arrived and then arrived at once at the
+  second attempt (the last in run 68, the first since run 54). Once, in Chromium, an activity stood at "Getting ready…" for ten
   seconds (run 56). Once, in run 66, a press of "My turn" sent as raw touches was not taken; 22 runs on a slowed
   page did not bring it back.
 - "Independent so far" can still be luck. A made-up learner who only taps is called that at something, at some

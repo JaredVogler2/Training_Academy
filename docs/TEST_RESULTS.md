@@ -2,11 +2,11 @@
 
 Everything in this file was actually run. Where something was not run, it says so.
 
-- **Date:** 2026-11-26
-- **Code under test:** `main` as the owner merged it on 2026-11-26 (pull request #16: Explorer Harbor's
-  room for making a story, the globe's turn and the grown-ups' page mended), with the pull request this
-  document came with: phase 12, which chooses what to offer next. The release check below was run on that
-  tree after the last change to it. What was run on the live site was run on what was live, and says so.
+- **Date:** 2026-11-27
+- **Code under test:** `main` as the owner merged it on 2026-11-27 (pull request #20, `3e9d905`: phase 13, the
+  grown-ups' dashboard), whose tree is that of `d679e93`, #20's head; with the pull request this document comes
+  with, which changes two browser tests (a race CI found on the merge, below) and the documents. The release check
+  below was run on `d679e93`'s tree. What was run on the live site was run on what was live, and says so.
 - **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright 1.63.0
   with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
 - **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium and WebKit builds that Playwright 1.63.0 installs.
@@ -23,15 +23,21 @@ npm run verify:release
 
 Result of the last local run: **passed.**
 
-| Step                   | Result                                                                                                                                                                           |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run format:check` | clean                                                                                                                                                                            |
-| `npm run lint`         | no errors, no warnings                                                                                                                                                           |
-| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                                                                   |
-| `npm test`             | **2724 tests in 95 files, all passed**                                                                                                                                           |
-| `npm run build`        | built; 843 files in `dist/`, 736 of them the voice's recordings                                                                                                                  |
-| `npm run verify:dist`  | **1849 checks, all passed** (sizes below)                                                                                                                                        |
-| `npm run test:e2e`     | **1535 browser tests, in two runs: none failed, and none needed a second attempt** (Chromium, seven screen shapes; the first run was stopped by a restart of the machine, below) |
+| Step                   | Result                                                                                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run format:check` | clean                                                                                                                                                           |
+| `npm run lint`         | no errors, no warnings                                                                                                                                          |
+| `npm run typecheck`    | no errors (TypeScript strict, plus `noUncheckedIndexedAccess`)                                                                                                  |
+| `npm test`             | **2754 tests in 98 files, all passed**                                                                                                                          |
+| `npm run build`        | built; 847 files in `dist/`, 736 of them the voice's recordings                                                                                                 |
+| `npm run verify:dist`  | **1862 checks, all passed** (sizes below)                                                                                                                       |
+| `npm run test:e2e`     | **1553 browser tests in one run: 1310 passed, 243 skipped by design, none failed, and none needed a second attempt** (Chromium, seven screen shapes, 1.0 hours) |
+
+**What the browser tests were run on, for phase 13.** The whole suite in one go, in Chromium on all seven
+screens, on `d679e93`'s tree (which is `main`'s since the merge of #20) after its last change to anything but a
+document: **1553 tests, 1310 passed, 243 skipped by design, none failed, and none at a second attempt**, in an
+hour. The two browser tests changed since (`e2e/grownups.spec.ts` and `e2e/next.spec.ts`, under _Run 68_) were
+then run again on all seven screens: see there.
 
 **What the browser tests were run on, exactly, for phase 12.** The whole suite was started in one go, in
 Chromium on all seven screens, on phase 12's tree after its last change to anything but a document. At 1351
@@ -2358,6 +2364,34 @@ dashboard). **Five jobs failed**, for two causes in the change, and one test pas
 All of it is put right on the pull request after #19, with what a review of the change found besides:
 _What phase 13 added to the tests, and what the tests found_, above.
 
+**Run 67** is pull request #20's (`d679e93`: #19 with its faults put right). **All thirteen jobs passed, and no
+test needed a second attempt**: the twelve reports are between 0.66 and 0.89 MB. In it, for the first time,
+WebKit ran the grown-ups' area's new tests, and Inventor Island's things to try together with their safety words
+back. The owner merged #20 as `3e9d905` eight minutes after the run ended; GitHub marked #19 merged with it, its
+one commit being in `main`.
+
+**Run 68** is `main` after that merge (`3e9d905`, whose tree is `d679e93`'s). **All thirteen jobs passed, and
+four tests passed only at their second attempt**, in two WebKit jobs (reports of 11.6 and 10.1 MB):
+
+- `e2e/grownups.spec.ts:386`, "dashboard controls and printable guides work with 200% text", on all three
+  WebKit screens that run it: the desktop, the iPhone upright and the iPhone sideways. It focused the
+  fold-out of things to do together and pressed Enter, and the fold-out stayed shut. The picture of the first
+  attempt shows the page scrolled to its top and the focus on "Add a player". **The cause:** a new player is
+  added, then chosen, then the dialog is closed, and the list shows the new name before the dialog has shut.
+  The test's way of adding a player waited for the name, and went on. A modal dialog makes everything behind it
+  inert, so the focus and the key were sent to a page that took neither; then the dialog closed and gave the
+  focus back to the button that had opened it, as dialogs do. A click waits for the page to take it, and every
+  other test that adds a player clicks next; a focus and a key do not wait, and this test, new with phase 13,
+  was the first to send them. **Shown:** with the dialog made to take 1.5 seconds to close (in a scratch copy, in
+  Chromium), the test failed at the same line, every time; with the test waiting for the dialog to have closed,
+  it passed. The wait is in the test's way of adding a player, and in the one other test that adds a player and
+  goes straight on (`e2e/next.spec.ts`).
+- `e2e/a11y-worlds.spec.ts:60`, "Hear a number", WebKit's desktop: **the page that never comes**, a twelfth
+  time and the first since run 54. The browser asked for `/world/number-garden`; the server answered six requests
+  for it, each in a millisecond or less; the browser reported no answer at all and stood at `about:blank` until
+  the half-minute limit, and at the second attempt the page came at once. **Not explained**, as before (_Seen
+  only on the CI machine_, below).
+
 **Phase 03** is pull request [#4](https://github.com/JaredVogler2/Training_Academy/pull/4). The first run with
 the whole phase in it to pass was [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45093042202)
 below, on `d2e644c`: **all three jobs passed, with no failed test and no retry.**
@@ -2486,7 +2520,7 @@ failures were the useful part:
 | 7   | `972c209` | passed (5.1 minutes)           | passed, 1 retry | The probe removed. One WebKit test needed its retry: a download cancelled by the test's own reload had been counted as a failed request.     |
 | 8   | `19e2b55` | passed (4.3 minutes)           | passed          | The tested commit. No failures and no retries in either browser.                                                                             |
 
-## What the unit tests cover (Vitest, 2724)
+## What the unit tests cover (Vitest, 2754)
 
 | Area                                                               | Files                                                                                                                                                                                                                                           | What is proven                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -2876,11 +2910,11 @@ the press reached the activity. It needs a busy machine to show, which is why it
 **Two tests out of time** on `main` (run 50): explained under _Run 50_. They took 59.5 seconds of their 60
 when they passed. A test now has two minutes, and one that uses three quarters of its limit fails for that.
 
-**Still not explained: the page that never comes.** Eleven times in CI's WebKit, always a test's first page,
+**Still not explained: the page that never comes.** Twelve times in CI's WebKit, always a test's first page,
 never in Chromium, never here: the server answers at once and the browser never reads the answer. It did not
-happen in runs 49 or 50; it did in runs 51, 52, 53 and 54, once each. The first two of those cost two minutes
-each. A page now has half a minute to come (_Run 51_, above), and the tenth and the eleventh, in runs 53 and
-54, cost 30 seconds each and said what they had been waiting for.
+happen in runs 49 or 50; it did in runs 51, 52, 53 and 54, once each, then not for thirteen runs, and again in
+run 68. The first two of those cost two minutes each. A page now has half a minute to come (_Run 51_, above),
+and the tenth to the twelfth cost 30 seconds each and said what they had been waiting for.
 
 **A globe that turned half-way and came back** (run 54): explained under _Run 54_, and put right. It was not
 only the machine: the wait before the globe turns back by itself was counted from the press, and a page that

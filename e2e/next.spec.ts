@@ -149,6 +149,8 @@ test.describe('a sitting of the length a grown-up chose', () => {
     await page.getByLabel('Nickname', { exact: true }).fill('Robin');
     await page.getByRole('radio', { name: 'Star' }).check({ force: true });
     await page.getByRole('button', { name: 'Add', exact: true }).click();
+    // The page behind the dialog takes nothing until the dialog has closed (CI's run 68: grownups.spec).
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
     const begin = page.getByTestId('where-to-begin');
     await begin.getByLabel('A sitting lasts').selectOption({ label: 'About 10 minutes' });
     await expect(begin.locator('[role="status"]')).toHaveText('Saved.');

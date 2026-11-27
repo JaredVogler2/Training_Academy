@@ -41,19 +41,19 @@ passed.
 
 ### Git and GitHub
 
-- `main` is at `4617489`. On 2026-11-27 the owner merged pull request #17 (phase 12, as `f2c080f`), #18 (the
+- `main` is at `1af2235`. On 2026-11-27 the owner merged pull request #17 (phase 12, as `f2c080f`), #18 (the
   storybook graphics and animations, from the branch `codex/storybook-graphics`, as `ccaddde`), #20 (phase 13,
-  as `3e9d905`) and #21 (two browser tests, the update rehearsal and the documents, as `4617489`). #20 carried
+  as `3e9d905`), #21 (two browser tests, the update rehearsal and the documents, as `4617489`) and #22 (how the
+  tests start Chromium, a test of the tests' own clock, and the documents, as `1af2235`). #20 carried
   #19, a draft from the branch `codex/academy-release-readiness` whose CI had failed, with its faults put right;
-  GitHub marked #19 merged with it. Vercel's production deployments of `3e9d905` and `4617489` are ready, and
-  `3e9d905`'s own browser tests passed against the live address, 349 of 349 on seven screens (#21 changed nothing
-  the game ships). CI on `main` is red in one job (run 70): Chromium as the tablet, held up for ten to fifteen
-  seconds after leaving a finished activity, because the tests started Chromium with switches that put all its
-  drawing on SwiftShader. Found and put right on the pull request after #21 (`docs/TEST_RESULTS.md` → _Runs 69
-  and 70_).
-- The working branch is `claude/zealous-carson-qyiipa`. Its open pull request, the one after #21, starts Chromium
-  without those switches, mends the test of the tests' own clock, and brings the documents up to date. Nothing the
-  game ships changes in it.
+  GitHub marked #19 merged with it. Vercel's production deployments of `3e9d905`, `4617489` and `1af2235` are
+  ready, and `3e9d905`'s own browser tests passed against the live address, 349 of 349 on seven screens (#21 and
+  #22 changed nothing the game ships). CI on `main` is green (run 72), with no test at a second attempt. Runs 69
+  and 70 had been red: Chromium as the tablet, held up for ten to fifteen seconds after leaving a finished
+  activity, because the tests started Chromium with switches that put all its drawing on SwiftShader; #22 took
+  them out (`docs/TEST_RESULTS.md` → _Runs 69 and 70_, _Runs 71 and 72_).
+- The working branch is `claude/zealous-carson-qyiipa`. Its open pull request, the one after #22, holds only these
+  documents, brought up to date.
 - Merging is the owner's decision, and it is a release: Vercel deploys `main` to production. The owner has merged
   every pull request so far soon after its checks went green.
 - The workflow cancels a run when a newer commit arrives on the same branch (`concurrency: cancel-in-progress`):
@@ -275,8 +275,8 @@ clip is missing, stale or heard as different words. **No person has listened to 
   for listening to and marking every clip.
 - **No child has played, and no teacher has reviewed the content.** Nobody has reviewed the safety notes of the
   things to do away from the screen.
-- **Not explained:** twelve times in CI, a WebKit test's first page never arrived and then arrived at once at the
-  second attempt (the last in run 68, the first since run 54). Once, in run 66, a press of "My turn" sent as raw
+- **Not explained:** thirteen times in CI, a WebKit test's first page never arrived and then arrived at once at the
+  second attempt (the last in runs 68 and 71). Once, in run 66, a press of "My turn" sent as raw
   touches was not taken; 22 runs on a slowed page did not bring it back (with the development machine's own
   browser, which did not draw as CI's did: see section 6). The activity that stood at "Getting ready…" for ten
   seconds in run 56 was very likely the stall of runs 69 and 70, now put right.

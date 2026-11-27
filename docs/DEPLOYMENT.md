@@ -197,6 +197,12 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   `4617489` says "Ready".** CI's run on it (run 70) failed in one job, Chromium's desktop and tablet part 3 of 3,
   for a cause in how the tests started Chromium and not in the game (`docs/TEST_RESULTS.md` → _Runs 69 and 70_),
   put right on the pull request after #21.
+- **Pull request [#22](https://github.com/JaredVogler2/Training_Academy/pull/22) was merged on 2026-11-27** as
+  `1af2235`, at 21:43: Chromium started without the switches that drew every page on SwiftShader, a test of the
+  tests' own clock mended, and the documents. Nothing the game ships changed, so the site's files are still
+  `3e9d905`'s. **Vercel's record of the production deployment of `1af2235` says "Ready". CI's run on it (run 72)
+  was green in all thirteen jobs, with no test at a second attempt** (`docs/TEST_RESULTS.md` → _Runs 71 and
+  72_).
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The

@@ -11,7 +11,7 @@ Everything in this file was actually run. Where something was not run, it says s
   with its Chromium 157 (headless; WebGL through the SwiftShader software renderer). WebKit is not installed there.
 - **In CI:** GitHub Actions, `ubuntu-latest`, Node 22, the Chromium and WebKit builds that Playwright 1.63.0 installs.
 - **On a phone or a tablet:** not by this project's testing. See _Phones and tablets_ below.
-- **On the live site:** the smoke tests, and two small probes. See _The live site_ below.
+- **On the live site:** each merged commit's own tests, on seven screens. See _The live site_ below.
 
 ## The release check
 
@@ -3057,6 +3057,22 @@ is the room for making a story, played against the site on five screens: a story
 pictures, each page told as it is made, and the globe's two, with the turn now mended. No probe was made beyond
 those tests. CI's own run on that commit was green in every job, with no test at a second attempt: _Run 58_,
 above.
+
+**After the owner merged pull requests #17 and #18** (2026-11-27, `f2c080f` and, twelve minutes later,
+`ccaddde`), **the live site was not checked with their tests**: the next check was after #20, below, and it
+covers what they brought too.
+
+**After the owner merged pull request #20** (2026-11-27 at 17:03, `3e9d905`), about fifty minutes after the
+merge: Vercel's own record of the production deployment of `3e9d905` said "Ready". That commit's own tests were
+run against the address from a clean copy of it, on every screen the configuration has: **349 passed of 349, and
+none failed, was passed over or needed a second attempt.** Eight are the smoke tests as a desktop and eight as a
+phone; 65 each are the tests of layout as a tablet, as a phone held sideways and as a small phone; and 69 each are
+the Pixel 7's, upright and sideways, which play something in every world. It took 24.0 minutes. Among them, live
+for the first time: phase 12's choice of what Play offers next and the card that says why, and phase 13's
+grown-ups' area, with its learning history, Glim's suggestions switched off for every world while each world's
+Play stays, and the area at twice the text size with axe; and the storybook graphics of #18. No probe was made
+beyond those tests. CI's own run on that commit was green in every job, with four tests at a second attempt, three
+of them a race in a test, mended: _Run 68_, above.
 
 ## An update, rehearsed
 

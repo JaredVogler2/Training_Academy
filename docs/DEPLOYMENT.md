@@ -179,11 +179,18 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   has been played on, once: data version 2 marks each game of pairs stored as right in more turns than its board
   allowed, and touches nothing else. That update had been rehearsed from `cbadaa3`, 24 of 24. **Vercel's record
   of the production deployment of `ccaddde` says "Ready". CI's run on `ccaddde` was green in all thirteen jobs**,
-  with no test at a second attempt (run 65); the run on `f2c080f` alone was cancelled by the second merge. **The
-  live site has not yet been checked with `ccaddde`'s own browser tests**, as it was after every merge before.
-- **What is on the pull request that is open is not live**: phase 13, the grown-ups' dashboard
-  (`docs/PROGRESS.md` → _Phase 13_). It adds one optional setting to a player (the worlds left out of where Glim
-  points), and changes nothing already stored.
+  with no test at a second attempt (run 65); the run on `f2c080f` alone was cancelled by the second merge. It was not
+  checked on the live site on its own: the check after #20, below, covers it.
+- **Phase 13 went live on 2026-11-27**, when the owner merged
+  [#20](https://github.com/JaredVogler2/Training_Academy/pull/20) as `3e9d905` at 17:03: the grown-ups' dashboard,
+  begun as [#19](https://github.com/JaredVogler2/Training_Academy/pull/19) and carried on #20 with its faults put
+  right. It added one optional setting to a player (the worlds left out of where Glim points) and changed nothing
+  already stored. **Checked on the live site about fifty minutes after the merge:** Vercel's record of the
+  production deployment of `3e9d905` said "Ready"; and that commit's own tests, run against the address from a
+  clean copy of it on all seven screens, passed **349 of 349**, none at a second attempt, in 24.0 minutes. That
+  check covers what #17 and #18 brought too. CI's run on `3e9d905` was green in all thirteen jobs, with four tests
+  at a second attempt (`docs/TEST_RESULTS.md` → _Run 68_). **The update from `ccaddde`, what was live before, was
+  rehearsed** after the merge (`docs/TEST_RESULTS.md` → _An update, rehearsed_).
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The

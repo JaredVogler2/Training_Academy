@@ -2,34 +2,31 @@
 
 **Seven worlds are built: the six islands, and the Music Lab in the lighthouse. Phases 01 to 03 are complete;
 phase 04 is built (the voice, and help for a child's first visit); phases 05 to 11 are built as far as their
-briefs go (but for countries and flags on the globe, which its brief leaves optional). Phase 12 is built and
-live: Play and Glim go where a small engine suggests, a grown-up can read why, and the record allows for luck.
-Phase 13, the grown-ups' dashboard, is built on the pull request that is open (see below). Phases 14 to 17 have
-a release checklist and a release audit, and nothing more: their briefs ask for checks by people and on real
+briefs go (but for countries and flags on the globe, which its brief leaves optional). Phases 12 and 13 are built
+and live: Play and Glim go where a small engine suggests, a grown-up can read why, the record allows for luck,
+and the grown-ups' area has a learning history, each skill in full, worlds left out of where Glim points,
+things to do together away from the screen, and a loaded copy checked against what it names. Phases 14 to 17
+have a release checklist and a release audit, and nothing more: their briefs ask for checks by people and on real
 devices that have not been made. All of it is unheard, and no child has played.**
 
 - **Date:** 2026-11-27
-- **What is live:** `main` at `ccaddde`, at `https://training-academy-dun.vercel.app`. Two pull requests were
-  merged on 2026-11-27: [#17](https://github.com/JaredVogler2/Training_Academy/pull/17) (phase 12, merged as
-  `f2c080f`) and, twelve minutes later, [#18](https://github.com/JaredVogler2/Training_Academy/pull/18) (the
-  storybook graphics and animations, from the branch `codex/storybook-graphics`). Vercel's production deployment of
-  `ccaddde` is ready. **The live site has not been checked with that commit's own browser tests**: do that first
-  (`REMAINING.md`, section 6, _After a merge_).
-- **CI on `main` is green**: run 65, of `ccaddde`, in all thirteen jobs, and no test needed a second attempt
-  (every report under 0.9 MB). Run 64, of `f2c080f`, was cancelled, not failed: the workflow cancels a run
-  when a newer commit arrives, and #18's merge was that commit. So phase 12 was never tested on `main` alone, only
-  together with #18, and passed.
-- **The three faults that phase 12 mended are live mended**: a game of pairs finished in far too many turns is
-  no longer written down as done alone (data version 2 marks the old ones once), a wall tested with no prop at
-  the shelter is an answer, and the time with an answer leaves out pauses.
-- **What is not live**, on the pull request that is open: **phase 13**, which began as
-  [#19](https://github.com/JaredVogler2/Training_Academy/pull/19) (a draft from the branch
-  `codex/academy-release-readiness`) and is carried
-  on, with its faults put right, on this branch. CI on #19 (run 66) failed in five jobs, for two causes in the
-  change itself: a new licence notice in `public/` named three other sites and was not in the asset manifest,
-  and Inventor Island's things to try together had lost the words a test holds them to (_Never leave a child
-  alone with water_; _no hair dryer, no electric fan, nothing lit_). Both are put right, with what a review
-  found besides: `docs/TEST_RESULTS.md` → _Phase 13_.
+- **What is live:** `main` at `3e9d905`, at `https://training-academy-dun.vercel.app`. On 2026-11-27 the owner
+  merged [#17](https://github.com/JaredVogler2/Training_Academy/pull/17) (phase 12), then
+  [#18](https://github.com/JaredVogler2/Training_Academy/pull/18) (the storybook graphics, from the branch
+  `codex/storybook-graphics`), then [#20](https://github.com/JaredVogler2/Training_Academy/pull/20) (phase 13, at
+  17:03), which carried [#19](https://github.com/JaredVogler2/Training_Academy/pull/19) (a draft from the branch
+  `codex/academy-release-readiness`) with its faults put right; GitHub marked #19 merged with it. **Checked on the
+  live site about fifty minutes after the last merge:** Vercel's production deployment of `3e9d905` is ready, and
+  that commit's own browser tests, run against the address from a clean copy of it on seven screens, passed **349
+  of 349**, none at a second attempt.
+- **CI on `main` is green** (run 68, of `3e9d905`), **with four tests passed at a second attempt.** Three were one
+  of phase 13's new tests on three WebKit screens: it pressed keys on the page while the add-player dialog was
+  still closing. That is mended on the pull request that is open, and shown. The fourth was the page that never
+  comes, in WebKit, a twelfth time and the first since run 54: still not explained. `docs/TEST_RESULTS.md` →
+  _Run 68_.
+- **What is on the pull request that is open**, and not on `main`: the mended test (and the same wait in one
+  other), a rehearsal script that no longer expects a migration where there is none (_An update, rehearsed_ in
+  `docs/TEST_RESULTS.md`), and the documents brought up to date. Nothing the game ships changes.
 - **The owner's instruction for this stretch of work** (2026-11-25): build all that is left, in the order
   recommended, and the owner will review all of it at once, sounds included, when it is complete. The order:
   the Music Lab; numerals and the number line in Number Garden; rhyme, syllables, letter pairs and sentences in
@@ -86,12 +83,14 @@ answer is right. Everything is saved on the device.
 
 ## Verified
 
-- Locally, on this tree after its last change: format, lint, typecheck, **2724 unit tests**, the production
-  build and its **1849 build checks**; and the whole browser suite in Chromium on all seven screens, 1535
-  tests, none failed and none needed a second attempt, in two runs (the first was stopped at 1351 by a restart of the machine; the second ran the 197 of the three screens it had not finished, and all passed). WebKit is CI's.
-- **CI's last runs, 55 to 58.** The three on pull request #16 are answered (above). **Run 58, on `main` after
-  it was merged, was green in all thirteen jobs with no test at a second attempt.** The page that never comes
-  in CI's WebKit has not happened since run 54. `docs/TEST_RESULTS.md` → _Run 55_ to _Run 58_.
+- Locally, on `d679e93`'s tree (which is `main`'s since #20): format, lint, typecheck, **2754 unit tests**, the
+  production build and its **1862 build checks**; and the whole browser suite in Chromium on all seven screens,
+  **1553 tests: 1310 passed, 243 skipped by design, none failed and none at a second attempt**, in an hour.
+  WebKit is CI's.
+- **CI's last runs, 59 to 68**, are all answered: run 66 was #19's, red in five jobs for two causes in that
+  change, both put right on #20; run 67, #20's, was green with no test at a second attempt; run 68, on `main`
+  after the merge, was green with four tests at a second attempt (above). `docs/TEST_RESULTS.md` → _Runs 59 to
+  65_, _Run 66_ to _Run 68_.
 - **CI's twelve browser jobs do what they were made for.** In the runs since they were dealt out by screen
   the longest set of tests took 18.3 minutes. The longest job took 30.1 of the forty it is allowed, and
   sixteen and a half of those went on fetching its browser from a slow mirror: another ten would have

@@ -106,7 +106,7 @@ try {
     const image = sharp(png);
     const { width, height } = await image.metadata();
     const webp = await image
-      .webp({ quality: 82, alphaQuality: 88, effort: 6, smartSubsample: true })
+      .webp({ quality: 80, alphaQuality: 88, effort: 6, smartSubsample: true })
       .toBuffer();
     const file = `${subject}.webp`;
     writeFileSync(join(out, file), webp);

@@ -191,6 +191,12 @@ owner. Production is the `main` branch, at `https://training-academy-dun.vercel.
   check covers what #17 and #18 brought too. CI's run on `3e9d905` was green in all thirteen jobs, with four tests
   at a second attempt (`docs/TEST_RESULTS.md` → _Run 68_). **The update from `ccaddde`, what was live before, was
   rehearsed** after the merge (`docs/TEST_RESULTS.md` → _An update, rehearsed_).
+- **Pull request [#21](https://github.com/JaredVogler2/Training_Academy/pull/21) was merged on 2026-11-27** as
+  `4617489`, at 19:06. It changed two browser tests, the update rehearsal and the documents, and nothing the game
+  ships, so the site's files are `3e9d905`'s, checked above. **Vercel's record of the production deployment of
+  `4617489` says "Ready".** CI's run on it (run 70) failed in one job, Chromium's desktop and tablet part 3 of 3,
+  for a cause in how the tests started Chromium and not in the game (`docs/TEST_RESULTS.md` → _Runs 69 and 70_),
+  put right on the pull request after #21.
 - **There is one Vercel project for this repository: `training-academy`.** For two days there was a second,
   `voice`, rooted at `scripts/voice` and set up as a Python app. That folder is the offline tool that makes the
   recordings (`make_voice.py`, a `requirements.txt`, a README), and nothing in it is meant to be deployed. The

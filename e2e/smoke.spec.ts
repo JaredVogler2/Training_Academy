@@ -279,8 +279,15 @@ test.describe('the clock that a test holds', () => {
   }) => {
     // What failed a test in CI once, at its first attempt only (run 47, words.spec.ts): the page's time is read
     // and the clock is asked to stop 20 ms after it; it will not stop at a time that has gone by, and that once
-    // the reading and the asking took longer than 20 ms. Here the reading is made to take a tenth of a second,
-    // the first time: the clock refuses, is asked again with the time read afresh, and is held.
+    // the reading and the asking took longer than 20 ms. Here the first reading is a fifth of a second old by
+    // the time the clock is asked: the clock refuses, is asked again with the time read afresh, and is held.
+    //
+    // The reading is made old, not slow. This test used to wait a tenth of a second after it, and that did not
+    // always make it old: Playwright's clock, asked to stop, compares with the time it last caught up with, and
+    // the page catches it up about every tenth of a second when nothing in it asks sooner. A tenth of a second
+    // after a reading it had caught up by anything from 2 to 100 ms, and the test as it was failed 3 times in
+    // 40 on an idle machine (and once in CI, run 69's re-run). Whether a second asking is refused as well is the
+    // same race the helper is there to win, so what is counted is that the time was read again, at least once.
     await page.clock.install();
     await page.goto('/');
     await expect(page.getByRole('navigation', { name: 'Worlds' })).toBeVisible();
@@ -288,10 +295,9 @@ test.describe('the clock that a test holds', () => {
     await holdClock(page, async () => {
       const now = await page.evaluate(() => Date.now());
       readings += 1;
-      if (readings === 1) await new Promise((resolve) => setTimeout(resolve, 100));
-      return now;
+      return readings === 1 ? now - 200 : now;
     });
-    expect(readings).toBe(2);
+    expect(readings).toBeGreaterThanOrEqual(2);
     // Held: a fifth of a second goes by here and none in the page, and a timer set there does not go off.
     const before = await page.evaluate(() => {
       window.setTimeout(() => document.body.setAttribute('data-went-off', 'true'), 50);

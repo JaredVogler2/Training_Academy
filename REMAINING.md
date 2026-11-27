@@ -41,15 +41,18 @@ passed.
 
 ### Git and GitHub
 
-- `main` is at `3e9d905`. On 2026-11-27 the owner merged pull request #17 (phase 12, as `f2c080f`), #18 (the
-  storybook graphics and animations, from the branch `codex/storybook-graphics`, as `ccaddde`) and #20 (phase 13,
-  as `3e9d905`). #20 carried #19, a draft from the branch `codex/academy-release-readiness` whose CI had failed,
-  with its faults put right; GitHub marked #19 merged with it. Vercel's production deployment of `3e9d905` is
-  ready, and that commit's own browser tests passed against the live address, 349 of 349 on seven screens. CI on
-  `main` passed (run 68), with four tests at a second attempt: three a race in a test, mended on the pull request
-  after #20, and one the page that never comes (section 7).
-- The working branch is `claude/zealous-carson-qyiipa`. Its open pull request, the one after #20, holds that mended
-  test, a rehearsal script that no longer expects a migration where there is none, and the documents. Nothing the
+- `main` is at `4617489`. On 2026-11-27 the owner merged pull request #17 (phase 12, as `f2c080f`), #18 (the
+  storybook graphics and animations, from the branch `codex/storybook-graphics`, as `ccaddde`), #20 (phase 13,
+  as `3e9d905`) and #21 (two browser tests, the update rehearsal and the documents, as `4617489`). #20 carried
+  #19, a draft from the branch `codex/academy-release-readiness` whose CI had failed, with its faults put right;
+  GitHub marked #19 merged with it. Vercel's production deployments of `3e9d905` and `4617489` are ready, and
+  `3e9d905`'s own browser tests passed against the live address, 349 of 349 on seven screens (#21 changed nothing
+  the game ships). CI on `main` is red in one job (run 70): Chromium as the tablet, held up for ten to fifteen
+  seconds after leaving a finished activity, because the tests started Chromium with switches that put all its
+  drawing on SwiftShader. Found and put right on the pull request after #21 (`docs/TEST_RESULTS.md` → _Runs 69
+  and 70_).
+- The working branch is `claude/zealous-carson-qyiipa`. Its open pull request, the one after #21, starts Chromium
+  without those switches, mends the test of the tests' own clock, and brings the documents up to date. Nothing the
   game ships changes in it.
 - Merging is the owner's decision, and it is a release: Vercel deploys `main` to production. The owner has merged
   every pull request so far soon after its checks went green.
@@ -241,6 +244,14 @@ it, show the failure before and the pass after, and write it up under _Continuou
 `docs/TEST_RESULTS.md`. Where the cause cannot be found, say so there, and make the test say exactly where it
 failed next time. A job gets one re-run at most.
 
+**Start the browser as CI does before concluding that something happens only in CI.** The machine this was
+developed on starts Chromium through a wrapper that is not CI's: it is a newer Chromium, and it leaves out or
+adds several switches. With `CHROMIUM_HEADLESS_SHELL=playwright CHROMIUM_KEEP_GL_SWITCHES=1 CHROMIUM_NO_DEV_SHM=1
+CHROMIUM_LAZY_SOURCE_POSITIONS=1 CHROMIUM_LATE_FRAME_SINK=1 CHROMIUM_KEEP_XSLT=1` in the environment, it starts
+the Chromium Playwright downloaded, with the switches the tests ask for. That is how the stall of runs 69 and 70
+was brought on there, when every stall of its kind before it had been "only on the CI machine"
+(`docs/TEST_RESULTS.md`).
+
 ### After a merge
 
 The owner merges and Vercel deploys `main`. Check that Vercel's production deployment of the merge commit is
@@ -265,9 +276,10 @@ clip is missing, stale or heard as different words. **No person has listened to 
 - **No child has played, and no teacher has reviewed the content.** Nobody has reviewed the safety notes of the
   things to do away from the screen.
 - **Not explained:** twelve times in CI, a WebKit test's first page never arrived and then arrived at once at the
-  second attempt (the last in run 68, the first since run 54). Once, in Chromium, an activity stood at "Getting ready…" for ten
-  seconds (run 56). Once, in run 66, a press of "My turn" sent as raw touches was not taken; 22 runs on a slowed
-  page did not bring it back.
+  second attempt (the last in run 68, the first since run 54). Once, in run 66, a press of "My turn" sent as raw
+  touches was not taken; 22 runs on a slowed page did not bring it back (with the development machine's own
+  browser, which did not draw as CI's did: see section 6). The activity that stood at "Getting ready…" for ten
+  seconds in run 56 was very likely the stall of runs 69 and 70, now put right.
 - "Independent so far" can still be luck. A made-up learner who only taps is called that at something, at some
   time, in 38 made-up months of 40 (`docs/QUALITY_REPORT.md`, _Phase 12_).
 - A finger that lands on the wrong thing counts as a wrong answer, so a child with unsteady hands is shown as

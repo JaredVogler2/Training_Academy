@@ -39,13 +39,18 @@ function webkitInstalled(): boolean {
   }
 }
 
-/** Headless Chromium has no GPU; these flags give it WebGL through SwiftShader, a CPU rasteriser. */
-const SOFTWARE_GL = [
-  '--use-gl=angle',
-  '--use-angle=swiftshader',
-  '--enable-unsafe-swiftshader',
-  '--ignore-gpu-blocklist',
-];
+/**
+ * Headless Chromium has no GPU; these flags give it WebGL through SwiftShader, a CPU rasteriser. The page itself is
+ * drawn by Chromium's own software path, as on any machine without a GPU.
+ *
+ * Not `--use-gl=angle --use-angle=swiftshader`, which were here until CI's runs 69 and 70. They put all of a page's
+ * drawing on SwiftShader as well, not only WebGL, and Chromium, taking down the drawing of a page it has left, waits
+ * until SwiftShader has finished everything queued for it, on the main thread of the page that follows
+ * (`LayerTreeHost::~LayerTreeHost`, waiting in `RasterImplementation::Finish`). As the tablet, 1536 by 2048 pixels,
+ * that wait was 10 to 15 seconds on CI's machine, and the tests waiting on that page failed. WebGL reports the same
+ * renderer either way. docs/TEST_RESULTS.md, under _Runs 69 and 70_, has the measurements.
+ */
+const SOFTWARE_GL = ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'];
 
 const chromium = { browserName: 'chromium' as const, launchOptions: { args: SOFTWARE_GL } };
 const touch = { hasTouch: true, isMobile: true, deviceScaleFactor: 2 };

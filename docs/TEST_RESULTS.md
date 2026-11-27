@@ -3,12 +3,12 @@
 Everything in this file was actually run. Where something was not run, it says so.
 
 - **Date:** 2026-11-27
-- **Code under test:** `main` as the owner merged it on 2026-11-27 (pull request #21, `4617489`), whose game is
-  that of pull request #20 (`3e9d905`: phase 13, the grown-ups' dashboard; #21 changed two browser tests, the
-  update rehearsal and the documents); with the pull request this document comes with, which changes how the
-  browser tests start Chromium (_Runs 69 and 70_, below), one test of the tests' own clock, and the documents.
-  The release check below was run on `d679e93`'s tree, which is `3e9d905`'s. What was run on the live site was
-  run on what was live, and says so.
+- **Code under test:** `main` as the owner merged it on 2026-11-27 (pull request #22, `1af2235`), whose game is
+  that of pull request #20 (`3e9d905`: phase 13, the grown-ups' dashboard). #21 changed two browser tests, the
+  update rehearsal and the documents; #22 changed how the browser tests start Chromium (_Runs 69 and 70_, below),
+  one test of the tests' own clock, and the documents. The pull request this document comes with changes only the
+  documents. The release check below was run on `d679e93`'s tree, which is `3e9d905`'s. What was run on the live
+  site was run on what was live, and says so.
 - **Locally:** a Linux container (Ubuntu 24.04, 4 CPU cores, **no GPU**), Node 22.23.5, npm 10.9.9, Playwright
   1.63.0. The browser there is the machine's own: Chrome for Testing 157 (headless), started through a wrapper
   that, among other things, leaves out `--use-gl=angle --use-angle=swiftshader`, so it has always drawn pages
@@ -2486,6 +2486,37 @@ counts that the time was read again at least once (whether a second asking is re
 helper is there to win). As it is now: 40 of 40. And it still fails, every time, with the helper broken so that
 it gives up at the first refusal, or asks again with the old reading (3 of 3 each).
 
+**Runs 71 and 72** are pull request #22's (`064198f`: Chromium started without the two switches, the clock's test
+mended, the documents) and `main` after the owner merged it as `1af2235`. **Both passed in all thirteen jobs.**
+Chromium's desktop and tablet part 3 of 3, red in runs 69 and 70, passed both times with no test at a second
+attempt.
+
+- **Run 71**: one test passed at its second attempt, `reading.spec.ts:98` as WebKit's iPad: **the page that
+  never comes**, a thirteenth time. The browser asked for `/world/reading-cove`; the server answered it at once,
+  and again 19.8 seconds later; the browser reported no answer at all and stood at `about:blank` for the
+  half-minute limit, and at the second attempt the page came. Not explained, as before (_Seen only on the CI
+  machine_, below); it is WebKit's, which #22 did not touch. The other eleven reports are 0.63 to 0.87 MB.
+- **Run 72**, on `main`: **no test at a second attempt in any job** (the twelve reports are 0.62 to 0.86 MB), the
+  first run since 67 with none.
+
+Chromium's seven jobs, minutes taken by their tests, with the switches (runs 68 and 70) and without (71 and 72):
+
+| Job                                    | Run 68 | Run 70 | Run 71 | Run 72 |
+| -------------------------------------- | -----: | -----: | -----: | -----: |
+| desktop and tablet, part 1 of 3        |   20.1 |   24.5 |   14.2 |   14.2 |
+| desktop and tablet, part 2 of 3        |   18.0 |   18.2 |   11.0 |   11.2 |
+| desktop and tablet, part 3 of 3        |   14.7 |   20.9 |   11.1 |   11.2 |
+| the phone, first half                  |   16.5 |   21.3 |   12.6 |   12.0 |
+| the phone, second half                 |   20.2 |   17.6 |   16.1 |   16.1 |
+| the small phone and the phone sideways |   13.6 |   14.0 |   12.5 |   12.5 |
+| the Pixel, upright and sideways        |   16.4 |   17.3 |   13.3 |   13.6 |
+| **all seven**                          |  119.5 |  133.8 |   90.8 |   90.8 |
+
+The hub's 3D tests took about half as long in run 72 as in run 70: as the desktop, the scene arriving 18.5 seconds
+against 31.3, and every island in the same place in the picture and the scene 18.1 against 43.5; as the phone
+23.4 against 49.6; as the tablet, the scene arriving 11.6 against 28.6. Whether the waits of five to thirty
+seconds that used to fall on the test after a 3D one have gone too was not measured.
+
 **Phase 03** is pull request [#4](https://github.com/JaredVogler2/Training_Academy/pull/4). The first run with
 the whole phase in it to pass was [3](https://github.com/JaredVogler2/Training_Academy/actions/runs/45093042202)
 below, on `d2e644c`: **all three jobs passed, with no failed test and no retry.**
@@ -3008,11 +3039,11 @@ the press reached the activity. It needs a busy machine to show, which is why it
 **Two tests out of time** on `main` (run 50): explained under _Run 50_. They took 59.5 seconds of their 60
 when they passed. A test now has two minutes, and one that uses three quarters of its limit fails for that.
 
-**Still not explained: the page that never comes.** Twelve times in CI's WebKit, always a test's first page,
+**Still not explained: the page that never comes.** Thirteen times in CI's WebKit, always a test's first page,
 never in Chromium, never here: the server answers at once and the browser never reads the answer. It did not
 happen in runs 49 or 50; it did in runs 51, 52, 53 and 54, once each, then not for thirteen runs, and again in
-run 68. The first two of those cost two minutes each. A page now has half a minute to come (_Run 51_, above),
-and the tenth to the twelfth cost 30 seconds each and said what they had been waiting for.
+runs 68 and 71. The first two of those cost two minutes each. A page now has half a minute to come (_Run 51_,
+above), and the tenth to the thirteenth cost 30 seconds each and said what they had been waiting for.
 
 **A globe that turned half-way and came back** (run 54): explained under _Run 54_, and put right. It was not
 only the machine: the wait before the globe turns back by itself was counted from the press, and a page that
